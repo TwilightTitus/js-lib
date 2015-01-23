@@ -1,0 +1,46 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>xhtml</title>
+	<script src="jquery-1.11.1.js" type="text/javascript"></script>
+	<script src="src/de.titus.grid.layout.js" type="text/javascript"></script>
+	<link href="style.css" type="text/css" rel="stylesheet"/>
+</head>
+<body>
+<h3>test 1</h3>
+<div style="width: 60em;"> 
+	<div class="container">
+		<div class="cell" data-layout-colum-span="2" data-layout-row-span="2"><div class="outer-cell"><div class="inner-cell"><div class="content-cell">2-2</div></div></div></div>
+		<div class="cell free"></div>
+		<div class="cell" data-layout-column-span="1" data-layout-row-span="2"><div class="outer-cell"><div class="inner-cell"><div class="content-cell">1-2</div></div></div></div>
+		<div class="cell free"></div>
+		<div  class="cell free"></div>
+		<div class="cell free"></div>
+		<div  class="cell" data-layout-row-span="2"><div class="inner-cell"><div class="outer-cell"><div class="content-cell">1-2</div></div></div></div>
+		<div class="cell" data-layout-column-span="2" data-layout-row-span="1"><div class="outer-cell"><div class="inner-cell"><div class="content-cell">2-1</div></div></div></div>
+		<div  class="cell free"></div>
+		<div class="cell free"></div>
+		<div  class="cell"><div class="outer-cell"><div class="inner-cell"><div class="content-cell">1-1</div></div></div></div>
+		<div class="cell"><div class="outer-cell"><div class="inner-cell"><div class="content-cell">1-1</div></div></div></div>
+		<div class="clear"/>		
+	</div>
+</div>
+<h3>test 2</h3>
+<div style="width: 60em;"> 
+	<div class="container" grid-layout-column-count="3">
+		<div class="cell" style="width:20em;"><div class="outer-cell" grid-layout-column-span="2" grid-layout-row-span="2"><div class="inner-cell"><div class="content-cell">2-2</div></div></div></div>
+		<div class="cell free" style="width: 20em;"></div>
+		<div class="cell" style="width: 20em;"><div class="outer-cell" grid-layout-column-span="1" ="2"><div class="inner-cell"><div class="content-cell">1-2</div></div></div></div>
+		<div class="cell free" style="width: 20em;"></div>
+		<div  class="cell free" style="width: 20em;"></div>
+		<div class="cell free" style="width: 20em;"></div>
+		<div  class="cell" style="width: 20em;"><div class="outer-cell" ="2"><div class="inner-cell"><div class="content-cell">1-2</div></div></div></div>
+		<div class="cell" style="width: 20em;"><div class="outer-cell" grid-layout-column-span="2" ="1"><div class="inner-cell"><div class="content-cell">2-1</div></div></div></div>
+		<div  class="cell free" style="width: 20em;"></div>
+		<div class="cell free" style="width: 20em;"></div>
+		<div  class="cell" style="width: 20em;"><div class="outer-cell"><div class="inner-cell"><div class="content-cell">1-1</div></div></div></div>
+		<div class="cell" style="width: 20em;"><div class="outer-cell"><div class="inner-cell"><div class="content-cell">1-1</div></div></div></div>		
+	</div>
+</div>	
+</body>
+</html>

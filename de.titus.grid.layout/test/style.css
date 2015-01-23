@@ -1,0 +1,27 @@
+html, body{
+font-size: 10px;
+}
+
+.container {width: 100%;}
+.container .clear{clear: both;}
+.cell{float: left;height: 10em;padding: 0px;margin:0px;}
+.outer-cell{height: 100%; height: inherit;position:absolut;z-index: 1000px;padding-left: 1em;padding-bottom: 1em;}
+.inner-cell{height: 9em; /*.cell(height) - padding(left/right)*/width: 19em; /*.cell(width) - padding(top/bottom)*/}
+.content-cell{height:100%;height: inherit;background-color: red;}
+
+.cell[grid-layout-column-span="2"] .outer-cell{
+	width: 200%;
+	display: block;
+}
+.cell[grid-layout-column-span="2"] .inner-cell{
+	width: 200%;
+	display: block;
+}
+
+.outer-cell[grid-layout-row-span="2"]{
+	height: 20em;
+}
+
+.outer-cell[grid-layout-row-span="2"] .inner-cell{
+	height: 19em;
+}
