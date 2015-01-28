@@ -442,12 +442,12 @@ de.titus.core.Namespace.create("de.titus.TemplateEngine", function() {
 		var content = aText;
 		var runValue = aText;
 		while (de.titus.TemplateEngine.GLOBAL_VARIABLEN_REGEX.test(runValue)) {
-			var match = de.titus.TemplateEngine.GLOBAL_VARIABLEN_REGEX.exec(content);
+			var match = de.titus.TemplateEngine.GLOBAL_VARIABLEN_REGEX.exec(runValue);
 			var result = this.evalVariable(match[1], aElement, theData, theOptions);
 			if (result != undefined) {
 				content = content.replace(match[0], result);
 			}
-			runValue.replace(match[0], "");
+			runValue = runValue.replace(match[0], "");
 		}
 		
 		return content;

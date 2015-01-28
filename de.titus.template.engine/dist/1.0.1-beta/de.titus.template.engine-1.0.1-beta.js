@@ -447,7 +447,7 @@ de.titus.core.Namespace.create("de.titus.TemplateEngine", function() {
 			if (result != undefined) {
 				content = content.replace(match[0], result);
 			}
-			runValue.replace(match[0], "");
+			runValue = runValue.replace(match[0], "");
 		}
 		
 		return content;
