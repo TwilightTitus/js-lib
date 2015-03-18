@@ -201,3 +201,4 @@ de.titus.core.Namespace.create("de.titus.core.DomHelper", function(){
 		return de.titus.core.GLOBAL_DOMHELPER_INSTANCE;
 	};
 });
+
