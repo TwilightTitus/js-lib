@@ -113,7 +113,6 @@ de.titus.core.Namespace.create("de.titus.TemplateEngine", function() {
 		'cache' : false };
 		ajaxSettings = this.domHelper.mergeObjects(ajaxSettings, this.settings.dataRemoteData);
 		this.domHelper.doRemoteLoadJson(ajaxSettings, function(data) {
-			console.log(data);
 			this_.data = data;
 			this_.isDataInit = true;
 		});

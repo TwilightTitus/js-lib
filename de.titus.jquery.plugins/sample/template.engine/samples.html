@@ -1,13 +1,13 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-	<title>Tamplate Engine Samples</title>
+	<title>Template Engine Samples</title>
 	<script src="../../libs/jquery-1.11.1.js" type="text/javascript"></script>
-	<script src="../../dist/1.0.0-beta/de.titus.jquery.plugins.min-1.0.0-beta.js" type="text/javascript"></script>
+	<script src="../../dist/1.0.10/de.titus.jquery.plugins-1.0.10.js" type="text/javascript"></script>
 	<link  type="text/css" href="style.css" rel="stylesheet"/>
 </head>
 <body>
-	<ul id="samples" tpl-template-remote="sample-template.html" tpl-template-data-remote="xsp/rest/mitarbeiter/all"></ul>
+	<ul id="samples" tpl-template-remote="sample-template.html" tpl-template-remote-data="{test:'test'}" tpl-template-data-remote="samples.json"></ul>
 	<script type="text/javascript">
 		/*<!--*/
 		$(document).ready(function(){$("body *").doTemplating();});		

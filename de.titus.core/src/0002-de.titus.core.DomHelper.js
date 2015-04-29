@@ -184,7 +184,9 @@ de.titus.core.Namespace.create("de.titus.core.DomHelper", function(){
 	 * @returns
 	 */
 	de.titus.core.DomHelper.prototype.doEvalWithContext = function(aStatement, aContext, aDefault) {
-		var result = $___DE_TITUS_CORE_EVAL_WITH_CONTEXT_EXTENTION___$(this, aStatement, aContext);
+		var result = de.titus.core.SpecialFunctions.doEval(this, aStatement, aContext);
+		
+//		var result = $___DE_TITUS_CORE_EVAL_WITH_CONTEXT_EXTENTION___$(this, aStatement, aContext);
 		if (result == undefined) {
 			return aDefault;
 		}
