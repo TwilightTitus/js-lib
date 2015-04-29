@@ -20,17 +20,19 @@ de.titus.core.Namespace.create("de.titus.TemplateEngine", function() {
 		this.isTemplateInit = false;
 		this.isDataInit = false;
 		this.isOptionInit = false;
+		this.hasError = false;
 	};
 	
 	de.titus.TemplateEngine.GLOBAL_VARIABLEN_REGEX = /\$\{([^\$\\{\}]*)\}/;
 	de.titus.TemplateEngine.GLOBAL_ISFUNCTION_REGEX = /([^\(\)]*)(\([^\(\)]*\);?)/;
 	
 	de.titus.TemplateEngine.prototype.doTemplating = /* string */function() {
+		if(this.settings.onLoad != undefined)
+			this.domHelper.doEval(this.settings.onLoad, this.settings.options);
 		var this_ = this;
 		window.setTimeout(function() {
 			this_.initTemplate();
 			this_.initData();
-			this_.initOptions();
 			this_.doRendering();
 		}, 1);
 	};
@@ -45,8 +47,6 @@ de.titus.core.Namespace.create("de.titus.TemplateEngine", function() {
 			this.loadTemplateByRemote();
 		} else if (this.settings.templateMode == "function") {
 			this.loadTemplateByFunction();
-		} else {
-			throw "there is no template mode defined!";
 		}
 	};
 	
@@ -60,9 +60,11 @@ de.titus.core.Namespace.create("de.titus.TemplateEngine", function() {
 	de.titus.TemplateEngine.prototype.loadTemplateByRemote = function() {
 		var this_ = this;
 		var ajaxSettings = {
-		'url' : this.settings.template,
+		'url' : this.evalText(this.settings.template, this.settings.options),
 		'async' : this.settings.templateAsync,
-		'cache' : false };
+		'cache' : false,
+		'error' : function(){this_.hasError = true;}
+		};
 		ajaxSettings = this.domHelper.mergeObjects(ajaxSettings, this.settings.templateRemoteData);
 		this.domHelper.doRemoteLoadHtml(ajaxSettings, function(template) {
 			this_.$template = this_.domHelper.toDomObject(template);
@@ -95,8 +97,6 @@ de.titus.core.Namespace.create("de.titus.TemplateEngine", function() {
 			this.loadDataByRemote();
 		} else if (this.settings.dataMode == "function") {
 			this.loadDataByFunction();
-		} else {
-			throw "there is no template mode defined!";
 		}
 	};
 	
@@ -108,9 +108,11 @@ de.titus.core.Namespace.create("de.titus.TemplateEngine", function() {
 	de.titus.TemplateEngine.prototype.loadDataByRemote = function() {
 		var this_ = this;
 		var ajaxSettings = {
-		'url' : this.settings.data,
+		'url' : this.evalText(this.settings.data, this.settings.options),
 		'async' : this.settings.dataAsync,
-		'cache' : false };
+		'cache' : false,
+		'error' : function(){this_.hasError = true;}
+		};
 		ajaxSettings = this.domHelper.mergeObjects(ajaxSettings, this.settings.dataRemoteData);
 		this.domHelper.doRemoteLoadJson(ajaxSettings, function(data) {
 			this_.data = data;
@@ -134,18 +136,12 @@ de.titus.core.Namespace.create("de.titus.TemplateEngine", function() {
 	/**
 	 * 
 	 */
-	de.titus.TemplateEngine.prototype.initOptions = /* void */function() {
-		// TODO implements
-		this.options = this.settings.options || {};
-		this.isOptionInit = true;
-	};
-	
-	/**
-	 * 
-	 */
 	de.titus.TemplateEngine.prototype.doRendering = /* string */function() {
-		this.settings.onLoad();
-		if (this.isTemplateInit && this.isDataInit && this.isOptionInit) {
+		if(this.hasError){
+			if(this.settings.onError != undefined)
+				this.domHelper.doEval(this.settings.onError, this.settings.options);
+		}
+		if (this.isTemplateInit && this.isDataInit) {
 			this.domHelper.doRemoveChilds(this.$target);
 			if (this.domHelper.isArray(this.data)) {
 				for (var i = 0; i < this.data.length; i++) {
@@ -154,6 +150,9 @@ de.titus.core.Namespace.create("de.titus.TemplateEngine", function() {
 			} else {
 				this.internalRendering(this.data, this.options);
 			}
+			
+			if(this.settings.onSuccess != undefined)
+				this.domHelper.doEval(this.settings.onSuccess, this.settings.options);
 		} else {
 			var this_ = this;
 			window.setTimeout(function() {
@@ -172,7 +171,6 @@ de.titus.core.Namespace.create("de.titus.TemplateEngine", function() {
 		content = this.domHelper.toDomObject(content);
 		this.processing(content, theData, theOptions);
 		this.domHelper.setHtml(this.$target, content, "append");
-		this.settings.onSuccess();
 	};
 	
 	/**
@@ -296,8 +294,8 @@ de.titus.core.Namespace.create("de.titus.TemplateEngine", function() {
 		
 		var defaultValue = this.domHelper.getAttribute(aElement, this.settings.attributePrefix + 'if-default');
 		if (expression != undefined) {
-			var match = de.titus.TemplateEngine.GLOBAL_VARIABLEN_REGEX.exec(expression);
-			var result = this.evalVariable(match[1], aElement, theData, theOptions, defaultValue);
+			var result = this.evalVariable(expression, theData, theOptions, undefined, false);
+			
 			if (result != true) {
 				this.domHelper.doRemove(aElement);
 				return false;
@@ -312,8 +310,7 @@ de.titus.core.Namespace.create("de.titus.TemplateEngine", function() {
 		this.domHelper.setAttribute(aElement, this.settings.attributePrefix + 'foreach');
 		
 		if (expression != undefined && expression.length != 0) {
-			var match = de.titus.TemplateEngine.GLOBAL_VARIABLEN_REGEX.exec(expression);
-			var result = this.evalVariable(match[1], aElement, theData, theOptions);
+			var result = this.evalVariable(expression, theData, theOptions);
 			
 			if (this.domHelper.isArray(result)) {
 				
@@ -403,17 +400,18 @@ de.titus.core.Namespace.create("de.titus.TemplateEngine", function() {
 	 * @returns {String}
 	 */
 	de.titus.TemplateEngine.prototype.processContent = function(aElement, theData, theOptions) {
+		var dataFormatter = this.domHelper.getAttribute(aElement, this.settings.attributePrefix + 'formatter');
+		var undefinedValue = this.domHelper.getAttribute(aElement, this.settings.attributePrefix + 'undefined-value');
 		
 		if (this.domHelper.getChildCount(aElement) == 0) {
 			var content = this.domHelper.getText(aElement);
-			content = this.evalText(content, aElement, theData, theOptions);
-			
+			content = this.evalText(content, theData, theOptions, dataFormatter, undefinedValue);
 			this.domHelper.setHtml(aElement, content);
 			this.processAttributes(aElement, theData, theOptions);
 			return false;
 		}
 		
-		this.processAttributes(aElement, theData, theOptions);
+		this.processAttributes(aElement, theData, theOptions, dataFormatter, undefinedValue);
 		return true;
 	};
 	
@@ -423,31 +421,24 @@ de.titus.core.Namespace.create("de.titus.TemplateEngine", function() {
 	 * @param theData
 	 * @param theOptions
 	 */
-	de.titus.TemplateEngine.prototype.processAttributes = function(aElement, theData, theOptions, all) {
+	de.titus.TemplateEngine.prototype.processAttributes = function(aElement, theData, theOptions, all, theDataformatter, theUndefinedValue) {
 		var attributes = this.domHelper.getAttributes(aElement);
 		var processAll = all || false;
 		for ( var name in attributes) {
 			if (processAll || this.settings.attributePrefix == undefined || this.settings.attributePrefix.lenght == 0 || name.indexOf(this.settings.attributePrefix) != 0) {
 				var value = attributes[name];
-				value = this.evalText(value, aElement, theData, theOptions);
+				value = this.evalText(value, theData, theOptions, theDataformatter, theUndefinedValue);
 				this.domHelper.setAttribute(aElement, name, value);
 			}
 		}
 	};
-	/**
-	 * 
-	 * @param aText
-	 * @param aElement
-	 * @param theData
-	 * @param theOptions
-	 * @returns
-	 */
-	de.titus.TemplateEngine.prototype.evalText = function(aText, aElement, theData, theOptions) {
+	
+	de.titus.TemplateEngine.prototype.evalText = function(aText, theData, theOptions, theDataformatter, theUndefinedValue) {
 		var content = aText;
 		var runValue = aText;
 		while (de.titus.TemplateEngine.GLOBAL_VARIABLEN_REGEX.test(runValue)) {
 			var match = de.titus.TemplateEngine.GLOBAL_VARIABLEN_REGEX.exec(runValue);
-			var result = this.evalVariable(match[1], aElement, theData, theOptions);
+			var result = this.evalVariable(match[0], theData, theOptions, theDataformatter, theUndefinedValue);
 			if (result != undefined) {
 				content = content.replace(match[0], result);
 			}
@@ -466,14 +457,18 @@ de.titus.core.Namespace.create("de.titus.TemplateEngine", function() {
 	 * 
 	 * @returns returns the value of "aVariable"
 	 */
-	de.titus.TemplateEngine.prototype.evalVariable = function(aVariable, aElement, theData, theOptions, aDefaultValue) {
-		var dataFormatter = this.domHelper.getAttribute(aElement, this.settings.attributePrefix + 'formatter');
-		var undefinedValue = this.domHelper.getAttribute(aElement, this.settings.attributePrefix + 'undefined-value');
+	de.titus.TemplateEngine.prototype.evalVariable = function(aVariable, theData, theOptions, aDefaultValue, theDataformatter, theUndefinedValue) {
+		var dataFormatter = theDataformatter;
+		var undefinedValue = theUndefinedValue;
+		var variable = aVariable;
 		
 		var data = theData || {};
-		var variable = aVariable;
+		var match = de.titus.TemplateEngine.GLOBAL_VARIABLEN_REGEX.exec(aVariable);
+		if(match != undefined)
+			variable = match[1];
+		
 		if (de.titus.TemplateEngine.GLOBAL_ISFUNCTION_REGEX.test(aVariable)) {
-			var functionMatch = de.titus.TemplateEngine.GLOBAL_ISFUNCTION_REGEX.exec(aVariable);
+			var functionMatch = de.titus.TemplateEngine.GLOBAL_ISFUNCTION_REGEX.exec(variable);
 			variable = functionMatch[1];
 		}
 		

@@ -14,17 +14,11 @@ de.titus.core.Namespace.create("de.titus.TemplateEngineSettings", function(){
 		this.dataAsync = true;
 		this.dataRemoteData = {};
 
-		this.options;
-		this.optionsMode = 'direct'; // direct, remote, function
-		this.optionsAsync = true;
-		this.optionsRemoteData = {};
+		this.options = {};
 
-		this.onLoad = function() {
-		};
-		this.onSuccess = function() {
-		};
-		this.onError = function() {
-		};
+		this.onLoad = undefined;
+		this.onSuccess = undefined;
+		this.onError = undefined;
 		
 		this.attributePrefix = "tpl-";
 	};
@@ -36,12 +30,14 @@ de.titus.core.Namespace.create("de.titus.TemplateEngineSettings", function(){
 	 */
 	de.titus.TemplateEngineSettings.prototype.initialize = function() {
 
-		this.templateRemoteData = this.domHelper.doEval(this.domHelper.getAttribute(this.target, this.attributePrefix +'template-remote-data'), {});
-		this.dataRemoteData = this.domHelper.doEval(this.domHelper.getAttribute(this.target, this.attributePrefix+'template-data-remote-data'), {})
-		this.optionsRemoteData = this.domHelper.doEval(this.domHelper.getAttribute(this.target, this.attributePrefix + 'template-options-remote-data'), {})
+		this.templateRemoteData = this.domHelper.doEval(this.domHelper.getAttribute(this.target, this.attributePrefix +'template-remote-data'), {}) || {};
+		this.dataRemoteData = this.domHelper.doEval(this.domHelper.getAttribute(this.target, this.attributePrefix+'template-data-remote-data'), {}) || {};
+		this.options = this.domHelper.doEval(this.domHelper.getAttribute(this.target, this.attributePrefix + 'template-options'), {}) || {};
 		this.initTemplateSettings();
 		this.initDataSettings();
-		this.initOptionsSettings();
+		this.onLoad = this.domHelper.getAttribute(this.target, this.attributePrefix +'on-load');
+		this.onSuccess = this.domHelper.getAttribute(this.target, this.attributePrefix +'on-success');
+		this.onError = this.domHelper.getAttribute(this.target, this.attributePrefix +'on-error');
 	};
 
 	/**
@@ -59,10 +55,7 @@ de.titus.core.Namespace.create("de.titus.TemplateEngineSettings", function(){
 		} else if (this.domHelper.getAttribute(this.target, this.attributePrefix + 'template-function') != undefined) {
 			this.template = this.domHelper.getAttribute(this.target, this.attributePrefix + 'template-function');
 			this.templateMode = 'function';
-		} else {
-			console.log('There is no template definition available!');
 		}
-
 	};
 
 	/**
@@ -80,28 +73,6 @@ de.titus.core.Namespace.create("de.titus.TemplateEngineSettings", function(){
 		} else if (this.domHelper.getAttribute(this.target, this.attributePrefix + 'template-data-function') != undefined) {
 			this.data = this.domHelper.getAttribute(this.target, this.attributePrefix + 'template-data-function');
 			this.dataMode = 'function';
-		} else {
-			console.log('There is no data definition available!');
-		}
-	};
-
-	/**
-	 * Initialize the settings for the options
-	 */
-	de.titus.TemplateEngineSettings.prototype.initOptionsSettings = function() {
-		if (this.options != undefined) {
-			return;
-		} else if (this.domHelper.getAttribute(this.target, this.attributePrefix + 'template-options') != undefined) {
-			this.options = this.domHelper.doEval(this.domHelper.getAttribute(this.target, this.attributePrefix + 'template-options'));
-			this.optionsMode = 'direct';
-		} else if (this.domHelper.getAttribute(this.target, this.attributePrefix + 'template-options-remote') != undefined) {
-			this.options = this.domHelper.getAttribute(this.target, this.attributePrefix + 'template-options-remote');
-			this.optionsMode = 'remote';
-		} else if (this.domHelper.getAttribute(this.target, this.attributePrefix + 'template-options-function') != undefined) {
-			this.options = this.domHelper.getAttribute(this.target, this.attributePrefix + 'template-options-function');
-			this.optionsMode = 'function';
-		} else {
-			this.options = {};
 		}
 	};
 });
