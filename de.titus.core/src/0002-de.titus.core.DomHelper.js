@@ -167,6 +167,14 @@ de.titus.core.Namespace.create("de.titus.core.DomHelper", function(){
 	de.titus.core.DomHelper.prototype.isArray = function(aVariable) {};
 	
 	/**
+	 * Call the function, after dom is ready!
+	 * 
+	 * @param afunction
+	 * 
+	 */
+	de.titus.core.DomHelper.prototype.doOnReady = function(afunction) {};
+	
+	/**
 	 * 
 	 * @param aStatement
 	 * @param aDefault

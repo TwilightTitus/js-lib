@@ -4,7 +4,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.TextContent", function()
 	de.titus.jstl.functions.TextContent.prototype.constructor = de.titus.jstl.functions.TextContent;
 	
 	de.titus.jstl.functions.TextContent.prototype.run = function(aElement, aDataContext, aProcessor){
-		console.log( "hier");
+		console.log( "call TextContent.run");
 		var processor = aProcessor || new de.titus.jstl.Processor();
 		var expressionResolver = processor.expressionResolver;
 		var domHelper = processor.domHelper || new de.titus.core.DomHelper();
@@ -12,7 +12,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.TextContent", function()
 		
 		
 		if(childCount == 0){
-			console.log( "append text");
+			console.log( "TextContent.run -> append text");
 			var text = domHelper.getText(aElement);
 			text = expressionResolver.resolveText(text, aDataContext);
 			

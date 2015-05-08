@@ -36,7 +36,7 @@ de.titus.core.Namespace.create("de.titus.jstl.ExpressionResolver", function() {
 			return this.internalResolveExpression(matcher.getGroup(1), aDataContext, aDefaultValue);
 		}
 		
-		this.internalResolveExpression(aExpression, aDataContext, aDefaultValue);
+		return this.internalResolveExpression(aExpression, aDataContext, aDefaultValue);
 	};
 	
 
@@ -136,7 +136,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.TextContent", function()
 	de.titus.jstl.functions.TextContent.prototype.constructor = de.titus.jstl.functions.TextContent;
 	
 	de.titus.jstl.functions.TextContent.prototype.run = function(aElement, aDataContext, aProcessor){
-		console.log( "hier");
+		console.log( "call TextContent.run");
 		var processor = aProcessor || new de.titus.jstl.Processor();
 		var expressionResolver = processor.expressionResolver;
 		var domHelper = processor.domHelper || new de.titus.core.DomHelper();
@@ -144,7 +144,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.TextContent", function()
 		
 		
 		if(childCount == 0){
-			console.log( "append text");
+			console.log( "TextContent.run -> append text");
 			var text = domHelper.getText(aElement);
 			text = expressionResolver.resolveText(text, aDataContext);
 			
@@ -160,6 +160,88 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.AttributeContent", funct
 	de.titus.jstl.functions.AttributeContent.prototype.constructor = de.titus.jstl.functions.AttributeContent;
 	
 	de.titus.jstl.functions.AttributeContent.prototype.run = function(aElement, aDataContext, aProcessor){
+		return true;
+	};
+	
+});
+de.titus.core.Namespace.create("de.titus.jstl.functions.Include", function() {	
+	de.titus.jstl.functions.Include = function(){}; 
+	de.titus.jstl.functions.Include.prototype = new de.titus.jstl.IFunction("include");
+	de.titus.jstl.functions.Include.prototype.constructor = de.titus.jstl.functions.Include;
+	
+	de.titus.jstl.functions.Include.prototype.run = function(aElement, aDataContext, aProcessor){
+		console.log("call IncludeTemplate.run")
+		var processor = aProcessor || new de.titus.jstl.Processor();
+		var expressionResolver = processor.expressionResolver || new de.titus.jstl.ExpressionResolver();		
+		var domHelper = processor.domHelper || new de.titus.core.DomHelper();
+		
+		var expression = domHelper.getAttribute(aElement, processor.config.attributePrefix + this.attributeName);
+		if(expression != undefined && expression.lenght != 0){		
+			return this.internalProcessing(expression, aElement, aDataContext, processor, expressionResolver, domHelper);
+		}
+		return true;
+	};
+	
+	de.titus.jstl.functions.Include.prototype.internalProcessing = function(anIncludeExpression, aElement, aDataContext, aProcessor, anExpressionResolver, aDomHelper){
+		var element = aElement;
+		var domHelper = aDomHelper;
+		var processor = aProcessor;
+		var context = aDataContext;
+		var url = anExpressionResolver.resolveText(anIncludeExpression, aDataContext);
+		var includeMode = this.getIncludeMode(aElement, aDataContext, aProcessor, anExpressionResolver, aDomHelper); 
+		
+		var options = this.getOptions(aElement, aDataContext, aProcessor, anExpressionResolver, aDomHelper);
+		
+		var ajaxSettings = {
+			'url' : url,
+			'async' : true,
+			'cache' : false
+			};
+		ajaxSettings = domHelper.mergeObjects(ajaxSettings, options);
+		
+		domHelper.doRemoteLoadHtml(ajaxSettings, function(template) {			
+			domHelper.setHtml(element, template, includeMode);			
+			domHelper.doOnReady(function(){
+				var childs = domHelper.getChilds(element);
+				for(var i = 0; i < childs.length; i++){
+					var result = new de.titus.jstl.Processor(childs[i], context, domHelper,processor.config).compute();
+				}
+			});
+		});
+		
+		return true;
+	};
+	
+	de.titus.jstl.functions.Include.prototype.getOptions= function(aElement, aDataContext, aProcessor, anExpressionResolver, aDomHelper){
+		var options = aDomHelper.getAttribute(aElement, aProcessor.config.attributePrefix + this.attributeName + "-options");
+		if(options != undefined){
+			options = anExpressionResolver.resolveText(options, aDataContext);
+			options = anExpressionResolver.resolveExpression(options, aDataContext);
+			return options || {};
+		}	
+		
+		return {};
+	};
+	
+	de.titus.jstl.functions.Include.prototype.getIncludeMode= function(aElement, aDataContext, aProcessor, anExpressionResolver, aDomHelper){
+		var mode = aDomHelper.getAttribute(aElement, aProcessor.config.attributePrefix + this.attributeName + "-mode");
+		if(mode == undefined)
+			return "append";
+		
+		mode  = mode.toLowerCase(); 
+		if(mode == "append" || mode == "replace" || mode == "prepend")
+			return mode;
+		
+		return "append";
+	};
+	
+});
+de.titus.core.Namespace.create("de.titus.jstl.functions.LoadData", function() {	
+	de.titus.jstl.functions.LoadData = function(){}; 
+	de.titus.jstl.functions.LoadData.prototype = new de.titus.jstl.IFunction();
+	de.titus.jstl.functions.LoadData.prototype.constructor = de.titus.jstl.functions.LoadData;
+	
+	de.titus.jstl.functions.LoadData.prototype.run = function(aElement, aDataContext, aProcessor){
 		return true;
 	};
 	
@@ -207,7 +289,9 @@ de.titus.core.Namespace.create("de.titus.jstl.Processor", function() {
 	};
 	
 	de.titus.jstl.Processor.prototype.internalComputeChilds = /* boolean */function(aElement, aDataContext) {
+		console.log("call Processor.internalComputeChilds for " + aElement);
 		var childs = this.domHelper.getChilds(aElement);
+		console.log("Processor.internalComputeChilds -> " + childs);
 		if(childs == undefined)
 			return true;
 		else if(!this.domHelper.isArray(childs))
@@ -223,10 +307,12 @@ de.titus.core.Namespace.create("de.titus.jstl.Processor", function() {
 		return true;
 	};
 });
-de.titus.core.Namespace.create("de.titus.jstl.Initialize", function() {
-	de.titus.jstl.Initialize = {};
+de.titus.core.Namespace.create("de.titus.jstl.Setup", function() {
+	de.titus.jstl.Setup = function(){};
 	
 	de.titus.jstl.FunctionRegistry.getInstance().add(new de.titus.jstl.functions.If());
+	de.titus.jstl.FunctionRegistry.getInstance().add(new de.titus.jstl.functions.LoadData());
+	de.titus.jstl.FunctionRegistry.getInstance().add(new de.titus.jstl.functions.Include());
 	de.titus.jstl.FunctionRegistry.getInstance().add(new de.titus.jstl.functions.Choose());
 	de.titus.jstl.FunctionRegistry.getInstance().add(new de.titus.jstl.functions.Foreach());
 	de.titus.jstl.FunctionRegistry.getInstance().add(new de.titus.jstl.functions.TextContent());

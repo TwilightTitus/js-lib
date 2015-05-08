@@ -24,7 +24,7 @@ de.titus.core.Namespace.create("de.titus.jstl.ExpressionResolver", function() {
 			return this.internalResolveExpression(matcher.getGroup(1), aDataContext, aDefaultValue);
 		}
 		
-		this.internalResolveExpression(aExpression, aDataContext, aDefaultValue);
+		return this.internalResolveExpression(aExpression, aDataContext, aDefaultValue);
 	};
 	
 

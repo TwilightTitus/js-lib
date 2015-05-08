@@ -41,7 +41,9 @@ de.titus.core.Namespace.create("de.titus.jstl.Processor", function() {
 	};
 	
 	de.titus.jstl.Processor.prototype.internalComputeChilds = /* boolean */function(aElement, aDataContext) {
+		console.log("call Processor.internalComputeChilds for " + aElement);
 		var childs = this.domHelper.getChilds(aElement);
+		console.log("Processor.internalComputeChilds -> " + childs);
 		if(childs == undefined)
 			return true;
 		else if(!this.domHelper.isArray(childs))

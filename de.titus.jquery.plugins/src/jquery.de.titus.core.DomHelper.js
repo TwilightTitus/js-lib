@@ -316,6 +316,16 @@ de.titus.core.Namespace.create("de.titus.jquery.DomHelper", function() {
 	};
 	
 	/**
+	 * Call the function, after dom is ready!
+	 * 
+	 * @param afunction
+	 * 
+	 */
+	de.titus.core.DomHelper.prototype.doOnReady = function(aFunction) {
+		$(document).ready(aFunction);		
+	};
+	
+	/**
 	 * 
 	 */
 	de.titus.jquery.DomHelper.getInstance = function() {
