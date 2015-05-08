@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>de.titus.core</name>
+	<name>de.titus.jstl</name>
 	<comment></comment>
 	<projects>
+		<project>de.titus.core</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
