@@ -1,5 +1,4 @@
 de.titus.core.Namespace.create("de.titus.jquery.DomHelper", function() {
-	
 	/**
 	 * Constructor of DomHelper for JQuery
 	 */
@@ -45,8 +44,8 @@ de.titus.core.Namespace.create("de.titus.jquery.DomHelper", function() {
 	 */
 	de.titus.core.DomHelper.prototype.getAttributes = function(aDomElementObject) {
 		var attributes = {};
-		$.each(aDomElementObject.get(0).attributes, function(i, attrib){
-		    attributes[attrib.name] = attrib.value;
+		$.each(aDomElementObject.get(0).attributes, function(i, attrib) {
+			attributes[attrib.name] = attrib.value;
 		});
 		return attributes;
 	};
@@ -65,12 +64,12 @@ de.titus.core.Namespace.create("de.titus.jquery.DomHelper", function() {
 	};
 	
 	/**
-	 * Get the width of element. 
+	 * Get the width of element.
 	 * 
 	 * @param aDomElementObject
 	 * @returns int, width in px
 	 */
-	de.titus.core.DomHelper.prototype.getWith = function(aDomElementObject){
+	de.titus.core.DomHelper.prototype.getWith = function(aDomElementObject) {
 		return aDomElementObject.width();
 	};
 	
@@ -79,9 +78,10 @@ de.titus.core.Namespace.create("de.titus.jquery.DomHelper", function() {
 	 * 
 	 * 
 	 * @param aDomElementObject
-	 * @param aWidth, width in px
+	 * @param aWidth,
+	 *            width in px
 	 */
-	de.titus.core.DomHelper.prototype.setWith = function(aDomElementObject, aWidth){
+	de.titus.core.DomHelper.prototype.setWith = function(aDomElementObject, aWidth) {
 		aDomElementObject.width(aWidth);
 	};
 	
@@ -91,17 +91,17 @@ de.titus.core.Namespace.create("de.titus.jquery.DomHelper", function() {
 	 * @param aDomElementObject
 	 * @returns int, width in px
 	 */
-	de.titus.core.DomHelper.prototype.getContentWith = function(aDomElementObject){
+	de.titus.core.DomHelper.prototype.getContentWith = function(aDomElementObject) {
 		return aDomElementObject.innerWidth();
 	};
 	
 	/**
-	 * Set the width from the content area of element. 
+	 * Set the width from the content area of element.
 	 * 
 	 * @param aDomElementObject
 	 * @param aWidth
 	 */
-	de.titus.core.DomHelper.prototype.setContentWith = function(aDomElementObject, aWidth){
+	de.titus.core.DomHelper.prototype.setContentWith = function(aDomElementObject, aWidth) {
 		aDomElementObject.innerWidth(aWidth);
 	};
 	
@@ -111,7 +111,7 @@ de.titus.core.Namespace.create("de.titus.jquery.DomHelper", function() {
 	 * @param aDomElementObject
 	 * @returns int, height in px
 	 */
-	de.titus.core.DomHelper.prototype.getHeight = function(aDomElementObject){
+	de.titus.core.DomHelper.prototype.getHeight = function(aDomElementObject) {
 		return aDomElementObject.height();
 	};
 	
@@ -121,7 +121,7 @@ de.titus.core.Namespace.create("de.titus.jquery.DomHelper", function() {
 	 * @param aDomElementObject
 	 * @param aHeight
 	 */
-	de.titus.core.DomHelper.prototype.setHeight = function(aDomElementObject, aHeight){
+	de.titus.core.DomHelper.prototype.setHeight = function(aDomElementObject, aHeight) {
 		aDomElementObject.height(aHeight);
 	};
 	
@@ -131,7 +131,7 @@ de.titus.core.Namespace.create("de.titus.jquery.DomHelper", function() {
 	 * @param aDomElementObject
 	 * @returns int, height in px
 	 */
-	de.titus.core.DomHelper.prototype.getContentHeight = function(aDomElementObject){
+	de.titus.core.DomHelper.prototype.getContentHeight = function(aDomElementObject) {
 		return aDomElementObject.innerHeight();
 	};
 	
@@ -141,7 +141,7 @@ de.titus.core.Namespace.create("de.titus.jquery.DomHelper", function() {
 	 * @param aDomElementObject
 	 * @param aHeight
 	 */
-	de.titus.core.DomHelper.prototype.setContentHeight = function(aDomElementObject, aHeight){
+	de.titus.core.DomHelper.prototype.setContentHeight = function(aDomElementObject, aHeight) {
 		aDomElementObject.innerHeight(aHeight);
 	};
 	
@@ -322,7 +322,7 @@ de.titus.core.Namespace.create("de.titus.jquery.DomHelper", function() {
 	 * 
 	 */
 	de.titus.core.DomHelper.prototype.doOnReady = function(aFunction) {
-		$(document).ready(aFunction);		
+		$(document).ready(aFunction);
 	};
 	
 	/**
@@ -332,7 +332,9 @@ de.titus.core.Namespace.create("de.titus.jquery.DomHelper", function() {
 		return new de.titus.jquery.DomHelper();
 	};
 	
-	de.titus.core.DomHelper.getInstance = function() {
-		return new de.titus.jquery.DomHelper();
-	};
+	if ($ != undefined) {
+		de.titus.core.DomHelper.getInstance = function() {
+			return new de.titus.jquery.DomHelper();
+		};
+	}
 });
