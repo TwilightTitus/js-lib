@@ -12,6 +12,7 @@
 		<div>
 			<div>${test}</div>
 			<div>${"test " + test + "!"}</div>
+			<div>${testFunction}</div>
 		</div>
 		<div jstl-if="${boolean}">boolean test</div>
 		<div></div>
@@ -32,12 +33,30 @@
 				<div>Parameterisierter Include mit den Options </div>			
 			</div>
 		</div>
+		<div>data tests
+			<div jstl-data='{"data": "direct Data"}'>${data}</div>	
+			<div jstl-data='dataFunction()'>${functionResult}</div>		
+			<div jstl-data="jstl-remote.data.json" jstl-data-mode="remote" jstl-data-options='{"test": "test"}'>${remoteData}</div>
+			<div jstl-data="jstl-remote.data.json" jstl-data-mode="remote" jstl-data-var="remoteData">${remoteData.remoteData} with new Varname</div>			
+		</div>
+		
+		<div>Choose test
+			<div jstl-choose = "">
+				<div jstl-when="false">when 1</div>	
+				<div jstl-when='false'>when 2</div>		
+				<div jstl-otherwise="">otherwise</div>
+			</div>			
+		</div>
 	</div>
 	
 	<script type="text/javascript">
 		/*<!--*/
 		function testFunction(){
-			return true;
+			return "result from a Function!";
+		};
+		
+		function dataFunction(){
+			return {"functionResult":"result from a Function!"};
 		};
 		
 		$(document).ready(function(){

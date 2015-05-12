@@ -331,4 +331,8 @@ de.titus.core.Namespace.create("de.titus.jquery.DomHelper", function() {
 	de.titus.jquery.DomHelper.getInstance = function() {
 		return new de.titus.jquery.DomHelper();
 	};
+	
+	de.titus.core.DomHelper.getInstance = function() {
+		return new de.titus.jquery.DomHelper();
+	};
 });

@@ -110,13 +110,72 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.If", function() {
 	};
 	
 });
-de.titus.core.Namespace.create("de.titus.jstl.functions.Choose", function() {	
-	de.titus.jstl.functions.Choose = function(){}; 
+de.titus.core.Namespace.create("de.titus.jstl.functions.Choose", function() {
+	de.titus.jstl.functions.Choose = function() {
+	};
 	de.titus.jstl.functions.Choose.prototype = new de.titus.jstl.IFunction("choose");
 	de.titus.jstl.functions.Choose.prototype.constructor = de.titus.jstl.functions.Choose;
 	
-	de.titus.jstl.functions.Choose.prototype.run = function(aElement, aDataContext, aProcessor){
+	de.titus.jstl.functions.Choose.prototype.run = function(aElement, aDataContext, aProcessor) {
+		console.log("call Choose.run");
+		var processor = aProcessor || new de.titus.jstl.Processor();
+		var expressionResolver = processor.expressionResolver || new de.titus.jstl.ExpressionResolver();
+		var domHelper = processor.domHelper || new de.titus.core.DomHelper();
+		
+		var expression = domHelper.getAttribute(aElement, processor.config.attributePrefix + this.attributeName);
+		if (expression != undefined) {
+			
+			
+			this.processChilds(aElement, aDataContext, processor, expressionResolver, domHelper);
+			return false;
+		}
 		return true;
+	};
+	
+	de.titus.jstl.functions.Choose.prototype.processChilds = function(aChooseElement, aDataContext, aProcessor, aExpressionResolver, aDomHelper) {
+		console.log("call Choose.processChilds");
+		var childs = aDomHelper.getChilds(aChooseElement);
+		var resolved = false;
+		for (var i = 0; i < childs.length; i++) {
+			var child = aDomHelper.toDomObject(childs[i]);
+			if(!resolved && this.processChild(aChooseElement, child, aDataContext, aProcessor, aExpressionResolver, aDomHelper)){
+				console.log("call Choose.processChilds -> keep child");
+				aProcessor.compute(child);
+				resolved = true;
+			}
+			else{
+				console.log("call Choose.processChilds -> remove child");
+				aDomHelper.doRemove(child);
+			}
+		}
+	};
+	
+	de.titus.jstl.functions.Choose.prototype.processChild = function(aChooseElement, aElement, aDataContext, aProcessor, aExpressionResolver, aDomHelper) {
+		if (this.processWhenElement(aChooseElement, aElement, aDataContext, aProcessor, aExpressionResolver, aDomHelper)) {
+			return true;
+		} else if (this.processOtherwiseElement(aChooseElement, aElement, aDataContext, aProcessor, aExpressionResolver, aDomHelper)) {
+			return true;
+		} else {
+			return false;
+		}
+	};
+	
+	de.titus.jstl.functions.Choose.prototype.processWhenElement = function(aChooseElement, aElement, aDataContext, aProcessor, aExpressionResolver, aDomHelper) {
+		var expression = aDomHelper.getAttribute(aElement, aProcessor.config.attributePrefix + 'when')
+		console.log("call Choose.processWhenElement -> expression:" +  expression);
+		if (expression != undefined) {
+			return aExpressionResolver.resolveExpression(expression, aDataContext, false);
+		}
+		return false;
+	};
+	
+	de.titus.jstl.functions.Choose.prototype.processOtherwiseElement = function(aChooseElement, aElement, aDataContext, aProcessor, aExpressionResolver, aDomHelper) {
+		var expression = aDomHelper.getAttribute(aElement, aProcessor.config.attributePrefix + 'otherwise');
+		console.log("call Choose.processOtherwiseElement -> expression:" +  expression);
+		if (expression != undefined) {
+			return true;
+		}
+		return false;
 	};
 	
 });
@@ -164,6 +223,99 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.AttributeContent", funct
 	};
 	
 });
+de.titus.core.Namespace.create("de.titus.jstl.functions.Data", function() {
+	de.titus.jstl.functions.Data = function() {
+	};
+	de.titus.jstl.functions.Data.prototype = new de.titus.jstl.IFunction("data");
+	de.titus.jstl.functions.Data.prototype.constructor = de.titus.jstl.functions.Data;
+	
+	de.titus.jstl.functions.Data.prototype.run = function(aElement, aDataContext, aProcessor) {
+		console.log("call Data.run")
+		var processor = aProcessor || new de.titus.jstl.Processor();
+		var expressionResolver = processor.expressionResolver || new de.titus.jstl.ExpressionResolver();
+		var domHelper = processor.domHelper || new de.titus.core.DomHelper();
+		
+		var expression = domHelper.getAttribute(aElement, processor.config.attributePrefix + this.attributeName);
+		if (expression != undefined && expression.lenght != 0) {
+			this.internalProcessing(expression, aElement, aDataContext, processor, expressionResolver, domHelper);
+		}
+		console.log("end Data.run")
+		return true;
+	};
+	
+	de.titus.jstl.functions.Data.prototype.internalProcessing = function(anExpression, aElement, aDataContext, aProcessor, anExpressionResolver, aDomHelper) {
+		var varname = this.getVarname(aElement, aDataContext, aProcessor, anExpressionResolver, aDomHelper);
+		var mode = this.getMode(aElement, aProcessor, anExpressionResolver, aDomHelper);
+		if (mode == "remote") {
+			this.doRemote(anExpression, aElement, varname, aDataContext, aProcessor, anExpressionResolver, aDomHelper);
+		} else {
+			this.doDirect(anExpression, aElement, varname, aDataContext, aProcessor, anExpressionResolver, aDomHelper);
+		}
+	};
+	
+	de.titus.jstl.functions.Data.prototype.getOptions = function(aElement, aDataContext, aProcessor, anExpressionResolver, aDomHelper) {
+		var options = aDomHelper.getAttribute(aElement, aProcessor.config.attributePrefix + this.attributeName + "-options");
+		if (options != undefined) {
+			options = anExpressionResolver.resolveText(options, aDataContext);
+			options = anExpressionResolver.resolveExpression(options, aDataContext);
+			return options || {};
+		}
+		
+		return {};
+	};
+	
+	de.titus.jstl.functions.Data.prototype.getMode = function(aElement, aProcessor, anExpressionResolver, aDomHelper) {
+		var mode = aDomHelper.getAttribute(aElement, aProcessor.config.attributePrefix + this.attributeName + "-mode");
+		if (mode == undefined)
+			return "direct";
+		
+		mode = mode.toLowerCase();
+		if (mode == "direct" || mode == "remote")
+			return mode;
+		
+		return "direct";
+	};
+	
+	de.titus.jstl.functions.Data.prototype.getVarname = function(aElement, aDataContext, aProcessor, anExpressionResolver, aDomHelper) {
+		var varname = aDomHelper.getAttribute(aElement, aProcessor.config.attributePrefix + this.attributeName + "-var");
+		return varname;
+	};
+	
+	de.titus.jstl.functions.Data.prototype.doDirect = function(anExpression, aElement, aVarname, aDataContext, aProcessor, anExpressionResolver, aDomHelper) {
+		var newData = anExpressionResolver.resolveExpression(anExpression, aDataContext);
+		this.addNewData(newData, aVarname, aDataContext, aProcessor, anExpressionResolver, aDomHelper);
+	};
+	
+	de.titus.jstl.functions.Data.prototype.doRemote = function(anExpression, aElement, aVarname, aDataContext, aProcessor, anExpressionResolver, aDomHelper) {
+		var varname = aVarname;
+		var dataContext = aDataContext;
+		var processor = aProcessor;
+		var expressionResolver = anExpressionResolver;
+		var domHelper = aDomHelper;
+		var this_ = this;
+		
+		var url = expressionResolver.resolveText(anExpression, dataContext);
+		var option = this.getOptions(aElement, aDataContext, aProcessor, anExpressionResolver, aDomHelper);
+		
+		var ajaxSettings = {
+			'url' : url,
+			'async' : false,
+			'cache' : false 
+			};
+		ajaxSettings = domHelper.mergeObjects(ajaxSettings, option);
+		domHelper.doRemoteLoadJson(ajaxSettings, function(newData) {
+			this_.addNewData(newData, varname, dataContext, processor, expressionResolver, domHelper);
+		});
+	};
+	
+	de.titus.jstl.functions.Data.prototype.addNewData = function(aNewData, aVarname, aDataContext, aProcessor, anExpressionResolver, aDomHelper) {
+		if (aVarname == undefined) {
+			aDomHelper.mergeObjects(aDataContext, aNewData);
+		} else {
+			aDataContext[aVarname] = aNewData;
+		}
+	};
+});
 de.titus.core.Namespace.create("de.titus.jstl.functions.Include", function() {	
 	de.titus.jstl.functions.Include = function(){}; 
 	de.titus.jstl.functions.Include.prototype = new de.titus.jstl.IFunction("include");
@@ -194,19 +346,19 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Include", function() {
 		
 		var ajaxSettings = {
 			'url' : url,
-			'async' : true,
-			'cache' : false
+			'async' : false,
+			'cache' : true
 			};
 		ajaxSettings = domHelper.mergeObjects(ajaxSettings, options);
 		
 		domHelper.doRemoteLoadHtml(ajaxSettings, function(template) {			
 			domHelper.setHtml(element, template, includeMode);			
-			domHelper.doOnReady(function(){
-				var childs = domHelper.getChilds(element);
-				for(var i = 0; i < childs.length; i++){
-					var result = new de.titus.jstl.Processor(childs[i], context, domHelper,processor.config).compute();
-				}
-			});
+//			domHelper.doOnReady(function(){
+//				var childs = domHelper.getChilds(element);
+//				for(var i = 0; i < childs.length; i++){
+//					var result = new de.titus.jstl.Processor(childs[i], context, domHelper,processor.config).compute();
+//				}
+//			});
 		});
 		
 		return true;
@@ -236,16 +388,6 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Include", function() {
 	};
 	
 });
-de.titus.core.Namespace.create("de.titus.jstl.functions.LoadData", function() {	
-	de.titus.jstl.functions.LoadData = function(){}; 
-	de.titus.jstl.functions.LoadData.prototype = new de.titus.jstl.IFunction();
-	de.titus.jstl.functions.LoadData.prototype.constructor = de.titus.jstl.functions.LoadData;
-	
-	de.titus.jstl.functions.LoadData.prototype.run = function(aElement, aDataContext, aProcessor){
-		return true;
-	};
-	
-});
 de.titus.core.Namespace.create("de.titus.jstl.Processor", function() {
 	
 	de.titus.jstl.Processor = function(aRootElement, aRootDataContext, aDomHelper, aConfig) {
@@ -269,7 +411,8 @@ de.titus.core.Namespace.create("de.titus.jstl.Processor", function() {
 	};
 	
 	de.titus.jstl.Processor.prototype.internalComputeElement = /* boolean */function(aElement, aDataContext) {
-		return this.internalExecuteFunction(aElement, aDataContext);
+		var dataContext = aDataContext || this.rootDataContext;
+		return this.internalExecuteFunction(aElement, dataContext);
 	};
 	
 	de.titus.jstl.Processor.prototype.internalExecuteFunction = /* boolean */function(aElement, aDataContext) {
@@ -289,9 +432,7 @@ de.titus.core.Namespace.create("de.titus.jstl.Processor", function() {
 	};
 	
 	de.titus.jstl.Processor.prototype.internalComputeChilds = /* boolean */function(aElement, aDataContext) {
-		console.log("call Processor.internalComputeChilds for " + aElement);
 		var childs = this.domHelper.getChilds(aElement);
-		console.log("Processor.internalComputeChilds -> " + childs);
 		if(childs == undefined)
 			return true;
 		else if(!this.domHelper.isArray(childs))
@@ -311,7 +452,7 @@ de.titus.core.Namespace.create("de.titus.jstl.Setup", function() {
 	de.titus.jstl.Setup = function(){};
 	
 	de.titus.jstl.FunctionRegistry.getInstance().add(new de.titus.jstl.functions.If());
-	de.titus.jstl.FunctionRegistry.getInstance().add(new de.titus.jstl.functions.LoadData());
+	de.titus.jstl.FunctionRegistry.getInstance().add(new de.titus.jstl.functions.Data());
 	de.titus.jstl.FunctionRegistry.getInstance().add(new de.titus.jstl.functions.Include());
 	de.titus.jstl.FunctionRegistry.getInstance().add(new de.titus.jstl.functions.Choose());
 	de.titus.jstl.FunctionRegistry.getInstance().add(new de.titus.jstl.functions.Foreach());

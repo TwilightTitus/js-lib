@@ -28,19 +28,19 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Include", function() {
 		
 		var ajaxSettings = {
 			'url' : url,
-			'async' : true,
-			'cache' : false
+			'async' : false,
+			'cache' : true
 			};
 		ajaxSettings = domHelper.mergeObjects(ajaxSettings, options);
 		
 		domHelper.doRemoteLoadHtml(ajaxSettings, function(template) {			
 			domHelper.setHtml(element, template, includeMode);			
-			domHelper.doOnReady(function(){
-				var childs = domHelper.getChilds(element);
-				for(var i = 0; i < childs.length; i++){
-					var result = new de.titus.jstl.Processor(childs[i], context, domHelper,processor.config).compute();
-				}
-			});
+//			domHelper.doOnReady(function(){
+//				var childs = domHelper.getChilds(element);
+//				for(var i = 0; i < childs.length; i++){
+//					var result = new de.titus.jstl.Processor(childs[i], context, domHelper,processor.config).compute();
+//				}
+//			});
 		});
 		
 		return true;
