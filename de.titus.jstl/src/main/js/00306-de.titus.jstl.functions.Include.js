@@ -3,8 +3,19 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Include", function() {
 	de.titus.jstl.functions.Include.prototype = new de.titus.jstl.IFunction("include");
 	de.titus.jstl.functions.Include.prototype.constructor = de.titus.jstl.functions.Include;
 	
+	/****************************************************************
+	 * static variables
+	 ***************************************************************/
+	de.titus.jstl.functions.Include.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.Include");
+	
+	/****************************************************************
+	 * functions
+	 ***************************************************************/
+	
 	de.titus.jstl.functions.Include.prototype.run = function(aElement, aDataContext, aProcessor){
-		console.log("call IncludeTemplate.run")
+		if (de.titus.jstl.functions.Include.LOGGER.isDebugEnabled())
+			de.titus.jstl.functions.Include.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
+		
 		var processor = aProcessor || new de.titus.jstl.Processor();
 		var expressionResolver = processor.expressionResolver || new de.titus.jstl.ExpressionResolver();		
 		var domHelper = processor.domHelper || new de.titus.core.DomHelper();
@@ -19,11 +30,8 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Include", function() {
 	de.titus.jstl.functions.Include.prototype.internalProcessing = function(anIncludeExpression, aElement, aDataContext, aProcessor, anExpressionResolver, aDomHelper){
 		var element = aElement;
 		var domHelper = aDomHelper;
-		var processor = aProcessor;
-		var context = aDataContext;
 		var url = anExpressionResolver.resolveText(anIncludeExpression, aDataContext);
 		var includeMode = this.getIncludeMode(aElement, aDataContext, aProcessor, anExpressionResolver, aDomHelper); 
-		
 		var options = this.getOptions(aElement, aDataContext, aProcessor, anExpressionResolver, aDomHelper);
 		
 		var ajaxSettings = {
@@ -33,14 +41,9 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Include", function() {
 			};
 		ajaxSettings = domHelper.mergeObjects(ajaxSettings, options);
 		
+		var this_ = this;		
 		domHelper.doRemoteLoadHtml(ajaxSettings, function(template) {			
-			domHelper.setHtml(element, template, includeMode);			
-//			domHelper.doOnReady(function(){
-//				var childs = domHelper.getChilds(element);
-//				for(var i = 0; i < childs.length; i++){
-//					var result = new de.titus.jstl.Processor(childs[i], context, domHelper,processor.config).compute();
-//				}
-//			});
+			this_.addHtml(element, template, includeMode, domHelper);	
 		});
 		
 		return true;
@@ -67,6 +70,19 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Include", function() {
 			return mode;
 		
 		return "append";
+	};
+	
+	de.titus.jstl.functions.Include.prototype.addHtml= function(aElement, aTemplate, aIncludeMode, aDomHelper){
+		if (de.titus.jstl.functions.Include.LOGGER.isDebugEnabled())
+			de.titus.jstl.functions.Include.LOGGER.logDebug("execute addHtml(" + aElement + ", " + aTemplate + ", " + aIncludeMode+ ", " + aDomHelper+ ")");
+		
+		aDomHelper.setHtml(aElement, aTemplate, aIncludeMode);	
+//		domHelper.doOnReady(function(){
+//			var childs = domHelper.getChilds(element);
+//			for(var i = 0; i < childs.length; i++){
+//				var result = new de.titus.jstl.Processor(childs[i], context, domHelper,processor.config).compute();
+//			}
+//		});
 	};
 	
 });

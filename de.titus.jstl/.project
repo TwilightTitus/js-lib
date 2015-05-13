@@ -4,6 +4,7 @@
 	<comment></comment>
 	<projects>
 		<project>de.titus.core</project>
+		<project>de.titus.logging</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

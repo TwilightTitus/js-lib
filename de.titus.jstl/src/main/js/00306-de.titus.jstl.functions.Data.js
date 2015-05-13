@@ -4,8 +4,19 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Data", function() {
 	de.titus.jstl.functions.Data.prototype = new de.titus.jstl.IFunction("data");
 	de.titus.jstl.functions.Data.prototype.constructor = de.titus.jstl.functions.Data;
 	
+	/****************************************************************
+	 * static variables
+	 ***************************************************************/
+	de.titus.jstl.functions.Data.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.Data");
+	
+	/****************************************************************
+	 * functions
+	 ***************************************************************/
+	
 	de.titus.jstl.functions.Data.prototype.run = function(aElement, aDataContext, aProcessor) {
-		console.log("call Data.run")
+		if (de.titus.jstl.functions.Data.LOGGER.isDebugEnabled())
+			de.titus.jstl.functions.Data.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
+		
 		var processor = aProcessor || new de.titus.jstl.Processor();
 		var expressionResolver = processor.expressionResolver || new de.titus.jstl.ExpressionResolver();
 		var domHelper = processor.domHelper || new de.titus.core.DomHelper();
@@ -14,7 +25,6 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Data", function() {
 		if (expression != undefined && expression.lenght != 0) {
 			this.internalProcessing(expression, aElement, aDataContext, processor, expressionResolver, domHelper);
 		}
-		console.log("end Data.run")
 		return true;
 	};
 	
@@ -73,10 +83,9 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Data", function() {
 		var option = this.getOptions(aElement, aDataContext, aProcessor, anExpressionResolver, aDomHelper);
 		
 		var ajaxSettings = {
-			'url' : url,
-			'async' : false,
-			'cache' : false 
-			};
+		'url' : url,
+		'async' : false,
+		'cache' : false };
 		ajaxSettings = domHelper.mergeObjects(ajaxSettings, option);
 		domHelper.doRemoteLoadJson(ajaxSettings, function(newData) {
 			this_.addNewData(newData, varname, dataContext, processor, expressionResolver, domHelper);
@@ -84,6 +93,9 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Data", function() {
 	};
 	
 	de.titus.jstl.functions.Data.prototype.addNewData = function(aNewData, aVarname, aDataContext, aProcessor, anExpressionResolver, aDomHelper) {
+		if (de.titus.jstl.functions.Data.LOGGER.isDebugEnabled())
+			de.titus.jstl.functions.Data.LOGGER.logDebug("execute addNewData(" + aNewData + ", " + aVarname + ", " + aDataContext + ", " + aProcessor + ", " + anExpressionResolver + ", " + aDomHelper + ")");
+		
 		if (aVarname == undefined) {
 			aDomHelper.mergeObjects(aDataContext, aNewData);
 		} else {

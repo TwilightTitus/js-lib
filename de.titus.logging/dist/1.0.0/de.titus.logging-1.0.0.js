@@ -41,10 +41,41 @@ de.titus.core.Namespace.create("de.titus.logging.LogAppender", function() {
 	de.titus.logging.LogAppender = function(aDomHelper) {
 		this.domHelper = aDomHelper || de.titus.core.DomHelper.getInstance();
 	};
+	
+	de.titus.logging.LogAppender.prototype.formatedDateString = function(aDate){
+		if(aDate == undefined)
+			return "";
+		
+		var dateString = "";
+		
+		dateString += aDate.getFullYear() + ".";
+		if(aDate.getMonth() < 10) dateString += "0" + aDate.getMonth();
+		else dateString += aDate.getMonth();
+		dateString += ".";
+		if(aDate.getDate() < 10) dateString += "0" + aDate.getDate();
+		else dateString += aDate.getDate();		
+		dateString +=  " ";
+		if(aDate.getHours() < 10) dateString += "0" + aDate.getHours();
+		else dateString += aDate.getHours();
+		dateString += ":";
+		if(aDate.getMinutes() < 10) dateString += "0" + aDate.getMinutes();
+		else dateString += aDate.getMinutes();
+		dateString += ":";
+		if(aDate.getSeconds() < 10) dateString += "0" + aDate.getSeconds();
+		else dateString += aDate.getSeconds();
+		dateString += ":";
+		if(aDate.getMilliseconds() < 10) dateString += "00" + aDate.getMilliseconds();
+		if(aDate.getMilliseconds() < 100) dateString += "0" + aDate.getMilliseconds();
+		else dateString += aDate.getMilliseconds();
+		
+		return dateString;
+	};
 
 	
 	/*This need to be Implemented*/
 	de.titus.logging.LogAppender.prototype.logMessage = function(aMessage, anException, aLoggerName, aDate, aLogLevel){};
+	
+	
 });
 
 de.titus.core.Namespace.create("de.titus.logging.Logger", function() {
@@ -73,36 +104,36 @@ de.titus.core.Namespace.create("de.titus.logging.Logger", function() {
 	
 	de.titus.logging.Logger.prototype.logError = function(aMessage, aException) {
 		if (this.isErrorEnabled())
-			this.log(aMessage, aException);
+			this.log(aMessage, aException, de.titus.logging.LogLevel.ERROR);
 	};
 	
 	de.titus.logging.Logger.prototype.logWarn = function(aMessage, aException) {
 		if (this.isWarnEnabled())
-			this.log(aMessage, aException);
+			this.log(aMessage, aException, de.titus.logging.LogLevel.WARN);
 	};
 	
 	de.titus.logging.Logger.prototype.logInfo = function(aMessage, aException) {
 		if (this.isInfoEnabled())
-			this.log(aMessage, aException);
+			this.log(aMessage, aException, de.titus.logging.LogLevel.INFO);
 	};
 	
 	de.titus.logging.Logger.prototype.logDebug = function(aMessage, aException) {
 		if (this.isDebugEnabled())
-			this.log(aMessage, aException);
+			this.log(aMessage, aException, de.titus.logging.LogLevel.DEBUG);
 	};
 	
 	de.titus.logging.Logger.prototype.logTrace = function(aMessage, aException) {
 		if (this.isTraceEnabled())
-			this.log(aMessage, aException);
+			this.log(aMessage, aException, de.titus.logging.LogLevel.TRACE);
 	};
 	
-	de.titus.logging.Logger.prototype.log = function(aMessage, anException) {
+	de.titus.logging.Logger.prototype.log = function(aMessage, anException, aLogLevel) {
 		if(this.logAppenders == undefined)
 			return;
 		
 		if(this.logAppenders.length > 0){
 			for(var i = 0; i < this.logAppenders.length; i++)
-				this.logAppenders[i].logMessage(aMessage, anException, this.name, new Date(), this.logLevel);
+				this.logAppenders[i].logMessage(aMessage, anException, this.name, new Date(), aLogLevel);
 		}
 	};
 });
@@ -137,42 +168,15 @@ de.titus.core.Namespace.create("de.titus.logging.LoggerRegistry", function() {
 	
 });de.titus.core.Namespace.create("de.titus.logging.LoggerFactory", function() {
 	
-	de.titus.logging.LoggerFactory = function(){
-		this.configs = {};
+	de.titus.logging.LoggerFactory = function() {
+		this.configs = undefined;
 		this.domHelper = de.titus.core.DomHelper.getInstance();
 		this.appenders = {};
 	};
-	de.titus.logging.LoggerFactory.prototype.loadConfig = function(aConfig){
-		if(aConfig.domHelper)
-			this.domHelper = aConfig.domHelper;
-		if(aConfig.remote)
-			this.loadConfigRemote(aConfig.remote);
-		else if(aConfig.data)
-			this.configs = aConfig.data.configs;		
-	};
 	
-	de.titus.logging.LoggerFactory.prototype.loadConfigRemote = function(aRemoteData){
-		var this_ = this;
-		var ajaxSettings = {
-			'async' : false,
-			'cache' : false 
-			};
-		ajaxSettings = this.domHelper.mergeObjects(ajaxSettings, aRemoteData);
-		this.domHelper.doRemoteLoadJson(ajaxSettings, function(data) {
-			this_.configs = data.configs;
-			this_.updateConfigs();
-		});
-	};
-	
-	de.titus.logging.LoggerFactory.prototype.updateConfigs = function(){
-		
-	};
-	
-	
-	de.titus.logging.LoggerFactory.prototype.newLogger = function(aLoggerName){
+	de.titus.logging.LoggerFactory.prototype.newLogger = function(aLoggerName) {
 		var logger = de.titus.logging.LoggerRegistry.getInstance().getLogger(aLoggerName);
-		if(logger == undefined)
-		{
+		if (logger == undefined) {
 			var config = this.findConfig(aLoggerName);
 			var logLevel = de.titus.logging.LogLevel.getLogLevel(config.logLevel);
 			var appenders = this.getAppenders(config.appenders);
@@ -184,61 +188,131 @@ de.titus.core.Namespace.create("de.titus.logging.LoggerRegistry", function() {
 		return logger;
 	};
 	
+	de.titus.logging.LoggerFactory.prototype.getConfig = function() {
+		if (this.configs == undefined)
+			this.updateConfigs();
+		
+		return this.configs;
+	};
 	
-	de.titus.logging.LoggerFactory.prototype.findConfig = function(aLoggerName){
-		var defaultConfig = {"filter": "", "logLevel": "NOLOG", "appenders":[]};
+	de.titus.logging.LoggerFactory.prototype.setConfig = function(aConfig) {
+		if (aConfig != undefined) {
+			this.configs = aConfig;
+			this.updateLogger();
+		}
+	};
+	
+	de.titus.logging.LoggerFactory.prototype.updateConfigs = function(aConfig) {
+		if (this.configs == undefined)
+			this.configs = {};
+		
+		var configElement = this.domHelper.toDomObject("[logging-properties]");
+		if (configElement != undefined && (configElement.length == undefined || configElement.length == 1)) {
+			var propertyString = this.domHelper.getAttribute(configElement, "logging-properties");
+			var properties = this.domHelper.doEval(propertyString, {});
+			this.loadConfig(properties);
+		} else {
+			this.domHelper.doOnReady(function() {
+				de.titus.logging.LoggerFactory.getInstance().loadConfig();
+			});
+		}
+	};
+	
+	de.titus.logging.LoggerFactory.prototype.loadConfig = function(aConfig) {
+		if (aConfig == undefined)
+			this.updateConfigs();
+		else {
+			if (aConfig.domHelper)
+				this.domHelper = aConfig.domHelper;
+			if (aConfig.remote)
+				this.loadConfigRemote(aConfig.remote);
+			else if (aConfig.data) {
+				this.setConfig(aConfig.data.configs);
+			}
+		}
+	};
+	
+	de.titus.logging.LoggerFactory.prototype.loadConfigRemote = function(aRemoteData) {
+		var this_ = this;
+		var ajaxSettings = {
+		'async' : false,
+		'cache' : false };
+		ajaxSettings = this.domHelper.mergeObjects(ajaxSettings, aRemoteData);
+		this.domHelper.doRemoteLoadJson(ajaxSettings, function(data) {
+			this_.setConfig(data.configs);
+		});
+	};
+	
+	de.titus.logging.LoggerFactory.prototype.updateLogger = function() {
+		
+		var loggers = de.titus.logging.LoggerRegistry.getInstance().loggers;
+		
+		for ( var loggerName in loggers) {
+			var logger = loggers[loggerName];
+			
+			var config = this.findConfig(loggerName);
+			var logLevel = de.titus.logging.LogLevel.getLogLevel(config.logLevel);
+			var appenders = this.getAppenders(config.appenders);
+			
+			logger.logLevel = logLevel;
+			logger.logAppenders = appenders;
+		}
+	};
+	
+	de.titus.logging.LoggerFactory.prototype.findConfig = function(aLoggerName) {
+		var defaultConfig = {
+		"filter" : "",
+		"logLevel" : "NOLOG",
+		"appenders" : [] };
 		var actualConfig = undefined;
-		for(var i = 0; i < this.configs.length; i++){
-			var config = this.configs[i];
-			if(this.isConfigActiv(aLoggerName, config, actualConfig))
+		var configs = this.getConfig();
+		for (var i = 0; i < configs.length; i++) {
+			var config = configs[i];
+			if (this.isConfigActiv(aLoggerName, config, actualConfig))
 				actualConfig = config;
-			else if(config.filter == undefined || config.filter == "")
+			else if (config.filter == undefined || config.filter == "")
 				defaultConfig = config;
-			if(actualConfig != undefined && actualConfig.filter == aLoggerName)
+			if (actualConfig != undefined && actualConfig.filter == aLoggerName)
 				return actualConfig;
-		}		
+		}
 		
 		return actualConfig || defaultConfig;
 	};
 	
-	de.titus.logging.LoggerFactory.prototype.isConfigActiv = function(aLoggerName, aConfig, anActualConfig){
-		if(anActualConfig != undefined && anActualConfig.filter.length >= aConfig.filter.filter)
+	de.titus.logging.LoggerFactory.prototype.isConfigActiv = function(aLoggerName, aConfig, anActualConfig) {
+		if (anActualConfig != undefined && anActualConfig.filter.length >= aConfig.filter.filter)
 			return false;
-		return aLoggerName.search(aConfig.filter) == 0;			
+		return aLoggerName.search(aConfig.filter) == 0;
 	};
 	
-	de.titus.logging.LoggerFactory.prototype.getAppenders = function(theAppenders){
+	de.titus.logging.LoggerFactory.prototype.getAppenders = function(theAppenders) {
 		var result = new Array();
-		for(var i = 0; i < theAppenders.length; i++){
+		for (var i = 0; i < theAppenders.length; i++) {
 			var appenderString = theAppenders[i];
 			var appender = this.appenders[appenderString];
-			if(appender == undefined)
-			{
+			if (appender == undefined) {
 				appender = this.domHelper.doEval("new " + appenderString + "();");
-				if(appender != undefined)
-				{
+				if (appender != undefined) {
 					appender.domHelper = this.domHelper;
 					this.appenders[appenderString] = appender;
 				}
 			}
-			if(appender != undefined)
+			if (appender != undefined)
 				result.push(appender);
-		}		
+		}
 		
-		return result;		
+		return result;
 	};
 	
-	
-	
-	de.titus.logging.LoggerFactory.getInstance = function(){
-		if(de.titus.logging.LoggerFactory.INSTANCE == undefined)
+	de.titus.logging.LoggerFactory.getInstance = function() {
+		if (de.titus.logging.LoggerFactory.INSTANCE == undefined)
 			de.titus.logging.LoggerFactory.INSTANCE = new de.titus.logging.LoggerFactory();
 		
 		return de.titus.logging.LoggerFactory.INSTANCE;
 	};
 	
-	
-});de.titus.core.Namespace.create("de.titus.logging.ConsolenAppender", function() {
+});
+de.titus.core.Namespace.create("de.titus.logging.ConsolenAppender", function() {
 	
 	de.titus.logging.ConsolenAppender = function(){
 	};
@@ -249,14 +323,14 @@ de.titus.core.Namespace.create("de.titus.logging.LoggerRegistry", function() {
 	de.titus.logging.ConsolenAppender.prototype.logMessage=  function(aMessage, anException, aLoggerName, aDate, aLogLevel){
 		var log = "";
 		if(aDate)
-			log += log = aDate + " ";
+			log += log = this.formatedDateString(aDate) + " ";
 		
 		log += "***" + aLogLevel.title + "*** " + aLoggerName + "";
 		
 		if(aMessage)
-			log += " -> " + aMessage + ":";
+			log += " -> " + aMessage;
 		if(anException)
-			log += anException;
+			log += ": " + anException;
 		
 		console.log(log);
 	};
@@ -279,14 +353,14 @@ de.titus.core.Namespace.create("de.titus.logging.LoggerRegistry", function() {
 		
 		var log = '<div class="log-entry ' + aLogLevel.title + '">';
 		if(aDate)
-			log += log = aDate + " ";
+			log += log = this.formatedDateString(aDate) + " ";
 		
 		log += "***" + aLogLevel.title + "*** " + aLoggerName + "";
 		
 		if(aMessage)
-			log += " -> " + aMessage + ":";
+			log += " -> " + aMessage;
 		if(anException)
-			log += anException;
+			log += ": " + anException;
 		
 		log += "</div>";
 		

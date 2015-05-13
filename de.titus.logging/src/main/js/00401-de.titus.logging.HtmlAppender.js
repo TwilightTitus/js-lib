@@ -17,14 +17,14 @@ de.titus.core.Namespace.create("de.titus.logging.HtmlAppender", function() {
 		
 		var log = '<div class="log-entry ' + aLogLevel.title + '">';
 		if(aDate)
-			log += log = aDate + " ";
+			log += log = this.formatedDateString(aDate) + " ";
 		
 		log += "***" + aLogLevel.title + "*** " + aLoggerName + "";
 		
 		if(aMessage)
-			log += " -> " + aMessage + ":";
+			log += " -> " + aMessage;
 		if(anException)
-			log += anException;
+			log += ": " + anException;
 		
 		log += "</div>";
 		

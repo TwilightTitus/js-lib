@@ -9,7 +9,19 @@ de.titus.core.Namespace.create("de.titus.jstl.Processor", function() {
 		this.config = this.domHelper.mergeObjects(aConfig, this.config);
 	};
 	
+	/****************************************************************
+	 * static variables
+	 ***************************************************************/
+	de.titus.jstl.Processor.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.Processor");	
+	
+	/****************************************************************
+	 * functions
+	 ***************************************************************/
+	
 	de.titus.jstl.Processor.prototype.compute = /* boolean */function(aElement, aDataContext) {
+		if(de.titus.jstl.Processor.LOGGER.isDebugEnabled())
+			de.titus.jstl.Processor.LOGGER.logDebug("execute compute(" + aElement + ", " + aDataContext + ")");
+		
 		if(aElement == undefined)
 			return this.internalComputeRoot();
 		
@@ -26,6 +38,9 @@ de.titus.core.Namespace.create("de.titus.jstl.Processor", function() {
 	};
 	
 	de.titus.jstl.Processor.prototype.internalExecuteFunction = /* boolean */function(aElement, aDataContext) {
+		if(de.titus.jstl.Processor.LOGGER.isDebugEnabled())
+			de.titus.jstl.Processor.LOGGER.logDebug("execute internalExecuteFunction(" + aElement + ", " + aDataContext + ")");
+		
 		try {
 			var functions = de.titus.jstl.FunctionRegistry.getInstance().functions;
 			for (var i = 0; i < functions.length; i++) {
@@ -36,12 +51,15 @@ de.titus.core.Namespace.create("de.titus.jstl.Processor", function() {
 			
 			return this.internalComputeChilds(aElement, aDataContext);
 		} catch (e) {
-			console.log (e)
+			de.titus.jstl.Processor.LOGGER.logError(e);
 			return false;
 		}	
 	};
 	
 	de.titus.jstl.Processor.prototype.internalComputeChilds = /* boolean */function(aElement, aDataContext) {
+		if(de.titus.jstl.Processor.LOGGER.isDebugEnabled())
+			de.titus.jstl.Processor.LOGGER.logDebug("execute internalComputeChilds(" + aElement + ", " + aDataContext + ")");
+		
 		var childs = this.domHelper.getChilds(aElement);
 		if(childs == undefined)
 			return true;

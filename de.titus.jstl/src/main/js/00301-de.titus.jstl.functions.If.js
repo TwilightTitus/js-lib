@@ -3,7 +3,17 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.If", function() {
 	de.titus.jstl.functions.If.prototype = new de.titus.jstl.IFunction("if");
 	de.titus.jstl.functions.If.prototype.constructor = de.titus.jstl.functions.If;
 	
+	/****************************************************************
+	 * static variables
+	 ***************************************************************/
+	de.titus.jstl.functions.If.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.If");
+	
+	
 	de.titus.jstl.functions.If.prototype.run = /*boolean*/function(aElement, aDataContext, aProcessor){
+		if(de.titus.jstl.functions.If.LOGGER.isDebugEnabled())
+			de.titus.jstl.functions.If.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
+		
+		
 		var processor = aProcessor || new de.titus.jstl.Processor();
 		var expressionResolver = processor.expressionResolver || new de.titus.jstl.ExpressionResolver();
 		var domHelper = processor.domHelper || new de.titus.core.DomHelper();

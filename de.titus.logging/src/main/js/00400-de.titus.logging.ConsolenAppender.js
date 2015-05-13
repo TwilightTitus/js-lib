@@ -9,14 +9,14 @@ de.titus.core.Namespace.create("de.titus.logging.ConsolenAppender", function() {
 	de.titus.logging.ConsolenAppender.prototype.logMessage=  function(aMessage, anException, aLoggerName, aDate, aLogLevel){
 		var log = "";
 		if(aDate)
-			log += log = aDate + " ";
+			log += log = this.formatedDateString(aDate) + " ";
 		
 		log += "***" + aLogLevel.title + "*** " + aLoggerName + "";
 		
 		if(aMessage)
-			log += " -> " + aMessage + ":";
+			log += " -> " + aMessage;
 		if(anException)
-			log += anException;
+			log += ": " + anException;
 		
 		console.log(log);
 	};
