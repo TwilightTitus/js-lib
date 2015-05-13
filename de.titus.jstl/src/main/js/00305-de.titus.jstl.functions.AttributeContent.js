@@ -16,7 +16,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.AttributeContent", funct
 		if (de.titus.jstl.functions.AttributeContent.LOGGER.isDebugEnabled())
 			de.titus.jstl.functions.AttributeContent.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
 		
-		return true;
+		return new de.titus.jstl.FunctionResult(true, true);
 	};
 	
 });

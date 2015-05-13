@@ -3,6 +3,6 @@ de.titus.core.Namespace.create("de.titus.jstl.IFunction", function() {
 		this.attributeName = theAttributeName;	
 	};
 	
-	de.titus.jstl.IFunction.prototype.run = /*boolean*/ function(aElement, aDataContext, aProcessor){return true;};
+	de.titus.jstl.IFunction.prototype.run = /*de.titus.jstl.FunctionResult*/ function(aElement, aDataContext, aProcessor){return true;};
 	
 });

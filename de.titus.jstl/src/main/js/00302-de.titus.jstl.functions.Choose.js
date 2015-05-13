@@ -25,9 +25,9 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Choose", function() {
 		if (expression != undefined) {
 			
 			this.processChilds(aElement, aDataContext, processor, expressionResolver, domHelper);
-			return false;
+			return new de.titus.jstl.FunctionResult(false, true);
 		}
-		return true;
+		return new de.titus.jstl.FunctionResult(true, true);
 	};
 	
 	de.titus.jstl.functions.Choose.prototype.processChilds = function(aChooseElement, aDataContext, aProcessor, aExpressionResolver, aDomHelper) {
@@ -41,7 +41,6 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Choose", function() {
 			if (!resolved && this.processChild(aChooseElement, child, aDataContext, aProcessor, aExpressionResolver, aDomHelper)) {
 				if (de.titus.jstl.functions.Choose.LOGGER.isTraceEnabled())
 					de.titus.jstl.functions.Choose.LOGGER.logTrace("compute child: " + child);
-				aProcessor.compute(child);
 				resolved = true;
 			} else {
 				if (de.titus.jstl.functions.Choose.LOGGER.isTraceEnabled())

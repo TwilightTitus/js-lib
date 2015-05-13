@@ -25,7 +25,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Data", function() {
 		if (expression != undefined && expression.lenght != 0) {
 			this.internalProcessing(expression, aElement, aDataContext, processor, expressionResolver, domHelper);
 		}
-		return true;
+		return new de.titus.jstl.FunctionResult(true, true);
 	};
 	
 	de.titus.jstl.functions.Data.prototype.internalProcessing = function(anExpression, aElement, aDataContext, aProcessor, anExpressionResolver, aDomHelper) {

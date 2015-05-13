@@ -22,9 +22,9 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Include", function() {
 		
 		var expression = domHelper.getAttribute(aElement, processor.config.attributePrefix + this.attributeName);
 		if(expression != undefined && expression.lenght != 0){		
-			return this.internalProcessing(expression, aElement, aDataContext, processor, expressionResolver, domHelper);
+			this.internalProcessing(expression, aElement, aDataContext, processor, expressionResolver, domHelper);
 		}
-		return true;
+		return new de.titus.jstl.FunctionResult(true, true);
 	};
 	
 	de.titus.jstl.functions.Include.prototype.internalProcessing = function(anIncludeExpression, aElement, aDataContext, aProcessor, anExpressionResolver, aDomHelper){
@@ -45,8 +45,6 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Include", function() {
 		domHelper.doRemoteLoadHtml(ajaxSettings, function(template) {			
 			this_.addHtml(element, template, includeMode, domHelper);	
 		});
-		
-		return true;
 	};
 	
 	de.titus.jstl.functions.Include.prototype.getOptions= function(aElement, aDataContext, aProcessor, anExpressionResolver, aDomHelper){

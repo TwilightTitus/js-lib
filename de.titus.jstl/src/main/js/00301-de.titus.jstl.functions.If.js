@@ -28,13 +28,13 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.If", function() {
 			
 			
 			expressionResult = expressionResult == true;
-			if(!expressionResult)
+			if(!expressionResult){
 				domHelper.doRemove(aElement);
-				
-			return expressionResult;
+				return new de.titus.jstl.FunctionResult(false, false);
+			}
 		}
 		
-		return true;
+		return new de.titus.jstl.FunctionResult(true, true);
 	};
 	
 });

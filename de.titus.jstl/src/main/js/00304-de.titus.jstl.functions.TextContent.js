@@ -27,7 +27,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.TextContent", function()
 			
 			domHelper.setText(aElement, text, "replace");
 		}
-		return true;
+		return new de.titus.jstl.FunctionResult(true, true);
 	};
 	
 });
