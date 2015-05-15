@@ -8,7 +8,7 @@
 	<link  type="text/css" href="style.css" rel="stylesheet"/>
 </head>
 <body logging-properties='{"remote":{"url":"logging.properties.json"}}'>
-	<div id="test">
+	<div id="test" jstl-load="load" jstl-success="success" jstl-fail="function(){alert('fail')}">
 		<div>
 			<div>${test}</div>
 			<div>${"test " + test + "!"}</div>
@@ -48,10 +48,12 @@
 			</div>			
 		</div>
 		<div>foreach test 1
-			<div jstl-data='{"data": "direct Data"}' jstl-foreach = "${list}">
-				<div>${statusVar.index}</div>
-				<div>id: ${itemVar.id}</div>
-				<div>name: ${itemVar.name}</div>
+			<div jstl-data='{"data": "direct Data"}' jstl-foreach = "${list}" jstl-foreach-var="listItem" jstl-foreach-status="listStatus">
+				<span>${listStatus.index}</span>
+				<span>id: ${listItem.id}</span>
+				<span>name: ${listItem.name}</span>
+				<span>name: ${jstlTemplate}</span>
+				<br/>
 			</div>			
 		</div>
 		<div>foreach test 2
@@ -60,6 +62,7 @@
 					<span>${statusVar.index}</span>
 					<span>id: ${itemVar.id}</span>
 					<span>name: ${itemVar.name}</span>
+					<span>name: ${jstlTemplate}</span>
 				</div>
 			</div>			
 		</div>
@@ -70,6 +73,17 @@
 	
 	<script type="text/javascript">
 		/*<!--*/
+		
+		function load(aElement){
+			$(aElement).hide();
+			alert("load");
+		};
+		
+		function success(aElement){
+			alert("success");
+			$(aElement).show();
+		};
+		
 		function testFunction(){
 			return "result from a Function!";
 		};
