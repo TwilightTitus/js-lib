@@ -37,8 +37,8 @@ de.titus.core.Namespace.create("de.titus.jstl.Processor", function() {
 		var dataContext = aDataContext || this.rootDataContext;
 		try {
 			var result = this.internalExecuteFunction(aElement, dataContext);
-			if(result.processChilds)
-				this.internalComputeChilds(aElement, dataContext);			
+			if (result.processChilds)
+				this.internalComputeChilds(aElement, dataContext);
 			return true;
 		} catch (e) {
 			de.titus.jstl.Processor.LOGGER.logError(e);
@@ -51,22 +51,45 @@ de.titus.core.Namespace.create("de.titus.jstl.Processor", function() {
 			de.titus.jstl.Processor.LOGGER.logDebug("execute internalExecuteFunction(" + aElement + ", " + aDataContext + ")");
 		
 		var functions = de.titus.jstl.FunctionRegistry.getInstance().functions;
-		var masterResult = new de.titus.jstl.FunctionResult();
+		var result = new de.titus.jstl.FunctionResult();
 		for (var i = 0; i < functions.length; i++) {
 			var functionObject = functions[i];
-			var result = functionObject.run(aElement, aDataContext, this);			
-			if (result != undefined)
-			{
-				masterResult.runNextFunction = masterResult.runNextFunction && result.runNextFunction;
-				masterResult.processChilds = masterResult.processChilds && result.processChilds;
+			var executeFunction = this.isFunctionNeeded(functionObject, aElement);
+			if (executeFunction) {
+				var result = this.executeFunction(functionObject, aElement, aDataContext, result);
+				if (!result.runNextFunction)
+					return masterResult;
 			}
-			
-			if(!masterResult.runNextFunction)
-				return masterResult;
 		}
-		return masterResult;
+		return result;
 	};
 	
+	de.titus.jstl.Processor.prototype.isFunctionNeeded = function(aFunction, aElement) {
+		if (de.titus.jstl.Processor.LOGGER.isDebugEnabled())
+			de.titus.jstl.Processor.LOGGER.logDebug("execute isFunctionNeeded(" + aFunction + ", " + aElement + ")");
+		
+		var executeFunction = true;
+		if (aFunction.attributeName != undefined && aFunction.attributeName != "") {
+			var expression = this.domHelper.getAttribute(aElement, this.config.attributePrefix + aFunction.attributeName);
+			executeFunction = expression != undefined;
+		}
+		
+		return executeFunction;
+	};
+	
+	de.titus.jstl.Processor.prototype.executeFunction = function(aFunction, aElement, aDataContext, aCurrentFunctionResult) {
+		if (de.titus.jstl.Processor.LOGGER.isDebugEnabled())
+			de.titus.jstl.Processor.LOGGER.logDebug("execute executeFunction(" + aFunction + ", " + aElement + ", " + aDataContext + ", " + aCurrentFunctionResult + ")");
+		
+		var result = aFunction.run(aElement, aDataContext, this);
+		if (result != undefined) {
+			aCurrentFunctionResult.runNextFunction = aCurrentFunctionResult.runNextFunction && result.runNextFunction;
+			aCurrentFunctionResult.processChilds = aCurrentFunctionResult.processChilds && result.processChilds;
+		}
+		
+		return aCurrentFunctionResult;
+	}
+
 	de.titus.jstl.Processor.prototype.internalComputeChilds = /* boolean */function(aElement, aDataContext) {
 		if (de.titus.jstl.Processor.LOGGER.isDebugEnabled())
 			de.titus.jstl.Processor.LOGGER.logDebug("execute internalComputeChilds(" + aElement + ", " + aDataContext + ")");

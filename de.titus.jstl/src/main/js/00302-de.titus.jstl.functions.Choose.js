@@ -25,7 +25,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Choose", function() {
 		if (expression != undefined) {
 			
 			this.processChilds(aElement, aDataContext, processor, expressionResolver, domHelper);
-			return new de.titus.jstl.FunctionResult(false, true);
+			return new de.titus.jstl.FunctionResult(true, true);
 		}
 		return new de.titus.jstl.FunctionResult(true, true);
 	};

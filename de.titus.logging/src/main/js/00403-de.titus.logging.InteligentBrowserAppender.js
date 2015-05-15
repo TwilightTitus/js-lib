@@ -9,7 +9,14 @@ de.titus.core.Namespace.create("de.titus.logging.InteligentBrowserAppender", fun
 	de.titus.logging.InteligentBrowserAppender.prototype.getAppender = function(){
 		if(this.appender == undefined)
 		{
-			if(console.log)
+			var consoleAvalible = true;
+			try{
+				console.log("Test Logging!");
+			}catch (e) {
+				consoleAvalible = false;
+			}
+			
+			if(consoleAvalible)
 				this.appender = new de.titus.logging.ConsolenAppender();
 			else if(this.domHelper.toDomObject(de.titus.logging.HtmlAppender.CONTAINER_QUERY))
 				this.appender = new de.titus.logging.HtmlAppender();

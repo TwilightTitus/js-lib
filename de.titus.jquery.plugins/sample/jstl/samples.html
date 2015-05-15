@@ -47,7 +47,26 @@
 				<div jstl-otherwise="">otherwise</div>
 			</div>			
 		</div>
+		<div>foreach test 1
+			<div jstl-data='{"data": "direct Data"}' jstl-foreach = "${list}">
+				<div>${statusVar.index}</div>
+				<div>id: ${itemVar.id}</div>
+				<div>name: ${itemVar.name}</div>
+			</div>			
+		</div>
+		<div>foreach test 2
+			<div jstl-foreach = "${jstlList}">
+				<div jstl-if="${itemVar.show}">
+					<span>${statusVar.index}</span>
+					<span>id: ${itemVar.id}</span>
+					<span>name: ${itemVar.name}</span>
+				</div>
+			</div>			
+		</div>
+		
 	</div>
+	
+	<div id="log"><div>Logs</div></div>
 	
 	<script type="text/javascript">
 		/*<!--*/
@@ -60,7 +79,18 @@
 		};
 		
 		$(document).ready(function(){
-			var result = new de.titus.jstl.Processor($("#test"), {test:"text", "boolean": false, "jstlTemplate" :"jstl-template.html"}, new de.titus.jquery.DomHelper()).compute();
+			var data = {test:"text", 
+				"boolean": false, 
+				"jstlTemplate" :"jstl-template.html", 
+				"jstlList":[ 
+                       ]
+			};
+			
+			for(var i = 0; i < 10; i++){
+				data.jstlList.push({"id":i, "name": "item " + i, "show":(i % 4 != 0)});
+			}
+			
+			var result = new de.titus.jstl.Processor($("#test"), data, new de.titus.jquery.DomHelper()).compute();
 			console.log(result);
 		});		
 		/*-->*/
