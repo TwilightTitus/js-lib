@@ -51,6 +51,9 @@
 			<fileset dir="${depents.logging.dist.dir}" includes="*.min-${depents.logging.version}.js" />
 		</concat>
 		<concat destfile="${dir.build}/tmp/${ant.project.name}.min-${project.version}.js" fixlastline="true" append="true">
+			<fileset dir="${depents.jstl.dist.dir}" includes="*.min-${depents.jstl.version}.js" />
+		</concat>
+		<concat destfile="${dir.build}/tmp/${ant.project.name}.min-${project.version}.js" fixlastline="true" append="true">
 			<fileset dir="${depents.template.engine.dist.dir}" includes="*.min-${depents.template.engine.version}.js" />
 		</concat>
 		<!--concat destfile="${dir.build}/tmp/${ant.project.name}.min-${project.version}.js" fixlastline="true" append="true">
@@ -70,6 +73,9 @@
 		</concat>
 		<concat destfile="${dir.build}/tmp/${ant.project.name}-${project.version}.js" fixlastline="true" append="true">
 			<fileset dir="${depents.logging.dist.dir}" excludes="*.min-${depents.logging.version}.js" includes="*.js" />
+		</concat>
+		<concat destfile="${dir.build}/tmp/${ant.project.name}-${project.version}.js" fixlastline="true" append="true">
+			<fileset dir="${depents.jstl.dist.dir}" excludes="*.min-${depents.jstl.version}.js" includes="*.js" />
 		</concat>
 		<concat destfile="${dir.build}/tmp/${ant.project.name}-${project.version}.js" fixlastline="true" append="true">
 			<fileset dir="${depents.template.engine.dist.dir}" excludes="*.min-${depents.template.engine.version}.js" includes="*.js" />
