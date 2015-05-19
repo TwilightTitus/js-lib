@@ -16,7 +16,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.If", function() {
 		
 		var processor = aProcessor || new de.titus.jstl.Processor();
 		var expressionResolver = processor.expressionResolver || new de.titus.jstl.ExpressionResolver();
-		var domHelper = processor.domHelper || new de.titus.core.DomHelper();
+		var domHelper = processor.domHelper || de.titus.core.DomHelper.getInstance();
 		
 		var expression = domHelper.getAttribute(aElement, processor.config.attributePrefix + this.attributeName);
 		if(expression != undefined && expression.lenght != 0){

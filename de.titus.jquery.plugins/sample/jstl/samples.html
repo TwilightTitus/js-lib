@@ -103,8 +103,9 @@
 				data.jstlList.push({"id":i, "name": "item " + i, "show":(i % 4 != 0)});
 			}
 			
-			var result = new de.titus.jstl.Processor($("#test"), data, new de.titus.jquery.DomHelper()).compute();
-			console.log(result);
+			//var result = new de.titus.jstl.Processor({"element": $("#test"),"data": data}).compute();
+			$("#test").jstl({"data": data});
+			//console.log(result);
 		});		
 		/*-->*/
 	</script>

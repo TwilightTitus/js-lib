@@ -1,7 +1,7 @@
 de.titus.core.Namespace.create("de.titus.jstl.ExpressionResolver", function() {
 	
 	de.titus.jstl.ExpressionResolver = function(aDomHelper) {
-		this.domHelper = aDomHelper || new de.titus.core.DomHelper();
+		this.domHelper = aDomHelper || de.titus.core.DomHelper.getInstance();
 	};
 	
 	/****************************************************************

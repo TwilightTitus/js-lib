@@ -16,8 +16,8 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.TextContent", function()
 			de.titus.jstl.functions.TextContent.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
 		
 		var processor = aProcessor || new de.titus.jstl.Processor();
-		var expressionResolver = processor.expressionResolver;
-		var domHelper = processor.domHelper || new de.titus.core.DomHelper();
+		var expressionResolver = processor.expressionResolver || new de.titus.jstl.ExpressionResolver();
+		var domHelper = processor.domHelper || de.titus.core.DomHelper.getInstance();
 		var childCount = domHelper.getChildCount(aElement);
 		
 		

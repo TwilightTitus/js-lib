@@ -1127,7 +1127,7 @@ de.titus.core.Namespace.create("de.titus.logging.ConsolenAppender", function() {
 de.titus.core.Namespace.create("de.titus.jstl.ExpressionResolver", function() {
 	
 	de.titus.jstl.ExpressionResolver = function(aDomHelper) {
-		this.domHelper = aDomHelper || new de.titus.core.DomHelper();
+		this.domHelper = aDomHelper || de.titus.core.DomHelper.getInstance();
 	};
 	
 	/****************************************************************
@@ -1251,7 +1251,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.If", function() {
 		
 		var processor = aProcessor || new de.titus.jstl.Processor();
 		var expressionResolver = processor.expressionResolver || new de.titus.jstl.ExpressionResolver();
-		var domHelper = processor.domHelper || new de.titus.core.DomHelper();
+		var domHelper = processor.domHelper || de.titus.core.DomHelper.getInstance();
 		
 		var expression = domHelper.getAttribute(aElement, processor.config.attributePrefix + this.attributeName);
 		if(expression != undefined && expression.lenght != 0){
@@ -1294,7 +1294,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Choose", function() {
 		
 		var processor = aProcessor || new de.titus.jstl.Processor();
 		var expressionResolver = processor.expressionResolver || new de.titus.jstl.ExpressionResolver();
-		var domHelper = processor.domHelper || new de.titus.core.DomHelper();
+		var domHelper = processor.domHelper || de.titus.core.DomHelper.getInstance();
 		
 		var expression = domHelper.getAttribute(aElement, processor.config.attributePrefix + this.attributeName);
 		if (expression != undefined) {
@@ -1382,7 +1382,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Foreach", function() {
 		
 		var processor = aProcessor || new de.titus.jstl.Processor();
 		var expressionResolver = processor.expressionResolver || new de.titus.jstl.ExpressionResolver();
-		var domHelper = processor.domHelper || new de.titus.core.DomHelper();
+		var domHelper = processor.domHelper || de.titus.core.DomHelper.getInstance();
 		
 		var expression = domHelper.getAttribute(aElement, processor.config.attributePrefix + this.attributeName);
 		if (expression != undefined) {
@@ -1480,8 +1480,8 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.TextContent", function()
 			de.titus.jstl.functions.TextContent.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
 		
 		var processor = aProcessor || new de.titus.jstl.Processor();
-		var expressionResolver = processor.expressionResolver;
-		var domHelper = processor.domHelper || new de.titus.core.DomHelper();
+		var expressionResolver = processor.expressionResolver || new de.titus.jstl.ExpressionResolver();
+		var domHelper = processor.domHelper || de.titus.core.DomHelper.getInstance();
 		var childCount = domHelper.getChildCount(aElement);
 		
 		
@@ -1513,6 +1513,22 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.AttributeContent", funct
 		if (de.titus.jstl.functions.AttributeContent.LOGGER.isDebugEnabled())
 			de.titus.jstl.functions.AttributeContent.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
 		
+		
+		var processor = aProcessor || new de.titus.jstl.Processor();
+		var expressionResolver = processor.expressionResolver || new de.titus.jstl.ExpressionResolver();
+		var domHelper = processor.domHelper || de.titus.core.DomHelper.getInstance();
+		
+		var attributes = domHelper.getAttributes(aElement);
+		var processAll = all || false;
+		for ( var name in attributes) {
+			if (name.indexOf(processor.config.attributePrefix) != 0) {
+				var value = attributes[name];
+				value = expressionResolver.resolveText(value, aDataContext);
+				domHelper.setAttribute(aElement, name, value);
+			}
+		}
+		
+		
 		return new de.titus.jstl.FunctionResult(true, true);
 	};
 	
@@ -1538,10 +1554,10 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Data", function() {
 		
 		var processor = aProcessor || new de.titus.jstl.Processor();
 		var expressionResolver = processor.expressionResolver || new de.titus.jstl.ExpressionResolver();
-		var domHelper = processor.domHelper || new de.titus.core.DomHelper();
+		var domHelper = processor.domHelper || de.titus.core.DomHelper.getInstance();
 		
 		var expression = domHelper.getAttribute(aElement, processor.config.attributePrefix + this.attributeName);
-		if (expression != undefined && expression.lenght != 0) {
+		if (expression != undefined && expression.length != 0 && expression != "") {
 			this.internalProcessing(expression, aElement, aDataContext, processor, expressionResolver, domHelper);
 		}
 		return new de.titus.jstl.FunctionResult(true, true);
@@ -1642,10 +1658,10 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Include", function() {
 		
 		var processor = aProcessor || new de.titus.jstl.Processor();
 		var expressionResolver = processor.expressionResolver || new de.titus.jstl.ExpressionResolver();		
-		var domHelper = processor.domHelper || new de.titus.core.DomHelper();
+		var domHelper = processor.domHelper || de.titus.core.DomHelper.getInstance();
 		
 		var expression = domHelper.getAttribute(aElement, processor.config.attributePrefix + this.attributeName);
-		if(expression != undefined && expression.lenght != 0){		
+		if(expression != undefined && expression.length != 0 && expression != ""){		
 			this.internalProcessing(expression, aElement, aDataContext, processor, expressionResolver, domHelper);
 		}
 		return new de.titus.jstl.FunctionResult(true, true);
@@ -1699,25 +1715,40 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Include", function() {
 			de.titus.jstl.functions.Include.LOGGER.logDebug("execute addHtml(" + aElement + ", " + aTemplate + ", " + aIncludeMode+ ", " + aDomHelper+ ")");
 		
 		aDomHelper.setHtml(aElement, aTemplate, aIncludeMode);	
-//		domHelper.doOnReady(function(){
-//			var childs = domHelper.getChilds(element);
-//			for(var i = 0; i < childs.length; i++){
-//				var result = new de.titus.jstl.Processor(childs[i], context, domHelper,processor.config).compute();
-//			}
-//		});
 	};
 	
 });
 de.titus.core.Namespace.create("de.titus.jstl.Processor", function() {
 	
-	de.titus.jstl.Processor = function(aRootElement, aRootDataContext, aDomHelper, aConfig) {
-		this.domHelper = aDomHelper || new de.titus.core.DomHelper();
-		this.rootElement = this.domHelper.toDomObject(aRootElement);
-		this.rootDataContext = aRootDataContext || {};
-		this.expressionResolver = new de.titus.jstl.ExpressionResolver(this.domHelper);
+	
+	/**
+	 * <code>
+	 * config: {
+	 * "element": element,
+	 * "data": dataContext,
+	 * "domHelper": domHelper,
+	 * "onLoad": function(){},
+	 * "onSuccess":function(){},
+	 * "onFail": function(){},
+	 * "attributePrefix" : "jstl-" 
+	 * }
+	 * </code>
+	 */
+	de.titus.jstl.Processor = function(aConfig) {
+		
+		this.domHelper = aConfig.domHelper || de.titus.core.DomHelper.getInstance();
 		this.config = {
-			"attributePrefix" : "jstl-" };
-		this.config = this.domHelper.mergeObjects(aConfig, this.config);
+			"data": {},
+			"attributePrefix" : "jstl-" 
+		};
+		
+		this.config = this.domHelper.mergeObjects(this.config, aConfig);
+		
+		
+		this.rootElement = this.domHelper.toDomObject(this.config.element);
+		this.rootDataContext = this.config.data;
+		this.expressionResolver = new de.titus.jstl.ExpressionResolver(this.domHelper);
+		
 		this.onReadyEvent = new Array();
 	};
 	
@@ -1889,7 +1920,7 @@ de.titus.core.Namespace.create("de.titus.jstl.Setup", function() {
 	de.titus.jstl.FunctionRegistry.getInstance().add(new de.titus.jstl.functions.Data());
 	de.titus.jstl.FunctionRegistry.getInstance().add(new de.titus.jstl.functions.Include());
 	de.titus.jstl.FunctionRegistry.getInstance().add(new de.titus.jstl.functions.Choose());
-	de.titus.jstl.FunctionRegistry.getInstance().add(new de.titus.jstl.functions.Foreach());
+	de.titus.jstl.FunctionRegistry.getInstance().add(new de.titus.jstl.functions.Foreach());  
 	de.titus.jstl.FunctionRegistry.getInstance().add(new de.titus.jstl.functions.TextContent());
 	de.titus.jstl.FunctionRegistry.getInstance().add(new de.titus.jstl.functions.AttributeContent());
 	
@@ -2477,6 +2508,28 @@ de.titus.core.Namespace.create("de.titus.jquery.TemplateEnginePlugin", function(
 			templateEngine.doTemplating();
 		};
 
+	}(jQuery));
+});
+de.titus.core.Namespace.create("de.titus.jquery.jstl.plugin", function(){
+	
+	/**
+	 * <code>
+	 * config: {
+	 * "data": dataContext,
+	 * "onLoad": function(){},
+	 * "onSuccess":function(){},
+	 * "onFail": function(){},
+	 * "attributePrefix" : "jstl-" 
+	 * }
+	 * </code>
+	 */
+	
+	(function($) {
+		$.fn.jstl = function(/* config */ aConfig) {
+			var config = {"element": this,"domHelper": de.titus.jquery.DomHelper.getInstance()};
+			config = $().extend(config, aConfig);
+			new de.titus.jstl.Processor(config).compute();
+		};
 	}(jQuery));
 });
 /*

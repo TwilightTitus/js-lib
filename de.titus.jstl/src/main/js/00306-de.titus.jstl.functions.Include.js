@@ -18,10 +18,10 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Include", function() {
 		
 		var processor = aProcessor || new de.titus.jstl.Processor();
 		var expressionResolver = processor.expressionResolver || new de.titus.jstl.ExpressionResolver();		
-		var domHelper = processor.domHelper || new de.titus.core.DomHelper();
+		var domHelper = processor.domHelper || de.titus.core.DomHelper.getInstance();
 		
 		var expression = domHelper.getAttribute(aElement, processor.config.attributePrefix + this.attributeName);
-		if(expression != undefined && expression.lenght != 0){		
+		if(expression != undefined && expression.length != 0 && expression != ""){		
 			this.internalProcessing(expression, aElement, aDataContext, processor, expressionResolver, domHelper);
 		}
 		return new de.titus.jstl.FunctionResult(true, true);
@@ -75,12 +75,6 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Include", function() {
 			de.titus.jstl.functions.Include.LOGGER.logDebug("execute addHtml(" + aElement + ", " + aTemplate + ", " + aIncludeMode+ ", " + aDomHelper+ ")");
 		
 		aDomHelper.setHtml(aElement, aTemplate, aIncludeMode);	
-//		domHelper.doOnReady(function(){
-//			var childs = domHelper.getChilds(element);
-//			for(var i = 0; i < childs.length; i++){
-//				var result = new de.titus.jstl.Processor(childs[i], context, domHelper,processor.config).compute();
-//			}
-//		});
 	};
 	
 });

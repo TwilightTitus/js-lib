@@ -1,13 +1,34 @@
 de.titus.core.Namespace.create("de.titus.jstl.Processor", function() {
 	
-	de.titus.jstl.Processor = function(aRootElement, aRootDataContext, aDomHelper, aConfig) {
-		this.domHelper = aDomHelper || new de.titus.core.DomHelper();
-		this.rootElement = this.domHelper.toDomObject(aRootElement);
-		this.rootDataContext = aRootDataContext || {};
-		this.expressionResolver = new de.titus.jstl.ExpressionResolver(this.domHelper);
+	
+	/**
+	 * <code>
+	 * config: {
+	 * "element": element,
+	 * "data": dataContext,
+	 * "domHelper": domHelper,
+	 * "onLoad": function(){},
+	 * "onSuccess":function(){},
+	 * "onFail": function(){},
+	 * "attributePrefix" : "jstl-" 
+	 * }
+	 * </code>
+	 */
+	de.titus.jstl.Processor = function(aConfig) {
+		
+		this.domHelper = aConfig.domHelper || de.titus.core.DomHelper.getInstance();
 		this.config = {
-			"attributePrefix" : "jstl-" };
-		this.config = this.domHelper.mergeObjects(aConfig, this.config);
+			"data": {},
+			"attributePrefix" : "jstl-" 
+		};
+		
+		this.config = this.domHelper.mergeObjects(this.config, aConfig);
+		
+		
+		this.rootElement = this.domHelper.toDomObject(this.config.element);
+		this.rootDataContext = this.config.data;
+		this.expressionResolver = new de.titus.jstl.ExpressionResolver(this.domHelper);
+		
 		this.onReadyEvent = new Array();
 	};
 	
