@@ -405,8 +405,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.AttributeContent", funct
 		var domHelper = processor.domHelper || de.titus.core.DomHelper.getInstance();
 		
 		var attributes = domHelper.getAttributes(aElement);
-		var processAll = all || false;
-		for ( var name in attributes) {
+		for (var name in attributes) {
 			if (name.indexOf(processor.config.attributePrefix) != 0) {
 				var value = attributes[name];
 				value = expressionResolver.resolveText(value, aDataContext);
