@@ -1,4 +1,4 @@
 {"configs":[
-	{"filter": "", "logLevel": "ERROR", "appenders":["de.titus.logging.InteligentBrowserAppender","de.titus.logging.HtmlAppender"]},
-	{"filter": "de.titus.jstl.functions", "logLevel": "TRACE", "appenders":["de.titus.logging.InteligentBrowserAppender","de.titus.logging.HtmlAppender"]}
+	{"filter": "", "logLevel": "WARN", "appenders":["de.titus.logging.InteligentBrowserAppender","de.titus.logging.HtmlAppender"]},
+	{"filter": "de.titus.jstl.functions", "logLevel": "WARN", "appenders":["de.titus.logging.InteligentBrowserAppender","de.titus.logging.HtmlAppender"]}
 ]}

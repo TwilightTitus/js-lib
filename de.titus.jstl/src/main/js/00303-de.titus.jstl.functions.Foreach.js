@@ -41,14 +41,17 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Foreach", function() {
 		
 		var varName = this.getVarname(aElement, aProcessor, aDomHelper);
 		var statusName = this.getStatusName(aElement, aProcessor, aDomHelper);
-		var list = anExpressionResolver.resolveExpression(aExpression, aDataContext);
+		var list = undefined;
+		if (aExpression == "") {
+			de.titus.jstl.functions.Foreach.LOGGER.logWarn("No list data specified. Using the data context!")
+			list = aDataContext;
+		} else
+			list = anExpressionResolver.resolveExpression(aExpression, aDataContext, new Array());
 		
 		if (list != undefined && aDomHelper.isArray(list) && list.length > 0) {
 			this.processList(list, tempalte, varName, statusName, aElement, aDataContext, aProcessor, anExpressionResolver, aDomHelper);
 		} else if (list != undefined) {
-			var tempList = new Array();
-			tempList.push(list);
-			this.processList(tempList, tempalte, varName, statusName, aElement, aDataContext, aProcessor, anExpressionResolver, aDomHelper);
+			this.processMap(list, tempalte, varName, statusName, aElement, aDataContext, aProcessor, anExpressionResolver, aDomHelper);
 		}
 	};
 	
@@ -62,10 +65,31 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Foreach", function() {
 			"index" : i,
 			"number" : (i + 1),
 			"count" : aListData.length,
-			"list" : aListData,
+			"data" : aListData,
 			"context" : aDataContext };
 			
 			this.processNewContent(newContent, newContext, aElement, aProcessor, aDomHelper);
+		}
+	};
+	
+	de.titus.jstl.functions.Foreach.prototype.processMap = function(aMap, aTemplate, aVarname, aStatusName, aElement, aDataContext, aProcessor, anExpressionResolver, aDomHelper) {
+		var count = 0;
+		for ( var name in aMap)
+			count++;
+		
+		var i = 0;
+		for ( var name in aMap) {
+			var newContent = aDomHelper.cloneDomObject(aTemplate);
+			var newContext = {};
+			newContext[aVarname] = aMap[name];
+			newContext[aStatusName] = {
+			"index" : i,
+			"number" : (i + 1),
+			"count" :count,
+			"data" : aMap,
+			"context" : aDataContext };
+			i++;
+			this.processNewContent(newContent, newContext, aElement, aProcessor, aDomHelper);			
 		}
 	};
 	

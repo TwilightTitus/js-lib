@@ -16,7 +16,7 @@
 		<div jstl-if="${boolean}">boolean test</div>
 		<div></div>
 		<div>include tests
-			<div jstl-include="jstl-template.html" jstl-include-options='{"test": "test"}' jstl-include-mode="append">
+			<div jstl-include="jstl-template.html" jstl-include-options='{"test": "test"}' jstl-include-mode="append" class="${test}">
 				<div>append</div>			
 			</div>
 			<div jstl-include="jstl-template.html" jstl-include-options='{"test": "test"}' jstl-include-mode="prepend">
@@ -48,7 +48,16 @@
 		</div>
 		<div>foreach test 1
 			<div jstl-data='{"data": "direct Data"}' jstl-foreach = "${list}" jstl-foreach-var="listItem" jstl-foreach-status="listStatus">
-				<span>${listStatus.index}</span>
+				<span>${listStatus.index} </span>
+				<span>id: ${listItem.id}</span>
+				<span>name: ${listItem.name}</span>
+				<span>name: ${jstlTemplate}</span>
+				<br/>
+			</div>			
+		</div>
+		<div>foreach on remote data
+			<div jstl-data="jstl-remote.data.json" jstl-data-mode="remote" jstl-data-var="newData" jstl-foreach = "${newData.list}" jstl-foreach-var="listItem" jstl-foreach-status="listStatus">
+				<span>${listStatus.index} </span>
 				<span>id: ${listItem.id}</span>
 				<span>name: ${listItem.name}</span>
 				<span>name: ${jstlTemplate}</span>
@@ -58,9 +67,20 @@
 		<div>foreach test 2
 			<div jstl-foreach = "${jstlList}">
 				<div jstl-if="${itemVar.show}">
-					<span>${statusVar.index}</span>
+					<span>${statusVar.index} </span>
 					<span>id: ${itemVar.id}</span>
 					<span>name: ${itemVar.name}</span>
+					<span>name: ${jstlTemplate}</span>
+				</div>
+			</div>			
+		</div>
+		
+		<div>foreach on data context / it's like run over all properties of an Object 
+			<div jstl-data='jstl-remote.data.array.json' jstl-data-mode="remote" jstl-foreach = "" jstl-foreach-var="listItem" jstl-foreach-status="listStatus">
+				<div jstl-if="${listItem.name != undefined}">
+					<span>${listStatus.index} </span>
+					<span>id: ${listItem.id}</span>
+					<span>name: ${listItem.name}</span>
 					<span>name: ${jstlTemplate}</span>
 				</div>
 			</div>			
@@ -103,9 +123,8 @@
 				data.jstlList.push({"id":i, "name": "item " + i, "show":(i % 4 != 0)});
 			}
 			
-			//var result = new de.titus.jstl.Processor({"element": $("#test"),"data": data}).compute();
 			$("#test").jstl({"data": data});
-			//console.log(result);
+			
 		});		
 		/*-->*/
 	</script>
