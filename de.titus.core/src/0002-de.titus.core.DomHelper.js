@@ -45,6 +45,23 @@ de.titus.core.Namespace.create("de.titus.core.DomHelper", function(){
 	de.titus.core.DomHelper.prototype.setAttribute = function(aDomElementObject, /* string */anAttribute, /* string */value) {
 	};
 	
+	/**
+	 * 
+	 * @param aDomElementObject
+	 * @param anAttribute
+	 */
+	de.titus.core.DomHelper.prototype.getProperty = function(aDomElementObject, anAttribute) {
+	};
+	
+	/**
+	 * 
+	 * @param aDomElementObject
+	 * @param anAttribute
+	 * @param aValue
+	 */
+	de.titus.core.DomHelper.prototype.setProperty = function(aDomElementObject, anAttribute, aValue) {
+	};
+	
 	
 	/**
 	 * 

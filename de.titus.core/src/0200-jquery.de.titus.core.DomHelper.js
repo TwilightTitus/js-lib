@@ -64,6 +64,25 @@ de.titus.core.Namespace.create("de.titus.jquery.DomHelper", function() {
 	};
 	
 	/**
+	 * 
+	 * @param aDomElementObject
+	 * @param anAttribute
+	 */
+	de.titus.core.DomHelper.prototype.getProperty = function(aDomElementObject, anAttribute) {
+		return aDomElementObject.prop(anAttribute);
+	};
+	
+	/**
+	 * 
+	 * @param aDomElementObject
+	 * @param anAttribute
+	 * @param aValue
+	 */
+	de.titus.core.DomHelper.prototype.setProperty = function(aDomElementObject, anAttribute, aValue) {
+		aDomElementObject.prop(anAttribute, aValue);
+	};
+	
+	/**
 	 * Get the width of element.
 	 * 
 	 * @param aDomElementObject

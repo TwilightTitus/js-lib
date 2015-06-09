@@ -48,6 +48,10 @@ de.titus.core.Namespace.create("de.titus.jstl.Processor", function() {
 		if (aElement == undefined)
 			return this.internalComputeRoot();
 		
+		if(!this.isElementProcessable(aElement)){
+			return true;
+		}
+		
 		var events = this.getEvents(aElement) || {};
 		return this.internalComputeElement(aElement, aDataContext, events, false);
 	};
@@ -76,7 +80,7 @@ de.titus.core.Namespace.create("de.titus.jstl.Processor", function() {
 			if (result.processChilds)
 				this.internalComputeChilds(aElement, dataContext);
 		} catch (e) {			
-			de.titus.jstl.Processor.LOGGER.logError(e);
+			de.titus.jstl.Processor.LOGGER.logError("error by processing the element \"" + (aElement.prop("tagName") || aElement) + "\"! ->" + (e.message || e));
 			processResult = false;
 		}
 
@@ -95,6 +99,19 @@ de.titus.core.Namespace.create("de.titus.jstl.Processor", function() {
 		}
 		
 		return processResult;
+	};
+	
+	de.titus.jstl.Processor.prototype.isElementProcessable = function(aElement){
+		var tagname = this.domHelper.getProperty(aElement, "tagName");
+		if(tagname != undefined){
+			
+			if(tagname.toLowerCase() == "br")
+				return false;
+			
+			
+			return true;
+		}
+		return false;		
 	};
 	
 	de.titus.jstl.Processor.prototype.internalExecuteFunction = /* boolean */function(aElement, aDataContext) {
@@ -187,7 +204,7 @@ de.titus.core.Namespace.create("de.titus.jstl.Processor", function() {
 					this.onReadyEvent[i](this.rootElement, this);
 				}
 				catch (e) {
-					de.titus.jstl.Processor.LOGGER.logError(e);
+					de.titus.jstl.Processor.LOGGER.logError("Error by process an on ready event! -> " + (e.message || e));
 				}				
 			}
 		}
