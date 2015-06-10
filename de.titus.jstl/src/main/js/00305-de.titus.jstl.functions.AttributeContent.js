@@ -28,7 +28,13 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.AttributeContent", funct
 				if (value != undefined && value != null && value != "" && value != "null") {
 					try {
 						var newValue = expressionResolver.resolveText(value, aDataContext);
-						domHelper.setAttribute(aElement, name, newValue);
+						if(value != newValue){
+							if(de.titus.jstl.functions.AttributeContent.LOGGER.isDebugEnabled())
+							{
+								de.titus.jstl.functions.AttributeContent.LOGGER.logDebug("Change attribute \"" + name +"\" from \"" + value + "\" to \"" + newValue + "\"!");
+							}
+							domHelper.setAttribute(aElement, name, newValue);
+						}
 					} catch (e) {
 						de.titus.jstl.functions.AttributeContent.LOGGER.logError("Can't process attribute\"" + name + "\" with value \"" + value + "\"!");
 					}
