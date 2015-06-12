@@ -4,6 +4,7 @@ de.titus.core.Namespace.create("de.titus.logging.LoggerFactory", function() {
 		this.configs = undefined;
 		this.domHelper = de.titus.core.DomHelper.getInstance();
 		this.appenders = {};
+		this.loadLazyCounter = 0;
 	};
 	
 	de.titus.logging.LoggerFactory.prototype.newLogger = function(aLoggerName) {
@@ -45,9 +46,18 @@ de.titus.core.Namespace.create("de.titus.logging.LoggerFactory", function() {
 			this.loadConfig(properties);
 		} else {
 			this.domHelper.doOnReady(function() {
-				de.titus.logging.LoggerFactory.getInstance().loadConfig();
+				de.titus.logging.LoggerFactory.getInstance().doLoadLazy();
 			});
 		}
+	};
+	
+	de.titus.logging.LoggerFactory.prototype.doLoadLazy = function() {
+		if (this.loadLazyCounter > 10)
+			return;
+		this.loadLazyCounter++;
+		window.setTimeout(function() {
+			de.titus.logging.LoggerFactory.getInstance().loadConfig();
+		}, 100);
 	};
 	
 	de.titus.logging.LoggerFactory.prototype.loadConfig = function(aConfig) {
