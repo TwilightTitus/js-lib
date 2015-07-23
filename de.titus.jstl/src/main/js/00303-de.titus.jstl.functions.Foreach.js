@@ -24,9 +24,8 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Foreach", function() {
 		var expression = domHelper.getAttribute(aElement, processor.config.attributePrefix + this.attributeName);
 		if (expression != undefined) {
 			this.internalProcession(expression, aElement, aDataContext, processor, expressionResolver, domHelper);
-			return new de.titus.jstl.FunctionResult(true, true);
+			return new de.titus.jstl.FunctionResult(true, false);
 		}
-		
 		return new de.titus.jstl.FunctionResult(true, true);
 	};
 	
@@ -67,7 +66,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Foreach", function() {
 			"count" : aListData.length,
 			"data" : aListData,
 			"context" : aDataContext };
-			
+			aDomHelper.mergeObjects(newContext, aDataContext);
 			this.processNewContent(newContent, newContext, aElement, aProcessor, aDomHelper);
 		}
 	};
@@ -85,11 +84,12 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Foreach", function() {
 			newContext[aStatusName] = {
 			"index" : i,
 			"number" : (i + 1),
-			"count" :count,
+			"count" : count,
 			"data" : aMap,
 			"context" : aDataContext };
+			aDomHelper.mergeObjects(newContext, aDataContext);
 			i++;
-			this.processNewContent(newContent, newContext, aElement, aProcessor, aDomHelper);			
+			this.processNewContent(newContent, newContext, aElement, aProcessor, aDomHelper);
 		}
 	};
 	

@@ -124,9 +124,12 @@ de.titus.core.Namespace.create("de.titus.jstl.Processor", function() {
 			var functionObject = functions[i];
 			var executeFunction = this.isFunctionNeeded(functionObject, aElement);
 			if (executeFunction) {
-				var result = this.executeFunction(functionObject, aElement, aDataContext, result);
+				var newResult = this.executeFunction(functionObject, aElement, aDataContext, result) || new de.titus.jstl.FunctionResult();
+				result.runNextFunction = newResult.runNextFunction && result.runNextFunction;
+				result.processChilds = newResult.processChilds && result.processChilds;
 				if (!result.runNextFunction)
 					return result;
+				
 			}
 		}
 		return result;

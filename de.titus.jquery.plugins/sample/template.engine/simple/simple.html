@@ -13,7 +13,7 @@
 		tpl-on-load='' tpl-on-success='' tpl-on-error=''></div>
 
 		<div id="display"
-		tpl-template-remote="template.html" tpl-template-data-remote="remote.json">loading</div>
+		tpl-template-remote="template.html" tpl-template-data-remote="remote.json" tpl-on-success='tplReady("#display")'>loading</div>
 	<script type="text/javascript">
 		/*<!--*/
 		function simpleFormat(aValue){
@@ -22,6 +22,10 @@
 
 		function simpleValueFunction(aData, currentContent){
 			return "\"Mustermann\"";
+		}
+		
+		function tplReady(elementId){
+			console.log(elementId);
 		}
 		
 		
@@ -37,7 +41,7 @@
 					alert("end");
 				};
 				
-				$("#display").doTemplating({'onLoad': startTemplating, 'onSuccess': endTemplating});
+				$("#display").doTemplating({'onLoad': startTemplating});
 			}, 1);
 		});
 		/*-->*/

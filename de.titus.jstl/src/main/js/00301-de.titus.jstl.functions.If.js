@@ -27,7 +27,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.If", function() {
 				expressionResult = expressionResult(aElement, aDataContext, aProcessor);
 			
 			
-			expressionResult = expressionResult == true;
+			expressionResult = expressionResult == true || expressionResult == "true";
 			if(!expressionResult){
 				domHelper.doRemove(aElement);
 				return new de.titus.jstl.FunctionResult(false, false);
