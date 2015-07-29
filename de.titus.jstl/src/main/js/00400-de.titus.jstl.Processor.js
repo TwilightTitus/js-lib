@@ -76,8 +76,12 @@ de.titus.core.Namespace.create("de.titus.jstl.Processor", function() {
 		
 		var processResult = true;
 		try {
+			var childprocessing = this.domHelper.getAttribute(aElement, processor.config.attributePrefix + "processor-child-processing") || true;
+			if(childprocessing != undefined && childprocessing != "")
+				childprocessing = this.domHelper.doEvalWithContext(childprocessing, aDataContext, true);			
+			
 			var result = this.internalExecuteFunction(aElement, dataContext);
-			if (result.processChilds)
+			if (childprocessing && result.processChilds)
 				this.internalComputeChilds(aElement, dataContext);
 		} catch (e) {			
 			de.titus.jstl.Processor.LOGGER.logError("error by processing the element \"" + (aElement.prop("tagName") || aElement) + "\"! ->" + (e.message || e));

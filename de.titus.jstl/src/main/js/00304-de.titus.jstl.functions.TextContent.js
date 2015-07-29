@@ -21,13 +21,26 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.TextContent", function()
 		var childCount = domHelper.getChildCount(aElement);
 		
 		
+		
 		if(childCount == 0){
+			var contentEscaping = domHelper.getAttribute(aElement, processor.config.attributePrefix + "text-content-type");
 			var text = domHelper.getText(aElement);
 			text = expressionResolver.resolveText(text, aDataContext);
 			
-			domHelper.setText(aElement, text, "replace");
+			if(contentEscaping == "html" || contentEscaping == "text/html"){
+				de.titus.jstl.functions.TextContent.prototype.asHtmlText(text, aElement, domHelper);
+			}else {
+				de.titus.jstl.functions.TextContent.prototype.asPlainText(text, aElement, domHelper);
+			}	
 		}
 		return new de.titus.jstl.FunctionResult(true, true);
 	};
 	
+	de.titus.jstl.functions.TextContent.prototype.asHtmlText = function(aText, aElement, aDomHelper){
+		aDomHelper.setHtml(aElement, aText, "replace");
+	};
+	
+	de.titus.jstl.functions.TextContent.prototype.asPlainText = function(aText, aElement, aDomHelper){
+		aDomHelper.setText(aElement, aText, "replace");
+	};	
 });
