@@ -76,7 +76,7 @@ de.titus.core.Namespace.create("de.titus.jstl.Processor", function() {
 		
 		var processResult = true;
 		try {
-			var childprocessing = this.domHelper.getAttribute(aElement, processor.config.attributePrefix + "processor-child-processing") || true;
+			var childprocessing = this.domHelper.getAttribute(aElement, this.config.attributePrefix + "processor-child-processing") || true;
 			if(childprocessing != undefined && childprocessing != "")
 				childprocessing = this.domHelper.doEvalWithContext(childprocessing, aDataContext, true);			
 			
