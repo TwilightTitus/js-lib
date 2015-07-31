@@ -271,6 +271,15 @@ de.titus.core.Namespace.create("de.titus.core.DomHelper", function(){
 	
 	/**
 	 * 
+	 * @param aObject1
+	 * @param aObject2
+	 * @returns The function need to be return the "aObject1"!
+	 */
+	de.titus.core.DomHelper.prototype.extendObjects = function(aObject1, aObject2) {
+	};
+	
+	/**
+	 * 
 	 * @param aVariable
 	 * 
 	 * @returns true, if the parameter a function. Undefined is false!

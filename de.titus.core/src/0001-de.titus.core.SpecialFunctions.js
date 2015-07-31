@@ -1,17 +1,33 @@
 de.titus.core.Namespace.create("de.titus.core.SpecialFunctions", function() {
 	
 	de.titus.core.SpecialFunctions = {};
+	de.titus.core.SpecialFunctions.EVALRESULTVARNAME = {};
+	de.titus.core.SpecialFunctions.EVALRESULTS = {};
 	
 	de.titus.core.SpecialFunctions.doEval = function(aDomhelper, aStatement, aContext) {
 		if (aStatement != undefined) {
-			eval("var $___DE_TITUS_CORE_EVAL_RESULT_FUNCTION___$ = function($___DOMHELPER___$,$___CONTEXT___$){ " + "$___DOMHELPER___$.mergeObjects(this, $___CONTEXT___$);" + "var $___EVAL_RESULT___$ = " + aStatement + ";" + "return $___EVAL_RESULT___$;};");
-			if ($___DE_TITUS_CORE_EVAL_RESULT_FUNCTION___$ != undefined) {
-				var result = $___DE_TITUS_CORE_EVAL_RESULT_FUNCTION___$(aDomhelper, aContext);
-				$___DE_TITUS_CORE_EVAL_RESULT_FUNCTION___$ = undefined;
-				
-				return result;
+			var varname = de.titus.core.SpecialFunctions.newVarname();
+			var runContext = aContext || {};			
+			with (runContext) {
+				eval("de.titus.core.SpecialFunctions.EVALRESULTS." + varname + " = " + aStatement + ";");
 			}
-			return undefined;
+			
+			var result = de.titus.core.SpecialFunctions.EVALRESULTS[varname];
+			de.titus.core.SpecialFunctions.EVALRESULTS[varname] = undefined;
+			de.titus.core.SpecialFunctions.EVALRESULTVARNAME[varname] = undefined;
+			return result;
 		}
+		
+		return undefined;
 	};
+	
+	de.titus.core.SpecialFunctions.newVarname = function() {
+		var varname = "var" + (new Date().getTime());
+		if (de.titus.core.SpecialFunctions.EVALRESULTVARNAME[varname] == undefined) {
+			de.titus.core.SpecialFunctions.EVALRESULTVARNAME[varname] = "";
+			return varname;
+		} else
+			return de.titus.core.SpecialFunctions.newVarname();
+	};
+	
 });

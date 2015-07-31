@@ -3,13 +3,40 @@
 <head>
 <title>JSTL Samples</title>
 <script src="../../libs/jquery-1.11.1.js" type="text/javascript"></script>
-<script src="../../dist/1.4.0/de.titus.jquery.plugins-1.4.0.js"
+<script src="../../dist/1.4.1/de.titus.jquery.plugins-1.4.1.js"
 	type="text/javascript"></script>
 <link type="text/css" href="style.css" rel="stylesheet" />
 </head>
 <body logging-properties='{"remote":{"url":"logging.properties.json"}}'>
 	<div id="test" jstl-load="load" jstl-success="success"
 		jstl-fail="function(){alert('fail')}">
+		<div>
+			foreach on data context / it's like run over all properties of an
+			Object
+			<div jstl-data='jstl-remote.data.json' jstl-data-mode="remote" jstl-foreach = "${list}" jstl-foreach-var="listItem" jstl-foreach-status="listStatus">
+				<div jstl-if="${listItem.id != 3}">
+					<span>${listStatus.index} </span>
+					<span>id: ${listItem.id}</span>
+					<span>name: ${listItem.name}</span>
+					<span>name: ${jstlTemplate}</span>
+				</div>
+			</div>			
+		</div>
+		
+		<div>
+			foreach on data context / it's like run over all properties of an
+			Object
+			<div jstl-data='jstl-remote.data.json' jstl-data-mode="remote" jstl-foreach = "${list}" jstl-foreach-var="listItem" jstl-foreach-status="listStatus">
+				<div>
+					<span>${listStatus.index} </span>
+					<span>id: ${listItem.id}</span>
+					<span>name: ${listItem.name}</span>
+					<span>name: ${jstlTemplate}</span>
+				</div>
+			</div>			
+		</div>
+		
+		
 		<div>
 			<div>${test}</div>
 			<div>${"test " + test + "!"}</div>
@@ -100,7 +127,7 @@
 			foreach on data context / it's like run over all properties of an
 			Object
 			<div jstl-data='jstl-remote.data.array.json' jstl-data-mode="remote" jstl-foreach = "" jstl-foreach-var="listItem" jstl-foreach-status="listStatus">
-				<div jstl-if="${listItem.name != undefined}">
+				<div jstl-if="${listItem.id != 1}">
 					<span>${listStatus.index} </span>
 					<span>id: ${listItem.id}</span>
 					<span>name: ${listItem.name}</span>
