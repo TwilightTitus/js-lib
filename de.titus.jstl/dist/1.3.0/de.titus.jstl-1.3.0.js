@@ -306,6 +306,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Foreach", function() {
 
 	de.titus.jstl.functions.Foreach.prototype.processList = function(aListData, aTemplate, aVarname, aStatusName, aBreakCondition, aElement, aDataContext, aProcessor, anExpressionResolver, aDomHelper) {
 		var startIndex = aDomHelper.getAttribute(aElement, aProcessor.config.attributePrefix + this.attributeName + "-start-index") || 0;
+		startIndex = anExpressionResolver.resolveExpression(startIndex, aDataContext, 0) || 0;
 		for (var i = startIndex; i < aListData.length; i++) {
 			var newContent = aDomHelper.cloneDomObject(aTemplate);
 			var newContext = {};
