@@ -11,6 +11,15 @@
 	<div id="test" jstl-load="load" jstl-success="success"
 		jstl-fail="function(){alert('fail')}">
 		<div>
+			add single attribute</br>
+			<img jstl-data='jstl-remote.data.json' jstl-data-mode="remote" jstl-add-attribute = "{'name':'src', 'value':testImage}"/>			
+		</div>
+		<div>
+			add multiple Attribute</br>
+			<div jstl-data='jstl-remote.data.json' jstl-data-mode="remote" jstl-add-attribute = "${addAttributes}"/>			
+		</div>		
+		
+		<div>
 			foreach on data context / it's like run over all properties of an
 			Object
 			<div jstl-data='jstl-remote.data.json' jstl-data-mode="remote" jstl-foreach = "${list}" jstl-foreach-var="listItem" jstl-foreach-status="listStatus">

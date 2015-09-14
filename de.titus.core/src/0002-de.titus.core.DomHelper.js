@@ -1,6 +1,10 @@
-de.titus.core.Namespace.create("de.titus.core.DomHelper", function(){
+de.titus.core.Namespace.create("de.titus.core.DomHelper", function() {
 	
 	/**
+	 * 
+	 */
+	/**
+	 * @author xce3560
 	 * 
 	 */
 	de.titus.core.DomHelper = /* constructor */function() {
@@ -40,7 +44,7 @@ de.titus.core.Namespace.create("de.titus.core.DomHelper", function(){
 	 * @param aDomElementObject
 	 * @param anAttribute
 	 * @param value
-	 * 		if the value undefined the attribute need to be removed!
+	 *            if the value undefined the attribute need to be removed!
 	 */
 	de.titus.core.DomHelper.prototype.setAttribute = function(aDomElementObject, /* string */anAttribute, /* string */value) {
 	};
@@ -61,7 +65,6 @@ de.titus.core.Namespace.create("de.titus.core.DomHelper", function(){
 	 */
 	de.titus.core.DomHelper.prototype.setProperty = function(aDomElementObject, anAttribute, aValue) {
 	};
-	
 	
 	/**
 	 * 
@@ -181,16 +184,17 @@ de.titus.core.Namespace.create("de.titus.core.DomHelper", function(){
 	 * 
 	 * @returns true, if the parameter a function. Undefined is false!
 	 */
-	de.titus.core.DomHelper.prototype.isFunction = function(aVariable) {};
+	de.titus.core.DomHelper.prototype.isFunction = function(aVariable) {
+	};
 	
 	/**
 	 * 
 	 * @param aVariable
 	 * 
-	 * @returns 
-	 * 		true, if the parameter a array;
+	 * @returns true, if the parameter a array;
 	 */
-	de.titus.core.DomHelper.prototype.isArray = function(aVariable) {};
+	de.titus.core.DomHelper.prototype.isArray = function(aVariable) {
+	};
 	
 	/**
 	 * Call the function, after dom is ready!
@@ -198,16 +202,63 @@ de.titus.core.Namespace.create("de.titus.core.DomHelper", function(){
 	 * @param afunction
 	 * 
 	 */
-	de.titus.core.DomHelper.prototype.doOnReady = function(afunction) {};
+	de.titus.core.DomHelper.prototype.doOnReady = function(afunction) {
+	};
+	
+	/**
+	 * 
+	 * @param aKey
+	 * @param aData
+	 */
+	de.titus.core.DomHelper.prototype.setBindData = function(aDomElementObject, aKey, aData) {
+	};
+	
+	/**
+	 * 
+	 * @param aKey
+	 */
+	de.titus.core.DomHelper.prototype.getBindData = function(aDomElementObject, aKey) {
+	};
+	
+	/**
+	 * 
+	 * @param aValue
+	 *            true = show item or false = hide item
+	 */
+	de.titus.core.DomHelper.prototype.doShow = function(aDomElementObject, aValue) {
+	};
+	
+	/**
+	 * 
+	 */
+	de.titus.core.DomHelper.prototype.getValue = function(aDomElementObject) {
+	};
+	
+	/**
+	 * 
+	 * @param aValue
+	 */
+	de.titus.core.DomHelper.prototype.setValue = function(aDomElementObject, aValue) {
+	};
+	
+	/**
+	 * 
+	 * @param aEvent
+	 *            click, keyup, change
+	 * @param aCallback
+	 */
+	de.titus.core.DomHelper.prototype.addEvent = function(aDomElementObject, aEvent, aCallback) {
+	};
 	
 	/**
 	 * 
 	 * @param aStatement
 	 * @param aDefault
+	 * @param aCallback
 	 * @returns
 	 */
-	de.titus.core.DomHelper.prototype.doEval = function(aStatement, aDefault) {
-		return this.doEvalWithContext(aStatement, {}, aDefault);
+	de.titus.core.DomHelper.prototype.doEval = function(aStatement, aDefault, aCallback) {
+		return this.doEvalWithContext(aStatement, {}, aDefault, aCallback);
 	};
 	
 	/**
@@ -215,16 +266,26 @@ de.titus.core.Namespace.create("de.titus.core.DomHelper", function(){
 	 * @param aStatement
 	 * @param aContext
 	 * @param aDefault
+	 * @param aCallback
 	 * @returns
 	 */
-	de.titus.core.DomHelper.prototype.doEvalWithContext = function(aStatement, aContext, aDefault) {
-		var result = de.titus.core.SpecialFunctions.doEval(this, aStatement, aContext);
-		
-//		var result = $___DE_TITUS_CORE_EVAL_WITH_CONTEXT_EXTENTION___$(this, aStatement, aContext);
-		if (result == undefined) {
-			return aDefault;
+	de.titus.core.DomHelper.prototype.doEvalWithContext = function(aStatement, aContext, aDefault, aCallback) {
+		if (aCallback != undefined && this.isFunction(aCallback)) {
+			var $__THIS__$ = this;
+			window.setTimeout(function() {
+				var result = $__THIS__$.doEvalWithContext(aStatement, aContext, aDefault, undefined);
+				aCallback(result, aContext, this);
+			}, 10);
+			
+		} else {
+			var result = de.titus.core.SpecialFunctions.doEval(this, aStatement, aContext);
+			
+			// var result = $___DE_TITUS_CORE_EVAL_WITH_CONTEXT_EXTENTION___$(this, aStatement, aContext);
+			if (result == undefined) {
+				return aDefault;
+			}
+			return result;
 		}
-		return result;
 	};
 	
 	/**
@@ -237,4 +298,3 @@ de.titus.core.Namespace.create("de.titus.core.DomHelper", function(){
 		return de.titus.core.GLOBAL_DOMHELPER_INSTANCE;
 	};
 });
-
