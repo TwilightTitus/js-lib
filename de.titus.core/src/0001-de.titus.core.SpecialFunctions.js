@@ -7,7 +7,7 @@ de.titus.core.Namespace.create("de.titus.core.SpecialFunctions", function() {
 	de.titus.core.SpecialFunctions.doEval = function(aDomhelper, aStatement, aContext) {
 		if (aStatement != undefined) {
 			var varname = de.titus.core.SpecialFunctions.newVarname();
-			var runContext = aContext || {};			
+			var runContext = aContext || {};
 			with (runContext) {
 				eval("de.titus.core.SpecialFunctions.EVALRESULTS." + varname + " = " + aStatement + ";");
 			}

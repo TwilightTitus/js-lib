@@ -376,7 +376,7 @@ de.titus.jquery.Namespace.create("de.titus.jquery.DomHelper", function() {
 	 *            click, keyup, change
 	 * @param aCallback
 	 */
-	de.titus.core.DomHelper.prototype.addEvent = function(aDomElementObject, aEvent, aCallback) {
+	de.titus.jquery.DomHelper.prototype.addEvent = function(aDomElementObject, aEvent, aCallback) {
 		aDomElementObject.bind(aEvent, aCallback);
 	};
 	
