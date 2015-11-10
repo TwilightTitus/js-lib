@@ -3,13 +3,24 @@
 <head>
 <title>JSTL Samples</title>
 <script src="../../libs/jquery-1.11.1.js" type="text/javascript"></script>
-<script src="../../dist/1.5.0/de.titus.jquery.plugins-1.5.0.js"
+<script src="../../dist/1.5.1/de.titus.jquery.plugins-1.5.1.js"
 	type="text/javascript"></script>
 <link type="text/css" href="style.css" rel="stylesheet" />
 </head>
 <body logging-properties='{"remote":{"url":"logging.properties.json"}}'>
 	<div id="test" jstl-load="load" jstl-success="success"
 		jstl-fail="function(){alert('fail')}">
+		<div>
+			foreach on remote data
+			<div jstl-data="jstl-remote.data.json" jstl-data-mode="remote"
+				jstl-data-var="newData" jstl-foreach="${toArray(newData.list)}"
+				jstl-foreach-var="listItem" jstl-foreach-status="listStatus">
+				<span>${listStatus.index} </span> <span>id: ${listItem.id}</span> <span>name:
+					${listItem.name}</span> <span>name: ${jstlTemplate}</span> <br />
+			</div>
+		</div>
+
+
 		<div>
 			add single attribute</br>
 			<img jstl-data='jstl-remote.data.json' jstl-data-mode="remote" jstl-add-attribute = "{'name':'src', 'value':testImage}"/>			
@@ -188,8 +199,12 @@
         
         function success(aElement) {
 	        alert("success");
-	        $(aElement).show();
+			$(aElement).show();
         };
+
+		function toArray(value){
+			return new Array();
+		};
         
         function testFunction() {
 	        return "result from a Function!";
