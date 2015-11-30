@@ -63,7 +63,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Foreach", function() {
 		startIndex = anExpressionResolver.resolveExpression(startIndex, aDataContext, 0) || 0;
 		for (var i = startIndex; i < aListData.length; i++) {
 			var newContent = aDomHelper.cloneDomObject(aTemplate);
-			var newContext = {};
+			var newContext = aDataContext;
 			newContext[aVarname] = aListData[i];
 			newContext[aStatusName] = {
 			    "index" : i,
@@ -72,7 +72,6 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Foreach", function() {
 			    "data" : aListData,
 			    "context" : aDataContext
 			};
-			aDomHelper.mergeObjects(newContext, aDataContext);
 			
 			if (aBreakCondition != undefined && this.processBreakCondition(newContext, aBreakCondition, aElement, aProcessor, aDomHelper)) {
 				return;
@@ -90,7 +89,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Foreach", function() {
 		var i = 0;
 		for ( var name in aMap) {
 			var newContent = aDomHelper.cloneDomObject(aTemplate);
-			var newContext = {};
+			var newContext = aDataContext;
 			newContext[aVarname] = aMap[name];
 			newContext[aStatusName] = {
 			    "index" : i,
