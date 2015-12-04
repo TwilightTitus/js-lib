@@ -8,7 +8,8 @@ de.titus.core.Namespace.create("de.titus.form.validation.Form", function() {
 		
 	};
 	
-	
-	
+	de.titus.form.validation.Form.prototype.getValidator = function(aFieldName){
+		
+	};	
 	
 });
