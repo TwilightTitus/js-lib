@@ -1,35 +1,51 @@
-de.titus.core.Namespace.create("de.titus.form.validation.Field", function() {
+de.titus.core.Namespace.create("de.titus.form.Field", function() {
 
-	de.titus.form.validation.Validator = function(aElement){
-		this.element = aElement;
-		this.name = aElement.attr("fv-fieldname");
-		this.dependencies = aElement.attr("fv-dependencies");
-		this.type = aElement.attr("fv-type");
-		this.load = aElement.attr("fv-load");
-		this.form = undefined;
+	de.titus.form.Field = function(aData){
+		this.data = {
+			element: undefined,
+			type: undefined,
+			validator: undefined,
+			dependencies: undefined,
+			load: undefined,
+			form: undefined,
+			value: undefined
+		};
+		$.extend(true, this.data, aData);
+		this.data.element.data("de.titus.form.Field", this);		
+		this.init();
 	};
 	
-	de.titus.form.validation.Validator.prototype.init = function(aForm){
-		this.form = aForm;
+	de.titus.form.Field.prototype.init = function(){
+		
+	};
+		
+	de.titus.form.Field.prototype.show = function(show){
+		if(show)		
+			this.data.element.show();
+		else
+			this.data.element.hide();
 	};
 	
-	de.titus.form.validation.Validator.prototype.doLoad = function(){
-		if(this.load != undefined){
-			this.load(this)
+	de.titus.form.Field.prototype.doLoad = function(){
+	};
+	
+	de.titus.form.Field.prototype.__valueChangeEvent = function(){
+		//TODO READ VALUE FROM DOM
+		this.data.value = "NEW VALUE";
+		
+		if(this.isValid())
+			this.data.form.fireEvent("isValid", this);
+	};
+	
+	de.titus.form.Field.prototype.isValid = function(){		
+		return this.data.validator.validate(this.data.value, this);
+	};
+	
+	$.fn.FormField = function(){
+		if(this.length > 1){
+			return this.each(function(){return $(this).FormField();});
 		}
-	};
-	
-	de.titus.form.validation.Validator.prototype.isValid = function(){		
-		return ;
-	};
-	
-	de.titus.form.validation.Validator.prototype.doValidRule = function(){		
-		return true;
-	};
-	
-	de.titus.form.validation.Validator.prototype.doValidRemote = function(){		
-		return ;
-	};
-	
-	
+		
+		return this.data.element.data("de.titus.form.Field");
+	};	
 });
