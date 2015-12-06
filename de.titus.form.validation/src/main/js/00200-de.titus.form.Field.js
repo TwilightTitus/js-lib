@@ -5,6 +5,7 @@ de.titus.core.Namespace.create("de.titus.form.Field", function() {
 			element: undefined,
 			type: undefined,
 			validator: undefined,
+			message: undefined,
 			dependencies: undefined,
 			load: undefined,
 			form: undefined,
@@ -38,7 +39,7 @@ de.titus.core.Namespace.create("de.titus.form.Field", function() {
 	};
 	
 	de.titus.form.Field.prototype.isValid = function(){		
-		return this.data.validator.validate(this.data.value, this);
+		return this.data.validator.doValidate(this.data.value, this);
 	};
 	
 	$.fn.FormField = function(){
