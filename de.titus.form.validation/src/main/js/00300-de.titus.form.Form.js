@@ -29,7 +29,10 @@ de.titus.core.Namespace.create("de.titus.form.Form", function() {
 	};
 	
 	de.titus.form.Form.prototype.fireEvent = function(aEvent, aField){
-		if(aEvent.toLowerCase() == "isValid"){
+		if(aEvent.toLowerCase() == "valid"){
+			this.__onFieldValueChanged(aField);
+		}
+		else if(aEvent.toLowerCase() == "invalid"){
 			this.__onFieldValueChanged(aField);
 		}		
 	};

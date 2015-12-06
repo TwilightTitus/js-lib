@@ -30,16 +30,20 @@ de.titus.core.Namespace.create("de.titus.form.Field", function() {
 	de.titus.form.Field.prototype.doLoad = function(){
 	};
 	
-	de.titus.form.Field.prototype.__valueChangeEvent = function(){
-		//TODO READ VALUE FROM DOM
-		this.data.value = "NEW VALUE";
-		
-		if(this.isValid())
-			this.data.form.fireEvent("isValid", this);
+	de.titus.form.Field.prototype.readValue = function(){
+		return "";
 	};
 	
 	de.titus.form.Field.prototype.isValid = function(){		
 		return this.data.validator.doValidate(this.data.value, this);
+	};
+	
+	de.titus.form.Field.prototype.__valueChangeEvent = function(){
+		this.data.value = this.readValue();		
+		if(this.isValid())
+			this.data.form.fireEvent("valid", this);
+		else
+			this.data.form.fireEvent("invalid", this);
 	};
 	
 	$.fn.FormField = function(){
