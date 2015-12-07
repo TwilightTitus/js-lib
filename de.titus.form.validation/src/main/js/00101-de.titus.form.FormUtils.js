@@ -17,16 +17,24 @@ de.titus.core.Namespace.create("de.titus.form.FormUtils", function() {
 			return [dependencyString];	
 	};
 	
+	de.titus.form.FormUtils.getMessage = function(aFieldname, aForm){
+		var element = aForm.data.element.find("[form-message-for='" + aFieldname + "']");
+		return new de.titus.form.Message({"element": element});		
+	};
+	
 	de.titus.form.FormUtils.getValidator = function(aElement){
-		var remoteString = aElement.attr("form-field-valitation-remote");
-		if(remoteString != undefined && remoteString != ""){
-			// TODO
-		}
-		else{
-			var valueString = aElement.attr("form-field-valitation");
-			
-			// TODO
-		}
+		var type = aElement.attr("form-valitation-type");
+		if(type == undefined)
+			return;
+		
+		var expression = aElement.attr("form-valitation");
+		var message = aElement.attr("form-validation-message");
+		var validatorType = de.titus.form.ValidatorRegistry.get(type);
+		
+		return new validatorType({
+			"expression": expression,
+			"message": message
+		});
 	};
 	
 	

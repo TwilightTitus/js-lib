@@ -6,25 +6,29 @@ de.titus.core.Namespace.create("de.titus.form.Form", function() {
 			fields: {},
 			validAction: undefined
 		};
+		this.init();
 	};
 	
 	de.titus.form.Form.prototype.init = function(){
-		var fields = this.data.element.find("[form-field-name]");
-		var field = fields[i];
+		var fields = this.data.element.find("[form-field]");		
 		var count = fields.length;
 		for(var i = 0; i < count; i++){
+			var field = $(fields[i]);
+			var fieldname = field.attr("form-field") || field.attr("id");
+			
 			var fieldData = {
 				element: field,
-				name:  field.attr("form-field-name"),
-				type: field.attr("form-field-type"),
+				name:  fieldname,
+				type: field.attr("form-type"),
+				message: de.titus.form.FormUtils.getMessage(fieldname, this),
 				validator: de.titus.form.FormUtils.getValidator(field),
 				dependencies: de.titus.form.FormUtils.getFieldDependencies(field),
-				load: aElement.attr("form-field-load"),
+				load: field.attr("form-load"),
 				form: this
 			};
 			
 			var fieldType = de.titus.form.FieldtypeRegistry.get(fieldData.type);
-			fields[fieldData.name] = fieldType(fieldData);			
+			this.data.fields[fieldData.name] = new fieldType(fieldData);			
 		}
 	};
 	

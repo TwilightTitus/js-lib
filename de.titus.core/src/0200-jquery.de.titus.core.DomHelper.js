@@ -1,4 +1,4 @@
-de.titus.jquery.Namespace.create("de.titus.jquery.DomHelper", function() {
+de.titus.core.Namespace.create("de.titus.jquery.DomHelper", function() {
 	/**
 	 * Constructor of DomHelper for JQuery
 	 */

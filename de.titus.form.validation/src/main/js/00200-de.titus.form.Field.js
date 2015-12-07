@@ -12,12 +12,11 @@ de.titus.core.Namespace.create("de.titus.form.Field", function() {
 			value: undefined
 		};
 		$.extend(true, this.data, aData);
-		this.data.element.data("de.titus.form.Field", this);		
-		this.init();
+		this.data.element.data("de.titus.form.Field", this);
 	};
 	
-	de.titus.form.Field.prototype.init = function(){
-		
+	de.titus.form.Field.prototype.init = function(aData){
+
 	};
 		
 	de.titus.form.Field.prototype.show = function(show){
