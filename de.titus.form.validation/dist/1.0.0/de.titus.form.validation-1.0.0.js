@@ -46,19 +46,35 @@ de.titus.core.Namespace.create("de.titus.form.FormUtils", function() {
 		return new de.titus.form.Message({"element": element});		
 	};
 	
-	de.titus.form.FormUtils.getValidator = function(aElement){
-		var type = aElement.attr("form-valitation-type");
-		if(type == undefined)
-			return;
+	de.titus.form.FormUtils.getFieldValidatorTypes = function(aElement){
+		var valitationTypes = aElement.attr("form-valitations");
+		if(valitationTypes == undefined)
+			return [];
+				
+		valitationTypes = valitationTypes.replace("[", "");
+		valitationTypes = valitationTypes.replace("]", "");
+		valitationTypes = valitationTypes.replace(" ", "");
 		
-		var expression = aElement.attr("form-valitation");
-		var message = aElement.attr("form-validation-message");
-		var validatorType = de.titus.form.ValidatorRegistry.get(type);
-		
-		return new validatorType({
-			"expression": expression,
-			"message": message
-		});
+		if(valitationTypes == "")
+			return [];
+		else if(valitationTypes.indexOf(",") != -1)
+			return valitationTypes.split(",")
+		else
+			return [valitationTypes];	
+	};
+	
+	de.titus.form.FormUtils.getValidators = function(aElement){
+		var result = [];
+		var types = de.titus.form.FormUtils.getFieldValidatorTypes(aElement);
+		if(types == undefined)
+			return result;
+		var count = types.length;
+		for(var i = 0; i < count; i++){
+			var validatorType = de.titus.form.ValidatorRegistry.get(types[i]);
+			if(validatorType != undefined)
+				result.push( new validatorType({"element": aElement}));
+		}
+		return result;
 	};
 	
 	
@@ -66,25 +82,38 @@ de.titus.core.Namespace.create("de.titus.form.FormUtils", function() {
 de.titus.core.Namespace.create("de.titus.form.Field", function() {
 
 	de.titus.form.Field = function(aData){
+		if(de.titus.form.Field.LOGGER.isDebugEnabled()){
+			de.titus.form.Field.LOGGER.logDebug("call de.titus.form.Field.prototype.constructor()");
+		}
+		if(aData != undefined)
+			this.init(aData);
+	};
+	
+	de.titus.form.Field.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.Field");
+	
+	de.titus.form.Field.prototype.init = function(aData){
+		if(de.titus.form.Field.LOGGER.isDebugEnabled()){
+			de.titus.form.Field.LOGGER.logDebug("call de.titus.form.Field.prototype.init()");
+		}
 		this.data = {
 			element: undefined,
 			type: undefined,
-			validator: undefined,
+			validators: undefined,
 			message: undefined,
 			dependencies: undefined,
 			load: undefined,
 			form: undefined,
-			value: undefined
+			value: undefined,
+			valid: {"valid": false, "message": ""}
 		};
 		$.extend(true, this.data, aData);
 		this.data.element.data("de.titus.form.Field", this);
 	};
-	
-	de.titus.form.Field.prototype.init = function(aData){
-
-	};
 		
 	de.titus.form.Field.prototype.show = function(show){
+		if(de.titus.form.Field.LOGGER.isDebugEnabled()){
+			de.titus.form.Field.LOGGER.logDebug("call de.titus.form.Field.prototype.show()");
+		}
 		if(show)		
 			this.data.element.show();
 		else
@@ -92,19 +121,51 @@ de.titus.core.Namespace.create("de.titus.form.Field", function() {
 	};
 	
 	de.titus.form.Field.prototype.doLoad = function(){
+		if(de.titus.form.Field.LOGGER.isDebugEnabled()){
+			de.titus.form.Field.LOGGER.logDebug("call de.titus.form.Field.prototype.doLoad()");
+		}
 	};
 	
 	de.titus.form.Field.prototype.readValue = function(){
+		if(de.titus.form.Field.LOGGER.isDebugEnabled()){
+			de.titus.form.Field.LOGGER.logDebug("call de.titus.form.Field.prototype.readValue()");
+		}
 		return "";
 	};
 	
-	de.titus.form.Field.prototype.isValid = function(){		
-		return this.data.validator.doValidate(this.data.value, this);
+	de.titus.form.Field.prototype.isValid = function(){
+		if(de.titus.form.Field.LOGGER.isDebugEnabled()){
+			de.titus.form.Field.LOGGER.logDebug("call de.titus.form.Field.prototype.isValid()");
+		}
+		
+		return this.data.validData.valid;
+	};
+	
+	de.titus.form.Field.prototype.__isInputValid = function(){
+		if(de.titus.form.Field.LOGGER.isDebugEnabled()){
+			de.titus.form.Field.LOGGER.logDebug("call de.titus.form.Field.prototype.__isInputValid()");
+		}
+		if(this.data.validDataators != undefined && this.data.validDataators.length > 0){
+			var count = this.data.validDataators.length;
+			for(var i = 0; i < count; i++){
+				var validator = this.data.validDataators[i];
+				if(!validator.doValidate(this.data.value, this)){
+					this.data.validData =  false;
+					return this.data.validData;
+				}				
+			}
+		}			
+		this.data.validData = {"valid": true, "message": ""};
+		
+		return this.data.validData.valid;
 	};
 	
 	de.titus.form.Field.prototype.__valueChangeEvent = function(){
+		if(de.titus.form.Field.LOGGER.isDebugEnabled()){
+			de.titus.form.Field.LOGGER.logDebug("call de.titus.form.Field.prototype.__valueChangeEvent()");
+		}
 		this.data.value = this.readValue();		
-		if(this.isValid())
+		if(this.__isInputValid().valid)
 			this.data.form.fireEvent("valid", this);
 		else
 			this.data.form.fireEvent("invalid", this);
@@ -121,21 +182,46 @@ de.titus.core.Namespace.create("de.titus.form.Field", function() {
 de.titus.core.Namespace.create("de.titus.form.TextField", function() {
 
 	de.titus.form.TextField =  function(aData){
-		de.titus.form.Field.call(this, aData);
-		this.data.inputElement = this.data.element.find("input");
-	};		
+		if(de.titus.form.TextField.LOGGER.isDebugEnabled()){
+			de.titus.form.TextField.LOGGER.logDebug("call de.titus.form.TextField.prototype.constructor()");
+		}
+		this.init(aData);
+	};	
+	
 	de.titus.form.TextField.prototype = Object.create(de.titus.form.Field.prototype);
 	de.titus.form.TextField.prototype.constructor = de.titus.form.TextField;
+	de.titus.form.TextField.prototype.parent = de.titus.form.Field.prototype;
 	
-	de.titus.form.TextField.prototype.init = function(){		
+	de.titus.form.TextField.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.TextField");
+	
+	de.titus.form.TextField.prototype.init = function(aData){
+		if(de.titus.form.TextField.LOGGER.isDebugEnabled()){
+			de.titus.form.TextField.LOGGER.logDebug("call de.titus.form.TextField.prototype.init()");
+		}
+		this.parent.init.call(this, aData);
+		if(this.data.element.is("input[type='text']"))
+			this.data.inputElement = this.data.element;
+		else
+			this.data.inputElement = this.data.element.find("input[type='text']");
 		
+		var $__THIS__$ = this;
+		this.data.inputElement.bind( "keyup", this.__valueChangeEvent.bind(this));
 	};
 	
-	
-	
-	
+	de.titus.form.TextField.prototype.__valueChangeEvent = function(){
+		if(de.titus.form.TextField.LOGGER.isDebugEnabled()){
+			de.titus.form.TextField.LOGGER.logDebug("call de.titus.form.TextField.prototype.__valueChangeEvent()");
+		}
+		if(this.changeEventTimeoutid)
+			clearTimeout(this.changeEventTimeoutid);
 		
-	de.titus.form.TextField.prototype.readValue = function(){		
+		this.changeEventTimeoutid = setTimeout(this.parent.__valueChangeEvent.bind(this), 500);
+	};	
+		
+	de.titus.form.TextField.prototype.readValue = function(){
+		if(de.titus.form.TextField.LOGGER.isDebugEnabled()){
+			de.titus.form.TextField.LOGGER.logDebug("call de.titus.form.TextField.prototype.readValue() -> " + this.data.inputElement.val());
+		}
 		return this.data.inputElement.val();
 	};
 	
@@ -144,15 +230,24 @@ de.titus.core.Namespace.create("de.titus.form.TextField", function() {
 de.titus.core.Namespace.create("de.titus.form.Form", function() {
 
 	de.titus.form.Form = function(aElement){
+		if(de.titus.form.TextField.LOGGER.isDebugEnabled()){
+			de.titus.form.TextField.LOGGER.logDebug("call de.titus.form.Form.prototype.constructor()");
+		}
+		this.init(aElement);
+	};
+	
+	de.titus.form.Form.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.Form");
+	
+	de.titus.form.Form.prototype.init = function(aElement){
+		if(de.titus.form.TextField.LOGGER.isDebugEnabled()){
+			de.titus.form.TextField.LOGGER.logDebug("call de.titus.form.Form.prototype.init()");
+		}
 		this.data = {
 			element : aElement,
 			fields: {},
 			validAction: undefined
 		};
-		this.init();
-	};
-	
-	de.titus.form.Form.prototype.init = function(){
+		
 		var fields = this.data.element.find("[form-field]");		
 		var count = fields.length;
 		for(var i = 0; i < count; i++){
@@ -164,7 +259,7 @@ de.titus.core.Namespace.create("de.titus.form.Form", function() {
 				name:  fieldname,
 				type: field.attr("form-type"),
 				message: de.titus.form.FormUtils.getMessage(fieldname, this),
-				validator: de.titus.form.FormUtils.getValidator(field),
+				validators: de.titus.form.FormUtils.getValidators(field),
 				dependencies: de.titus.form.FormUtils.getFieldDependencies(field),
 				load: field.attr("form-load"),
 				form: this
@@ -176,6 +271,9 @@ de.titus.core.Namespace.create("de.titus.form.Form", function() {
 	};
 	
 	de.titus.form.Form.prototype.fireEvent = function(aEvent, aField){
+		if(de.titus.form.TextField.LOGGER.isDebugEnabled()){
+			de.titus.form.TextField.LOGGER.logDebug("call de.titus.form.Form.prototype.fireEvent()");
+		}
 		if(aEvent.toLowerCase() == "valid"){
 			this.__onFieldValueChanged(aField);
 		}
@@ -185,6 +283,9 @@ de.titus.core.Namespace.create("de.titus.form.Form", function() {
 	};
 	
 	de.titus.form.Form.prototype.__onFieldValueChanged = function(aField){
+		if(de.titus.form.TextField.LOGGER.isDebugEnabled()){
+			de.titus.form.TextField.LOGGER.logDebug("call de.titus.form.Form.prototype.__onFieldValueChanged()");
+		}
 		var isValid = aField.isValid();
 		var dependencies = aField.data.dependencies;
 		var count = dependencies.length;
@@ -198,7 +299,15 @@ de.titus.core.Namespace.create("de.titus.form.Form", function() {
 	};
 	
 	de.titus.form.Form.prototype.isValid = function(){
-		
+		if(de.titus.form.TextField.LOGGER.isDebugEnabled()){
+			de.titus.form.TextField.LOGGER.logDebug("call de.titus.form.Form.prototype.isValid");
+		}
+		var count = this.data.fields.length;
+		for(var i = 0; i < count; i++){
+			if(!fields[i].isValid())
+				return false;			
+		}
+		return true;		
 	};
 	
 	$.fn.Form = function(){
@@ -268,27 +377,36 @@ de.titus.core.Namespace.create("de.titus.form.ValidatorRegistry", function() {
 	
 	de.titus.form.ValidatorRegistry.get = function(aTypeKey){
 		if(aTypeKey == undefined || aTypeKey == "")
-			return; //TODO default Validator
+			return;
 		
 		return de.titus.form.ValidatorRegistry.VALIDATORTYPES[aTypeKey.toLowerCase()];
 	};	
 });de.titus.core.Namespace.create("de.titus.form.Validator", function() {
 
 	de.titus.form.Validator = function(aData){
-		this.data = {
+		if(de.titus.form.Validator.LOGGER.isDebugEnabled()){
+			de.titus.form.Validator.LOGGER.logDebug("call de.titus.form.Validator.prototype.constructor()");
+		}
+		this.init(aData);
+	};
+	de.titus.form.Validator.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.Validator");
+	
+	de.titus.form.Validator.prototype.init = function(aData){
+		if(de.titus.form.Validator.LOGGER.isDebugEnabled()){
+			de.titus.form.Validator.LOGGER.logDebug("call de.titus.form.Validator.prototype.init()");
+		}
+		this.data = {				
 			expression: undefined,
 			message: undefined
 		};
 		$.extend(true, this.data, aData);
-		this.data.element.data("de.titus.form.Validator", this);		
-		this.init();
+		this.data.element.data("de.titus.form.Validator", this);
 	};
 	
-	de.titus.form.Validator.prototype.init = function(){
-		
-	};
-	
-	de.titus.form.Validator.prototype.doValidate = function(aValue, aField){		
-		return {"isValid": false, "message": "is invalid"};		
+	de.titus.form.Validator.prototype.doValidate = function(aValue, aField){
+		if(de.titus.form.Validator.LOGGER.isDebugEnabled()){
+			de.titus.form.Validator.LOGGER.logDebug("call de.titus.form.Validator.prototype.doValidate()");
+		}
+		return {"valid": false, "message": "is invalid"};		
 	};
 });

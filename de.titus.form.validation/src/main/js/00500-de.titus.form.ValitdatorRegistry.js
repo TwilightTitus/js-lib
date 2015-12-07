@@ -8,7 +8,7 @@ de.titus.core.Namespace.create("de.titus.form.ValidatorRegistry", function() {
 	
 	de.titus.form.ValidatorRegistry.get = function(aTypeKey){
 		if(aTypeKey == undefined || aTypeKey == "")
-			return; //TODO default Validator
+			return;
 		
 		return de.titus.form.ValidatorRegistry.VALIDATORTYPES[aTypeKey.toLowerCase()];
 	};	

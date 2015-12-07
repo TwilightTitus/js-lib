@@ -7,10 +7,10 @@
 		<link rel="style" type="text/css" href="bootstrap.min.css"/>
 		<script type="application/javascript" src="js/jquery-2.1.4.min.js"></script>
 		<script type="application/javascript" src="js/bootstrap.min.js"></script>
-		<script type="application/javascript" src="../../de.titus.core/dist/1.4.2/de.titus.core.min-1.4.2.js"></script>
+		<script type="application/javascript" src="../../de.titus.jquery.plugins/dist/1.5.2/de.titus.jquery.plugins.min-1.5.2.js"></script>
 		<script type="application/javascript" src="../dist/1.0.0/de.titus.form.validation-1.0.0.js"></script>
 	</head>
-	<body>
+	<body >
 		<div class="container-fluid">
 			<form class="form-horizontal" role="form" onsubmit="alert('submit')">
 				<div class="form-group" form-field="name" form-type="text" form-validation="[A-Za-z]* [A-Za-z]+" form-validation-type="regex" form-validation-message="Vor- und Nachname" required>
@@ -28,12 +28,11 @@
 				</div>
 			</form>
 		</div>
+		<div id="log" logging-properties='{"remote":{"url":"logging.properties.json"}}'></div>
 		<script type="application/javascript">
 			$(document).ready(function(){
 				$('form').Form();
-			});
-		
-		
+			});		
 		</script>
 	</body>
 </html>

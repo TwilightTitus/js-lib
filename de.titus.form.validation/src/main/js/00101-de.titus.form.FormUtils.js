@@ -22,19 +22,35 @@ de.titus.core.Namespace.create("de.titus.form.FormUtils", function() {
 		return new de.titus.form.Message({"element": element});		
 	};
 	
-	de.titus.form.FormUtils.getValidator = function(aElement){
-		var type = aElement.attr("form-valitation-type");
-		if(type == undefined)
-			return;
+	de.titus.form.FormUtils.getFieldValidatorTypes = function(aElement){
+		var valitationTypes = aElement.attr("form-valitations");
+		if(valitationTypes == undefined)
+			return [];
+				
+		valitationTypes = valitationTypes.replace("[", "");
+		valitationTypes = valitationTypes.replace("]", "");
+		valitationTypes = valitationTypes.replace(" ", "");
 		
-		var expression = aElement.attr("form-valitation");
-		var message = aElement.attr("form-validation-message");
-		var validatorType = de.titus.form.ValidatorRegistry.get(type);
-		
-		return new validatorType({
-			"expression": expression,
-			"message": message
-		});
+		if(valitationTypes == "")
+			return [];
+		else if(valitationTypes.indexOf(",") != -1)
+			return valitationTypes.split(",")
+		else
+			return [valitationTypes];	
+	};
+	
+	de.titus.form.FormUtils.getValidators = function(aElement){
+		var result = [];
+		var types = de.titus.form.FormUtils.getFieldValidatorTypes(aElement);
+		if(types == undefined)
+			return result;
+		var count = types.length;
+		for(var i = 0; i < count; i++){
+			var validatorType = de.titus.form.ValidatorRegistry.get(types[i]);
+			if(validatorType != undefined)
+				result.push( new validatorType({"element": aElement}));
+		}
+		return result;
 	};
 	
 	
