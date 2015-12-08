@@ -9,15 +9,27 @@
 		<script type="application/javascript" src="js/bootstrap.min.js"></script>
 		<script type="application/javascript" src="../../de.titus.jquery.plugins/dist/1.5.2/de.titus.jquery.plugins.min-1.5.2.js"></script>
 		<script type="application/javascript" src="../dist/1.0.0/de.titus.form.validation-1.0.0.js"></script>
+		<style type="text/css">
+			[form-dependencies] {display: none;}
+			div#log {display: none;}
+			div#log-container:hover #log{display: block;}
+		</style>
 	</head>
 	<body >
 		<div class="container-fluid">
-			<form class="form-horizontal" role="form" onsubmit="alert('submit')">
-				<div class="form-group" form-field="name" form-type="text" form-validation="regex" form-validation-regex="[A-Za-z]* [A-Za-z]+" form-validation-message="Vor- und Nachname" form-required-message="Bitte etwas eingeben" required>
+			<form class="form-horizontal" role="form" onsubmit="alert('submit')" autocomplete="off" novalidate form-validate-on-start>
+				<div class="form-group" form-field="name" form-type="text" form-validation="regex,remote,custom" form-validation-regex="[A-Za-z]* [A-Za-z]+" form-validation-regex-message="Vor- und Nachname" form-required-message="Bitte etwas eingeben" form-required>
 					<label class="control-label col-sm-2" for="name">Name:</label>
 					<div class="col-sm-10">
 						<input type="text" class="form-control" id="name" placeholder="Name" value="" />
 						<div class="message text-danger" form-message-for="name"></div>
+					</div>
+				</div>
+				<div class="form-group" form-field="dependentName" form-type="text" form-validation="regex,remote,custom" form-validation-regex="[A-Za-z]* [A-Za-z]+" form-validation-regex-message="Vor- und Nachname" form-required-message="Bitte etwas eingeben" form-required="" form-dependencies="name" form-dependencies-message="Bitte erst einen Namen angeben!">
+					<label class="control-label col-sm-2" for="dependentName">dependent Name:</label>
+					<div class="col-sm-10">
+						<input type="text" class="form-control" id="dependentName" placeholder="Name" value="" />
+						<div class="message text-danger" form-message-for="dependentName"></div>
 					</div>
 				</div>
 				<div class="form-group">
@@ -28,11 +40,15 @@
 				</div>
 			</form>
 		</div>
-		<div id="log" logging-properties='{"remote":{"url":"logging.properties.json"}}'></div>
+		<div id="log-container">
+			<h4>log</h4>
+			<div id="log" logging-properties='{"remote":{"url":"logging.properties.json"}}'></div>
+		</div>
 		<script type="application/javascript">
 			$(document).ready(function(){
 				$('form').Form();
 			});		
 		</script>
+		
 	</body>
 </html>

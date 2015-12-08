@@ -34,14 +34,18 @@ de.titus.core.Namespace.create("de.titus.form.TextField", function() {
 		if(this.changeEventTimeoutid)
 			clearTimeout(this.changeEventTimeoutid);
 		
-		this.changeEventTimeoutid = setTimeout(this.parent.__valueChangeEvent.bind(this), 500);
+		this.changeEventTimeoutid = setTimeout(this.parent.__valueChangeEvent.bind(this), this.data.validateTimeout);
 	};	
 		
-	de.titus.form.TextField.prototype.readValue = function(){
+	de.titus.form.TextField.prototype.readValues = function(){
 		if(de.titus.form.TextField.LOGGER.isDebugEnabled()){
 			de.titus.form.TextField.LOGGER.logDebug("call de.titus.form.TextField.prototype.readValue() -> " + this.data.inputElement.val());
 		}
-		return this.data.inputElement.val();
+		var value = this.data.inputElement.val();
+		if(value == undefined || value == "")
+			return [];
+		
+		return [value];
 	};
 	
 	de.titus.form.FieldtypeRegistry.add("text", de.titus.form.TextField);

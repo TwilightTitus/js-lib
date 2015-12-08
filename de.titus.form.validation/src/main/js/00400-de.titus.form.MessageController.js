@@ -17,7 +17,6 @@ de.titus.core.Namespace.create("de.titus.form.MessageControllerController", func
 				field: undefined
 			};
 			$.extend(true, this.data, aData);
-			this.data.element.data("de.titus.form.MessageController", this);
 		};
 	
 	de.titus.form.MessageController.prototype.setMessage = function(aMessage){
