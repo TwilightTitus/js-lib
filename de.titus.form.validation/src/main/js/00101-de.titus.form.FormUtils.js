@@ -17,13 +17,13 @@ de.titus.core.Namespace.create("de.titus.form.FormUtils", function() {
 			return [dependencyString];	
 	};
 	
-	de.titus.form.FormUtils.getMessage = function(aFieldname, aForm){
-		var element = aForm.data.element.find("[form-message-for='" + aFieldname + "']");
-		return new de.titus.form.Message({"element": element});		
+	de.titus.form.FormUtils.getMessageController = function(aField, aForm){
+		var element = aForm.data.element.find("[form-message-for='" + aField.data.name + "']");
+		return new de.titus.form.MessageController({"element": element, "field": aField});		
 	};
 	
 	de.titus.form.FormUtils.getFieldValidatorTypes = function(aElement){
-		var valitationTypes = aElement.attr("form-valitations");
+		var valitationTypes = aElement.attr("form-validation");
 		if(valitationTypes == undefined)
 			return [];
 				

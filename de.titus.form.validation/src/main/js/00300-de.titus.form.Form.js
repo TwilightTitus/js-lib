@@ -16,6 +16,7 @@ de.titus.core.Namespace.create("de.titus.form.Form", function() {
 		this.data = {
 			element : aElement,
 			fields: {},
+			messageController: {},
 			validAction: undefined
 		};
 		
@@ -28,8 +29,7 @@ de.titus.core.Namespace.create("de.titus.form.Form", function() {
 			var fieldData = {
 				element: field,
 				name:  fieldname,
-				type: field.attr("form-type"),
-				message: de.titus.form.FormUtils.getMessage(fieldname, this),
+				type: field.attr("form-type"),				
 				validators: de.titus.form.FormUtils.getValidators(field),
 				dependencies: de.titus.form.FormUtils.getFieldDependencies(field),
 				load: field.attr("form-load"),
@@ -37,7 +37,28 @@ de.titus.core.Namespace.create("de.titus.form.Form", function() {
 			};
 			
 			var fieldType = de.titus.form.FieldtypeRegistry.get(fieldData.type);
-			this.data.fields[fieldData.name] = new fieldType(fieldData);			
+			this.data.fields[fieldData.name] = new fieldType(fieldData);
+			this.data.messageController[fieldData.name] = de.titus.form.FormUtils.getMessageController(this.data.fields[fieldData.name], this);
+		}		
+	};
+	
+	de.titus.form.Form.prototype.printMessage = function(aMessage, aFieldname){
+		if(de.titus.form.TextField.LOGGER.isDebugEnabled()){
+			de.titus.form.TextField.LOGGER.logDebug("call de.titus.form.Form.prototype.printMessage()");
+		}
+		var messageController = this.data.messageController[aFieldname];
+		if(messageController != undefined){
+			messageController.setMessage(aMessage);
+		}
+	};
+	
+	de.titus.form.Form.prototype.clearMessage = function(aFieldname){
+		if(de.titus.form.TextField.LOGGER.isDebugEnabled()){
+			de.titus.form.TextField.LOGGER.logDebug("call de.titus.form.Form.prototype.clearMessage()");
+		}
+		var messageController = this.data.messageController[aFieldname];
+		if(messageController != undefined){
+			messageController.doClear();
 		}
 	};
 	
