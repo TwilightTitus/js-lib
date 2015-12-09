@@ -18,7 +18,7 @@ de.titus.core.Namespace.create("de.titus.form.FormUtils", function() {
 	};
 	
 	de.titus.form.FormUtils.getMessageController = function(aField, aForm){
-		var element = aForm.data.element.find("[form-message-for='" + aField.data.fieldname + "']");
+		var element = aForm.data.element.find("[form-message-for='" + aField.getFieldname() + "']");
 		return new de.titus.form.MessageController({"element": element, "field": aField});		
 	};
 	

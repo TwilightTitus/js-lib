@@ -22,34 +22,51 @@ de.titus.core.Namespace.create("de.titus.form.Form", function() {
 			validateTimeout: 10
 		};
 		
-		var fields = this.data.element.find("[form-field]");		
-		var count = fields.length;
-		for(var i = 0; i < count; i++){
-			this.__buildField($(fields[i]));			
-		}
+		var fields = this.data.element.find("[form-field]");
+		var fieldDataMap = this.__buildFieldDataMap(fields);
+		fieldDataMap = this.__updateFieldDepends(fieldDataMap);
 		
-		//TODO nachberechung der Dependent Fields, also der Felder die von einem Feld abhängig sind
-
+		this.__buildFields(fieldDataMap);
+		
 		var $__THIS__$ = this;
 		this.data.element.find("[type='submit'],[form-submit]").each(function(){
 			$__THIS__$.data.submitButtons.push($(this));
 		});		
 		
 		if(this.data.element.attr("form-validate-on-start")!= undefined){
-			setTimeout(function(){$__THIS__$.isValid(false, true)}, this.data.validateTimeout);//TODO force parameter Konfigurierbar machen
+			//TODO force parameter Konfigurierbar machen
+			setTimeout(function(){$__THIS__$.isValid(false, true)}, this.data.validateTimeout);
 		}
 		
 	};
 	
-	de.titus.form.Form.prototype.__buildField = function(aElement){
+	de.titus.form.Form.prototype.__buildFields = function(aFieldDataMap){
 		if(de.titus.form.TextField.LOGGER.isDebugEnabled()){
-			de.titus.form.TextField.LOGGER.logDebug("call de.titus.form.Form.prototype.__buildField()");
+			de.titus.form.TextField.LOGGER.logDebug("call de.titus.form.Form.prototype.__buildFields()");
 		}
-		var data = this.__buildFieldData(aElement);		
-		var fieldType = de.titus.form.FieldtypeRegistry.get(data.type);
-		var fieldInstance = new fieldType(data);
-		this.data.fields[data.fieldname] = fieldInstance;
-		this.data.messageController[data.fieldname] = de.titus.form.FormUtils.getMessageController(fieldInstance, this);
+		for(var fieldnames in aFieldDataMap){			
+			var data = aFieldDataMap[fieldnames];		
+			var fieldType = de.titus.form.FieldtypeRegistry.get(data.type);
+			var fieldInstance = new fieldType(data);
+			this.data.fields[data.fieldname] = fieldInstance;
+			
+			//TODO MessageController ins Field verlagern
+			this.data.messageController[data.fieldname] = de.titus.form.FormUtils.getMessageController(fieldInstance, this);
+		}
+	};
+	
+	de.titus.form.Form.prototype.__buildFieldDataMap = function(aFieldElements){
+		if(de.titus.form.TextField.LOGGER.isDebugEnabled()){
+			de.titus.form.TextField.LOGGER.logDebug("call de.titus.form.Form.prototype.__buildFieldDataMap()");
+		}
+		var fieldDataMap = {};
+		var count = aFieldElements.length;
+		for(var i = 0; i < count; i++){
+			var data = this.__buildFieldData($(aFieldElements[i]));
+			fieldDataMap[data.fieldname] = data;
+		}
+		
+		return fieldDataMap;
 	};
 	
 	de.titus.form.Form.prototype.__buildFieldData = function(aElement){
@@ -66,6 +83,49 @@ de.titus.core.Namespace.create("de.titus.form.Form", function() {
 			"load": aElement.attr("form-load"),
 			"form": this
 		};
+	};
+	
+	de.titus.form.Form.prototype.__updateFieldDepends = function(aFieldDataMap){
+		if(de.titus.form.TextField.LOGGER.isDebugEnabled()){
+			de.titus.form.TextField.LOGGER.logDebug("call de.titus.form.Form.prototype.__updateFieldDepends()");
+		}
+		for(var fieldnames in aFieldDataMap){
+			var data = aFieldDataMap[fieldnames];
+			
+			var count = data.dependencies.length;
+			for(var i = 0; i < count; i++){
+				aFieldDataMap[data.dependencies[i]].dependents.push(data.fieldname);
+			}
+		}
+		
+		return aFieldDataMap;
+	};
+	de.titus.form.Form.prototype.getFields = function(){
+		if(de.titus.form.TextField.LOGGER.isDebugEnabled()){
+			de.titus.form.TextField.LOGGER.logDebug("call de.titus.form.Form.prototype.getFields()");
+		}
+		return this.data.fields;
+	};
+	
+	de.titus.form.Form.prototype.getField = function(aFieldname){
+		if(de.titus.form.TextField.LOGGER.isDebugEnabled()){
+			de.titus.form.TextField.LOGGER.logDebug("call de.titus.form.Form.prototype.getField()");
+		}
+		return this.data.fields[aFieldname];
+	};
+	
+	de.titus.form.Form.prototype.getData = function(){
+		if(de.titus.form.TextField.LOGGER.isDebugEnabled()){
+			de.titus.form.TextField.LOGGER.logDebug("call de.titus.form.Form.prototype.getData()");
+		}
+		var formData = {};
+		for(var fieldnames in this.data.fields){
+			var field = this.data.fields[fieldnames];
+			if(field.getValues() != undefined)
+				formData[field.getFieldname()] = field.getValues();
+		}
+		
+		return formData;
 	};
 	
 	de.titus.form.Form.prototype.printMessage = function(aMessage, aFieldname){
@@ -107,14 +167,17 @@ de.titus.core.Namespace.create("de.titus.form.Form", function() {
 		if(de.titus.form.TextField.LOGGER.isDebugEnabled()){
 			de.titus.form.TextField.LOGGER.logDebug("call de.titus.form.Form.prototype.__onFieldValueChanged()");
 		}
-		var isValid = aField.isValid();
-		var dependents = aField.data.dependents;
+		var valid = aField.isValid();
+		var dependents = aField.getDependents();
 		var count = dependents.length;
 		for(var i = 0; i < count; i++){
 			var dependents = dependents[i];
-			var dependentField = this.data.fields[dependency];
+			var dependentField = this.data.fields[dependents];
 			if(dependentField != undefined){
-				dependentField.show(isValied);
+				dependentField.show(valid);
+				if(!valid){
+					dependentField.doReset();
+				}
 			}			
 		}
 	};

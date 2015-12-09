@@ -25,10 +25,10 @@ de.titus.core.Namespace.create("de.titus.form.DependencyValitdator", function() 
 		if(de.titus.form.DependencyValitdator.LOGGER.isDebugEnabled()){
 			de.titus.form.DependencyValitdator.LOGGER.logDebug("call de.titus.form.DependencyValitdator.prototype.doValidate()");
 		}
-		var dependencies = aField.data.dependencies;
+		var dependencies = aField.getDependencies();
 		var count = dependencies.length;
 		for(var i = 0; i < count; i++){
-			var dependentField = aField.data.form.data.fields[dependencies[i]];
+			var dependentField = aField.getForm().getField(dependencies[i]);
 			if(dependentField != undefined){
 				var valid = dependentField.isValid();
 				if(!valid){

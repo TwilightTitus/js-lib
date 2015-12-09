@@ -42,7 +42,7 @@ de.titus.core.Namespace.create("de.titus.form.FormUtils", function() {
 	};
 	
 	de.titus.form.FormUtils.getMessageController = function(aField, aForm){
-		var element = aForm.data.element.find("[form-message-for='" + aField.data.fieldname + "']");
+		var element = aForm.data.element.find("[form-message-for='" + aField.getFieldname() + "']");
 		return new de.titus.form.MessageController({"element": element, "field": aField});		
 	};
 	
@@ -111,20 +111,72 @@ de.titus.core.Namespace.create("de.titus.form.Field", function() {
 			de.titus.form.Field.LOGGER.logDebug("call de.titus.form.Field.prototype.init()");
 		}
 		this.data = {
-			element: undefined,
-			fieldname: undefined,
-			type: undefined,
-			validators: undefined,
-			dependencies: undefined,
-			load: undefined,
-			form: undefined,
-			values: undefined,
-			validData: {"valid": false, "message": ""},
-			validateTimeout: 300
+			"element": undefined,
+			"fieldname": undefined,
+			"type": undefined,
+			"validators": undefined,
+			"dependents": undefined,
+			"dependencies": undefined,
+			"load": undefined,
+			"form": undefined,
+			"values": undefined,
+			"validData": {"valid": false, "message": ""},
+			"validateTimeout": 300
 		};
-		$.extend(true, this.data, aData);		
+		$.extend(true, this.data, aData);
+		
+		
 		this.data.element.data("de.titus.form.Field", this);
 		return;
+	};
+	
+	de.titus.form.Field.prototype.getElement = function(){
+		if(de.titus.form.Field.LOGGER.isDebugEnabled()){
+			de.titus.form.Field.LOGGER.logDebug("call de.titus.form.Field.prototype.getElement()");
+		}
+		return this.data.element;
+	};
+	
+	de.titus.form.Field.prototype.getForm = function(){
+		if(de.titus.form.Field.LOGGER.isDebugEnabled()){
+			de.titus.form.Field.LOGGER.logDebug("call de.titus.form.Field.prototype.getForm()");
+		}
+		return this.data.form;
+	};
+	
+	de.titus.form.Field.prototype.getFieldname = function(){
+		if(de.titus.form.Field.LOGGER.isDebugEnabled()){
+			de.titus.form.Field.LOGGER.logDebug("call de.titus.form.Field.prototype.getFieldname()");
+		}
+		return this.data.fieldname;
+	};
+	
+	de.titus.form.Field.prototype.getValidators = function(){
+		if(de.titus.form.Field.LOGGER.isDebugEnabled()){
+			de.titus.form.Field.LOGGER.logDebug("call de.titus.form.Field.prototype.getValidators()");
+		}
+		return this.data.validators;
+	};
+	
+	de.titus.form.Field.prototype.getDependents = function(){
+		if(de.titus.form.Field.LOGGER.isDebugEnabled()){
+			de.titus.form.Field.LOGGER.logDebug("call de.titus.form.Field.prototype.getDependents()");
+		}
+		return this.data.dependents;
+	};
+	
+	de.titus.form.Field.prototype.getDependencies = function(){
+		if(de.titus.form.Field.LOGGER.isDebugEnabled()){
+			de.titus.form.Field.LOGGER.logDebug("call de.titus.form.Field.prototype.getDependencies()");
+		}
+		return this.data.dependencies;
+	};
+	
+	de.titus.form.Field.prototype.getValues = function(){
+		if(de.titus.form.Field.LOGGER.isDebugEnabled()){
+			de.titus.form.Field.LOGGER.logDebug("call de.titus.form.Field.prototype.getValues()");
+		}
+		return this.data.values;
 	};
 		
 	de.titus.form.Field.prototype.show = function(show){
@@ -152,6 +204,15 @@ de.titus.core.Namespace.create("de.titus.form.Field", function() {
 		return "";
 	};
 	
+	de.titus.form.Field.prototype.doReset = function(){
+		if(de.titus.form.Field.LOGGER.isDebugEnabled()){
+			de.titus.form.Field.LOGGER.logDebug("call de.titus.form.Field.prototype.doReset()");
+		}
+		this.data.values = [];
+		this.data.form.clearMessage(this.data.fieldname);
+		this.data.element.removeClass("form-invalid");
+	};
+	
 	de.titus.form.Field.prototype.isValid = function(force){
 		if(de.titus.form.Field.LOGGER.isDebugEnabled()){
 			de.titus.form.Field.LOGGER.logDebug("call de.titus.form.Field.prototype.isValid()");
@@ -169,11 +230,14 @@ de.titus.core.Namespace.create("de.titus.form.Field", function() {
 		this.__executeValidators();
 		
 
-		if(this.data.validData != undefined && !this.data.validData.valid)
+		if(this.data.validData != undefined && !this.data.validData.valid){
 			this.data.form.printMessage(this.data.validData.message, this.data.fieldname);
-		else 
+			this.data.element.addClass("form-invalid");
+		}
+		else{
 			this.data.form.clearMessage(this.data.fieldname);
-		
+			this.data.element.removeClass("form-invalid");
+		}
 		return this.data.validData.valid;
 	};
 	
@@ -211,7 +275,7 @@ de.titus.core.Namespace.create("de.titus.form.Field", function() {
 			return this.each(function(){return $(this).FormField();});
 		}
 		
-		return this.data.element.data("de.titus.form.Field");
+		return this.data("de.titus.form.Field");
 	};	
 });
 de.titus.core.Namespace.create("de.titus.form.TextField", function() {
@@ -264,6 +328,15 @@ de.titus.core.Namespace.create("de.titus.form.TextField", function() {
 		return [value];
 	};
 	
+	de.titus.form.TextField.prototype.doReset = function(){
+		if(de.titus.form.TextField.LOGGER.isDebugEnabled()){
+			de.titus.form.TextField.LOGGER.logDebug("call de.titus.form.TextField.prototype.doReset()");
+		}
+		this.parent.doReset.call(this);
+		
+		this.data.inputElement.val("");
+	};
+	
 	de.titus.form.FieldtypeRegistry.add("text", de.titus.form.TextField);
 });
 de.titus.core.Namespace.create("de.titus.form.Form", function() {
@@ -290,32 +363,51 @@ de.titus.core.Namespace.create("de.titus.form.Form", function() {
 			validateTimeout: 10
 		};
 		
-		var fields = this.data.element.find("[form-field]");		
-		var count = fields.length;
-		for(var i = 0; i < count; i++){
-			this.__buildField($(fields[i]));			
-		}
-
+		var fields = this.data.element.find("[form-field]");
+		var fieldDataMap = this.__buildFieldDataMap(fields);
+		fieldDataMap = this.__updateFieldDepends(fieldDataMap);
+		
+		this.__buildFields(fieldDataMap);
+		
 		var $__THIS__$ = this;
 		this.data.element.find("[type='submit'],[form-submit]").each(function(){
 			$__THIS__$.data.submitButtons.push($(this));
 		});		
 		
 		if(this.data.element.attr("form-validate-on-start")!= undefined){
+			//TODO force parameter Konfigurierbar machen
 			setTimeout(function(){$__THIS__$.isValid(false, true)}, this.data.validateTimeout);
 		}
 		
 	};
 	
-	de.titus.form.Form.prototype.__buildField = function(aElement){
+	de.titus.form.Form.prototype.__buildFields = function(aFieldDataMap){
 		if(de.titus.form.TextField.LOGGER.isDebugEnabled()){
-			de.titus.form.TextField.LOGGER.logDebug("call de.titus.form.Form.prototype.__buildField()");
+			de.titus.form.TextField.LOGGER.logDebug("call de.titus.form.Form.prototype.__buildFields()");
 		}
-		var data = this.__buildFieldData(aElement);		
-		var fieldType = de.titus.form.FieldtypeRegistry.get(data.type);
-		var fieldInstance = new fieldType(data);
-		this.data.fields[data.fieldname] = fieldInstance;
-		this.data.messageController[data.fieldname] = de.titus.form.FormUtils.getMessageController(fieldInstance, this);
+		for(var fieldnames in aFieldDataMap){			
+			var data = aFieldDataMap[fieldnames];		
+			var fieldType = de.titus.form.FieldtypeRegistry.get(data.type);
+			var fieldInstance = new fieldType(data);
+			this.data.fields[data.fieldname] = fieldInstance;
+			
+			//TODO MessageController ins Field verlagern
+			this.data.messageController[data.fieldname] = de.titus.form.FormUtils.getMessageController(fieldInstance, this);
+		}
+	};
+	
+	de.titus.form.Form.prototype.__buildFieldDataMap = function(aFieldElements){
+		if(de.titus.form.TextField.LOGGER.isDebugEnabled()){
+			de.titus.form.TextField.LOGGER.logDebug("call de.titus.form.Form.prototype.__buildFieldDataMap()");
+		}
+		var fieldDataMap = {};
+		var count = aFieldElements.length;
+		for(var i = 0; i < count; i++){
+			var data = this.__buildFieldData($(aFieldElements[i]));
+			fieldDataMap[data.fieldname] = data;
+		}
+		
+		return fieldDataMap;
 	};
 	
 	de.titus.form.Form.prototype.__buildFieldData = function(aElement){
@@ -325,12 +417,56 @@ de.titus.core.Namespace.create("de.titus.form.Form", function() {
 		return {
 			"element": aElement,
 			"fieldname":  aElement.attr("form-field") || aElement.attr("id"),
-			"type": aElement.attr("form-type"),				
+			"type": aElement.attr("form-type"),
+			"dependents": [],
 			"validators": de.titus.form.FormUtils.getValidators(aElement),
 			"dependencies": de.titus.form.FormUtils.getFieldDependencies(aElement),
 			"load": aElement.attr("form-load"),
 			"form": this
 		};
+	};
+	
+	de.titus.form.Form.prototype.__updateFieldDepends = function(aFieldDataMap){
+		if(de.titus.form.TextField.LOGGER.isDebugEnabled()){
+			de.titus.form.TextField.LOGGER.logDebug("call de.titus.form.Form.prototype.__updateFieldDepends()");
+		}
+		for(var fieldnames in aFieldDataMap){
+			var data = aFieldDataMap[fieldnames];
+			
+			var count = data.dependencies.length;
+			for(var i = 0; i < count; i++){
+				aFieldDataMap[data.dependencies[i]].dependents.push(data.fieldname);
+			}
+		}
+		
+		return aFieldDataMap;
+	};
+	de.titus.form.Form.prototype.getFields = function(){
+		if(de.titus.form.TextField.LOGGER.isDebugEnabled()){
+			de.titus.form.TextField.LOGGER.logDebug("call de.titus.form.Form.prototype.getFields()");
+		}
+		return this.data.fields;
+	};
+	
+	de.titus.form.Form.prototype.getField = function(aFieldname){
+		if(de.titus.form.TextField.LOGGER.isDebugEnabled()){
+			de.titus.form.TextField.LOGGER.logDebug("call de.titus.form.Form.prototype.getField()");
+		}
+		return this.data.fields[aFieldname];
+	};
+	
+	de.titus.form.Form.prototype.getData = function(){
+		if(de.titus.form.TextField.LOGGER.isDebugEnabled()){
+			de.titus.form.TextField.LOGGER.logDebug("call de.titus.form.Form.prototype.getData()");
+		}
+		var formData = {};
+		for(var fieldnames in this.data.fields){
+			var field = this.data.fields[fieldnames];
+			if(field.getValues() != undefined)
+				formData[field.getFieldname()] = field.getValues();
+		}
+		
+		return formData;
 	};
 	
 	de.titus.form.Form.prototype.printMessage = function(aMessage, aFieldname){
@@ -372,14 +508,17 @@ de.titus.core.Namespace.create("de.titus.form.Form", function() {
 		if(de.titus.form.TextField.LOGGER.isDebugEnabled()){
 			de.titus.form.TextField.LOGGER.logDebug("call de.titus.form.Form.prototype.__onFieldValueChanged()");
 		}
-		var isValid = aField.isValid();
-		var dependencies = aField.data.dependencies;
-		var count = dependencies.length;
+		var valid = aField.isValid();
+		var dependents = aField.getDependents();
+		var count = dependents.length;
 		for(var i = 0; i < count; i++){
-			var dependency = dependencies[i];
-			var dependentField = this.data.fields[dependency];
+			var dependents = dependents[i];
+			var dependentField = this.data.fields[dependents];
 			if(dependentField != undefined){
-				dependentField.show(isValied);
+				dependentField.show(valid);
+				if(!valid){
+					dependentField.doReset();
+				}
 			}			
 		}
 	};
@@ -609,10 +748,10 @@ de.titus.core.Namespace.create("de.titus.form.DependencyValitdator", function() 
 		if(de.titus.form.DependencyValitdator.LOGGER.isDebugEnabled()){
 			de.titus.form.DependencyValitdator.LOGGER.logDebug("call de.titus.form.DependencyValitdator.prototype.doValidate()");
 		}
-		var dependencies = aField.data.dependencies;
+		var dependencies = aField.getDependencies();
 		var count = dependencies.length;
 		for(var i = 0; i < count; i++){
-			var dependentField = aField.data.form.data.fields[dependencies[i]];
+			var dependentField = aField.getForm().getField(dependencies[i]);
 			if(dependentField != undefined){
 				var valid = dependentField.isValid();
 				if(!valid){
@@ -685,4 +824,93 @@ de.titus.core.Namespace.create("de.titus.form.RegexValitdator", function() {
 	};
 	
 	de.titus.form.ValidatorRegistry.add("regex", de.titus.form.RegexValitdator);
+});
+de.titus.core.Namespace.create("de.titus.form.MatchValitdator", function() {
+
+	de.titus.form.MatchValitdator = function(aData){
+		if(de.titus.form.MatchValitdator.LOGGER.isDebugEnabled()){
+			de.titus.form.MatchValitdator.LOGGER.logDebug("call de.titus.form.MatchValitdator.prototype.constructor()");
+		}
+		this.init(aData);
+	};
+	
+	de.titus.form.MatchValitdator.prototype = Object.create(de.titus.form.Validator.prototype);
+	de.titus.form.MatchValitdator.prototype.constructor = de.titus.form.MatchValitdator;
+	de.titus.form.MatchValitdator.prototype.parent = de.titus.form.Validator.prototype;
+	
+	de.titus.form.MatchValitdator.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.MatchValitdator");
+	
+	de.titus.form.MatchValitdator.prototype.init = function(aData){
+		if(de.titus.form.MatchValitdator.LOGGER.isDebugEnabled()){
+			de.titus.form.MatchValitdator.LOGGER.logDebug("call de.titus.form.MatchValitdator.prototype.init()");
+		}
+		this.parent.init.call(this, aData);
+		this.data.matches = this.__buildMatchList();
+		
+		this.data.validData = {"valid": false, "message": (this.data.element.attr("form-validation-match-message") || "invalid")};	
+	};
+	
+	de.titus.form.MatchValitdator.prototype.__buildMatchList = function(){
+		var matchString = this.data.element.attr("form-validation-match");
+		if(matchString == undefined)
+			return [];
+				
+		matchString = matchString.replace("[", "");
+		matchString = matchString.replace("]", "");
+		matchString = matchString.replace(" ", "");
+		
+		if(matchString == "")
+			return [];
+		else if(matchString.indexOf(",") != -1)
+			return matchString.split(",")
+		else
+			return [matchString];	
+	};
+	
+	de.titus.form.MatchValitdator.prototype.doValidate = function(aValue, aField){
+		if(de.titus.form.MatchValitdator.LOGGER.isDebugEnabled()){
+			de.titus.form.MatchValitdator.LOGGER.logDebug("call de.titus.form.MatchValitdator.prototype.doValidate()");
+		}
+		this.data.validData.valid = this.__doValidateValue(aValue, aField);		
+		return this.data.validData;		
+	};
+	
+	de.titus.form.MatchValitdator.prototype.__doValidateValue = function(aValues, aField){
+		if(de.titus.form.MatchValitdator.LOGGER.isDebugEnabled()){
+			de.titus.form.MatchValitdator.LOGGER.logDebug("call de.titus.form.MatchValitdator.prototype.__doValidateValue()");
+		}
+		var count = this.data.matches.length;
+		for(var i = 0; i < count; i++){
+			var field = aField.getForm().getField(this.data.matches[i]);
+			if(field != undefined && !this.__doMatchValues(aValues, field.getValues()))
+				return false;
+		}
+		return true;
+	};
+	
+	de.titus.form.MatchValitdator.prototype.__doMatchValues = function(aValues1, aValues2){
+		if(aValues1.length !=  aValues2.length)
+			return false;
+		
+		var count = aValues1.length;
+		for(var i = 0; i < count; i++){
+			if(!this.__doContainValue(aValues1[i], aValues2)){
+				return false;
+			}
+		}
+		return true;
+		
+	};
+	
+	de.titus.form.MatchValitdator.prototype.__doContainValue = function(aValue, aValues){		
+		var count = aValues.length;
+		for(var i = 0; i < count; i++){
+			if(aValues[i] == aValue){
+				return true;
+			}
+		}
+		return false;		
+	};
+	
+	de.titus.form.ValidatorRegistry.add("match", de.titus.form.MatchValitdator);
 });

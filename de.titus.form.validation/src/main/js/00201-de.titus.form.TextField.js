@@ -48,5 +48,14 @@ de.titus.core.Namespace.create("de.titus.form.TextField", function() {
 		return [value];
 	};
 	
+	de.titus.form.TextField.prototype.doReset = function(){
+		if(de.titus.form.TextField.LOGGER.isDebugEnabled()){
+			de.titus.form.TextField.LOGGER.logDebug("call de.titus.form.TextField.prototype.doReset()");
+		}
+		this.parent.doReset.call(this);
+		
+		this.data.inputElement.val("");
+	};
+	
 	de.titus.form.FieldtypeRegistry.add("text", de.titus.form.TextField);
 });

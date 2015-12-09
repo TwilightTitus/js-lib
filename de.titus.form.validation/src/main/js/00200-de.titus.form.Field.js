@@ -15,20 +15,72 @@ de.titus.core.Namespace.create("de.titus.form.Field", function() {
 			de.titus.form.Field.LOGGER.logDebug("call de.titus.form.Field.prototype.init()");
 		}
 		this.data = {
-			element: undefined,
-			fieldname: undefined,
-			type: undefined,
-			validators: undefined,
-			dependencies: undefined,
-			load: undefined,
-			form: undefined,
-			values: undefined,
-			validData: {"valid": false, "message": ""},
-			validateTimeout: 300
+			"element": undefined,
+			"fieldname": undefined,
+			"type": undefined,
+			"validators": undefined,
+			"dependents": undefined,
+			"dependencies": undefined,
+			"load": undefined,
+			"form": undefined,
+			"values": undefined,
+			"validData": {"valid": false, "message": ""},
+			"validateTimeout": 300
 		};
-		$.extend(true, this.data, aData);		
+		$.extend(true, this.data, aData);
+		
+		
 		this.data.element.data("de.titus.form.Field", this);
 		return;
+	};
+	
+	de.titus.form.Field.prototype.getElement = function(){
+		if(de.titus.form.Field.LOGGER.isDebugEnabled()){
+			de.titus.form.Field.LOGGER.logDebug("call de.titus.form.Field.prototype.getElement()");
+		}
+		return this.data.element;
+	};
+	
+	de.titus.form.Field.prototype.getForm = function(){
+		if(de.titus.form.Field.LOGGER.isDebugEnabled()){
+			de.titus.form.Field.LOGGER.logDebug("call de.titus.form.Field.prototype.getForm()");
+		}
+		return this.data.form;
+	};
+	
+	de.titus.form.Field.prototype.getFieldname = function(){
+		if(de.titus.form.Field.LOGGER.isDebugEnabled()){
+			de.titus.form.Field.LOGGER.logDebug("call de.titus.form.Field.prototype.getFieldname()");
+		}
+		return this.data.fieldname;
+	};
+	
+	de.titus.form.Field.prototype.getValidators = function(){
+		if(de.titus.form.Field.LOGGER.isDebugEnabled()){
+			de.titus.form.Field.LOGGER.logDebug("call de.titus.form.Field.prototype.getValidators()");
+		}
+		return this.data.validators;
+	};
+	
+	de.titus.form.Field.prototype.getDependents = function(){
+		if(de.titus.form.Field.LOGGER.isDebugEnabled()){
+			de.titus.form.Field.LOGGER.logDebug("call de.titus.form.Field.prototype.getDependents()");
+		}
+		return this.data.dependents;
+	};
+	
+	de.titus.form.Field.prototype.getDependencies = function(){
+		if(de.titus.form.Field.LOGGER.isDebugEnabled()){
+			de.titus.form.Field.LOGGER.logDebug("call de.titus.form.Field.prototype.getDependencies()");
+		}
+		return this.data.dependencies;
+	};
+	
+	de.titus.form.Field.prototype.getValues = function(){
+		if(de.titus.form.Field.LOGGER.isDebugEnabled()){
+			de.titus.form.Field.LOGGER.logDebug("call de.titus.form.Field.prototype.getValues()");
+		}
+		return this.data.values;
 	};
 		
 	de.titus.form.Field.prototype.show = function(show){
@@ -56,6 +108,15 @@ de.titus.core.Namespace.create("de.titus.form.Field", function() {
 		return "";
 	};
 	
+	de.titus.form.Field.prototype.doReset = function(){
+		if(de.titus.form.Field.LOGGER.isDebugEnabled()){
+			de.titus.form.Field.LOGGER.logDebug("call de.titus.form.Field.prototype.doReset()");
+		}
+		this.data.values = [];
+		this.data.form.clearMessage(this.data.fieldname);
+		this.data.element.removeClass("form-invalid");
+	};
+	
 	de.titus.form.Field.prototype.isValid = function(force){
 		if(de.titus.form.Field.LOGGER.isDebugEnabled()){
 			de.titus.form.Field.LOGGER.logDebug("call de.titus.form.Field.prototype.isValid()");
@@ -73,11 +134,14 @@ de.titus.core.Namespace.create("de.titus.form.Field", function() {
 		this.__executeValidators();
 		
 
-		if(this.data.validData != undefined && !this.data.validData.valid)
+		if(this.data.validData != undefined && !this.data.validData.valid){
 			this.data.form.printMessage(this.data.validData.message, this.data.fieldname);
-		else 
+			this.data.element.addClass("form-invalid");
+		}
+		else{
 			this.data.form.clearMessage(this.data.fieldname);
-		
+			this.data.element.removeClass("form-invalid");
+		}
 		return this.data.validData.valid;
 	};
 	
@@ -115,6 +179,6 @@ de.titus.core.Namespace.create("de.titus.form.Field", function() {
 			return this.each(function(){return $(this).FormField();});
 		}
 		
-		return this.data.element.data("de.titus.form.Field");
+		return this.data("de.titus.form.Field");
 	};	
 });
