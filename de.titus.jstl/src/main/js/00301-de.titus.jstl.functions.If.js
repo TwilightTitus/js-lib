@@ -15,21 +15,18 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.If", function() {
 		
 		
 		var processor = aProcessor || new de.titus.jstl.Processor();
-		var expressionResolver = processor.expressionResolver || new de.titus.jstl.ExpressionResolver();
-		var domHelper = processor.domHelper || de.titus.core.DomHelper.getInstance();
+		var expressionResolver = processor.expressionResolver || new de.titus.core.ExpressionResolver();
 		
-		var expression = domHelper.getAttribute(aElement, processor.config.attributePrefix + this.attributeName);
-		if(expression != undefined && expression.lenght != 0){
-			
-			var expressionResult = expressionResolver.resolveExpression(expression, aDataContext, false);			
-
-			if(domHelper.isFunction(expressionResult))
+		var expression = aElement.attr(processor.config.attributePrefix + this.attributeName);
+		if(expression != undefined){
+			var expressionResult = expressionResolver.resolveExpression(expression, aDataContext, false);
+			if(typeof expressionResult === "function")
 				expressionResult = expressionResult(aElement, aDataContext, aProcessor);
 			
 			
 			expressionResult = expressionResult == true || expressionResult == "true";
 			if(!expressionResult){
-				domHelper.doRemove(aElement);
+				aElement.remove();
 				return new de.titus.jstl.FunctionResult(false, false);
 			}
 		}

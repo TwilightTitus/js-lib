@@ -21,7 +21,7 @@ if(de.titus.core.Namespace == undefined){
 		var namespaces = aNamespace.split(".");
 		var currentNamespace = window;
 		var namespaceCreated = false;
-		for(i = 0; i < namespaces.length; i++){
+		for(var i = 0; i < namespaces.length; i++){
 			if (currentNamespace[namespaces[i]] == undefined) {
 				currentNamespace[namespaces[i]] = {};
 				namespaceCreated = true;
@@ -29,7 +29,6 @@ if(de.titus.core.Namespace == undefined){
 			currentNamespace = currentNamespace[namespaces[i]];
 		}
 		if(namespaceCreated && aFunction != undefined){
-			"use strict";
 			aFunction();
 		}
 		
@@ -47,7 +46,7 @@ if(de.titus.core.Namespace == undefined){
 	de.titus.core.Namespace.exist = function (aNamespace){
 		var namespaces = aNamespace.split(".");
 		var currentNamespace = window;
-		for(i = 0; i < namespaces.length; i++){
+		for(var i = 0; i < namespaces.length; i++){
 			if (currentNamespace[namespaces[i]] == undefined) {
 				return false;
 	        }

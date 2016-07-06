@@ -3,7 +3,7 @@
 <head>
 <title>JSTL Samples</title>
 <script src="../../libs/jquery-1.11.1.js" type="text/javascript"></script>
-<script src="../../dist/1.5.1/de.titus.jquery.plugins-1.5.1.js"
+<script src="../../dist/1.6.0/de.titus.jquery.plugins-1.6.0.js"
 	type="text/javascript"></script>
 <link type="text/css" href="style.css" rel="stylesheet" />
 </head>
@@ -22,41 +22,43 @@
 
 
 		<div>
-			add single attribute</br>
-			<img jstl-data='jstl-remote.data.json' jstl-data-mode="remote" jstl-add-attribute = "{'name':'src', 'value':testImage}"/>			
+			add single attribute</br> <img jstl-data='jstl-remote.data.json'
+				jstl-data-mode="remote"
+				jstl-add-attribute="{'name':'src', 'value':testImage}" />
 		</div>
 		<div>
 			add multiple Attribute</br>
-			<div jstl-data='jstl-remote.data.json' jstl-data-mode="remote" jstl-add-attribute = "${addAttributes}"/>			
-		</div>		
-		
+			<div jstl-data='jstl-remote.data.json' jstl-data-mode="remote"
+				jstl-add-attribute="${addAttributes}"></div>
+		</div>
+
 		<div>
 			foreach on data context / it's like run over all properties of an
 			Object
-			<div jstl-data='jstl-remote.data.json' jstl-data-mode="remote" jstl-foreach = "${list}" jstl-foreach-var="listItem" jstl-foreach-status="listStatus">
+			<div jstl-data='jstl-remote.data.json' jstl-data-mode="remote"
+				jstl-foreach="${list}" jstl-foreach-var="listItem"
+				jstl-foreach-status="listStatus">
 				<div jstl-if="${listItem.id != 3}">
-					<span>${listStatus.index} </span>
-					<span>id: ${listItem.id}</span>
-					<span>name: ${listItem.name}</span>
-					<span>name: ${jstlTemplate}</span>
+					<span>${listStatus.index} </span> <span>id: ${listItem.id}</span> <span>name:
+						${listItem.name}</span> <span>name: ${jstlTemplate}</span>
 				</div>
-			</div>			
+			</div>
 		</div>
-		
+
 		<div>
 			foreach on data context / it's like run over all properties of an
 			Object
-			<div jstl-data='jstl-remote.data.json' jstl-data-mode="remote" jstl-foreach = "${list}" jstl-foreach-var="listItem" jstl-foreach-status="listStatus">
+			<div jstl-data='jstl-remote.data.json' jstl-data-mode="remote"
+				jstl-foreach="${list}" jstl-foreach-var="listItem"
+				jstl-foreach-status="listStatus">
 				<div>
-					<span>${listStatus.index} </span>
-					<span>id: ${listItem.id}</span>
-					<span>name: ${listItem.name}</span>
-					<span>name: ${jstlTemplate}</span>
+					<span>${listStatus.index} </span> <span>id: ${listItem.id}</span> <span>name:
+						${listItem.name}</span> <span>name: ${jstlTemplate}</span>
 				</div>
-			</div>			
+			</div>
 		</div>
-		
-		
+
+
 		<div>
 			<div>${test}</div>
 			<div>${"test " + test + "!"}</div>
@@ -136,16 +138,13 @@
 		<div>
 			foreach on remote data with start index and break condition
 			<div jstl-data="jstl-remote.data.json" jstl-data-mode="remote"
-				jstl-foreach="${list}"
-				jstl-foreach-var="listItem"
-				jstl-foreach-status="listStatus"
-				jstl-foreach-start-index="2"		
-				jstl-foreach-break-condition="${listStatus.index == 5}"				
-				>
+				jstl-foreach="${list}" jstl-foreach-var="listItem"
+				jstl-foreach-status="listStatus" jstl-foreach-start-index="2"
+				jstl-foreach-break-condition="${listStatus.index == 5}">
 				<span>${listStatus.index} </span> <span>id: ${listItem.id}</span> <span>name:
 					${listItem.name}</span> <span>name: ${jstlTemplate}</span> <br />
 			</div>
-		</div>		
+		</div>
 		<div>
 			foreach test 2
 			<div jstl-foreach="${jstlList}">
@@ -159,52 +158,57 @@
 		<div>
 			foreach on data context / it's like run over all properties of an
 			Object
-			<div jstl-data='jstl-remote.data.array.json' jstl-data-mode="remote" jstl-foreach = "" jstl-foreach-var="listItem" jstl-foreach-status="listStatus">
+			<div jstl-data='jstl-remote.data.array.json' jstl-data-mode="remote"
+				jstl-foreach="" jstl-foreach-var="listItem"
+				jstl-foreach-status="listStatus">
 				<div jstl-if="${listItem.id != 1}">
-					<span>${listStatus.index} </span>
-					<span>id: ${listItem.id}</span>
-					<span>name: ${listItem.name}</span>
-					<span>name: ${jstlTemplate}</span>
+					<span>${listStatus.index} </span> <span>id: ${listItem.id}</span> <span>name:
+						${listItem.name}</span> <span>name: ${jstlTemplate}</span>
 				</div>
-			</div>			
+			</div>
 		</div>
-		
-		<div class="jstl-text-content-type">jstl-text-content-type="html" 
-			<ul jstl-data='{"text":"<b>insert</b>text as <i>html</i><p>$\{subtext\}</p>", "subtext":"and with child processing"}' >
+
+		<div class="jstl-text-content-type">
+			jstl-text-content-type="html"
+			<ul
+				jstl-data='{"text":"<b>insert</b>text as <i>html</i><p>$\{subtext\}</p>", "subtext":"and with child processing"}'>
 				<li>
 					<h4>inculde as html and child processing</h4>
 					<div jstl-text-content-type="html">${text}</div>
 				</li>
 				<li>
 					<h4>inculde as html and no child processing</h4>
-					<div jstl-text-content-type="html" jstl-processor-child-processing="false">${text}</div>
+					<div jstl-text-content-type="html"
+						jstl-processor-child-processing="false">${text}</div>
 				</li>
 				<li>
 					<h4>normal inculde as plain text</h4>
 					<div>${text}</div>
 				</li>
 			</ul>
-		</div>		
+		</div>
 	</div>
-	
-	<div id="log"><div>Logs</div></div>
-	
+
+	<div id="log">
+		<div>Logs</div>
+	</div>
+
 	<script type="text/javascript">
 		/*<!--*/
 
         function load(aElement) {
 	        $(aElement).hide();
-	        alert("load");
+	        //alert("load");
         };
         
         function success(aElement) {
-	        alert("success");
-			$(aElement).show();
+	        //alert("success");
+	        $(aElement).show();
         };
-
-		function toArray(value){
-			return new Array();
-		};
+        
+        function toArray(value) {
+	        return value;
+        };
         
         function testFunction() {
 	        return "result from a Function!";
@@ -212,7 +216,8 @@
         
         function dataFunction() {
 	        return {
-		        "functionResult" : "result from a Function!" };
+		        "functionResult" : "result from a Function!"
+	        };
         };
         
         $(document).ready(function() {
@@ -220,17 +225,34 @@
 	        test : "text",
 	        "boolean" : false,
 	        "jstlTemplate" : "jstl-template.html",
-	        "jstlList" : [] };
+	        "jstlList" : []
+	        };
 	        
 	        for (var i = 0; i < 10; i++) {
 		        data.jstlList.push({
 		        "id" : i,
 		        "name" : "item " + i,
-		        "show" : (i % 4 != 0) });
+		        "show" : (i % 4 != 0)
+		        });
 	        }
+	        $("#test").on("jstl-on-load", function(event) {
+		        window.jstlStartTime = new Date();
+	        });
+	        
+	        $("#test").on("jstl-on-ready", function(event) {
+	        	window.jstlEndTime = new Date();
+	        	$("body").append(window.jstlEndTime.getTime() - window.jstlStartTime.getTime() + "ms");
+	        });
+	        
+	        $("#test").on(de.titus.jstl.Constants.EVENTS.onLoad, function(event) {
+		        console.log("load event");
+		        console.log(event);
+		        event.stopPropagation();
+	        });
 	        
 	        $("#test").jstl({
-		        "data" : data });
+		        "data" : data
+	        });
 	        
         });
         /*-->*/

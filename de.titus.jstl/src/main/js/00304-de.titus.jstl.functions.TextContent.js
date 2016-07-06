@@ -16,31 +16,21 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.TextContent", function()
 			de.titus.jstl.functions.TextContent.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
 		
 		var processor = aProcessor || new de.titus.jstl.Processor();
-		var expressionResolver = processor.expressionResolver || new de.titus.jstl.ExpressionResolver();
-		var domHelper = processor.domHelper || de.titus.core.DomHelper.getInstance();
-		var childCount = domHelper.getChildCount(aElement);
+		var expressionResolver = processor.expressionResolver || new de.titus.core.ExpressionResolver();		
 		
-		
-		
-		if(childCount == 0){
-			var contentEscaping = domHelper.getAttribute(aElement, processor.config.attributePrefix + "text-content-type");
-			var text = domHelper.getText(aElement);
+		if(aElement.children() == undefined || aElement.children().length == 0){
+			var contentEscaping = aElement.attr(processor.config.attributePrefix + "text-content-type");
+			var text = aElement.text();
 			text = expressionResolver.resolveText(text, aDataContext);
-			
 			if(contentEscaping == "html" || contentEscaping == "text/html"){
-				de.titus.jstl.functions.TextContent.prototype.asHtmlText(text, aElement, domHelper);
+				aElement.html(text);
+			}
+			else if(contentEscaping == "json" || contentEscaping == "application/json"){
+				aElement.html(text);
 			}else {
-				de.titus.jstl.functions.TextContent.prototype.asPlainText(text, aElement, domHelper);
+				aElement.text(text);
 			}	
 		}
 		return new de.titus.jstl.FunctionResult(true, true);
-	};
-	
-	de.titus.jstl.functions.TextContent.prototype.asHtmlText = function(aText, aElement, aDomHelper){
-		aDomHelper.setHtml(aElement, aText, "replace");
-	};
-	
-	de.titus.jstl.functions.TextContent.prototype.asPlainText = function(aText, aElement, aDomHelper){
-		aDomHelper.setText(aElement, aText, "replace");
 	};	
 });

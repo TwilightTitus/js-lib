@@ -15,7 +15,7 @@ de.titus.core.Namespace.create("de.titus.jquery.jstl.plugin", function(){
 	(function($) {
 		$.fn.jstl = function(/* config */ aConfig) {
 			var config = {"element": this,"domHelper": de.titus.jquery.DomHelper.getInstance()};
-			config = $().extend(config, aConfig);
+			config = $.extend(config, aConfig);
 			new de.titus.jstl.Processor(config).compute();
 		};
 	}(jQuery));
