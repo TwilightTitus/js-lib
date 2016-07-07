@@ -72,7 +72,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Data", function() {
 	};
 	
 	de.titus.jstl.functions.Data.prototype.doRemote = function(anExpression, aElement, aVarname, aDataContext, aProcessor, anExpressionResolver) {
-			var varname = aVarname;
+		var varname = aVarname;
 		var dataContext = aDataContext;
 		var processor = aProcessor;
 		var expressionResolver = anExpressionResolver;

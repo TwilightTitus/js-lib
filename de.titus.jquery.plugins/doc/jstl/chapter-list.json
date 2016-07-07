@@ -1,0 +1,12 @@
+{
+	"chapters": [
+		{
+		"title": "summary",
+		"data":"summary.chapter.data.json"
+		},
+		{
+		"title":"quick start",
+		"data":"quick-start.chapter.data.json"
+		}
+	]
+}

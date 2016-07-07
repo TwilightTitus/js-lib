@@ -39,11 +39,17 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Include", function() {
 			'dataType': "html"
 			};
 		ajaxSettings = $.extend(true,ajaxSettings, options);
-		
+
 		var this_ = this;		
-		$.ajax(ajaxSettings).done(function(template) {			
+		
+		ajaxSettings.success = function(template) {			
 			this_.addHtml(element, template, includeMode);	
-		});
+		};
+		
+		ajaxSettings.error = function(error){
+			throw JSON.stringify(error);
+		};
+		$.ajax(ajaxSettings)
 	};
 	
 	de.titus.jstl.functions.Include.prototype.getOptions= function(aElement, aDataContext, aProcessor, anExpressionResolver){

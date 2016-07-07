@@ -1,0 +1,11 @@
+{
+	"title":"summary",
+	"teaser": "a short overview about the functions",
+	"sections":[
+		{
+			"title":"",
+			"type":"text",
+			"content":"blabla"
+		}
+	]
+}

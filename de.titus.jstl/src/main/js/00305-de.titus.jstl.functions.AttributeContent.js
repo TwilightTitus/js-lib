@@ -19,22 +19,23 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.AttributeContent", funct
 		
 		var processor = aProcessor || new de.titus.jstl.Processor();
 		var expressionResolver = processor.expressionResolver || new de.titus.core.ExpressionResolver();
-		
-		var attributes = aElement[0].attributes || {};
-		for (name in attributes) {
-			if (name.indexOf(processor.config.attributePrefix) != 0) {
-				var value = attributes[name];
-				if (value != undefined && value != null && value != "" && value != "null") {
-					try {
-						var newValue = expressionResolver.resolveText(value, aDataContext);
-						if (value != newValue) {
-							if (de.titus.jstl.functions.AttributeContent.LOGGER.isDebugEnabled()) {
-								de.titus.jstl.functions.AttributeContent.LOGGER.logDebug("Change attribute \"" + name + "\" from \"" + value + "\" to \"" + newValue + "\"!");
+		if (aElement.length == 1) {
+			var attributes = aElement[0].attributes || {};
+			for (name in attributes) {
+				if (name.indexOf(processor.config.attributePrefix) != 0) {
+					var value = attributes[name];
+					if (value != undefined && value != null && value != "" && value != "null") {
+						try {
+							var newValue = expressionResolver.resolveText(value, aDataContext);
+							if (value != newValue) {
+								if (de.titus.jstl.functions.AttributeContent.LOGGER.isDebugEnabled()) {
+									de.titus.jstl.functions.AttributeContent.LOGGER.logDebug("Change attribute \"" + name + "\" from \"" + value + "\" to \"" + newValue + "\"!");
+								}
+								aElement.attr(name, newValue);
 							}
-							aElement.attr(name, newValue);
+						} catch (e) {
+							de.titus.jstl.functions.AttributeContent.LOGGER.logError("Can't process attribute\"" + name + "\" with value \"" + value + "\"!");
 						}
-					} catch (e) {
-						de.titus.jstl.functions.AttributeContent.LOGGER.logError("Can't process attribute\"" + name + "\" with value \"" + value + "\"!");
 					}
 				}
 			}

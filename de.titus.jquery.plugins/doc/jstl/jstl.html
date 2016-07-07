@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+<base href="../../" />
+<meta charset="utf-8">
+<title>JSTL - Javascript Template Language</title>
+<link rel="style" type="text/css" href="doc/css/base.css"/>
+<script type="text/javascript" src="libs/jquery-2.1.1.js"></script>
+<script type="text/javascript" src="dist/1.6.0/de.titus.jquery.plugins.min-1.6.0.js"></script>
+<script type="text/javascript" src="doc/js/doc.app.js"></script>
+</head>
+<body jstl-data="./doc/jstl/chapter-list.json" jstl-data-mode="remote">
+	<span>${currentChapter} ${chapters[currentChapter].title} ${chapters[currentChapter].data}</span>
+	<div id="content" jstl-data="./doc/jstl/chapters/${chapters[currentChapter].data}" jstl-data-mode="remote" jstl-data-var="chapter" jstl-include="./doc/templates/chapter.tpl.html" jstl-include-mode="replace">
+	
+	</div>
+	<div id="chapter-pager">
+		<a>prev</a>
+		<span>${chapters[currentChapter].title}</span>
+		<a>next</a>
+	</div>
+
+</body>
+</html>
