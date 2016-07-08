@@ -94,6 +94,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Foreach", function() {
 			newContext[aStatusName] = {
 			"index" : i,
 			"number" : (i + 1),
+			"key": name,
 			"count" : count,
 			"data" : aMap,
 			"context" : aDataContext

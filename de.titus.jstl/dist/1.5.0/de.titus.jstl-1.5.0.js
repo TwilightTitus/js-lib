@@ -348,6 +348,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Foreach", function() {
 			newContext[aStatusName] = {
 			"index" : i,
 			"number" : (i + 1),
+			"key": name,
 			"count" : count,
 			"data" : aMap,
 			"context" : aDataContext
@@ -492,14 +493,14 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Data", function() {
 	de.titus.jstl.functions.Data.prototype = new de.titus.jstl.IFunction("data");
 	de.titus.jstl.functions.Data.prototype.constructor = de.titus.jstl.functions.Data;
 	
-	/***************************************************************************
+	/**********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************
 	 * static variables
-	 **************************************************************************/
+	 *********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
 	de.titus.jstl.functions.Data.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.Data");
 	
-	/***************************************************************************
+	/**********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************
 	 * functions
-	 **************************************************************************/
+	 *********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
 	
 	de.titus.jstl.functions.Data.prototype.run = function(aElement, aDataContext, aProcessor) {
 		if (de.titus.jstl.functions.Data.LOGGER.isDebugEnabled())
@@ -519,11 +520,10 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Data", function() {
 	de.titus.jstl.functions.Data.prototype.internalProcessing = function(anExpression, aElement, aDataContext, aProcessor, anExpressionResolver) {
 		var varname = this.getVarname(aElement, aDataContext, aProcessor, anExpressionResolver);
 		var mode = this.getMode(aElement, aProcessor, anExpressionResolver);
-		if (mode == "remote") {
-			this.doRemote(anExpression, aElement, varname, aDataContext, aProcessor, anExpressionResolver);
-		} else {
-			this.doDirect(anExpression, aElement, varname, aDataContext, aProcessor, anExpressionResolver);
-		}
+		if (typeof this[mode] === "function")
+			this[mode].call(this, anExpression, aElement, varname, aDataContext, aProcessor, anExpressionResolver);
+		else
+			this["direct"].call(this, anExpression, aElement, varname, aDataContext, aProcessor, anExpressionResolver);
 	};
 	
 	de.titus.jstl.functions.Data.prototype.getOptions = function(aElement, aDataContext, aProcessor, anExpressionResolver) {
@@ -538,48 +538,40 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Data", function() {
 	};
 	
 	de.titus.jstl.functions.Data.prototype.getMode = function(aElement, aProcessor, anExpressionResolver) {
-		var mode = aElement.attr(aProcessor.config.attributePrefix + this.attributeName + "-mode");
-		if (mode == undefined)
-			return "direct";
-		
-		mode = mode.toLowerCase();
-		if (mode == "direct" || mode == "remote")
-			return mode;
-		
-		return "direct";
+		return aElement.attr(aProcessor.config.attributePrefix + this.attributeName + "-mode") || "direct";
 	};
 	
 	de.titus.jstl.functions.Data.prototype.getVarname = function(aElement, aDataContext, aProcessor, anExpressionResolver) {
-		var varname = aElement.attr(aProcessor.config.attributePrefix + this.attributeName + "-var");
-		return varname;
+		return aElement.attr(aProcessor.config.attributePrefix + this.attributeName + "-var");
 	};
 	
-	de.titus.jstl.functions.Data.prototype.doDirect = function(anExpression, aElement, aVarname, aDataContext, aProcessor, anExpressionResolver) {
+	de.titus.jstl.functions.Data.prototype["direct"] = function(anExpression, aElement, aVarname, aDataContext, aProcessor, anExpressionResolver) {
 		var newData = anExpressionResolver.resolveExpression(anExpression, aDataContext);
 		this.addNewData(newData, aVarname, aDataContext, aProcessor, anExpressionResolver);
 	};
 	
-	de.titus.jstl.functions.Data.prototype.doRemote = function(anExpression, aElement, aVarname, aDataContext, aProcessor, anExpressionResolver) {
-		var varname = aVarname;
-		var dataContext = aDataContext;
-		var processor = aProcessor;
-		var expressionResolver = anExpressionResolver;
-		var this_ = this;
-		
-		var url = expressionResolver.resolveText(anExpression, dataContext);
+	de.titus.jstl.functions.Data.prototype["remote"] = function(anExpression, aElement, aVarname, aDataContext, aProcessor, anExpressionResolver) {		
+		var $__THIS__$ = this;		
+		var url = anExpressionResolver.resolveText(anExpression, aDataContext);
 		var option = this.getOptions(aElement, aDataContext, aProcessor, anExpressionResolver);
 		
 		var ajaxSettings = {
 		'url' : url,
 		'async' : false,
 		'cache' : false,
-		'dataType': "json"
+		'dataType' : "json"
 		};
-		ajaxSettings = $.extend(true, ajaxSettings, option);
+		ajaxSettings = $.extend(ajaxSettings, option);
 		ajaxSettings.success = function(newData) {
-			this_.addNewData(newData, varname, dataContext, processor, expressionResolver);
+			$__THIS__$.addNewData(newData, aVarname, aDataContext, aProcessor, anExpressionResolver);
 		};
 		$.ajax(ajaxSettings);
+	};
+	
+	de.titus.jstl.functions.Data.prototype["url-parameter"] = function(anExpression, aElement, aVarname, aDataContext, aProcessor, anExpressionResolver) {
+		var parameterName = anExpressionResolver.resolveText(anExpression, aDataContext);
+		var value = de.titus.core.Page.getInstance().getUrl().getParameter(parameterName);
+		this.addNewData(value, aVarname, aDataContext, aProcessor, anExpressionResolver);
 	};
 	
 	de.titus.jstl.functions.Data.prototype.addNewData = function(aNewData, aVarname, aDataContext, aProcessor, anExpressionResolver) {

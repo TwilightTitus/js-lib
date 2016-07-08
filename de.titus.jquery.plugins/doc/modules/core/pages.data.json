@@ -1,9 +1,5 @@
 {
-	"header" : {
-		"title" : "JSTL - Javascript Template Language",
-		"teaser" : "JSTL is designed as a flexible templating language like \"JSP Standard Tag Library\"."
-	},
-	"chapters": [
+	"pages": [
 		{
 		"title": "summary",
 		"data":"doc/jstl/chapters/summary.chapter.data.json"

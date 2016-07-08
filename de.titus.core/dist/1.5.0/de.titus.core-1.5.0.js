@@ -1,59 +1,55 @@
-if(de == undefined)
-	var de = {};
-if(de.titus == undefined){
-	de.titus = {};
-}
-if(de.titus.core == undefined){
-	de.titus.core = {};
-}
-if(de.titus.core.Namespace == undefined){
-	de.titus.core.Namespace = {};	
+var de = de || {};
+de.titus = de.titus || {};
+de.titus.core = de.titus.core || {};
+if (de.titus.core.Namespace == undefined) {
+	de.titus.core.Namespace = {};
 	/**
 	 * creates a namespace and run the function, if the Namespace new
-	 * @param aNamespace 
-	 * 		the namespace(requiered)
-	 * @param aFunction 
-	 * 		a function that be executed, if the namespace created (optional)
 	 * 
-	 *  @returns boolean, true if the namespace created
+	 * @param aNamespace
+	 *            the namespace(requiered)
+	 * @param aFunction
+	 *            a function that be executed, if the namespace created (optional)
+	 * 
+	 * @returns boolean, true if the namespace created
 	 */
-	de.titus.core.Namespace.create = function (aNamespace, aFunction){
+	de.titus.core.Namespace.create = function(aNamespace, aFunction) {
 		var namespaces = aNamespace.split(".");
 		var currentNamespace = window;
 		var namespaceCreated = false;
-		for(var i = 0; i < namespaces.length; i++){
+		for (var i = 0; i < namespaces.length; i++) {
 			if (currentNamespace[namespaces[i]] == undefined) {
 				currentNamespace[namespaces[i]] = {};
 				namespaceCreated = true;
-	        }
+			}
 			currentNamespace = currentNamespace[namespaces[i]];
 		}
-		if(namespaceCreated && aFunction != undefined){
+		if (namespaceCreated && aFunction != undefined) {
 			aFunction();
 		}
 		
 		return namespaceCreated;
-	};	
+	};
 	
 	/**
 	 * exist the namespace?
 	 * 
-	 * @param aNamespace 
-	 * 		the namespace(requiered)
+	 * @param aNamespace
+	 *            the namespace(requiered)
 	 * 
-	 *  @returns boolean, true if the namespace existing
+	 * @returns boolean, true if the namespace existing
 	 */
-	de.titus.core.Namespace.exist = function (aNamespace){
+	de.titus.core.Namespace.exist = function(aNamespace) {
 		var namespaces = aNamespace.split(".");
 		var currentNamespace = window;
-		for(var i = 0; i < namespaces.length; i++){
+		for (var i = 0; i < namespaces.length; i++) {
 			if (currentNamespace[namespaces[i]] == undefined) {
 				return false;
-	        }
+			}
 			currentNamespace = currentNamespace[namespaces[i]];
-		}		
+		}
 		return true;
-	};	
+	};
 };de.titus.core.Namespace.create("de.titus.core.SpecialFunctions", function() {
 	
 	de.titus.core.SpecialFunctions = {};
@@ -434,6 +430,46 @@ de.titus.core.Namespace.create("de.titus.core.DomHelper", function() {
 		}
 	};
 })(jQuery);
+(function($){
+	if($.fn.Selector == undefined){
+		$.fn.Selector = function() {
+			var pathes = [];
+			
+			this.each(function() {
+				var element = fiduciagad.$(this);
+				if(element[0].id != undefined && element[0].id != "")
+					pathes.push("#" + element[0].id);
+				else {
+					var path;
+					while (element.length) {
+						var realNode = element.get(0), name = realNode.localName;
+						if (!name) {
+							break;
+						}
+						
+						name = name.toLowerCase();
+						var parent = element.parent();
+						var sameTagSiblings = parent.children(name);
+						
+						if (sameTagSiblings.length > 1) {
+							allSiblings = parent.children();
+							var index = allSiblings.index(realNode) + 1;
+							if (index > 0) {
+								name += ':nth-child(' + index + ')';
+							}
+						}
+						
+						path = name + (path ? ' > ' + path : '');
+						element = parent;
+					}			
+					pathes.push(path);
+				}
+			});
+			
+			return pathes.join(',');
+		};
+	};
+})($);
 de.titus.core.Namespace.create("de.titus.core.regex.Matcher", function() {
 	de.titus.core.regex.Matcher = function(/* RegExp */aRegExp, /* String */aText) {
 		this.internalRegex = aRegExp;
@@ -967,4 +1003,368 @@ de.titus.core.Namespace.create("de.titus.jquery.DomHelper", function() {
 			return new de.titus.jquery.DomHelper();
 		};
 	}
+});
+(function($) {
+	de.titus.core.Namespace.create("de.titus.core.URL", function() {
+		de.titus.core.URL = function(aProtocol, aDomain, aPort, aPath, theParameter, aMarker) {
+			
+			var protocol = aProtocol;
+			var domain = aDomain;
+			var port = aPort;
+			var path = aPath;
+			var parameters = theParameter;
+			var marker = aMarker
+
+			this.getMarker = function() {
+				return marker;
+			}
+
+			this.setMarker = function(aMarker) {
+				marker = aMarker;
+			}
+
+			this.getProtocol = function() {
+				if (protocol == undefined) {
+					protocol = "http";
+				}
+				return protocol;
+			};
+			
+			this.setProtocol = function(aProtocol) {
+				protokoll = aProtocol;
+			};
+			
+			this.getDomain = function() {
+				return domain;
+			};
+			
+			this.setDomain = function(aDomain) {
+				domain = aDomain;
+			};
+			
+			this.getPath = function() {
+				return path;
+			};
+			
+			this.setPath = function(aPath) {
+				path = aPath;
+			};
+			
+			this.getPort = function() {
+				if (port == undefined) {
+					port = 80;
+				}
+				return port;
+			};
+			
+			this.setPort = function(aPort) {
+				
+				port = aPort;
+			};
+			
+			this.getParameters = function() {
+				return parameters;
+			};
+			
+			this.setParameters = function(theParameter) {
+				parameters = theParameter;
+			};
+		};
+		
+		de.titus.core.URL.prototype.getParameter = function(aKey) {
+			var value = this.getParameters()[aKey];
+			if (value == undefined)
+				return undefined;
+			if (value.length > 1)
+				return value;
+			else
+				return value[0];
+		};
+		
+		de.titus.core.URL.prototype.getParameters = function(aKey) {
+			return this.getParameters()[aKey];
+		};
+		
+		de.titus.core.URL.prototype.addParameter = function(aKey, aValue, append) {
+			if (this.getParameters()[aKey] == undefined) {
+				this.getParameters()[aKey] = [];
+			}
+			if (!append && aValue == undefined) {
+				this.getParameters()[aKey] = undefined;
+			} else if (!append && aValue != undefined && aValue.length != undefined) {
+				this.getParameters()[aKey] = aValue;
+			} else if (append && aValue != undefined && aValue.length != undefined) {
+				$.merge(this.getParameters()[aKey], aValue);
+			} else if (!append && aValue != undefined) {
+				this.getParameters()[aKey] = [ aValue ];
+			} else if (append && aValue != undefined) {
+				this.getParameters()[aKey].push(aValue);
+			}
+		};
+		
+		de.titus.core.URL.prototype.getQueryString = function() {
+			if (this.getParameters() != undefined) {
+				var parameters = this.getParameters();
+				var result = "?";
+				var isFirstParameter = true;
+				for ( var propertyName in parameters) {
+					if (!isFirstParameter) {
+						result = result + "&";
+					} else {
+						isFirstParameter = false;
+					}
+					var parameterValues = parameters[propertyName];
+					if (parameterValues.length == undefined) {
+						result = result + encodeURIComponent(propertyName) + "=" + encodeURIComponent(parameterValues);
+					} else {
+						for (j = 0; j < parameterValues.length; j++) {
+							if (j > 0) {
+								result = result + "&";
+							}
+							result = result + encodeURIComponent(propertyName) + "=" + encodeURIComponent(parameterValues[j]);
+						}
+					}
+				}
+				return result;
+			} else {
+				return "";
+			}
+		};
+		
+		de.titus.core.URL.prototype.asString = function() {
+			var result = this.getProtocol() + "://" + this.getDomain() + ":" + this.getPort();
+			
+			if (this.getPath() != undefined)
+				result = result + this.getPath();
+			
+			if (this.getMarker() != undefined)
+				result = result + "#" + this.getMarker();
+			
+			result = result + this.getQueryString();
+			
+			return result;
+		};
+		
+		de.titus.core.URL.prototype.toString = function() {
+			return this.asString();
+		};
+		
+		de.titus.core.URL.fromString = function(aUrlString) {
+			var tempUrl = aUrlString;
+			var protocol = "http";
+			var host;
+			var port = 80;
+			var path = "/";
+			var marker = "";
+			var parameterString;
+			var splitIndex = -1;
+			var parameter = {};
+			
+			var regex = new RegExp("\\?([^#]*)");
+			var match = regex.exec(tempUrl);
+			if (match != undefined)
+				parameterString = match[1];
+			
+			var regex = new RegExp("#([^\\?#]*)");
+			var match = regex.exec(tempUrl);
+			if (match != undefined)
+				marker = decodeURIComponent(match[1]);
+			
+			splitIndex = tempUrl.indexOf("://");
+			if (splitIndex > 0) {
+				protocol = tempUrl.substr(0, splitIndex);
+				tempUrl = tempUrl.substr(splitIndex + 3);
+			}
+			
+			var regex = new RegExp("([^\/:\\?#]*)");
+			var match = regex.exec(tempUrl);
+			if (match != undefined)
+				host = match[1];
+			
+			var regex = new RegExp(":([^\\/\\?#]*)");
+			var match = regex.exec(tempUrl);
+			if (match != undefined) {
+				port = match[1];
+			} else if (protocol.toLowerCase() == "https")
+				port = 443;
+			else if (protocol.toLowerCase() == "ftp")
+				port = 21;
+			else if (protocol.toLowerCase() == "ftps")
+				port = 21;
+			
+			var regex = new RegExp("(/[^\\?#]*)");
+			var match = regex.exec(tempUrl);
+			if (match != undefined) {
+				path = match[1];
+			}
+			
+			var regex = new RegExp("([^&\\?#=]*)=([^&\\?#=]*)");
+			if (parameterString != undefined && "" != parameterString) {
+				var parameterEntries = parameterString.split("&");
+				for (i = 0; i < parameterEntries.length; i++) {
+					var match = regex.exec(parameterEntries[i]);
+					var pName = decodeURIComponent(match[1]);
+					var pValue = decodeURIComponent(match[2]);
+					parameter[pName] ? parameter[pName].push(pValue) : parameter[pName] = [ pValue ];
+				}
+			}
+			
+			return new de.titus.core.URL(protocol, host, port, path, parameter, marker);
+			
+		};
+		de.titus.core.URL.getCurrentUrl = function() {
+			if (de.titus.core.URL.STATIC__CURRENTURL == undefined) {
+				de.titus.core.URL.STATIC__CURRENTURL = de.titus.core.URL.fromString(location.href);
+			}
+			
+			return de.titus.core.URL.STATIC__CURRENTURL;
+		};
+	});
+})($);
+(function($) {
+	de.titus.core.Namespace.create("de.titus.core.Page", function() {
+		
+		de.titus.core.Page = function() {
+			this.baseTagValue = undefined;
+			this.hasBaseTag = false;
+			var baseTag = $('base');
+			if (baseTag != undefined) {
+				this.baseTagValue = baseTag.attr("href");
+				this.hasBaseTag = true;
+			}
+			this.files = {};
+			this.data = {};
+		};
+		
+		// KONSTANTEN
+		de.titus.core.Page.CSSTEMPLATE = '<link rel="stylesheet" type="text/css"/>';
+		de.titus.core.Page.JSTEMPLATE = '<script type="text/javascript"></script>';
+		
+		de.titus.core.Page.prototype.addJsFile = function(aUrl, aFunction, forceFunction) {
+			if ($.isArray(aUrl)) {
+				return this.addJsFiles(aUrl, aFunction, forceFunction);
+			}
+			if (this.files[aUrl] == undefined) {
+				this.files[aUrl] = true;
+				var jsScript = $(de.titus.core.Page.JSTEMPLATE).clone();
+				jsScript.attr("src", aUrl);
+				$("head").append(jsScript);
+				
+				if (aFunction != undefined)
+					aFunction();
+			} else if (forceFunction && aFunction != undefined) {
+				aFunction();
+			}
+		};
+		
+		de.titus.core.Page.prototype.addJsFiles = function(aUrls, aFunction, forceFunction) {
+			if ($.isArray(aUrls)) {
+				var url = aUrls.shift();
+				if (aUrls.length != 0) {
+					var $__THIS__$ = this;
+					this.addJsFile(url, function() {
+						$__THIS__$.addJsFiles(aUrls, aFunction, forceFunction)
+					}, true);
+				} else
+					this.addJsFile(url, aFunction, forceFunction);
+			} else {
+				this.addJsFile(aUrls, aFunction, forceFunction);
+			}
+		};
+		
+		de.titus.core.Page.prototype.addCssFile = function(aUrl) {
+			if ($.isArray(aUrl)) {
+				this.addCssFiles(aUrl);
+				return;
+			}
+			
+			if (this.files[aUrl] == undefined) {
+				this.files[aUrl] = true;
+				var cssScript = $(de.titus.core.Page.CSSTEMPLATE).clone();
+				cssScript.attr("href", aUrl);
+				$("head").append(cssScript);
+			}
+		};
+		
+		de.titus.core.Page.prototype.addCssFiles = function(aUrls) {
+			if ($.isArray(aUrls)) {
+				for (i = 0; i < aUrls.length; i++) {
+					this.addCssFile(aUrls[i]);
+				}
+			}
+		};
+		
+		de.titus.core.Page.prototype.getUrl = function() {
+			return de.titus.core.URL.getCurrentUrl();
+		};
+		
+		de.titus.core.Page.prototype.buildUrl = function(aUrl) {
+			if (this.detectBrowser().microsoft) {
+				var tempUrl = aUrl.toLowerCase().trim();
+				if (this.hasBaseTag && !tempUrl.indexOf("http:") == 0 && !tempUrl.indexOf("https:") == 0 && !tempUrl.indexOf("ftp:") == 0 && !tempUrl.indexOf("ftps:") == 0 && !tempUrl.indexOf("mailto:") == 0 && !tempUrl.indexOf("notes:") == 0 && !tempUrl.indexOf("/") == 0) {
+					return this.baseTagValue + aUrl;
+				}
+			}
+			return aUrl;
+		};
+		
+		de.titus.core.Page.prototype.detectBrowser = function() {
+			/* http://stackoverflow.com/a/21712356/2120330 */
+			var result = {
+			"microsoft" : false,
+			"other" : false
+			};
+			var ua = window.navigator.userAgent;
+			
+			var msie = ua.indexOf('MSIE ');
+			if (msie > 0) {
+				result.microsoft = true;
+				return result;
+			}
+			var trident = ua.indexOf('Trident/');
+			if (trident > 0) {
+				result.microsoft = true;
+				return result;
+			}
+			var edge = ua.indexOf('Edge/');
+			if (edge > 0) {
+				result.microsoft = true;
+				return result;
+			}
+			
+			result.other = true;
+			return result;
+		};
+		
+		de.titus.core.Page.prototype.setData = function(aKey, aValue) {
+			this.data[aKey] = aValue;
+		};
+		
+		de.titus.core.Page.prototype.getData = function(aKey) {
+			return this.data[aKey];
+		};
+		
+		de.titus.core.Page.getInstance = function() {
+			if (de.titus.core.Page.INSTANCE == undefined) {
+				de.titus.core.Page.INSTANCE = new de.titus.core.Page();
+			}
+			
+			return de.titus.core.Page.INSTANCE;
+		};
+		
+		if ($.fn.de_titus_core_Page == undefined) {
+			$.fn.de_titus_core_Page = de.titus.core.Page.getInstance;
+		}
+		;
+	});
+})($);de.titus.core.Namespace.create("de.titus.core.UUID", function() {
+	de.titus.core.UUID = function(customSpacer) {
+		var spacer = customSpacer || "-";
+		var template = 'xxxxxxxx' + spacer + 'xxxx' + spacer + '4xxx' + spacer + 'yxxx' + spacer + 'xxxxxxxxxxxx';
+		return template.replace(/[xy]/g, function(c) {
+			var r = Math.random() * 16 | 0
+			var v = c == 'x' ? r : (r & 0x3 | 0x8);
+			return v.toString(16);
+		});
+	};
 });

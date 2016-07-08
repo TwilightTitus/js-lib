@@ -1,4 +1,4 @@
-de.titus.core.Namespace.create("de.titus.jquery.jstl.plugin", function(){
+de.titus.core.Namespace.create("de.titus.jquery.jstl.plugin", function() {
 	
 	/**
 	 * <code>
@@ -13,10 +13,20 @@ de.titus.core.Namespace.create("de.titus.jquery.jstl.plugin", function(){
 	 */
 	
 	(function($) {
-		$.fn.jstl = function(/* config */ aConfig) {
-			var config = {"element": this,"domHelper": de.titus.jquery.DomHelper.getInstance()};
+		$.fn.jstl = function(/* config */aConfig) {
+			var config = {
+				"element" : this
+			};
 			config = $.extend(config, aConfig);
 			new de.titus.jstl.Processor(config).compute();
 		};
+		
 	}(jQuery));
+	
+	$(document).ready(function() {
+		$("[jstl-autorun]").each(function() {
+			$(this).jstl();
+		});
+	});
+	
 });

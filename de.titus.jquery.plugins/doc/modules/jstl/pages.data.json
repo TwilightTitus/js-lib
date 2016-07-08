@@ -1,0 +1,14 @@
+{
+	"pages": [
+		{
+			"title": "Quick Start",
+			"teaser": "It's simple to start make pages with JSTL.",
+			"data": "doc/modules/jstl/pages/quick-start.page.data.json"
+		},
+		{
+			"title": "summary",
+			"teaser": "teaser text",
+			"data": "doc/modules/jstl/pages/summary.page.data.json"
+		}
+	]
+}
