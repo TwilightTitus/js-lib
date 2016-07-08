@@ -460,10 +460,11 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.AttributeContent", funct
 		var processor = aProcessor || new de.titus.jstl.Processor();
 		var expressionResolver = processor.expressionResolver || new de.titus.core.ExpressionResolver();
 		if (aElement.length == 1) {
-			var attributes = aElement[0].attributes || {};
-			for (name in attributes) {
+			var attributes = aElement[0].attributes || [];
+			for (var i = 0; i< attributes.length; i++) {
+				var name = attributes[i].name;				
 				if (name.indexOf(processor.config.attributePrefix) != 0) {
-					var value = attributes[name];
+					var value = attributes[i].value;
 					if (value != undefined && value != null && value != "" && value != "null") {
 						try {
 							var newValue = expressionResolver.resolveText(value, aDataContext);
@@ -629,12 +630,11 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Include", function() {
 			'url' : url,
 			'async' : false,
 			'cache' : true,
-			'dataType': "html"
+			"dataType": "html"
 			};
 		ajaxSettings = $.extend(true,ajaxSettings, options);
 
-		var this_ = this;		
-		
+		var this_ = this;
 		ajaxSettings.success = function(template) {			
 			this_.addHtml(element, template, includeMode);	
 		};
@@ -659,13 +659,13 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Include", function() {
 	de.titus.jstl.functions.Include.prototype.getIncludeMode= function(aElement, aDataContext, aProcessor, anExpressionResolver){
 		var mode = aElement.attr( aProcessor.config.attributePrefix + this.attributeName + "-mode");
 		if(mode == undefined)
-			return "append";
+			return "replace";
 		
 		mode  = mode.toLowerCase(); 
 		if(mode == "append" || mode == "replace" || mode == "prepend")
 			return mode;
 		
-		return "append";
+		return "replace";
 	};
 	
 	de.titus.jstl.functions.Include.prototype.addHtml= function(aElement, aTemplate, aIncludeMode){
