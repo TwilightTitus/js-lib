@@ -16,7 +16,7 @@
 				},
 				{
 					"type": "text",
-					"content": "You can use jQuery > 1.9.0 and jQuery > 2.0.0."
+					"content": "You need to use jQuery versions greater then 1.9.0+ (also 2.0.0+ and 3.0.0+)."
 				}
 			]
 		},

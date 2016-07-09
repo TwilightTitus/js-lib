@@ -20,27 +20,53 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.TextContent", function()
 		var expressionResolver = processor.expressionResolver || new de.titus.core.ExpressionResolver();
 		var ignore = aElement.attr(processor.config.attributePrefix + "text-ignore");
 		
-		if (ignore != true || ignore != "true") {			
-			var contentEscaping = aElement.attr(processor.config.attributePrefix + "text-content-type");
+		if (ignore != true || ignore != "true") {
 			aElement.contents().filter(function() {
 				return this.nodeType === 3 && this.textContent != undefined && this.textContent.trim() != "";
 			}).each(function() {
+				var contenttype = aElement.attr(processor.config.attributePrefix + "text-content-type") || "text";
 				var node = this;
 				var text = node.textContent;
 				text = expressionResolver.resolveText(text, aDataContext);
-				if (contentEscaping == "html" || contentEscaping == "text/html") {
-					$(node).replaceWith(text);
-				} else if (contentEscaping == "json" || contentEscaping == "application/json") {
-					if (typeof text === "string")
-						node.textContent = text;
-					else
-						node.textContent = JSON.stringify(text);
-				} else {
-					node.textContent = text;
-				}
+				var contentFunction = de.titus.jstl.functions.TextContent.CONTENTTYPE[contenttype];
+				if (contentFunction)
+					contentFunction(node, text, aElement, processor, aDataContext);
 			});
 		}
 		
 		return new de.titus.jstl.FunctionResult(true, true);
 	};
+	de.titus.jstl.functions.TextContent.CONTENTTYPE = {};
+	de.titus.jstl.functions.TextContent.CONTENTTYPE["html"] = function(aNode, aText, aBaseElement, aProcessor, aDataContext) {
+		$(aNode).replaceWith(text);
+	};
+	de.titus.jstl.functions.TextContent.CONTENTTYPE["text/html"] = de.titus.jstl.functions.TextContent.CONTENTTYPE["html"];
+	
+	de.titus.jstl.functions.TextContent.CONTENTTYPE["json"] = function(aNode, aText, aBaseElement, aProcessor, aDataContext) {
+		if (typeof aText === "string")
+			aNode.textContent = aText;
+		else
+			aNode.textContent = JSON.stringify(aText);
+	};
+	de.titus.jstl.functions.TextContent.CONTENTTYPE["application/json"] = de.titus.jstl.functions.TextContent.CONTENTTYPE["json"];
+	
+	de.titus.jstl.functions.TextContent.CONTENTTYPE["text"] = function(aNode, aText, aBaseElement, aProcessor, aDataContext) {
+	
+		var text = aText;
+		var addAsHtml = false;
+		var trimLength = parseInt(aBaseElement.attr(aProcessor.config.attributePrefix + "text-trim-length") || "-1") || false;
+		if (trimLength && trimLength > 0)
+			text = de.titus.core.StringUtils.trimTextLength(text, trimLength);
+		
+		var preventformat = aBaseElement.attr(aProcessor.config.attributePrefix + "text-prevent-format");
+		if (typeof preventformat === "string" && (preventformat.length == 0 || preventformat == "true" || preventformat == true)) {
+			text = de.titus.core.StringUtils.formatToHtml(text);
+			addAsHtml = true;
+		}		
+		if (addAsHtml)
+			$(aNode).replaceWith(text);
+		else
+			aNode.textContent = aText;
+	};
+	de.titus.jstl.functions.TextContent.CONTENTTYPE["text/plain"] = de.titus.jstl.functions.TextContent.CONTENTTYPE["text"];
 });
