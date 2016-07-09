@@ -1,0 +1,126 @@
+{
+	"text": "Summary of all functions",
+	"articles": [
+		{
+			"title": "basics",
+			"teaser": "",
+			"content": [
+				{
+					"type": "processing hierarchy",
+					"content": "jstl-if > jstl-data > jstl-include > jstl-choose > jstl-foreach > jstl-add-attribute > text replacements > attribute value replacements"
+				}
+			]
+		},
+		{
+			"title": "jstl-if",
+			"teaser": "",
+			"content": [
+				{
+					"type": "text",
+					"content": "With \"jstl-if\" you can determinate to render or not render an tag element. If the expression determinated to not render, it will stops all other processing steps and removed the element with all childs from dom tree."
+				},
+				{
+					"type": "code",
+					"codetype": "html",
+					"headline": "jstl-if sample",
+					"content": "<[any tag] jstl-if=\"true|false|${variable|javascript}\"></[any tag]>"
+				},
+				{
+					"type": "text",
+					"content": "As value of the \"jstl-if\" attribute you can use the Strings \"true\" or \"false\", an variable name from the data context or execute any javascript expression.\nThe result should always be a boolean."
+				}
+			]
+		},
+		{
+			"title": "jstl-data",
+			"teaser": "",
+			"content": [
+				{
+					"type": "text",
+					"content": "With \"jstl-data\" you can manipulate the data context. You can add static values or objects, manipulate exsisting values or you can run a html request to get json."
+				},
+				{
+					"type": "code",
+					"codetype": "html",
+					"headline": "jstl-if sample",
+					"content": "<[any tag] jstl-data=\"[object|url]\" jstl-data-mode=\"[direct|remote|url-parameter]\" jstl-data-var=\"[a variable name]\"></[any tag]>"
+				},
+				{
+					"type": "text",
+					"headline" : "\"jstl-data\" - Attribute",
+					"content": "With \"jstl-data\" you can manipulate the data context. You can add static values or objects, manipulate exsisting values or you can run a html request to get json."
+				},
+				{
+					"type": "text",
+					"headline" : "\"jstl-data-mode\" - Attribute",
+					"content": "With \"jstl-data\" you can manipulate the data context. You can add static values or objects, manipulate exsisting values or you can run a html request to get json."
+				},
+				{
+					"type": "text",
+					"headline" : "\"jstl-data-var\" - Attribute",
+					"content": "With \"jstl-data\" you can manipulate the data context. You can add static values or objects, manipulate exsisting values or you can run a html request to get json."
+				}
+			]
+		},
+		{
+			"title": "jstl-include",
+			"teaser": "",
+			"content": [
+				{
+					"type": "text",
+					"content": "You can use JSTL for render data to html, to load dynamicly static html fracments or both together. Hier is a \"Hello World\" sample."
+				}
+			]
+		},
+		{
+			"title": "jstl-choose",
+			"teaser": "",
+			"content": [
+				{
+					"type": "text",
+					"content": "You can use JSTL for render data to html, to load dynamicly static html fracments or both together. Hier is a \"Hello World\" sample."
+				}
+			]
+		},
+		{
+			"title": "jstl-foreach",
+			"teaser": "",
+			"content": [
+				{
+					"type": "text",
+					"content": "You can use JSTL for render data to html, to load dynamicly static html fracments or both together. Hier is a \"Hello World\" sample."
+				}
+			]
+		},
+		{
+			"title": "jstl-add-atribute",
+			"teaser": "",
+			"content": [
+				{
+					"type": "text",
+					"content": "You can use JSTL for render data to html, to load dynamicly static html fracments or both together. Hier is a \"Hello World\" sample."
+				}
+			]
+		},
+		{
+			"title": "Text replacement",
+			"teaser": "",
+			"content": [
+				{
+					"type": "text",
+					"content": "You can use JSTL for render data to html, to load dynamicly static html fracments or both together. Hier is a \"Hello World\" sample."
+				}
+			]
+		},
+		{
+			"title": "Tag attribute value replacement",
+			"teaser": "",
+			"content": [
+				{
+					"type": "text",
+					"content": "You can use JSTL for render data to html, to load dynamicly static html fracments or both together. Hier is a \"Hello World\" sample."
+				}
+			]
+		}
+	]
+}
