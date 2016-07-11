@@ -44,7 +44,7 @@
 					"type": "code",
 					"codetype": "html",
 					"headline": "jstl-if sample",
-					"content": "<[any tag] jstl-data=\"[object|url]\" jstl-data-mode=\"[direct|remote|url-parameter]\" jstl-data-var=\"[a variable name]\"></[any tag]>"
+					"content": "<[any tag] jstl-data=\"[object|string|expression]\" jstl-data-mode=\"[direct|remote|url-parameter]\" jstl-data-var=\"[a variable name]\" jstl-data-options=\"[ajax request options]\"></[any tag]>"
 				},
 				{
 					"type": "text",
@@ -68,7 +68,7 @@
 				},
 				{
 					"type": "text",
-					"headline": "\"jstl-data-mode\" - Attribute (optional - default: direct)",
+					"headline": "\"jstl-data-mode\" - Attribute (optional - default value \"direct\")",
 					"content": [
 						"\"jstl-data-mode\" can be three values:",
 						"",
@@ -81,6 +81,11 @@
 					"type": "text",
 					"headline": "\"jstl-data-var\" - Attribute (optional)",
 					"content": "The value of this attribute must be a static string. With the static string you define a new variable at your data context. If the \"jstl-data-var\" not availible or ist the value empty, the evaluated data would be merged into data context and can override existing values. Be carrful!"
+				},
+				{
+					"type": "text",
+					"headline": "\"jstl-data-options\" - Attribute (optional)",
+					"content": "The value must be an object. This object would be merged with the ajax request object from jquery. You are able to change all default values, without \"success\" and \"error\". Be carrful if you use this feature!"
 				}
 			]
 		},
@@ -90,7 +95,34 @@
 			"content": [
 				{
 					"type": "text",
-					"content": "You can use JSTL for render data to html, to load dynamicly static html fracments or both together. Hier is a \"Hello World\" sample."
+					"content": "This attribute indicate the feature to load a new teamplate file by a html request. The content of this request would be include as child of the current element and would be processed by JSTL."
+				},
+				{
+					"type": "code",
+					"codetype": "html",
+					"headline": "jstl-if sample",
+					"content": "<[any tag] jstl-include=\"[string|expression]\" jstl-include-mode=\"[append|prepend|replace]\" jstl-include-options=\"[ajax request options]\"></[any tag]>"
+				},
+				{
+					"type": "text",
+					"headline": "\"jstl-include\" - Attribute (required)",
+					"content": "The value must be a url string. You can use a static url string, an expression or you can combine static string with an expression."
+				},
+				{
+					"type": "text",
+					"headline": "\"jstl-include-mode\" - Attribute (optional - default value \"replace\")",
+					"content": [
+						"\"jstl-include-mode\" can be three values:",
+						"",
+						"\t- \"append\"\t -> append the content of the template as a child.",
+						"\t- \"prepend\"\t -> prepend the content of the template as a child.",
+						"\t- \"replace\"\t -> replaced all child with the content from the template."
+					]
+				},
+				{
+					"type": "text",
+					"headline": "\"jstl-include-options\" - Attribute (optional)",
+					"content": "The value must be an object. This object would be merged with the ajax request object from jquery. You are able to change all default values, without \"success\" and \"error\". Be carrful if you use this feature!"
 				}
 			]
 		},
