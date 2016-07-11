@@ -58,11 +58,17 @@
 					"type": "code",
 					"codetype": "html",
 					"content": [
-						"<!--\"jstl-data\" - Attribute samples as static url string-->\n<[any tag] jstl-data=\"/url/to/json/data\" jstl-data-mode=\"remote\"></[any tag]>",
-						"<!--\"jstl-data\" - Attribute samples as static string to recive a prameter value-->\n<[any tag] jstl-data=\"my-html-parameter\" jstl-data-mode=\"url-parameter\"></[any tag]>",
-						"<!--\"jstl-data\" - Attribute samples as object-->\n<[any tag] jstl-data=\"{myObject:'my object value'}\"></[any tag]>",
-						"<!--\"jstl-data\" - Attribute samples as dynamic value-->\n<[any tag] jstl-data=\"${my-variable-or-javscript-expression}\" jstl-data-mode=\"[direct|remote|url-parameter]\"></[any tag]>\n",
-						"<!--\"jstl-data\" - Attribute samples as dynamic combination to a url-->\n<[any tag] jstl-data=\"/url/to/json/${dynmic data}\" jstl-data-mode=\"remote\"></[any tag]>"
+						"<!--\"jstl-data\" - Attribute samples as static url string-->",
+						"<[any tag] jstl-data=\"/url/to/json/data\" jstl-data-mode=\"remote\"></[any tag]>",
+						"<!--\"jstl-data\" - Attribute samples as static string to recive a prameter value-->",
+						"<[any tag] jstl-data=\"my-html-parameter\" jstl-data-mode=\"url-parameter\"></[any tag]>",
+						"<!--\"jstl-data\" - Attribute samples as object-->",
+						"<[any tag] jstl-data=\"{myObject:'my object value'}\"></[any tag]>",
+						"<!--\"jstl-data\" - Attribute samples as dynamic value-->",
+						"<[any tag] jstl-data=\"${my-variable-or-javscript-expression}\" jstl-data-mode=\"[direct|remote|url-parameter]\"></[any tag]>",
+						"",
+						"<!--\"jstl-data\" - Attribute samples as dynamic combination to a url-->",
+						"<[any tag] jstl-data=\"/url/to/json/${dynmic data}\" jstl-data-mode=\"remote\"></[any tag]>"
 					],
 					"subcontent": "If you want to run a request, you must add \"jstl-data-mode='remote'\", to get url parameter you must add \"jstl-data-mode='url-parameter'\". Also, you can full combine dynamic expression with static content."
 				},
@@ -72,9 +78,9 @@
 					"content": [
 						"\"jstl-data-mode\" can be three values:",
 						"",
-						"\t- \"direct\"\t -> this is the default value and means that the expression be evaluated and add to the data context.",
-						"\t- \"remote\"\t -> this value means that the value of the \"jstl-data\" expression results in a ajax call to get json data.",
-						"\t- \"url-parameter\"\t -> this value means that the value of the \"jstl-data\" expression used to evaluate a value as url parameter."
+						"\t- \"direct\"\t-> this is the default value and means that the expression be evaluated and add to the data context.",
+						"\t- \"remote\"\t-> this value means that the value of the \"jstl-data\" expression results in a ajax call to get json data.",
+						"\t- \"url-parameter\"\t-> this value means that the value of the \"jstl-data\" expression used to evaluate a value as url parameter."
 					]
 				},
 				{
@@ -114,9 +120,9 @@
 					"content": [
 						"\"jstl-include-mode\" can be three values:",
 						"",
-						"\t- \"append\"\t -> append the content of the template as a child.",
-						"\t- \"prepend\"\t -> prepend the content of the template as a child.",
-						"\t- \"replace\"\t -> replaced all child with the content from the template."
+						"\t- \"append\"\t-> append the content of the template as a child.",
+						"\t- \"prepend\"\t-> prepend the content of the template as a child.",
+						"\t- \"replace\"\t-> replaced all child with the content from the template."
 					]
 				},
 				{

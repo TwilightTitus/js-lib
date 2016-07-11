@@ -1443,12 +1443,12 @@ de.titus.core.Namespace.create("de.titus.jquery.DomHelper", function() {
 			var text = "";
 			var tabs = aText.split("\t");
 			for (var i = 0; i < tabs.length; i++) {
-				if (i != 0){
+				if (tabs[i].length != 0 && i != 0){
 					var size = text.length;
 					var tabSize = size % tabStops;
 					text = text + tabstopMap[theTabStops - tabSize] + tabs[i];
 				}
-				else if (i == 0 && aText.indexOf("\t") == 0)
+				else if (tabs[i].length == 0 && i != 0)
 					text = text + tabstopMap[theTabStops];
 				else
 					text = text + tabs[i];				
