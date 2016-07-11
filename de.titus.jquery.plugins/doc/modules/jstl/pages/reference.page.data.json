@@ -178,12 +178,14 @@
 						"\t<[any tag] jstl-otherwise></[any tag]>",
 						"</[any tag]>"
 					],
-					"subcontent" : "Is an element marked with \"jstl-choose\", then there childs are evaluated to which child be rendered. All other childs would be removed!"					
-				},{
+					"subcontent": "Is an element marked with \"jstl-choose\", then there childs are evaluated to which child be rendered. All other childs would be removed!"
+				},
+				{
 					"type": "text",
 					"headline": "jstl-when - required",
 					"content": "\"jstl-when\" is aquivalent ti \"jstl-if\". It the same functionality! As value of the \"jstl-when\" attribute you can use the Strings \"true\" or \"false\", an variable name from the data context or execute any javascript expression. The result should always be a boolean. It is possible to define multible child elements with the \"jstl-when\" attribute. The first element with \"jstl-when\" result \"true\" will be rendered. All other elements are removed!"
-				},{
+				},
+				{
 					"type": "text",
 					"headline": "jstl-otherwise - optional",
 					"content": "\"jstl-otherwise\" is optional and defines the default case. Is not an \"jstl-when\" case evaluated to true, \"jstl-otherwise\" will be rendered. Only once time, \"jstl-otherwise\" can be defined at \"jstl-choose\"!"
@@ -197,7 +199,47 @@
 			"content": [
 				{
 					"type": "text",
-					"content": "You can use JSTL for render data to html, to load dynamicly static html fracments or both together. Hier is a \"Hello World\" sample."
+					"content": "\"jstl-foreach\" is the feature to loop over an array or over the properties of an object."
+				},
+				{
+					"type": "code",
+					"codetype": "html",
+					"headline": "jstl-foreach sample",
+					"content": [
+						"<[any tag] jstl-foreach=\"[expression]\" jstl-foreach-var=\"string\" jstl-foreach-status=\"string\">",
+						"\t[any content]",
+						"</[any tag]>"
+					]
+				},
+				{
+					"type": "text",
+					"headline": "jstl-foreach - required",
+					"content": "\"jstl-foreach\" the value of this attribute must be an epression and it is required that the expression evaluate an arry, an object or a undefined!"
+				},
+				{
+					"type": "text",
+					"headline": "jstl-foreach-var - option (default is \"itemVar\")",
+					"content": "With \"jstl-foreach-var\" you can define your running variable! This is fully optional but helpful to get an better anderstanding of your template at a later time."
+				},
+				{
+					"type": "text",
+					"headline": "jstl-foreach-status - option (default is \"statusVar\")",
+					"content": "With \"jstl-foreach-status\" you can define your running variable for the iteration context! This is fully optional but helpful to get an better anderstanding of your template at a later time."
+				},
+				{
+					"type": "code",
+					"codetype": "javascript",
+					"headline": "object structure for \"jstl-foreach-status\" variable",
+					"content": [
+						"{",
+						"\t\"index\" : [index starts by 0],",
+						"\t\"number\" : [starts by 1],",
+						"\t\"key\": [property name - only by object iterating],",
+						"\t\"count\" : [count of items or properties],",
+						"\t\"data\" : [the array or object],",
+						"\t\"context\" : [the full data context]",
+						"}"
+					]
 				}
 			]
 		},

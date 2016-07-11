@@ -30,7 +30,7 @@
 							jstl-foreach="${pageData.articles}" jstl-foreach-var="article"
 							jstl-foreach-status="articleStatus">
 							<li><a
-								href="doc/index.html?module=${moduleId}&page=${pageStatus.index}#article-${articleStatus.index}">${article.title}</a></li>
+								href="doc/index.html?module=${moduleId}&page=${pageStatus.index}#${article.tag}">${article.title}</a></li>
 						</ul></li>
 				</ul>
 			</div>
