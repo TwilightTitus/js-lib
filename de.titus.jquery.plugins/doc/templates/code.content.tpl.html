@@ -2,9 +2,7 @@
 	<small>${content.headline}</small>
 </h3>
 <pre jstl-choose>
-	<code class="${content.codeType}" jstl-when="${typeof content.content === 'string'}">${content.content}</code>
-	<code class="${content.codeType}" jstl-otherwise="" jstl-foreach="${content.content}" jstl-foreach-var="text"><span>${text}<span><br/></code>
-</pre>
+<code class="${content.codeType}" jstl-when="${typeof content.content === 'string'}">${content.content}</code><code class="${content.codeType}" jstl-otherwise="" jstl-foreach="${content.content}" jstl-foreach-var="text">${text}</code></pre>
 <div jstl-if="${content.subcontent != undefined && content.subcontent != ''}">
 	<small>${content.subcontent}</small>
 </div>

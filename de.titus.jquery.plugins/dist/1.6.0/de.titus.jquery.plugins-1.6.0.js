@@ -2172,7 +2172,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Foreach", function() {
 		var startIndex = aElement.attr(aProcessor.config.attributePrefix + this.attributeName + "-start-index") || 0;
 		startIndex = anExpressionResolver.resolveExpression(startIndex, aDataContext, 0) || 0;
 		for (var i = startIndex; i < aListData.length; i++) {
-			var newContent = aTemplate.clone(true);
+			var newContent = $("<div>").html(aTemplate);
 			var newContext = jQuery.extend({}, aDataContext);
 			newContext[aVarname] = aListData[i];
 			newContext[aStatusName] = {
@@ -2199,7 +2199,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Foreach", function() {
 		
 		var i = 0;
 		for ( var name in aMap) {
-			var newContent = aTemplate.clone(true);
+			var newContent = $("<div>").html(aTemplate);
 			var newContext = jQuery.extend({}, aDataContext);
 			newContext[aVarname] = aMap[name];
 			newContext[aStatusName] = {
@@ -2231,13 +2231,9 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Foreach", function() {
 		return expressionResult == true || expressionResult == "true";
 	};
 	
-	de.titus.jstl.functions.Foreach.prototype.processNewContent = function(aNewContent, aNewContext, aElement, aProcessor) {
-		var tempContent = $("<div></div>");
-		tempContent.html(aNewContent);
-		
-		aProcessor.compute(tempContent, aNewContext);
-		var childs = tempContent.children();
-		aElement.append(childs);
+	de.titus.jstl.functions.Foreach.prototype.processNewContent = function(aNewContent, aNewContext, aElement, aProcessor) {		
+		aProcessor.compute(	aNewContent, aNewContext);
+		aElement.append(aNewContent.contents());
 	};
 	
 	de.titus.jstl.functions.Foreach.prototype.getVarname = function(aElement, aProcessor) {
@@ -2257,7 +2253,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Foreach", function() {
 	};
 	
 	de.titus.jstl.functions.Foreach.prototype.getRepeatableContent = function(aElement) {
-		return $(aElement.children());
+		return aElement.html();
 	};
 });
 de.titus.core.Namespace.create("de.titus.jstl.functions.TextContent", function() {
