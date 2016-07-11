@@ -2,6 +2,7 @@
 	"text": "Summary of all functions",
 	"articles": [
 		{
+			"tag": "basics",
 			"title": "basics",
 			"teaser": "",
 			"content": [
@@ -9,10 +10,33 @@
 					"type": "text",
 					"headline": "processing hierarchy",
 					"content": "jstl-if > jstl-data > jstl-include > jstl-choose > jstl-foreach > jstl-add-attribute > text replacements > attribute value replacements"
+				},
+				{
+					"type": "text",
+					"headline": "jstl-autorun",
+					"content": "With \"jstl-autorun\" start the JSTL direct after page load. Its simalar to:"
+				},
+				{
+					"type": "code",
+					"codetype": "javascript",
+					"content": "$(document).ready(function(){\n\t$('[jstl-autorun]').each(function(){\n\t\t$(this).jstl();\n\t});\n});"
 				}
 			]
 		},
 		{
+			"tag": "expression",
+			"title": "Expression",
+			"teaser": "",
+			"content": [
+				{
+					"type": "text",
+					"headline": "",
+					"content": ""
+				}
+			]
+		},
+		{
+			"tag": "jstl-if",
 			"title": "jstl-if",
 			"teaser": "",
 			"content": [
@@ -28,11 +52,12 @@
 				},
 				{
 					"type": "text",
-					"content": "As value of the \"jstl-if\" attribute you can use the Strings \"true\" or \"false\", an variable name from the data context or execute any javascript expression.\nThe result should always be a boolean."
+					"content": "As value of the \"jstl-if\" attribute you can use the Strings \"true\" or \"false\", an variable name from the data context or execute any javascript expression. The result should always be a boolean."
 				}
 			]
 		},
 		{
+			"tag": "jstl-data",
 			"title": "jstl-data",
 			"teaser": "",
 			"content": [
@@ -57,6 +82,7 @@
 				{
 					"type": "code",
 					"codetype": "html",
+					"headline": "jstl-data sample",
 					"content": [
 						"<!--\"jstl-data\" - Attribute samples as static url string-->",
 						"<[any tag] jstl-data=\"/url/to/json/data\" jstl-data-mode=\"remote\"></[any tag]>",
@@ -96,6 +122,7 @@
 			]
 		},
 		{
+			"tag": "jstl-include",
 			"title": "jstl-include",
 			"teaser": "",
 			"content": [
@@ -106,7 +133,7 @@
 				{
 					"type": "code",
 					"codetype": "html",
-					"headline": "jstl-if sample",
+					"headline": "jstl-include sample",
 					"content": "<[any tag] jstl-include=\"[string|expression]\" jstl-include-mode=\"[append|prepend|replace]\" jstl-include-options=\"[ajax request options]\"></[any tag]>"
 				},
 				{
@@ -133,16 +160,38 @@
 			]
 		},
 		{
+			"tag": "jstl-choose",
 			"title": "jstl-choose",
 			"teaser": "",
 			"content": [
 				{
 					"type": "text",
-					"content": "You can use JSTL for render data to html, to load dynamicly static html fracments or both together. Hier is a \"Hello World\" sample."
+					"content": "\"jstl-choose\" is aquivalent to \"if - else if - else\" or \"switch\" construction in javascript or other programming languages. The \"jstl-choose\" attribute is an marker attribute and don't need a value."
+				},
+				{
+					"type": "code",
+					"codetype": "html",
+					"headline": "jstl-choose sample",
+					"content": [
+						"<[any tag] jstl-choose>",
+						"\t<[any tag] jstl-when=\"[true|false|expression]\"></[any tag]>",
+						"\t<[any tag] jstl-otherwise></[any tag]>",
+						"</[any tag]>"
+					],
+					"subcontent" : "Is an element marked with \"jstl-choose\", then there childs are evaluated to which child be rendered. All other childs would be removed!"					
+				},{
+					"type": "text",
+					"headline": "jstl-when - required",
+					"content": "\"jstl-when\" is aquivalent ti \"jstl-if\". It the same functionality! As value of the \"jstl-when\" attribute you can use the Strings \"true\" or \"false\", an variable name from the data context or execute any javascript expression. The result should always be a boolean. It is possible to define multible child elements with the \"jstl-when\" attribute. The first element with \"jstl-when\" result \"true\" will be rendered. All other elements are removed!"
+				},{
+					"type": "text",
+					"headline": "jstl-otherwise - optional",
+					"content": "\"jstl-otherwise\" is optional and defines the default case. Is not an \"jstl-when\" case evaluated to true, \"jstl-otherwise\" will be rendered. Only once time, \"jstl-otherwise\" can be defined at \"jstl-choose\"!"
 				}
 			]
 		},
 		{
+			"tag": "jstl-foreach",
 			"title": "jstl-foreach",
 			"teaser": "",
 			"content": [
@@ -153,6 +202,7 @@
 			]
 		},
 		{
+			"tag": "jstl-add-atribute",
 			"title": "jstl-add-atribute",
 			"teaser": "",
 			"content": [
@@ -163,6 +213,7 @@
 			]
 		},
 		{
+			"tag": "text-replacement",
 			"title": "Text replacement",
 			"teaser": "",
 			"content": [
@@ -173,6 +224,7 @@
 			]
 		},
 		{
+			"tag": "attribute-replacement",
 			"title": "Tag attribute value replacement",
 			"teaser": "",
 			"content": [

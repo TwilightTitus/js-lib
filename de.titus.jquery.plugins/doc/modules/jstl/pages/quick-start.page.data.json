@@ -47,7 +47,7 @@
 				{
 					"type": "button",
 					"text": "reference for \"jstl-data\"",
-					"link": "doc/index.html?module=jstl&page=1#article-2",
+					"link": "doc/index.html?module=jstl&page=1#jstl-data",
 					"linktype": "relativ"
 				},
 				{
@@ -63,8 +63,8 @@
 				{
 					"type": "button",
 					"text": "reference for \"jstl-autorun\"",
-					"link": "test.html",
-					"linktype": "relativ|absolute"
+					"link": "doc/index.html?module=jstl&page=1#basics",
+					"linktype": "relativ"
 				},
 				{
 					"type": "text",
@@ -74,7 +74,7 @@
 				{
 					"type": "button",
 					"text": "reference for \"Expressions\"",
-					"link": "doc/index.html?module=jstl&page=1#article-7",
+					"link": "doc/index.html?module=jstl&page=1#expression",
 					"linktype": "relativ"
 				}
 			]
