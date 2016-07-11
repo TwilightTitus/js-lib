@@ -6,7 +6,8 @@
 			"teaser": "",
 			"content": [
 				{
-					"type": "processing hierarchy",
+					"type": "text",
+					"headline": "processing hierarchy",
 					"content": "jstl-if > jstl-data > jstl-include > jstl-choose > jstl-foreach > jstl-add-attribute > text replacements > attribute value replacements"
 				}
 			]
