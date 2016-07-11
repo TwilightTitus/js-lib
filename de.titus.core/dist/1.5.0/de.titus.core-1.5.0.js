@@ -1372,7 +1372,8 @@ de.titus.core.Namespace.create("de.titus.jquery.DomHelper", function() {
 		de.titus.core.StringUtils = {};
 		de.titus.core.StringUtils.DEFAULTS = {};
 		de.titus.core.StringUtils.DEFAULTS.formatToHtml = {
-		"tabblanks" : "    ",
+		"tabsize" : 4,
+		"tabchar" : "&nbsp;",
 		"newlineTag" : "<br/>"
 		};
 		
@@ -1399,10 +1400,47 @@ de.titus.core.Namespace.create("de.titus.jquery.DomHelper", function() {
 				return aText;
 			
 			var settings = $.extend({}, theSettings, de.titus.core.StringUtils.DEFAULTS.formatToHtml);
-			var text = aText.replace(new RegExp("\n\r", "g"), settings.newlineTag);
-			text = text.replace(new RegExp("\n", "g"), settings.newlineTag);
-			text = text.replace(new RegExp("\r", "g"), settings.newlineTag);
-			text = text.replace(new RegExp("\t", "g"), settings.tabblanks);
+			var text = aText.replace(new RegExp("\n\r", "g"), "\n");
+			var text = aText.replace(new RegExp("\r", "g"), "\n");
+			var lines = text.split("\n");
+			var text = "";
+			for (var i = 0; i < lines.length; i++) {
+				if (i != 0)
+					text = text + settings.newlineTag;
+				text = text + de.titus.core.StringUtils.preventTabs(lines[i], settings.tabsize, settings.tabchar);
+			}
+			return text;
+		};
+		
+		de.titus.core.StringUtils.getTabStopMap = function(tabSize, tabString) {
+			var tabstopMap = [];
+			for (var i = 0; i <= tabSize; i++) {
+				if (i == 0)
+					tabstopMap[0] = "";
+				else
+					tabstopMap[i] = tabstopMap[i - 1] + tabString;
+			}
+			
+			return tabstopMap;
+		};
+		
+		de.titus.core.StringUtils.preventTabs = function(aText, theTabStops, theTabStopChar) {
+			var tabstopMap = de.titus.core.StringUtils.getTabStopMap(theTabStops, theTabStopChar);
+			var tabStops = theTabStops;
+			var text = "";
+			var tabs = aText.split("\t");
+			for (var i = 0; i < tabs.length; i++) {
+				if (i != 0){
+					var size = text.length;
+					var tabSize = size % tabStops;
+					text = text + tabstopMap[theTabStops - tabSize] + tabs[i];
+				}
+				else if (i == 0 && aText.indexOf("\t") == 0)
+					text = text + tabstopMap[theTabStops];
+				else
+					text = text + tabs[i];				
+			}
+			
 			return text;
 		};
 		
