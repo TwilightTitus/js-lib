@@ -48,18 +48,39 @@
 				},
 				{
 					"type": "text",
-					"headline" : "\"jstl-data\" - Attribute",
-					"content": "With \"jstl-data\" you can manipulate the data context. You can add static values or objects, manipulate exsisting values or you can run a html request to get json."
+					"headline": "\"jstl-data\" - Attribute (requiered)",
+					"content": [
+						"At content of this attribute, you can define a json object, evaluate an variable, run a javascript expression or use a static string. All this ways can be combined with evaluating a variable or execute an javascript.\nThe condition for the expression is, that the result must be a string or an object.",
+						"If you use a static string, it is posible to comibe it with the \"jstl-data-mode\" attribute. "
+					]
+				},
+				{
+					"type": "code",
+					"codetype": "html",
+					"content": [
+						"<!--\"jstl-data\" - Attribute samples as static url string-->\n<[any tag] jstl-data=\"/url/to/json/data\" jstl-data-mode=\"remote\"></[any tag]>",
+						"<!--\"jstl-data\" - Attribute samples as static string to recive a prameter value-->\n<[any tag] jstl-data=\"my-html-parameter\" jstl-data-mode=\"url-parameter\"></[any tag]>",
+						"<!--\"jstl-data\" - Attribute samples as object-->\n<[any tag] jstl-data=\"{myObject:'my object value'}\"></[any tag]>",
+						"<!--\"jstl-data\" - Attribute samples as dynamic value-->\n<[any tag] jstl-data=\"${my-variable-or-javscript-expression}\" jstl-data-mode=\"[direct|remote|url-parameter]\"></[any tag]>\n",
+						"<!--\"jstl-data\" - Attribute samples as dynamic combination to a url-->\n<[any tag] jstl-data=\"/url/to/json/${dynmic data}\" jstl-data-mode=\"remote\"></[any tag]>"
+					],
+					"subcontent": "If you want to run a request, you must add \"jstl-data-mode='remote'\", to get url parameter you must add \"jstl-data-mode='url-parameter'\". Also, you can full combine dynamic expression with static content."
 				},
 				{
 					"type": "text",
-					"headline" : "\"jstl-data-mode\" - Attribute",
-					"content": "With \"jstl-data\" you can manipulate the data context. You can add static values or objects, manipulate exsisting values or you can run a html request to get json."
+					"headline": "\"jstl-data-mode\" - Attribute (optional - default: direct)",
+					"content": [
+						"\"jstl-data-mode\" can be three values:",
+						"",
+						"\t- \"direct\"\t -> this is the default value and means that the expression be evaluated and add to the data context.",
+						"\t- \"remote\"\t -> this value means that the value of the \"jstl-data\" expression results in a ajax call to get json data.",
+						"\t- \"url-parameter\"\t -> this value means that the value of the \"jstl-data\" expression used to evaluate a value as url parameter."
+					]
 				},
 				{
 					"type": "text",
-					"headline" : "\"jstl-data-var\" - Attribute",
-					"content": "With \"jstl-data\" you can manipulate the data context. You can add static values or objects, manipulate exsisting values or you can run a html request to get json."
+					"headline": "\"jstl-data-var\" - Attribute (optional)",
+					"content": "The value of this attribute must be a static string. With the static string you define a new variable at your data context. If the \"jstl-data-var\" not availible or ist the value empty, the evaluated data would be merged into data context and can override existing values. Be carrful!"
 				}
 			]
 		},

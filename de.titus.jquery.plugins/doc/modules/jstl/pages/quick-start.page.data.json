@@ -47,8 +47,8 @@
 				{
 					"type": "button",
 					"text": "reference for \"jstl-data\"",
-					"link": "test.html",
-					"linktype": "relativ|absolute"
+					"link": "doc/index.html?module=jstl&page=1#article-2",
+					"linktype": "relativ"
 				},
 				{
 					"type": "text",
@@ -74,8 +74,18 @@
 				{
 					"type": "button",
 					"text": "reference for \"Expressions\"",
-					"link": "test.html",
-					"linktype": "relativ|absolute"
+					"link": "doc/index.html?module=jstl&page=1#article-7",
+					"linktype": "relativ"
+				}
+			]
+		},
+		{
+			"title": "Best sample for JSTL",
+			"teaser": "",
+			"content": [
+				{
+					"type": "text",
+					"content": "The best sample for \"how to use JSTL\" and to see \"what feature has JSTL\" is look at this documentation app. The documentation fully written with JSTL."
 				}
 			]
 		}

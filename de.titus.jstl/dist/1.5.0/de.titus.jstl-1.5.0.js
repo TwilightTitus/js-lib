@@ -190,7 +190,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Choose", function() {
 			
 			this.processChilds(aElement, aDataContext, processor, expressionResolver);
 			return new de.titus.jstl.FunctionResult(true, true);
-		}
+		}		
 		return new de.titus.jstl.FunctionResult(true, true);
 	};
 	
@@ -201,8 +201,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Choose", function() {
 		var childs = aChooseElement.children();
 		var resolved = false;
 		var $__THIS__$ = this;
-		childs.each(function() {
-			
+		childs.each(function() {			
 			var child = $(this);
 			if (!resolved && $__THIS__$.processChild(aChooseElement, child, aDataContext, aProcessor, aExpressionResolver)) {
 				if (de.titus.jstl.functions.Choose.LOGGER.isTraceEnabled())
