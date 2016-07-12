@@ -67,7 +67,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Data", function() {
 		var option = this.getOptions(aElement, aDataContext, aProcessor, anExpressionResolver);
 		
 		var ajaxSettings = {
-		'url' : url,
+		'url' : de.titus.core.Page.getInstance().buildUrl(url),
 		'async' : false,
 		'cache' : false,
 		'dataType' : "json"

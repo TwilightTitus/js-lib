@@ -33,7 +33,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Include", function() {
 		var options = this.getOptions(aElement, aDataContext, aProcessor, anExpressionResolver);
 		
 		var ajaxSettings = {
-			'url' : url,
+			'url' : de.titus.core.Page.getInstance().buildUrl(url),
 			'async' : false,
 			'cache' : true,
 			"dataType": "html"

@@ -1,6 +1,6 @@
 <div jstl-if="${moduleData.pages != undefined && moduleData.pages.length > pageNumber}">
 	<jstl jstl-data="${moduleData.pages[pageNumber]}" jstl-data-var="page"></jstl>
-	<jstl jstl-data="${de.titus.core.Page.getInstance().buildUrl(page.data)}" jstl-data-mode="remote" jstl-data-var="pageData"></jstl>
+	<jstl jstl-data="${page.data}" jstl-data-mode="remote" jstl-data-var="pageData"></jstl>
 	<h1>${page.title}</h1>
 	<h1>
 		<small>${page.teaser}</small>
