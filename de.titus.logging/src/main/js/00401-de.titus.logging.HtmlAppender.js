@@ -11,7 +11,7 @@ de.titus.core.Namespace.create("de.titus.logging.HtmlAppender", function() {
 	de.titus.logging.HtmlAppender.prototype.constructor = de.titus.logging.HtmlAppender;
 	
 	de.titus.logging.HtmlAppender.prototype.logMessage=  function(aMessage, anException, aLoggerName, aDate, aLogLevel){
-		var container = this.domHelper.toDomObject(de.titus.logging.HtmlAppender.CONTAINER_QUERY);
+		var container = $(de.titus.logging.HtmlAppender.CONTAINER_QUERY);
 		if(container == undefined)
 			return;
 		
@@ -28,6 +28,6 @@ de.titus.core.Namespace.create("de.titus.logging.HtmlAppender", function() {
 		
 		log += "</div>";
 		
-		this.domHelper.setHtml(container, log, "append");
+		container.append($(log));
 	};
 });

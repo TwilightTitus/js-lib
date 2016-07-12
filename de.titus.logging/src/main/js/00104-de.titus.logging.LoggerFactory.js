@@ -2,7 +2,6 @@ de.titus.core.Namespace.create("de.titus.logging.LoggerFactory", function() {
 	
 	de.titus.logging.LoggerFactory = function() {
 		this.configs = undefined;
-		this.domHelper = de.titus.core.DomHelper.getInstance();
 		this.appenders = {};
 		this.loadLazyCounter = 0;
 	};
@@ -39,10 +38,10 @@ de.titus.core.Namespace.create("de.titus.logging.LoggerFactory", function() {
 		if (this.configs == undefined)
 			this.configs = {};
 		
-		var configElement = this.domHelper.toDomObject("[logging-properties]");
+		var configElement = $("[logging-properties]").first();
 		if (configElement != undefined && (configElement.length == undefined || configElement.length == 1)) {
-			var propertyString = this.domHelper.getAttribute(configElement, "logging-properties");
-			var properties = this.domHelper.doEval(propertyString, {});
+			var propertyString = configElement.attr("logging-properties");
+			var properties = de.titus.core.SpecialFunctions.doEval(propertyString, {});
 			this.loadConfig(properties);
 		} else {
 			this.domHelper.doOnReady(function() {
@@ -64,8 +63,6 @@ de.titus.core.Namespace.create("de.titus.logging.LoggerFactory", function() {
 		if (aConfig == undefined)
 			this.updateConfigs();
 		else {
-			if (aConfig.domHelper)
-				this.domHelper = aConfig.domHelper;
 			if (aConfig.remote)
 				this.loadConfigRemote(aConfig.remote);
 			else if (aConfig.data) {
@@ -78,9 +75,10 @@ de.titus.core.Namespace.create("de.titus.logging.LoggerFactory", function() {
 		var this_ = this;
 		var ajaxSettings = {
 		'async' : false,
-		'cache' : false };
-		ajaxSettings = this.domHelper.mergeObjects(ajaxSettings, aRemoteData);
-		this.domHelper.doRemoteLoadJson(ajaxSettings, function(data) {
+		'cache' : false
+		};
+		ajaxSettings = $.merged(ajaxSettings, aRemoteData);
+		$.ajax(ajaxSettings).done(function(data) {
 			this_.setConfig(data.configs);
 		});
 	};
@@ -105,7 +103,8 @@ de.titus.core.Namespace.create("de.titus.logging.LoggerFactory", function() {
 		var defaultConfig = {
 		"filter" : "",
 		"logLevel" : "NOLOG",
-		"appenders" : [] };
+		"appenders" : []
+		};
 		var actualConfig = undefined;
 		var configs = this.getConfig();
 		for (var i = 0; i < configs.length; i++) {
@@ -135,7 +134,6 @@ de.titus.core.Namespace.create("de.titus.logging.LoggerFactory", function() {
 			if (appender == undefined) {
 				appender = this.domHelper.doEval("new " + appenderString + "();");
 				if (appender != undefined) {
-					appender.domHelper = this.domHelper;
 					this.appenders[appenderString] = appender;
 				}
 			}

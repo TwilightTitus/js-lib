@@ -1,8 +1,7 @@
 
 de.titus.core.Namespace.create("de.titus.logging.LogAppender", function() {
 	
-	de.titus.logging.LogAppender = function(aDomHelper) {
-		this.domHelper = aDomHelper || de.titus.core.DomHelper.getInstance();
+	de.titus.logging.LogAppender = function() {
 	};
 	
 	de.titus.logging.LogAppender.prototype.formatedDateString = function(aDate){

@@ -18,12 +18,10 @@ de.titus.core.Namespace.create("de.titus.logging.InteligentBrowserAppender", fun
 			
 			if(consoleAvalible)
 				this.appender = new de.titus.logging.ConsolenAppender();
-			else if(this.domHelper.toDomObject(de.titus.logging.HtmlAppender.CONTAINER_QUERY))
+			else if($(de.titus.logging.HtmlAppender.CONTAINER_QUERY))
 				this.appender = new de.titus.logging.HtmlAppender();
 			else
-				this.appender = new de.titus.logging.MemoryAppender();
-			
-			this.appender.domHelper = this.domHelper;
+				this.appender = new de.titus.logging.MemoryAppender();			
 		}
 		
 		return this.appender;

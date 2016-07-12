@@ -61,19 +61,40 @@
 			var text = "";
 			var tabs = aText.split("\t");
 			for (var i = 0; i < tabs.length; i++) {
-				if (tabs[i].length != 0 && i != 0){
+				if (tabs[i].length != 0 && i != 0) {
 					var size = text.length;
 					var tabSize = size % tabStops;
 					text = text + tabstopMap[theTabStops - tabSize] + tabs[i];
-				}
-				else if (tabs[i].length == 0 && i != 0)
+				} else if (tabs[i].length == 0 && i != 0)
 					text = text + tabstopMap[theTabStops];
 				else
-					text = text + tabs[i];				
+					text = text + tabs[i];
 			}
 			
 			return text;
 		};
+		
+		// This is the function.
+		de.titus.core.StringUtils.format = function(aText, args) {
+			var objects = arguments;
+			return aText.replace(de.titus.core.StringUtils.format.VARREGEX, function(item) {
+				var index = parseInt(item.substring(1, item.length - 1)) + 1;
+				var replace;
+				if (index > 0 && index < objects.length ) {
+					replace = objects[index];
+					if(typeof replace !== "string")
+						replace = JSON.stringify(replace);
+				} else if (index === -1) {
+					replace = "{";
+				} else if (index === -2) {
+					replace = "}";
+				} else {
+					replace = "";
+				}
+				return replace;
+			});
+		};
+		de.titus.core.StringUtils.format.VARREGEX = new RegExp("{-?[0-9]+}", "g");
 		
 		$.fn.de_titus_core_StringUtils = de.titus.core.StringUtils;
 	});
