@@ -26,9 +26,8 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.AddAttribute", function(
 			var expressionResult = expressionResolver.resolveExpression(expression, aDataContext, false);
 			
 			if (expressionResult != undefined && typeof expressionResult === "function")
-				expressionResult = expressionResult(aElement, aDataContext, aProcessor);
-			
-			if (expressionResult != undefined && typeof expressionResult === "array")
+				expressionResult = expressionResult(aElement, aDataContext, aProcessor);			
+			else if (expressionResult != undefined && typeof expressionResult === "array")
 				this.processArray(expressionResult, aElement, aDataContext, processor);
 			else
 				this.processObject(expressionResult, aElement, aDataContext, processor);

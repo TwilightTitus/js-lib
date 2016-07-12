@@ -276,7 +276,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Foreach", function() {
 		var expression = aElement.attr(processor.config.attributePrefix + this.attributeName);
 		if (expression != undefined) {
 			this.internalProcession(expression, aElement, aDataContext, processor, expressionResolver);
-			return new de.titus.jstl.FunctionResult(true, false);
+			return new de.titus.jstl.FunctionResult(false, false);
 		}
 		return new de.titus.jstl.FunctionResult(true, true);
 	};
@@ -450,8 +450,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.TextContent", function()
 	};
 	de.titus.jstl.functions.TextContent.CONTENTTYPE["application/json"] = de.titus.jstl.functions.TextContent.CONTENTTYPE["json"];
 	
-	de.titus.jstl.functions.TextContent.CONTENTTYPE["text"] = function(aNode, aText, aBaseElement, aProcessor, aDataContext) {
-	
+	de.titus.jstl.functions.TextContent.CONTENTTYPE["text"] = function(aNode, aText, aBaseElement, aProcessor, aDataContext) {	
 		var text = aText;
 		var addAsHtml = false;
 		var trimLength = parseInt(aBaseElement.attr(aProcessor.config.attributePrefix + "text-trim-length") || "-1") || false;
@@ -734,9 +733,8 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.AddAttribute", function(
 			var expressionResult = expressionResolver.resolveExpression(expression, aDataContext, false);
 			
 			if (expressionResult != undefined && typeof expressionResult === "function")
-				expressionResult = expressionResult(aElement, aDataContext, aProcessor);
-			
-			if (expressionResult != undefined && typeof expressionResult === "array")
+				expressionResult = expressionResult(aElement, aDataContext, aProcessor);			
+			else if (expressionResult != undefined && typeof expressionResult === "array")
 				this.processArray(expressionResult, aElement, aDataContext, processor);
 			else
 				this.processObject(expressionResult, aElement, aDataContext, processor);
@@ -795,19 +793,18 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.AddAttribute", function(
 			this.onReadyEvent = new Array();
 		};
 		
-		/***********************************************************************
+		/******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************
 		 * static variables
-		 **********************************************************************/
+		 *****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
 		de.titus.jstl.Processor.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.Processor");
 		
-		/***********************************************************************
+		/******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************
 		 * functions
-		 **********************************************************************/
+		 *****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
 		
 		de.titus.jstl.Processor.prototype.compute = /* boolean */function(aElement, aDataContext) {
 			if (de.titus.jstl.Processor.LOGGER.isDebugEnabled())
 				de.titus.jstl.Processor.LOGGER.logDebug("execute compute(" + (aElement.prop("tagName") || aElement) + ", " + aDataContext + ")");
-			
 			if (aElement == undefined)
 				return this.internalComputeRoot();
 			
@@ -838,13 +835,16 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.AddAttribute", function(
 			aElement.trigger(de.titus.jstl.Constants.EVENTS.onLoad, aDataContext);
 			
 			var processResult = true;
-				var childprocessing = aElement.attr(this.config.attributePrefix + "processor-child-processing") || true;
-				if (childprocessing != undefined && childprocessing != "")
-					childprocessing = de.titus.core.SpecialFunctions.doEvalWithContext(childprocessing, aDataContext, true);
-				
-				var result = this.internalExecuteFunction(aElement, dataContext);
-				if (childprocessing && result.processChilds)					
-					this.internalComputeChilds(aElement, dataContext);
+			var childprocessing = aElement.attr(this.config.attributePrefix + "processor-child-processing") || true;
+			if (childprocessing != undefined && childprocessing != "")
+				childprocessing = de.titus.core.SpecialFunctions.doEvalWithContext(childprocessing, aDataContext, true);
+			
+			var result = this.internalExecuteFunction(aElement, dataContext);
+			if ((childprocessing == "true" || childprocessing == true) && result.processChilds)
+				this.internalComputeChilds(aElement, dataContext);
+			
+			if (aElement.tagName() == "jstl" && aElement.contents().length > 0)
+				aElement.replaceWith(aElement.contents());
 			
 			if (processResult) {
 				if (theEvents.onSuccess != undefined && typeof theEvents.onSuccess === "function")
@@ -973,7 +973,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.AddAttribute", function(
 						de.titus.jstl.Processor.LOGGER.logError("Error by process an on ready event! -> " + (e.message || e));
 					}
 				}
-
+				
 				this.config.element.trigger(de.titus.jstl.Constants.EVENTS.onReady, this);
 			}
 		};

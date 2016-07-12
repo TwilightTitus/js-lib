@@ -23,7 +23,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Foreach", function() {
 		var expression = aElement.attr(processor.config.attributePrefix + this.attributeName);
 		if (expression != undefined) {
 			this.internalProcession(expression, aElement, aDataContext, processor, expressionResolver);
-			return new de.titus.jstl.FunctionResult(true, false);
+			return new de.titus.jstl.FunctionResult(false, false);
 		}
 		return new de.titus.jstl.FunctionResult(true, true);
 	};

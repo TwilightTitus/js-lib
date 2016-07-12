@@ -50,8 +50,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.TextContent", function()
 	};
 	de.titus.jstl.functions.TextContent.CONTENTTYPE["application/json"] = de.titus.jstl.functions.TextContent.CONTENTTYPE["json"];
 	
-	de.titus.jstl.functions.TextContent.CONTENTTYPE["text"] = function(aNode, aText, aBaseElement, aProcessor, aDataContext) {
-	
+	de.titus.jstl.functions.TextContent.CONTENTTYPE["text"] = function(aNode, aText, aBaseElement, aProcessor, aDataContext) {	
 		var text = aText;
 		var addAsHtml = false;
 		var trimLength = parseInt(aBaseElement.attr(aProcessor.config.attributePrefix + "text-trim-length") || "-1") || false;
