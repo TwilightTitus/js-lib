@@ -63,7 +63,7 @@
 				{
 					"type": "button",
 					"text": "reference for \"jstl-autorun\"",
-					"link": "doc/index.html?module=jstl&page=1#basics",
+					"link": "doc/index.html?module=jstl&page=1#jstl-processor",
 					"linktype": "relativ"
 				},
 				{

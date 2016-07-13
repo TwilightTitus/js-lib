@@ -2,11 +2,8 @@
 	"pages": [
 		{
 		"title": "summary",
-		"data":"doc/jstl/chapters/summary.chapter.data.json"
-		},
-		{
-		"title":"quick start",
-		"data":"doc/jstl/chapters/quick-start.chapter.data.json"
+		"teaser": "",
+		"data":"doc/modules/core/chapters/summary.chapter.data.json"
 		}
 	]
 }

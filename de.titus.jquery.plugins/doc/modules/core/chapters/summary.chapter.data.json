@@ -1,21 +1,11 @@
 {
 	"title": "Summary",
-	"teaser": "JSTL is designed as a flexible templating language like \"JSP Standard Tag Library\".",
-	"text": "a Simple Text",
+	"text": "",
 	"articles": [
 		{
-			"title": "article",
-			"teaser": "article Teaser",
+			"title": "What is \"de.titus.core\"?",
+			"teaser": "\"de.titus.core\" is a collection of utility functions and jQuery plugins for web developer.",
 			"content": [
-				{
-					"type": "text",
-					"content": "das ist ein text"
-				},
-				{
-					"type": "code",
-					"codeType": "java",
-					"content": "public interface IEntityManager extends Serializable {\n\tpublic <T> Collection<T> getEntitiesByQuery(String aQueryName, final Class<T> aDaoClass);\n\tpublic <T> Collection<T> getEntitiesByQuery(IQuery aQuery, final Class<T> aDaoClass);\n\tpublic <T> Collection<T> getEntitiesByQuery(String aQueryName, IDatabase aDatabase, final Class<T> aDaoClass);\n\tpublic <T> Collection<T> getEntitiesByQuery(IQuery aQuery, IDatabase aDatabase, final Class<T> aDaoClass);\n\tpublic <T> T getEntity(String aDocumentId, final Class<T> aDaoClass);\n\tpublic <T> T getEntity(String aDocumentId, IDatabase aDatabase, final Class<T> aDaoClass);\n\tpublic <T> T getEntity(final IDocument aDocument, final Class<T> aDaoClass);\t\n\tpublic <T> void setEntity(T aDao);\t\n\tpublic <T> void setEntity(T aDao, IDatabase aDatabase);\t\n\tpublic <T> void setEntity(T aDao, IDocument aDocument);\n}"
-				}
 			]
 		}
 	]
