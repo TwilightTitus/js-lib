@@ -68,14 +68,24 @@
 		};
 		
 		de.titus.jstl.Processor.prototype.internalComputeElement = /* boolean */function(aElement, aDataContext, theEvents, isRoot) {
-			var dataContext = aDataContext || this.config.data;
+			var dataContext = aDataContext || this.config.data;			
+			if (!isRoot) {
+				var ignore = aElement.attr(this.config.attributePrefix + "ignore");
+				if (ignore != undefined && ignore != "")
+					ignore = de.titus.core.SpecialFunctions.doEvalWithContext(ignore, aDataContext, false);
+				
+				if (ignore == true || ignore == "true") {
+					return true;
+				}
+			}
+		
 			
 			if (theEvents.onLoad != undefined && typeof theEvents.onLoad === "function")
 				theEvents.onLoad(aElement, aDataContext, this);
 			aElement.trigger(de.titus.jstl.Constants.EVENTS.onLoad, aDataContext);
 			
 			var processResult = true;
-			var childprocessing = aElement.attr(this.config.attributePrefix + "processor-child-processing") || true;
+			var childprocessing = aElement.attr(this.config.attributePrefix + "processor-child-processing") || aElement.attr(this.config.attributePrefix + "ignore-childs") || true;
 			if (childprocessing != undefined && childprocessing != "")
 				childprocessing = de.titus.core.SpecialFunctions.doEvalWithContext(childprocessing, aDataContext, true);
 			

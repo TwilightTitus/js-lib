@@ -18,83 +18,7 @@ de.titus.core.Namespace.create("de.titus.jstl.Constants", function() {
 	de.titus.jstl.Constants.EVENTS.onFail = "jstl-on-fail";
 	de.titus.jstl.Constants.EVENTS.onReady = "jstl-on-ready";
 	
-});de.titus.core.Namespace.create("de.titus.jstl.ExpressionResolver", function() {
-	
-//	de.titus.jstl.ExpressionResolver = function(aDomHelper) {
-//		this.domHelper = aDomHelper || de.titus.core.DomHelper.getInstance();
-//	};
-//	
-//	/****************************************************************
-//	 * static variables
-//	 ***************************************************************/
-//	de.titus.jstl.ExpressionResolver.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.ExpressionResolver");	
-//	de.titus.jstl.ExpressionResolver.prototype.TEXT_EXPRESSION_REGEX = new de.titus.core.regex.Regex("\\$\\{([^\\$\\{\\}]*)\\}");
-//	
-//	/**
-//	 * @param aText
-//	 * @param aDataContext
-//	 * @param aDefaultValue
-//	 * 
-//	 * @returns
-//	 */	
-//	de.titus.jstl.ExpressionResolver.prototype.resolveText = function(aText, aDataContext, aDefaultValue) {
-//		if(de.titus.jstl.ExpressionResolver.LOGGER.isDebugEnabled())
-//			de.titus.jstl.ExpressionResolver.LOGGER.logDebug("execute resolveText(" + aText + ", " + aDataContext + ", " +  aDefaultValue + ")");
-//		var text = aText;
-//		var matcher = this.TEXT_EXPRESSION_REGEX.parse(text);
-//		while (matcher.next()) {
-//			var expression = matcher.getMatch();
-//			var expressionResult = this.internalResolveExpression(matcher.getGroup(1), aDataContext, aDefaultValue);
-//			if (expressionResult != undefined)
-//				text = matcher.replaceAll(expressionResult, text);
-//		}
-//		return text;
-//	}
-//	
-//	/****************************************************************
-//	 * functions
-//	 ***************************************************************/
-//	
-//	/**
-//	 * @param aExpression
-//	 * @param aDataContext
-//	 * @param aDefaultValue
-//	 * 
-//	 * @returns
-//	 */
-//	de.titus.jstl.ExpressionResolver.prototype.resolveExpression = function(aExpression, aDataContext, aDefaultValue) {
-//		if(de.titus.jstl.ExpressionResolver.LOGGER.isDebugEnabled())
-//			de.titus.jstl.ExpressionResolver.LOGGER.logDebug("execute resolveText(" + aExpression + ", " + aDataContext + ", " +  aDefaultValue + ")");
-//		var matcher = this.TEXT_EXPRESSION_REGEX.parse(aExpression);
-//		if(matcher.next()){
-//			return this.internalResolveExpression(matcher.getGroup(1), aDataContext, aDefaultValue);
-//		}
-//		
-//		return this.internalResolveExpression(aExpression, aDataContext, aDefaultValue);
-//	};
-//	
-//
-//	/**
-//	 * @param aExpression
-//	 * @param aDataContext
-//	 * @param aDefaultValue
-//	 * 
-//	 * @returns
-//	 */
-//	de.titus.jstl.ExpressionResolver.prototype.internalResolveExpression = function(aExpression, aDataContext, aDefaultValue) {
-//		try {
-//			var result = this.domHelper.doEvalWithContext(aExpression, aDataContext, aDefaultValue);			
-//			if (result == undefined)				
-//				return aDefaultValue;
-//		
-//			return result;
-//		} catch (e) {
-//			return undefined;
-//		}
-//	};
-	
-});
-de.titus.core.Namespace.create("de.titus.jstl.FunctionRegistry", function() {	
+});de.titus.core.Namespace.create("de.titus.jstl.FunctionRegistry", function() {	
 	de.titus.jstl.FunctionRegistry = function(){
 		this.functions = new Array();
 	};
@@ -586,7 +510,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Data", function() {
 		var option = this.getOptions(aElement, aDataContext, aProcessor, anExpressionResolver);
 		
 		var ajaxSettings = {
-		'url' : url,
+		'url' : de.titus.core.Page.getInstance().buildUrl(url),
 		'async' : false,
 		'cache' : false,
 		'dataType' : "json"
@@ -649,7 +573,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Include", function() {
 		var options = this.getOptions(aElement, aDataContext, aProcessor, anExpressionResolver);
 		
 		var ajaxSettings = {
-			'url' : url,
+			'url' : de.titus.core.Page.getInstance().buildUrl(url),
 			'async' : false,
 			'cache' : true,
 			"dataType": "html"
@@ -828,14 +752,24 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.AddAttribute", function(
 		};
 		
 		de.titus.jstl.Processor.prototype.internalComputeElement = /* boolean */function(aElement, aDataContext, theEvents, isRoot) {
-			var dataContext = aDataContext || this.config.data;
+			var dataContext = aDataContext || this.config.data;			
+			if (!isRoot) {
+				var ignore = aElement.attr(this.config.attributePrefix + "ignore");
+				if (ignore != undefined && ignore != "")
+					ignore = de.titus.core.SpecialFunctions.doEvalWithContext(ignore, aDataContext, false);
+				
+				if (ignore == true || ignore == "true") {
+					return true;
+				}
+			}
+		
 			
 			if (theEvents.onLoad != undefined && typeof theEvents.onLoad === "function")
 				theEvents.onLoad(aElement, aDataContext, this);
 			aElement.trigger(de.titus.jstl.Constants.EVENTS.onLoad, aDataContext);
 			
 			var processResult = true;
-			var childprocessing = aElement.attr(this.config.attributePrefix + "processor-child-processing") || true;
+			var childprocessing = aElement.attr(this.config.attributePrefix + "processor-child-processing") || aElement.attr(this.config.attributePrefix + "ignore-childs") || true;
 			if (childprocessing != undefined && childprocessing != "")
 				childprocessing = de.titus.core.SpecialFunctions.doEvalWithContext(childprocessing, aDataContext, true);
 			
