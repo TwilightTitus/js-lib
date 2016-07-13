@@ -351,6 +351,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.TextContent", function()
 				var contenttype = aElement.attr(processor.config.attributePrefix + "text-content-type") || "text";
 				var node = this;
 				var text = node.textContent;
+
 				text = expressionResolver.resolveText(text, aDataContext);
 				var contentFunction = de.titus.jstl.functions.TextContent.CONTENTTYPE[contenttype];
 				if (contentFunction)
@@ -362,7 +363,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.TextContent", function()
 	};
 	de.titus.jstl.functions.TextContent.CONTENTTYPE = {};
 	de.titus.jstl.functions.TextContent.CONTENTTYPE["html"] = function(aNode, aText, aBaseElement, aProcessor, aDataContext) {
-		$(aNode).replaceWith(text);
+		$(aNode).replaceWith($(aText));
 	};
 	de.titus.jstl.functions.TextContent.CONTENTTYPE["text/html"] = de.titus.jstl.functions.TextContent.CONTENTTYPE["html"];
 	
@@ -726,14 +727,14 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.AddAttribute", function(
 			this.onReadyEvent = new Array();
 		};
 		
-		/******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************
+		/***********************************************************************
 		 * static variables
-		 *****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+		 **********************************************************************/
 		de.titus.jstl.Processor.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.Processor");
 		
-		/******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************
+		/***********************************************************************
 		 * functions
-		 *****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+		 **********************************************************************/
 		
 		de.titus.jstl.Processor.prototype.compute = /* boolean */function(aElement, aDataContext) {
 			if (de.titus.jstl.Processor.LOGGER.isDebugEnabled())
@@ -761,7 +762,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.AddAttribute", function(
 		};
 		
 		de.titus.jstl.Processor.prototype.internalComputeElement = /* boolean */function(aElement, aDataContext, theEvents, isRoot) {
-			var dataContext = aDataContext || this.config.data;			
+			var dataContext = aDataContext || this.config.data;
 			if (!isRoot) {
 				var ignore = aElement.attr(this.config.attributePrefix + "ignore");
 				if (ignore != undefined && ignore != "")
@@ -771,25 +772,30 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.AddAttribute", function(
 					return true;
 				}
 			}
-		
 			
 			if (theEvents.onLoad != undefined && typeof theEvents.onLoad === "function")
 				theEvents.onLoad(aElement, aDataContext, this);
 			aElement.trigger(de.titus.jstl.Constants.EVENTS.onLoad, aDataContext);
 			
 			var processResult = true;
-			var childprocessing = aElement.attr(this.config.attributePrefix + "processor-child-processing");
-			if (childprocessing != undefined && childprocessing != "")
-				childprocessing = de.titus.core.SpecialFunctions.doEvalWithContext(childprocessing, aDataContext, true);
-			
-			var ignoreChilds = aElement.attr(this.config.attributePrefix + "ignore-childs") || !childprocessing;
-			if (ignoreChilds != undefined && ignoreChilds != "")
-				ignoreChilds = de.titus.core.SpecialFunctions.doEvalWithContext(ignoreChilds, aDataContext, false);
-			
-			
 			var result = this.internalExecuteFunction(aElement, dataContext);
-			if ((ignoreChilds != false && ignoreChilds != "true") && result.processChilds)
-				this.internalComputeChilds(aElement, dataContext);
+			if (result.processChilds) {
+				
+				var ignoreChilds = aElement.attr(this.config.attributePrefix + "ignore-childs");
+				if (ignoreChilds != undefined && ignoreChilds != "")
+					ignoreChilds = de.titus.core.SpecialFunctions.doEvalWithContext(ignoreChilds, aDataContext, true);
+				else if(ignoreChilds == "")
+					ignoreChilds = true;
+				else {
+					var childprocessing = aElement.attr(this.config.attributePrefix + "processor-child-processing");
+					if (childprocessing != undefined && childprocessing != "")
+						ignoreChilds = !de.titus.core.SpecialFunctions.doEvalWithContext(childprocessing, aDataContext, true);
+					else
+						ignoreChilds = false;
+				}
+				if (ignoreChilds != true && ignoreChilds != "true")
+					this.internalComputeChilds(aElement, dataContext);
+			}
 			
 			if (aElement.tagName() == "jstl" && aElement.contents().length > 0)
 				aElement.replaceWith(aElement.contents());

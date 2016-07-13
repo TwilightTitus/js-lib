@@ -27,6 +27,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.TextContent", function()
 				var contenttype = aElement.attr(processor.config.attributePrefix + "text-content-type") || "text";
 				var node = this;
 				var text = node.textContent;
+
 				text = expressionResolver.resolveText(text, aDataContext);
 				var contentFunction = de.titus.jstl.functions.TextContent.CONTENTTYPE[contenttype];
 				if (contentFunction)
@@ -38,7 +39,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.TextContent", function()
 	};
 	de.titus.jstl.functions.TextContent.CONTENTTYPE = {};
 	de.titus.jstl.functions.TextContent.CONTENTTYPE["html"] = function(aNode, aText, aBaseElement, aProcessor, aDataContext) {
-		$(aNode).replaceWith(text);
+		$(aNode).replaceWith($(aText));
 	};
 	de.titus.jstl.functions.TextContent.CONTENTTYPE["text/html"] = de.titus.jstl.functions.TextContent.CONTENTTYPE["html"];
 	
