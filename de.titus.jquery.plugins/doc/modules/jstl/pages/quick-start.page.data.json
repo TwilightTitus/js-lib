@@ -2,6 +2,7 @@
 	"text": "",
 	"articles": [
 		{
+			"tag": "dependencies",
 			"title": "Dependencies",
 			"teaser": "",
 			"content": [
@@ -21,6 +22,7 @@
 			]
 		},
 		{
+			"tag":"hello-world",
 			"title": "Hello World",
 			"teaser": "",
 			"content": [
@@ -80,6 +82,7 @@
 			]
 		},
 		{
+			"tag":"best-sample",
 			"title": "Best sample for JSTL",
 			"teaser": "",
 			"content": [
