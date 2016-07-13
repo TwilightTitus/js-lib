@@ -85,9 +85,9 @@
 			aElement.trigger(de.titus.jstl.Constants.EVENTS.onLoad, aDataContext);
 			
 			var processResult = true;
-			var childprocessing = aElement.attr(this.config.attributePrefix + "processor-child-processing") || aElement.attr(this.config.attributePrefix + "ignore-childs") || true;
+			var childprocessing = aElement.attr(this.config.attributePrefix + "processor-child-processing") || aElement.attr(this.config.attributePrefix + "ignore-childs");
 			if (childprocessing != undefined && childprocessing != "")
-				childprocessing = de.titus.core.SpecialFunctions.doEvalWithContext(childprocessing, aDataContext, true);
+				childprocessing = de.titus.core.SpecialFunctions.doEvalWithContext(childprocessing, aDataContext, false);
 			
 			var result = this.internalExecuteFunction(aElement, dataContext);
 			if ((childprocessing == "true" || childprocessing == true) && result.processChilds)

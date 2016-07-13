@@ -2,14 +2,14 @@
 	"text": "Summary of all functions",
 	"articles": [
 		{
-			"tag": "basics",
-			"title": "Basic knowledge",
+			"tag": "jstl-processor",
+			"title": "JSTL Processor",
 			"teaser": "",
 			"content": [
 				{
 					"type": "text",
-					"headline": "processing hierarchy",
-					"content": "jstl-if > jstl-data > jstl-include > jstl-choose > jstl-foreach > jstl-add-attribute > text replacements > attribute value replacements"
+					"headline": "Processing pipeline",
+					"content": "Processor flags -> jstl-if > jstl-data > jstl-include > jstl-choose > jstl-foreach > jstl-add-attribute > text replacements > attribute value replacements"
 				},
 				{
 					"type": "text",
@@ -20,6 +20,36 @@
 					"type": "code",
 					"codetype": "javascript",
 					"content": "$(document).ready(function(){\n\t$('[jstl-autorun]').each(function(){\n\t\t$(this).jstl();\n\t});\n});"
+				},
+				{
+					"type": "text",
+					"headline": "jstl-ignore",
+					"content": "With \"jstl-ignore\" you can contol if an element to be processed by jstl. This flag would be ignored if you are calling JSTL directly at this element. The value of \"jstl-ignore\" will be evaluated to a boolean. Is the value empty then is the value \"true\"!"
+				},
+				{
+					"type": "code",
+					"codetype": "html",
+					"content": "<[any tag] jstl-ignore=\"empty|true|false|${expression}\"></[any tag]>"
+				},
+				{
+					"type": "text",
+					"headline": "jstl-ignore-childs",
+					"content": "With \"jstl-ignore-childs\" you can contol if the childs of an element to be processed by jstl. The value of \"jstl-ignore-childs\" will be evaluated to a boolean. Is the value empty then is the value \"true\"!"
+				},
+				{
+					"type": "code",
+					"codetype": "html",
+					"content": "<[any tag] jstl-ignore-childs=\"empty|true|false|${expression}\">[content]</[any tag]>"
+				},
+				{
+					"type": "text",
+					"headline": "<jstl/> Tag",
+					"content": "If you want you can use the \"<jstl/>\" tag. This tag helps you if you want a flatten dom sturcture. Has the \"<jstl/>\" tag content, then the \"<jstl/>\" tag will be replaced with there content!"
+				},
+				{
+					"type": "code",
+					"codetype": "html",
+					"content": "<jstl [any jstl-attributes]>[content]</jstl>"
 				}
 			]
 		},
@@ -50,7 +80,7 @@
 						"${\"a static string\"}",
 						"${\"a static string\" + my.data}",
 						"${my.data == true}",
-						"${my.data == undefined}"						
+						"${my.data == undefined}"
 					]
 				}
 			]
@@ -332,6 +362,27 @@
 						"<[any tag] any-attribute-you-want my-attribute=\"${my.data}\"></[any tag]>"
 					],
 					"subcontent": "For more samples, take a look at this documentation app. This app is fully written with JSTL"
+				},
+				{
+					"type": "text",
+					"headline": "jstl-text-ignore",
+					"content": "With \"jstl-text-ignore\", the text content is not processed!"
+				}
+				,
+				{
+					"type": "text",
+					"headline": "jstl-text-content-type",
+					"content": "\"jstl-text-content-type\" defines how text content is processed. Possible values are \"text\", \"json\" and \"html\"."
+				},
+				{
+					"type": "text",
+					"headline": "text-prevent-format",
+					"content": "\"text-prevent-format\" will retain the formatting. This only availible at plain text content."
+				},
+				{
+					"type": "text",
+					"headline": "text-trim-length",
+					"content": "\"text-trim-length\""
 				}
 			]
 		}
