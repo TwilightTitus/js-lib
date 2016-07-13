@@ -15,19 +15,19 @@ de.titus.core.Namespace.create("de.titus.logging.HtmlAppender", function() {
 		if(container == undefined)
 			return;
 		
-		var log = '<div class="log-entry ' + aLogLevel.title + '">';
+		var log = $("<div />").addClass("log-entry " + aLogLevel.title);
+		var logEntry = "";
 		if(aDate)
-			log += log = this.formatedDateString(aDate) + " ";
+			logEntry += logEntry = this.formatedDateString(aDate) + " ";
 		
-		log += "***" + aLogLevel.title + "*** " + aLoggerName + "";
+		logEntry += "***" + aLogLevel.title + "*** " + aLoggerName + "";
 		
 		if(aMessage)
-			log += " -> " + aMessage;
+			logEntry += " -> " + aMessage;
 		if(anException)
-			log += ": " + anException;
+			logEntry += ": " + anException;
 		
-		log += "</div>";
-		
-		container.append($(log));
+		log.text(logEntry);		
+		container.append(log);
 	};
 });

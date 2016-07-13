@@ -31,7 +31,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Data", function() {
 	de.titus.jstl.functions.Data.prototype.internalProcessing = function(anExpression, aElement, aDataContext, aProcessor, anExpressionResolver) {
 		var varname = this.getVarname(aElement, aDataContext, aProcessor, anExpressionResolver);
 		var mode = this.getMode(aElement, aProcessor, anExpressionResolver);
-		if (typeof this[mode] === "function")
+		if (this[mode] != undefined && typeof this[mode] === "function")
 			this[mode].call(this, anExpression, aElement, varname, aDataContext, aProcessor, anExpressionResolver);
 		else
 			this["direct"].call(this, anExpression, aElement, varname, aDataContext, aProcessor, anExpressionResolver);
@@ -87,7 +87,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Data", function() {
 	
 	de.titus.jstl.functions.Data.prototype.addNewData = function(aNewData, aVarname, aDataContext, aProcessor, anExpressionResolver) {
 		if (de.titus.jstl.functions.Data.LOGGER.isDebugEnabled())
-			de.titus.jstl.functions.Data.LOGGER.logDebug("execute addNewData(" + aNewData + ", " + aVarname + ", " + aDataContext + ", " + aProcessor + ", " + anExpressionResolver + ", " + aDomHelper + ")");
+			de.titus.jstl.functions.Data.LOGGER.logDebug("execute addNewData(" + aNewData + ", " + aVarname + ", " + aDataContext + ", " + aProcessor + ", " + anExpressionResolver + ")");
 		if (aVarname == undefined) {
 			$.extend(true, aDataContext, aNewData);
 		} else {

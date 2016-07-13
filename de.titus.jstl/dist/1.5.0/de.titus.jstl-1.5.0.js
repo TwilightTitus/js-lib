@@ -484,7 +484,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Data", function() {
 	de.titus.jstl.functions.Data.prototype.internalProcessing = function(anExpression, aElement, aDataContext, aProcessor, anExpressionResolver) {
 		var varname = this.getVarname(aElement, aDataContext, aProcessor, anExpressionResolver);
 		var mode = this.getMode(aElement, aProcessor, anExpressionResolver);
-		if (typeof this[mode] === "function")
+		if (this[mode] != undefined && typeof this[mode] === "function")
 			this[mode].call(this, anExpression, aElement, varname, aDataContext, aProcessor, anExpressionResolver);
 		else
 			this["direct"].call(this, anExpression, aElement, varname, aDataContext, aProcessor, anExpressionResolver);
@@ -540,7 +540,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Data", function() {
 	
 	de.titus.jstl.functions.Data.prototype.addNewData = function(aNewData, aVarname, aDataContext, aProcessor, anExpressionResolver) {
 		if (de.titus.jstl.functions.Data.LOGGER.isDebugEnabled())
-			de.titus.jstl.functions.Data.LOGGER.logDebug("execute addNewData(" + aNewData + ", " + aVarname + ", " + aDataContext + ", " + aProcessor + ", " + anExpressionResolver + ", " + aDomHelper + ")");
+			de.titus.jstl.functions.Data.LOGGER.logDebug("execute addNewData(" + aNewData + ", " + aVarname + ", " + aDataContext + ", " + aProcessor + ", " + anExpressionResolver + ")");
 		if (aVarname == undefined) {
 			$.extend(true, aDataContext, aNewData);
 		} else {
@@ -626,7 +626,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Include", function() {
 	
 	de.titus.jstl.functions.Include.prototype.addHtml= function(aElement, aTemplate, aIncludeMode){
 		if (de.titus.jstl.functions.Include.LOGGER.isDebugEnabled())
-			de.titus.jstl.functions.Include.LOGGER.logDebug("execute addHtml(" + aElement + ", " + aTemplate + ", " + aIncludeMode+ ", " + aDomHelper+ ")");
+			de.titus.jstl.functions.Include.LOGGER.logDebug("execute addHtml(" + aElement + ", " + aTemplate + ", " + aIncludeMode + ")");
 		if(aIncludeMode == "replace")
 			aElement.html(aTemplate);
 		else if(aIncludeMode == "append")
@@ -738,7 +738,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.AddAttribute", function(
 		
 		de.titus.jstl.Processor.prototype.compute = /* boolean */function(aElement, aDataContext) {
 			if (de.titus.jstl.Processor.LOGGER.isDebugEnabled())
-				de.titus.jstl.Processor.LOGGER.logDebug("execute compute(" + (aElement.prop("tagName") || aElement) + ", " + aDataContext + ")");
+				de.titus.jstl.Processor.LOGGER.logDebug("execute compute(" + (aElement != undefined ? aElement.prop("tagName") : aElement) + ", " + aDataContext + ")");
 			if (aElement == undefined)
 				return this.internalComputeRoot();
 			

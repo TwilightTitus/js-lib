@@ -22,12 +22,12 @@
 
 
 		<div>
-			add single attribute</br> <img jstl-data='jstl-remote.data.json'
+			add single attribute<br/> <img jstl-data='jstl-remote.data.json'
 				jstl-data-mode="remote"
 				jstl-add-attribute="{'name':'src', 'value':testImage}" />
 		</div>
 		<div>
-			add multiple Attribute</br>
+			add multiple Attribute<br/>
 			<div jstl-data='jstl-remote.data.json' jstl-data-mode="remote"
 				jstl-add-attribute="${addAttributes}"></div>
 		</div>
@@ -171,7 +171,7 @@
 		<div class="jstl-text-content-type">
 			jstl-text-content-type="html"
 			<ul
-				jstl-data='{"text":"<b>insert</b>text as <i>html</i><p>$\{subtext\}</p>", "subtext":"and with child processing"}'>
+				jstl-data="${addAttributeTest}">
 				<li>
 					<h4>inculde as html and child processing</h4>
 					<div jstl-text-content-type="html">${text}</div>
@@ -179,7 +179,7 @@
 				<li>
 					<h4>inculde as html and no child processing</h4>
 					<div jstl-text-content-type="html"
-						jstl-ignore-childs>${text}</div>
+						jstl-ignore-childs="">${text}</div>
 				</li>
 				<li>
 					<h4>normal inculde as plain text</h4>
@@ -221,7 +221,8 @@
         };
         
         $(document).ready(function() {
-	        var data = {
+	        var data = {	        		
+	        "addAttributeTest":{"text":"<b>insert</b>text as <i>html</i><p>$\{subtext\}</p>", "subtext":"and with child processing"},
 	        test : "text",
 	        "boolean" : false,
 	        "jstlTemplate" : "jstl-template.html",

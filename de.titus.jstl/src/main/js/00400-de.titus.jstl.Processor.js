@@ -44,7 +44,7 @@
 		
 		de.titus.jstl.Processor.prototype.compute = /* boolean */function(aElement, aDataContext) {
 			if (de.titus.jstl.Processor.LOGGER.isDebugEnabled())
-				de.titus.jstl.Processor.LOGGER.logDebug("execute compute(" + (aElement.prop("tagName") || aElement) + ", " + aDataContext + ")");
+				de.titus.jstl.Processor.LOGGER.logDebug("execute compute(" + (aElement != undefined ? aElement.prop("tagName") : aElement) + ", " + aDataContext + ")");
 			if (aElement == undefined)
 				return this.internalComputeRoot();
 			

@@ -44,9 +44,7 @@ de.titus.core.Namespace.create("de.titus.logging.LoggerFactory", function() {
 			var properties = de.titus.core.SpecialFunctions.doEval(propertyString, {});
 			this.loadConfig(properties);
 		} else {
-			this.domHelper.doOnReady(function() {
-				de.titus.logging.LoggerFactory.getInstance().doLoadLazy();
-			});
+			de.titus.logging.LoggerFactory.getInstance().doLoadLazy();
 		}
 	};
 	
@@ -56,7 +54,7 @@ de.titus.core.Namespace.create("de.titus.logging.LoggerFactory", function() {
 		this.loadLazyCounter++;
 		window.setTimeout(function() {
 			de.titus.logging.LoggerFactory.getInstance().loadConfig();
-		}, 100);
+		}, 1);
 	};
 	
 	de.titus.logging.LoggerFactory.prototype.loadConfig = function(aConfig) {
@@ -74,13 +72,18 @@ de.titus.core.Namespace.create("de.titus.logging.LoggerFactory", function() {
 	de.titus.logging.LoggerFactory.prototype.loadConfigRemote = function(aRemoteData) {
 		var this_ = this;
 		var ajaxSettings = {
-		'async' : false,
-		'cache' : false
+		"async" : false,
+		"cache" : false,
+		"dataType" : "json"
 		};
-		ajaxSettings = $.merged(ajaxSettings, aRemoteData);
-		$.ajax(ajaxSettings).done(function(data) {
+		ajaxSettings = $.extend(ajaxSettings, aRemoteData);
+		ajaxSettings.success = function(data) {
 			this_.setConfig(data.configs);
-		});
+		};
+		ajaxSettings.error = function(error) {
+			console.log(error);
+		};
+		$.ajax(ajaxSettings)
 	};
 	
 	de.titus.logging.LoggerFactory.prototype.updateLogger = function() {
@@ -132,7 +135,7 @@ de.titus.core.Namespace.create("de.titus.logging.LoggerFactory", function() {
 			var appenderString = theAppenders[i];
 			var appender = this.appenders[appenderString];
 			if (appender == undefined) {
-				appender = this.domHelper.doEval("new " + appenderString + "();");
+				appender = de.titus.core.SpecialFunctions.doEval("new " + appenderString + "();");
 				if (appender != undefined) {
 					this.appenders[appenderString] = appender;
 				}

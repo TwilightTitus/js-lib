@@ -76,7 +76,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Include", function() {
 	
 	de.titus.jstl.functions.Include.prototype.addHtml= function(aElement, aTemplate, aIncludeMode){
 		if (de.titus.jstl.functions.Include.LOGGER.isDebugEnabled())
-			de.titus.jstl.functions.Include.LOGGER.logDebug("execute addHtml(" + aElement + ", " + aTemplate + ", " + aIncludeMode+ ", " + aDomHelper+ ")");
+			de.titus.jstl.functions.Include.LOGGER.logDebug("execute addHtml(" + aElement + ", " + aTemplate + ", " + aIncludeMode + ")");
 		if(aIncludeMode == "replace")
 			aElement.html(aTemplate);
 		else if(aIncludeMode == "append")
