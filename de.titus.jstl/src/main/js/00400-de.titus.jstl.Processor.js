@@ -85,12 +85,17 @@
 			aElement.trigger(de.titus.jstl.Constants.EVENTS.onLoad, aDataContext);
 			
 			var processResult = true;
-			var childprocessing = aElement.attr(this.config.attributePrefix + "processor-child-processing") || aElement.attr(this.config.attributePrefix + "ignore-childs");
+			var childprocessing = aElement.attr(this.config.attributePrefix + "processor-child-processing");
 			if (childprocessing != undefined && childprocessing != "")
-				childprocessing = de.titus.core.SpecialFunctions.doEvalWithContext(childprocessing, aDataContext, false);
+				childprocessing = de.titus.core.SpecialFunctions.doEvalWithContext(childprocessing, aDataContext, true);
+			
+			var ignoreChilds = aElement.attr(this.config.attributePrefix + "ignore-childs") || !childprocessing;
+			if (ignoreChilds != undefined && ignoreChilds != "")
+				ignoreChilds = de.titus.core.SpecialFunctions.doEvalWithContext(ignoreChilds, aDataContext, false);
+			
 			
 			var result = this.internalExecuteFunction(aElement, dataContext);
-			if ((childprocessing == "true" || childprocessing == true) && result.processChilds)
+			if ((ignoreChilds != false && ignoreChilds != "true") && result.processChilds)
 				this.internalComputeChilds(aElement, dataContext);
 			
 			if (aElement.tagName() == "jstl" && aElement.contents().length > 0)

@@ -2295,6 +2295,23 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.TextContent", function()
 		var text = aText;
 		var addAsHtml = false;
 		
+		var trimLength = aBaseElement.attr(aProcessor.config.attributePrefix + "text-trim-length");
+		if (trimLength != undefined && trimLength != "") {
+			trimLength = aProcessor.expressionResolver.resolveExpression(trimLength, aDataContext, "-1");
+			trimLength = parseInt(trimLength);
+			if (trimLength && trimLength > 0)
+				text = de.titus.core.StringUtils.trimTextLength(text, trimLength);
+		}
+		
+		var preventformat = aBaseElement.attr(aProcessor.config.attributePrefix + "text-prevent-format");
+		if (preventformat != undefined && preventformat != "false") {
+			preventformat = aProcessor.expressionResolver.resolveExpression(preventformat, aDataContext, true);
+			if (preventformat == "true" || preventformat == true) {
+				text = de.titus.core.StringUtils.formatToHtml(text);
+				addAsHtml = true;
+			}
+		}
+		
 		if (addAsHtml)
 			$(aNode).replaceWith(text);
 		else
@@ -2678,12 +2695,17 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.AddAttribute", function(
 			aElement.trigger(de.titus.jstl.Constants.EVENTS.onLoad, aDataContext);
 			
 			var processResult = true;
-			var childprocessing = aElement.attr(this.config.attributePrefix + "processor-child-processing") || aElement.attr(this.config.attributePrefix + "ignore-childs");
+			var childprocessing = aElement.attr(this.config.attributePrefix + "processor-child-processing");
 			if (childprocessing != undefined && childprocessing != "")
-				childprocessing = de.titus.core.SpecialFunctions.doEvalWithContext(childprocessing, aDataContext, false);
+				childprocessing = de.titus.core.SpecialFunctions.doEvalWithContext(childprocessing, aDataContext, true);
+			
+			var ignoreChilds = aElement.attr(this.config.attributePrefix + "ignore-childs") || !childprocessing;
+			if (ignoreChilds != undefined && ignoreChilds != "")
+				ignoreChilds = de.titus.core.SpecialFunctions.doEvalWithContext(ignoreChilds, aDataContext, false);
+			
 			
 			var result = this.internalExecuteFunction(aElement, dataContext);
-			if ((childprocessing == "true" || childprocessing == true) && result.processChilds)
+			if ((ignoreChilds != false && ignoreChilds != "true") && result.processChilds)
 				this.internalComputeChilds(aElement, dataContext);
 			
 			if (aElement.tagName() == "jstl" && aElement.contents().length > 0)
