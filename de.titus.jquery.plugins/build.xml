@@ -41,16 +41,16 @@
 	</target>
 
 	<target name="concat-min-js-files" depends="init" description="Concatenate JavaScript source files">
-		<concat destfile="${dir.build}/tmp/${ant.project.name}.min-${project.version}.js" fixlastline="true">
+		<concat destfile="${dir.build}/tmp/${ant.project.name}.${project.version}.min.js" fixlastline="true">
 			<fileset dir="${dir.src}" includes="license-header.js" />
 		</concat>
-		<concat destfile="${dir.build}/tmp/${ant.project.name}.min-${project.version}.js" fixlastline="true" append="true">
+		<concat destfile="${dir.build}/tmp/${ant.project.name}.${project.version}.min.js" fixlastline="true" append="true">
 			<fileset dir="${depents.core.dist.dir}" includes="*.min-${depents.core.version}.js" />
 		</concat>
-		<concat destfile="${dir.build}/tmp/${ant.project.name}.min-${project.version}.js" fixlastline="true" append="true">
+		<concat destfile="${dir.build}/tmp/${ant.project.name}.${project.version}.min.js" fixlastline="true" append="true">
 			<fileset dir="${depents.logging.dist.dir}" includes="*.min-${depents.logging.version}.js" />
 		</concat>
-		<concat destfile="${dir.build}/tmp/${ant.project.name}.min-${project.version}.js" fixlastline="true" append="true">
+		<concat destfile="${dir.build}/tmp/${ant.project.name}.${project.version}.min.js" fixlastline="true" append="true">
 			<fileset dir="${depents.jstl.dist.dir}" includes="*.min-${depents.jstl.version}.js" />
 		</concat>
 		<!--concat destfile="${dir.build}/tmp/${ant.project.name}.min-${project.version}.js" fixlastline="true" append="true">
@@ -59,7 +59,7 @@
 		<!--concat destfile="${dir.build}/tmp/${ant.project.name}.min-${project.version}.js" fixlastline="true" append="true">
 			<fileset dir="${depents.grid.layout.dist.dir}" includes="*.min-${depents.grid.layout.version}.js" />
 		</concat-->
-		<concat destfile="${dir.build}/tmp/${ant.project.name}.min-${project.version}.js" fixlastline="true" append="true">
+		<concat destfile="${dir.build}/tmp/${ant.project.name}.${project.version}.min.js" fixlastline="true" append="true">
 			<fileset dir="${dir.build}" includes="*.min-${project.version}.js" />
 		</concat>
 	</target>
@@ -87,6 +87,7 @@
 			<fileset dir="${dir.build}">
 				<include name="*.js" />
 				<exclude name="*.min-${project.version}.js" />
+				<exclude name="*.${project.version}.min.js" />
 				<exclude name="license-header.js" />
 			</fileset>
 		</concat>

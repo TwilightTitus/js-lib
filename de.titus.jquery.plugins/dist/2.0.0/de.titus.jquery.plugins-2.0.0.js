@@ -2865,15 +2865,6 @@ de.titus.core.Namespace.create("de.titus.jstl.Setup", function() {
 	
 });
 
-de.titus.core.Namespace.create("de.titus.jquery.TemplateEnginePlugin", function(){
-	(function($) {
-		$.fn.doTemplating = function(/* settings */ theSettings) {
-			var templateEngine = new de.titus.TemplateEngine( de.titus.jquery.DomHelper.getInstance(),this, theSettings);
-			templateEngine.doTemplating();
-		};
-
-	}(jQuery));
-});
 de.titus.core.Namespace.create("de.titus.jquery.jstl.plugin", function() {
 	
 	/**
