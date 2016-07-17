@@ -76,6 +76,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Data", function() {
 		ajaxSettings.success = function(newData) {
 			$__THIS__$.addNewData(newData, aVarname, aDataContext, aProcessor, anExpressionResolver);
 		};
+		
 		$.ajax(ajaxSettings);
 	};
 	
