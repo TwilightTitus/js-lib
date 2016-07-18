@@ -407,12 +407,7 @@ de.titus.core.Namespace.create("de.titus.logging.ConsolenAppender", function() {
 	de.titus.logging.InteligentBrowserAppender.prototype.getAppender = function(){
 		if(this.appender == undefined)
 		{
-			var consoleAvalible = true;
-			try{
-				console.log("Test Logging!");
-			}catch (e) {
-				consoleAvalible = false;
-			}
+			var consoleAvalible = console && console.log === "function";			
 			
 			if(consoleAvalible)
 				this.appender = new de.titus.logging.ConsolenAppender();
