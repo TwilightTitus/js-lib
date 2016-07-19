@@ -27,6 +27,8 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.TextContent", function()
 				var contenttype = aElement.attr(processor.config.attributePrefix + "text-content-type") || "text";
 				var node = this;
 				var text = node.textContent;
+				if(text)
+					text = text.trim();
 
 				text = expressionResolver.resolveText(text, aDataContext);
 				var contentFunction = de.titus.jstl.functions.TextContent.CONTENTTYPE[contenttype];
@@ -39,7 +41,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.TextContent", function()
 	};
 	de.titus.jstl.functions.TextContent.CONTENTTYPE = {};
 	de.titus.jstl.functions.TextContent.CONTENTTYPE["html"] = function(aNode, aText, aBaseElement, aProcessor, aDataContext) {
-		$(aNode).replaceWith($(aText));
+		$(aNode).replaceWith($.parseHTML(aText));
 	};
 	de.titus.jstl.functions.TextContent.CONTENTTYPE["text/html"] = de.titus.jstl.functions.TextContent.CONTENTTYPE["html"];
 	
@@ -65,7 +67,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.TextContent", function()
 		
 		var preventformat = aBaseElement.attr(aProcessor.config.attributePrefix + "text-prevent-format");
 		if (preventformat != undefined && preventformat != "false") {
-			preventformat = aProcessor.expressionResolver.resolveExpression(preventformat, aDataContext, true);
+			preventformat = preventformat == "" || aProcessor.expressionResolver.resolveExpression(preventformat, aDataContext, true) || true;
 			if (preventformat == "true" || preventformat == true) {
 				text = de.titus.core.StringUtils.formatToHtml(text);
 				addAsHtml = true;
@@ -73,7 +75,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.TextContent", function()
 		}
 		
 		if (addAsHtml)
-			$(aNode).replaceWith(text);
+			$(aNode).replaceWith($.parseHTML(text));
 		else
 			aNode.textContent = aText;
 	};
