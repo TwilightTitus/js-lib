@@ -1539,6 +1539,7 @@ de.titus.core.Namespace.create("de.titus.core.UUID", function() {
 		$(document).ready(function() {
 			var hasAutorun = $("[event-autorun]");
 			if (hasAutorun != undefined && hasAutorun.length != 0) {
+				$("[event-autorun]").de_titus_core_EventBind();
 				$("[event-autorun]").find("[event-type]").de_titus_core_EventBind();
 				
 				var observer = new MutationObserver(function(mutations) {

@@ -371,6 +371,38 @@
 			]
 		},
 		{
+			"tag": "jstl-eventbind",
+			"title": "jstl-eventbind",
+			"teaser": "",
+			"content": [
+				{
+					"type": "text",
+					"content": "\"jstl-eventbind\" execute the event binding from the \"de.titus.core\" module!"
+				},
+				{
+					"type": "code",
+					"codetype": "html",
+					"headline": "jstl-eventbind sample",
+					"content": "<[any tag] jstl-eventbind=\"\" event-type=\"[eventname]\" event-action=\"[expression to a function]\" event-data=\"[any]\" event-prevent-default=\"\"></[any tag]>"
+				},
+				{
+					"type": "text",
+					"headline": "\"jstl-eventbind\" - Attribute (requiered)",
+					"content": [
+						"This tells the jstl processor to start the event binding for this element.",
+						"The process will be pass the current data context as context to the event binding.",
+						"Be careful: if you define \"event-data\" the jstl context will not passt to the event handler"
+					]
+				},
+				{
+					"type": "button",
+					"text": "reference for event binding",
+					"link": "doc/index.html?module=core&page=2#reference",
+					"linktype": "relativ"
+				}
+			]
+		},
+		{
 			"tag": "jstl-add-atribute",
 			"title": "jstl-add-atribute",
 			"teaser": "",
