@@ -106,18 +106,10 @@
 					"subcontent": "Your expression can be an javacript call or an variable from the data context."
 				},
 				{
-					"type": "code",
-					"codetype": "jsp",
-					"headline": "some expression samples",
-					"content": [
-						"${my.data}",
-						"${document.location.href}",
-						"${my.javascript.function}",
-						"${\"a static string\"}",
-						"${\"a static string\" + my.data}",
-						"${my.data == true}",
-						"${my.data == undefined}"
-					]
+					"type": "button",
+					"text": "full reference the expression",
+					"link": "doc/index.html?module=core&page=1#expression-language",
+					"linktype": "relativ"
 				}
 			]
 		},
