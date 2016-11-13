@@ -1,4 +1,4 @@
-<project name="de.titus.form.validation" default="all" basedir=".">
+<project name="de.titus.form" default="all" basedir=".">
 	<!-- Setup -->
 	<property file="project.properties">
 	</property>

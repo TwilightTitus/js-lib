@@ -174,11 +174,4 @@ de.titus.core.Namespace.create("de.titus.form.Field", function() {
 		return;
 	};
 	
-	$.fn.FormField = function(){
-		if(this.length > 1){
-			return this.each(function(){return $(this).FormField();});
-		}
-		
-		return this.data("de.titus.form.Field");
-	};	
 });

@@ -7,8 +7,8 @@
 		<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/>
 		<script type="application/javascript" src="js/jquery-2.1.4.min.js"></script>
 		<script type="application/javascript" src="js/bootstrap.min.js"></script>
-		<script type="application/javascript" src="../../de.titus.jquery.plugins/dist/1.5.2/de.titus.jquery.plugins.min-1.5.2.js"></script>
-		<script type="application/javascript" src="../dist/1.0.0/de.titus.form.validation-1.0.0.js"></script>
+		<script type="application/javascript" src="../../de.titus.jquery.plugins/dist/2.6.0/de.titus.jquery.plugins.min-2.6.0.js"></script>
+		<script type="application/javascript" src="../dist/1.0.0/de.titus.form-1.0.0.js"></script>
 		<style type="text/css">
 			[form-dependencies] {display: none;}
 			div#log {display: none;}
@@ -19,36 +19,22 @@
 		</style>
 	</head>
 	<body >
-		<div class="container-fluid">
-			<form class="form-horizontal" role="form" onsubmit="alert('submit')" autocomplete="off" novalidate form-validate-on-start>
-				<div class="form-group" form-field="name" form-type="text" form-validation="regex,remote,custom" form-validation-regex="[A-Za-z]* [A-Za-z]+" form-validation-regex-message="Vor- und Nachname" form-required-message="Bitte etwas eingeben" form-required>
-					<label class="control-label col-sm-2" for="name">Name:</label>
-					<div class="col-sm-10">
-						<input type="text" class="form-control" id="name" placeholder="Name" value="" />
-						<div class="message text-danger" form-message-for="name"></div>
-					</div>
-				</div>
-				<div class="form-group" form-field="dependentName" form-type="text" form-validation="regex,match" form-validation-regex="[A-Za-z]* [A-Za-z]+" form-validation-regex-message="Vor- und Nachname" form-required-message="Bitte etwas eingeben" form-required="" form-dependencies="name" form-dependencies-message="Bitte erst einen Namen angeben!" form-validation-match="name" form-validation-match-message="nicht gleich!">
-					<label class="control-label col-sm-2" for="dependentName">dependent Name:</label>
-					<div class="col-sm-10">
-						<input type="text" class="form-control" id="dependentName" placeholder="Name" value="" />
-						<div class="message text-danger" form-message-for="dependentName"></div>
-					</div>
-				</div>
-				<div class="form-group" form-field="dependentName2" form-type="text" form-validation="regex,match" form-validation-regex="[A-Za-z]* [A-Za-z]+" form-validation-regex-message="Vor- und Nachname" form-required-message="Bitte etwas eingeben" form-required="" form-dependencies="dependentName" form-dependencies-message="Bitte erst einen Namen angeben!" form-validation-match="dependentName2" form-validation-match-message="nicht gleich!">
-					<label class="control-label col-sm-2" for="dependentName2">dependent Name 2:</label>
-					<div class="col-sm-10">
-						<input type="text" class="form-control" id="dependentName2" placeholder="Name" value="" />
-						<div class="message text-danger" form-message-for="dependentName2"></div>
-					</div>
-				</div>
-				<div class="form-group">
-					<div class="col-sm-offset-2 col-sm-10">
-						<button type="submit" class="btn btn-default" onclick="alert('save')">save</button>
-						<button type="button" class="btn btn-default" onclick="alert('cancel')">cancel</button>
-					</div>
-				</div>
-			</form>
+		<div form-name="" form-template-folder="" form-validator="">
+			<div form-field="singletext" form-field-type="text" form-validator=""></div>
+			<div form-field="number" form-field-type="number" form-validator=""></div>
+			<div form-field="date" form-field-type="date" form-validator=""></div>
+			<div form-field="file" form-field-type="file" form-validator=""></div>
+			<div form-field="multitext" form-field-type="multitext" form-validator=""></div>
+			<div form-field="multifieldlist" form-field-type="multifieldlist">
+				<div form-multifieldlist-template="">
+					<div form-field="singletext" form-field-type="text" form-validator=""></div>
+					<div form-field="number" form-field-type="number" form-validator=""></div>
+					<div form-field="date" form-field-type="date" form-validator=""></div>
+					<div form-field="file" form-field-type="file" form-validator=""></div>
+					<div form-field="multitext" form-field-type="multitext" form-validator=""></div>
+				</div>						
+			</div> 
+		
 		</div>
 		<div id="log-container">
 			<h4>log</h4>
@@ -56,7 +42,7 @@
 		</div>
 		<script type="application/javascript">
 			$(document).ready(function(){
-				$('form').Form();
+				$('[form-name]').Form();
 			});		
 		</script>
 		
