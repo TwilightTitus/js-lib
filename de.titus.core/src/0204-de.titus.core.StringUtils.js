@@ -13,7 +13,7 @@
 		};
 		
 		de.titus.core.StringUtils.trimTextLength = function(aText, maxLength, theSettings) {
-			if (aText == undefined || aText !== "string" || aText == "")
+			if (aText == undefined || typeof aText !== "string" || aText == "")
 				return aText;
 			
 			var settings = $.extend({}, theSettings, de.titus.core.StringUtils.DEFAULTS.trimTextLength);
