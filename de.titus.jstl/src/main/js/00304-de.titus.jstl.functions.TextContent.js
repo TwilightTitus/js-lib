@@ -98,7 +98,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.TextContent", function()
 		if (addAsHtml)
 			$(aNode).replaceWith($.parseHTML(text));
 		else
-			aNode.textContent = aText;
+			aNode.textContent = text;
 	};
 	de.titus.jstl.functions.TextContent.CONTENTTYPE["text/plain"] = de.titus.jstl.functions.TextContent.CONTENTTYPE["text"];
 });
