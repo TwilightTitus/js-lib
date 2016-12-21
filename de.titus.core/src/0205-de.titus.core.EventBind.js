@@ -52,8 +52,13 @@
 			
 			var action = element.attr("event-action");
 			action = de.titus.core.EventBind.EXPRESSIONRESOLVER.resolveExpression(action, anEvent.data, undefined);
-			if (typeof action === "function")
-				action(anEvent, anEvent.data);
+			if (typeof action === "function"){
+				var args = Array.from(arguments);
+				if(args != undefined && args.length >= 1 && anEvent.data != undefined){
+					args.splice(1,0,anEvent.data);
+				}
+				action.apply(action, args);
+			}
 			
 			return !anEvent.isDefaultPrevented();
 		};
