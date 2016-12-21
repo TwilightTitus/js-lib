@@ -57,6 +57,7 @@
 		};
 		
 		de.titus.jstl.Processor.prototype.internalComputeRoot = /* boolean */function() {
+			
 			var events = this.getEvents(this.config.element) || {};
 			if (this.config.onLoad)
 				events.onLoad = this.config.onLoad;
@@ -64,6 +65,8 @@
 				events.onSuccess = this.config.onSuccess;
 			if (this.config.onFail)
 				events.onFail = this.config.onFail;
+			
+			this.config.element.trigger(de.titus.jstl.Constants.EVENTS.onStart,[this.config.data, this ]);
 			return this.internalComputeElement(this.config.element, this.config.data, events, true);
 		};
 		
@@ -81,8 +84,8 @@
 			
 			if (theEvents.onLoad != undefined && typeof theEvents.onLoad === "function")
 				theEvents.onLoad(aElement, aDataContext, this);
-			aElement.trigger(de.titus.jstl.Constants.EVENTS.onLoad, aDataContext);
 			
+			aElement.trigger(de.titus.jstl.Constants.EVENTS.onLoad,[aDataContext, this ]);			
 			var processResult = true;
 			var result = this.internalExecuteFunction(aElement, dataContext);
 			if (result.processChilds) {
