@@ -25,7 +25,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Include", function() {
 		if (expression != undefined) {
 			this.internalProcessing(expression, aElement, aDataContext, processor, expressionResolver);
 		}
-		return new de.titus.jstl.FunctionResult(true, true);
+		return new de.titus.jstl.FunctionResult(true, false);
 	};
 	
 	de.titus.jstl.functions.Include.prototype.internalProcessing = function(anIncludeExpression, aElement, aDataContext, aProcessor, anExpressionResolver) {
@@ -37,7 +37,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Include", function() {
 		
 		var includeMode = this.getIncludeMode(aElement, aDataContext, aProcessor, anExpressionResolver);
 		if (content)
-			this.addHtml(aElement, content, includeMode);
+			this.addHtml(aElement, content, includeMode, aProcessor, aDataContext);
 		else {
 			var options = this.getOptions(aElement, aDataContext, aProcessor, anExpressionResolver);
 			var ajaxSettings = {
@@ -51,7 +51,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Include", function() {
 			var $__this__$ = this;
 			ajaxSettings.success = function(template) {
 				$__this__$.cache[url] = template;
-				$__this__$.addHtml(aElement, template, includeMode);
+				$__this__$.addHtml(aElement, template, includeMode, aProcessor, aDataContext);
 			};
 			
 			ajaxSettings.error = function(error) {
@@ -84,17 +84,21 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Include", function() {
 		return "replace";
 	};
 	
-	de.titus.jstl.functions.Include.prototype.addHtml = function(aElement, aTemplate, aIncludeMode) {
+	de.titus.jstl.functions.Include.prototype.addHtml = function(aElement, aTemplate, aIncludeMode, aProcessor, aDataContext) {
 		if (de.titus.jstl.functions.Include.LOGGER.isDebugEnabled())
 			de.titus.jstl.functions.Include.LOGGER.logDebug("execute addHtml(" + aElement + ", " + aTemplate + ", " + aIncludeMode + ")");
+		var content = $("<div/>");
+		content.html(aTemplate);
+		aProcessor.compute(content, aDataContext);
+		
 		if (aIncludeMode == "replace")
-			aElement.html(aTemplate);
+			aElement.html(content.html());
 		else if (aIncludeMode == "append")
-			aElement.append(aTemplate);
+			aElement.append(content.html());
 		else if (aIncludeMode == "prepend")
-			aElement.prepend(aTemplate);
+			aElement.prepend(content.html());
 		else
-			aElement.html(aTemplate);
+			aElement.html(content.html());
 		
 	};
 	
