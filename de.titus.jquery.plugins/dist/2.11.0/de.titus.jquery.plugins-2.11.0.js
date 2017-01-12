@@ -1610,8 +1610,11 @@ de.titus.core.Namespace.create("de.titus.core.UUID", function() {
 			if (xml.hasChildNodes()) {
 				if (xml.childNodes.length == 1 && xml.childNodes.item(0).nodeType != 3) {
 					obj[xml.childNodes.item(0).nodeName] = de.titus.core.Converter.xmlToJson(xml.childNodes.item(0));
-				} 
-				else if (xml.childNodes.length == 1 && xml.childNodes.item(0).nodeType == 3) {
+				}
+				else if (xml.childNodes.length == 1 && xml.childNodes.item(0).nodeType == 3 && obj["@attributes"] != undefined) {
+					obj[xml.childNodes.item(0).nodeName] = de.titus.core.Converter.xmlToJson(xml.childNodes.item(0));
+				}
+				else if (xml.childNodes.length == 1 && xml.childNodes.item(0).nodeType == 3 && obj["@attributes"] == undefined) {
 					return de.titus.core.Converter.xmlToJson(xml.childNodes.item(0));
 				}else {
 					for (var i = 0; i < xml.childNodes.length; i++) {
