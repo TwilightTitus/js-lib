@@ -1,12 +1,12 @@
 (function($) {
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.core.Converter", function() {
-		de.titus.core.Converter.xmlToJson = function(xml, theParent) {
+		de.titus.core.Converter.xmlToJson = function(xml) {
 			// Create the return object
 			var obj = {};
-			if (xml.nodeType == 1) { // element
+			if (xml.nodeType == 1 || xml.nodeType == 9) { // element
 				// do attributes
-				if (xml.attributes.length > 0) {
+				if (xml.attributes != undefined && xml.attributes.length > 0) {
 					var attributes = {};
 					for (var j = 0; j < xml.attributes.length; j++) {
 						var attribute = xml.attributes.item(j);
@@ -22,9 +22,12 @@
 			
 			// do children
 			if (xml.hasChildNodes()) {
-				if (xml.childNodes.length == 1) {
+				if (xml.childNodes.length == 1 && xml.childNodes.item(0).nodeType != 3) {
+					obj[xml.childNodes.item(0).nodeName] = de.titus.core.Converter.xmlToJson(xml.childNodes.item(0));
+				} 
+				else if (xml.childNodes.length == 1 && xml.childNodes.item(0).nodeType == 3) {
 					return de.titus.core.Converter.xmlToJson(xml.childNodes.item(0));
-				} else {
+				}else {
 					for (var i = 0; i < xml.childNodes.length; i++) {
 						var item = xml.childNodes.item(i);
 						if (item.nodeType != 3) {							

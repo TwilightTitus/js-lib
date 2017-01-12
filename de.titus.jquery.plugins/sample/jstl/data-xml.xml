@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data xmlns="http://www.w3.org/2005/Atom" xmlns:test="http://www.w3.org/2005/Atom">
+	<key name="key1">Value 1</key>
+	<key name="key2">Value 2</key>
+	<key name="key2">Value 3</key>
+</data>

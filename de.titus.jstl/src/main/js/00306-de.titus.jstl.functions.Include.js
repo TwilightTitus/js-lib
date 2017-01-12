@@ -91,14 +91,25 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Include", function() {
 		content.html(aTemplate);
 		aProcessor.compute(content, aDataContext);
 		
-		if (aIncludeMode == "replace")
-			aElement.html(content.html());
+		if (aIncludeMode == "replace"){
+			aElement.empty();
+			content.contents().appendTo(aElement);
+			//aElement.html(content.html());
+		}
 		else if (aIncludeMode == "append")
-			aElement.append(content.html());
-		else if (aIncludeMode == "prepend")
+		{			
+			content.contents().appendTo(aElement);
+			//aElement.append(content.html());
+		}
+		else if (aIncludeMode == "prepend"){
+			content.contents().prependTo(aElement);
 			aElement.prepend(content.html());
+		}
 		else
-			aElement.html(content.html());
+		{
+			aElement.empty();
+			content.contents().appendTo(aElement);
+		}
 		
 	};
 	

@@ -65,16 +65,20 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Data", function() {
 		var $__THIS__$ = this;		
 		var url = anExpressionResolver.resolveText(anExpression, aDataContext);
 		var option = this.getOptions(aElement, aDataContext, aProcessor, anExpressionResolver);
+		var dataType = aElement.attr(aProcessor.config.attributePrefix + this.attributeName + "-datatype") || "json";
 		
 		var ajaxSettings = {
 		'url' : de.titus.core.Page.getInstance().buildUrl(url),
 		'async' : false,
 		'cache' : false,
-		'dataType' : "json"
+		'dataType' : dataType
 		};
 		ajaxSettings = $.extend(ajaxSettings, option);
 		ajaxSettings.success = function(newData) {
-			$__THIS__$.addNewData(newData, aVarname, aDataContext, aProcessor, anExpressionResolver);
+			var data = newData;
+			if(dataType.toLowerCase() == "xml")
+				data = de.titus.core.Converter.xmlToJson(newData);			
+			$__THIS__$.addNewData(data, aVarname, aDataContext, aProcessor, anExpressionResolver);
 		};
 		
 		$.ajax(ajaxSettings);
