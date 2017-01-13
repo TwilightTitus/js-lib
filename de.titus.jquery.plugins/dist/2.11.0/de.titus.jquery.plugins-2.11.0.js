@@ -1587,36 +1587,41 @@ de.titus.core.Namespace.create("de.titus.core.UUID", function() {
 (function($) {
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.core.Converter", function() {
-		de.titus.core.Converter.xmlToJson = function(xml) {
+		de.titus.core.Converter.xmlToJson = function(aNode) {
 			// Create the return object
 			var obj = {};
-			if (xml.nodeType == 1 || xml.nodeType == 9) { // element
+			if (aNode.nodeType == 1 || aNode.nodeType == 9) { // element
 				// do attributes
-				if (xml.attributes != undefined && xml.attributes.length > 0) {
+				if (aNode.attributes != undefined && aNode.attributes.length > 0) {
 					var attributes = {};
-					for (var j = 0; j < xml.attributes.length; j++) {
-						var attribute = xml.attributes.item(j);
+					for (var j = 0; j < aNode.attributes.length; j++) {
+						var attribute = aNode.attributes.item(j);
 						attributes[attribute.nodeName] = attribute.nodeValue;
 					}
 					obj["@attributes"] = attributes;
 				}
-			} else if (xml.nodeType == 3) { // text
-				return xml.nodeValue;
-			} else if (xml.nodeName.indexOf("#cdata") == 0) {
-				return xml.nodeValue;
+			}else if (aNode.nodeType == 3 || aNode.nodeType == 4) { // text
+				return aNode.nodeValue;
 			}
 			
 			// do children
-			if (xml.hasChildNodes()) {
-				if (xml.childNodes.length == 1 && xml.childNodes.item(0).nodeType != 3) {
-					obj[xml.childNodes.item(0).nodeName] = de.titus.core.Converter.xmlToJson(xml.childNodes.item(0));
-				} 
-				else if (xml.childNodes.length == 1 && xml.childNodes.item(0).nodeType == 3) {
-					return de.titus.core.Converter.xmlToJson(xml.childNodes.item(0));
-				}else {
-					for (var i = 0; i < xml.childNodes.length; i++) {
-						var item = xml.childNodes.item(i);
-						if (item.nodeType != 3) {							
+			if (aNode.hasChildNodes()) {
+				if (aNode.childNodes.length == 1){
+					var item = aNode.childNodes.item(0);
+					if(item.nodeType != 3 &&  item.nodeType != 4) {
+						obj[item.nodeName] =  de.titus.core.Converter.xmlToJson(item);
+					}
+					else if ((item.nodeType == 3 || item.nodeType == 4) && obj["@attributes"] == undefined) {
+						return  de.titus.core.Converter.xmlToJson(item);
+					}
+					else if ((item.nodeType == 3 || item.nodeType == 4) && obj["@attributes"] != undefined) {
+						obj.text =  de.titus.core.Converter.xmlToJson(item);
+					}
+				}
+				else {
+					for (var i = 0; i < aNode.childNodes.length; i++) {
+						var item = aNode.childNodes.item(i);
+						if (item.nodeType == 1) {							
 							var nodeName = item.nodeName;
 							if (typeof (obj[nodeName]) == "undefined") {
 								obj[nodeName] = de.titus.core.Converter.xmlToJson(item);

@@ -15,7 +15,7 @@
 			<div jstl-data="data-xml.xml" jstl-data-mode="remote" jstl-data-datatype="xml"
 				jstl-foreach="${data.key}"
 				jstl-foreach-var="listItem" jstl-foreach-status="listStatus">
-				<span>${listStatus.index} </span> <span>name: ${listItem["@attributes"]["name"]}</span> <span>value: ${listItem["#text"]}</span> <br />
+				<span>${listStatus.index} </span> <span>name: ${listItem["@attributes"]["name"]}</span> <span>value: ${listItem.text}</span> <br />
 			</div>
 		</div>
 
