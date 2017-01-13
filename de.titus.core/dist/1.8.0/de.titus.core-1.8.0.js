@@ -1608,7 +1608,7 @@ de.titus.core.Namespace.create("de.titus.core.UUID", function() {
 				else {
 					for (var i = 0; i < aNode.childNodes.length; i++) {
 						var item = aNode.childNodes.item(i);
-						if (item.nodeType == 1) {							
+						if (item.nodeType == 1) {	
 							var nodeName = item.nodeName;
 							if (typeof (obj[nodeName]) == "undefined") {
 								obj[nodeName] = de.titus.core.Converter.xmlToJson(item);
