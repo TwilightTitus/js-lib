@@ -41,28 +41,27 @@
 		};
 		
 		de.titus.form.StepControl.prototype.update = function() {
-			 if(this.data.form.data.sate == de.titus.form.Constants.STATE.SUBMITED)
-				 this.element.hide();
-			 else if (this.data.form.doValidate()) {
+			if (this.data.form.data.state == de.titus.form.Constants.STATE.SUBMITED) {
+				this.data.element.hide();
+				return;
+			} else if (this.data.form.doValidate()) {
 				this.data.stepControlNext.prop("disabled", false);
 				this.data.stepControlFinish.prop("disabled", false);
 				this.data.stepControlSubmit.prop("disabled", false);
 				
-				if((this.data.form.data.pages.length - 1) > this.data.form.data.currentPage){
+				if ((this.data.form.data.pages.length - 1) > this.data.form.data.currentPage) {
 					this.data.stepControlNext.show();
 					this.data.stepControlFinish.hide();
 					this.data.stepControlSubmit.hide();
-				}
-				else if(this.data.form.data.state == de.titus.form.Constants.STATE.PAGES){
+				} else if (this.data.form.data.state == de.titus.form.Constants.STATE.PAGES) {
 					this.data.stepControlNext.hide();
 					this.data.stepControlFinish.show();
 					this.data.stepControlSubmit.hide();
-				}
-				else if(this.data.form.data.state == de.titus.form.Constants.STATE.SUMMARY){
+				} else if (this.data.form.data.state == de.titus.form.Constants.STATE.SUMMARY) {
 					this.data.stepControlNext.hide();
 					this.data.stepControlFinish.hide();
 					this.data.stepControlSubmit.show();
-				}				
+				}
 			} else {
 				this.data.stepControlNext.prop("disabled", true);
 				this.data.stepControlFinish.prop("disabled", true);
@@ -80,7 +79,7 @@
 				de.titus.form.StepControl.LOGGER.logDebug("__StepBackHandle()");
 			
 			if (this.data.form.data.currentPage > 0) {
-				this.data.form.prevPage();					
+				this.data.form.prevPage();
 			}
 		};
 		

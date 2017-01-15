@@ -19,9 +19,9 @@
 		};
 		
 		de.titus.form.Constants.STATE = {
-		PAGES : "form-step-summary",
-		SUMMARY : "form-step-summary",
-		SUBMITED : "form-step-submited",
+		PAGES : "form-state-pages",
+		SUMMARY : "form-state-summary",
+		SUBMITED : "form-state-submited",
 		};
 	});
 })();

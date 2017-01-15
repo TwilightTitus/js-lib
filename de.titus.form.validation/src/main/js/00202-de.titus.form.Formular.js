@@ -75,8 +75,12 @@
 				de.titus.form.Formular.LOGGER.logDebug("showSummary()");
 			
 			for (var i = 0; i < this.data.pages.length; i++)
-				if (this.data.pages[i].active)
+				if (this.data.pages[i].data.activ)
 					this.data.pages[i].showSummary();
+			
+			this.data.state = de.titus.form.Constants.STATE.SUMMARY;
+			this.data.stepPanel.update();
+			this.data.stepControl.update();
 		};
 		
 		de.titus.form.Formular.prototype.currentPage = function() {
@@ -85,17 +89,30 @@
 			
 			return this.data.pages[this.data.currentPage];
 		};
+		
 		de.titus.form.Formular.prototype.prevPage = function() {
 			if (de.titus.form.Formular.LOGGER.isDebugEnabled())
 				de.titus.form.Formular.LOGGER.logDebug("prevPage()");
 			
-			if (this.data.currentPage > 0) {
+			if (this.data.state == de.titus.form.Constants.STATE.SUBMITED)
+				return;
+			else if (this.data.state == de.titus.form.Constants.STATE.SUMMARY) {
+				this.data.state = de.titus.form.Constants.STATE.PAGES;
+				for (var i = 0; i < this.data.pages.length; i++)
+					if(i != this.data.currentPage)
+						this.data.pages[i].hide();
+				
+				this.data.stepPanel.update();
+				this.data.stepControl.update();
+				
+			} else if (this.data.currentPage > 0) {
 				var page = de.titus.form.PageUtils.findPrevPage(this.data.pages, this.data.currentPage);
 				this.data.currentPage = page.data.number - 1;
 				this.data.state = de.titus.form.Constants.STATE.PAGES;
 				this.data.stepPanel.update();
 				this.data.stepControl.update();
 			}
+			
 		};
 		
 		de.titus.form.Formular.prototype.nextPage = function() {
@@ -123,6 +140,7 @@
 			if (de.titus.form.Formular.LOGGER.isDebugEnabled())
 				de.titus.form.Formular.LOGGER.logDebug("submit()");
 			
+			this.data.state = de.titus.form.Constants.STATE.SUBMITED;
 			this.data.stepPanel.update();
 			this.data.stepControl.update();
 		};
@@ -146,4 +164,8 @@
 			return data;
 		}
 	};
+	
+	$(document).ready(function() {
+		$('[data-form]').Formular();
+	});
 })($);

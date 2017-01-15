@@ -39,9 +39,9 @@
 		};
 		
 		de.titus.form.Constants.STATE = {
-		PAGES : "form-step-summary",
-		SUMMARY : "form-step-summary",
-		SUBMITED : "form-step-submited",
+		PAGES : "form-state-pages",
+		SUMMARY : "form-state-summary",
+		SUBMITED : "form-state-submited",
 		};
 	});
 })();
@@ -251,8 +251,12 @@
 				de.titus.form.Formular.LOGGER.logDebug("showSummary()");
 			
 			for (var i = 0; i < this.data.pages.length; i++)
-				if (this.data.pages[i].active)
+				if (this.data.pages[i].data.activ)
 					this.data.pages[i].showSummary();
+			
+			this.data.state = de.titus.form.Constants.STATE.SUMMARY;
+			this.data.stepPanel.update();
+			this.data.stepControl.update();
 		};
 		
 		de.titus.form.Formular.prototype.currentPage = function() {
@@ -261,17 +265,30 @@
 			
 			return this.data.pages[this.data.currentPage];
 		};
+		
 		de.titus.form.Formular.prototype.prevPage = function() {
 			if (de.titus.form.Formular.LOGGER.isDebugEnabled())
 				de.titus.form.Formular.LOGGER.logDebug("prevPage()");
 			
-			if (this.data.currentPage > 0) {
+			if (this.data.state == de.titus.form.Constants.STATE.SUBMITED)
+				return;
+			else if (this.data.state == de.titus.form.Constants.STATE.SUMMARY) {
+				this.data.state = de.titus.form.Constants.STATE.PAGES;
+				for (var i = 0; i < this.data.pages.length; i++)
+					if(i != this.data.currentPage)
+						this.data.pages[i].hide();
+				
+				this.data.stepPanel.update();
+				this.data.stepControl.update();
+				
+			} else if (this.data.currentPage > 0) {
 				var page = de.titus.form.PageUtils.findPrevPage(this.data.pages, this.data.currentPage);
 				this.data.currentPage = page.data.number - 1;
 				this.data.state = de.titus.form.Constants.STATE.PAGES;
 				this.data.stepPanel.update();
 				this.data.stepControl.update();
 			}
+			
 		};
 		
 		de.titus.form.Formular.prototype.nextPage = function() {
@@ -299,6 +316,7 @@
 			if (de.titus.form.Formular.LOGGER.isDebugEnabled())
 				de.titus.form.Formular.LOGGER.logDebug("submit()");
 			
+			this.data.state = de.titus.form.Constants.STATE.SUBMITED;
 			this.data.stepPanel.update();
 			this.data.stepControl.update();
 		};
@@ -322,6 +340,10 @@
 			return data;
 		}
 	};
+	
+	$(document).ready(function() {
+		$('[data-form]').Formular();
+	});
 })($);
 (function() {
 	"use strict";
@@ -351,8 +373,8 @@
 		
 
 		de.titus.form.Page.prototype.initFields = function(aElement) {
-			if(de.titus.form.Formular.LOGGER.isDebugEnabled())
-				de.titus.form.Formular.LOGGER.logDebug("initFields()");
+			if(de.titus.form.Page.LOGGER.isDebugEnabled())
+				de.titus.form.Page.LOGGER.logDebug("initFields()");
 			
 			if (aElement.attr(de.titus.form.Setup.prefix + "-field") != undefined) {
 				var field = aElement.FormularField(this.data.dataController);
@@ -367,20 +389,31 @@
 		
 		
 		de.titus.form.Page.prototype.checkCondition = function(){
+			if(de.titus.form.Page.LOGGER.isDebugEnabled())
+				de.titus.form.Page.LOGGER.logDebug("checkCondition()");
 			
 			this.data.activ = true;
 			return this.data.activ;
 		};		
 		
 		de.titus.form.Page.prototype.show = function(){
+			if(de.titus.form.Page.LOGGER.isDebugEnabled())
+				de.titus.form.Page.LOGGER.logDebug("show()");
+			
 			this.data.element.show();
 		};
 		
 		de.titus.form.Page.prototype.hide = function(){
+			if(de.titus.form.Page.LOGGER.isDebugEnabled())
+				de.titus.form.Page.LOGGER.logDebug("hide()");
+			
 			this.data.element.hide();
 		};
 		
 		de.titus.form.Page.prototype.showSummary = function(){
+			if(de.titus.form.Page.LOGGER.isDebugEnabled())
+				de.titus.form.Page.LOGGER.logDebug("showSummary()");
+			
 			if(!this.data.activ)
 				return;
 			
@@ -391,6 +424,9 @@
 		};
 		
 		de.titus.form.Page.prototype.doValidate = function(){
+			if(de.titus.form.Page.LOGGER.isDebugEnabled())
+				de.titus.form.Page.LOGGER.logDebug("doValidate()");
+			
 			for(var i = 0; i < this.data.fields.length; i++)
 				if(this.data.fields[i].data.activ && !this.data.fields[i].data.valid)
 					return false;
@@ -496,28 +532,27 @@
 		};
 		
 		de.titus.form.StepControl.prototype.update = function() {
-			 if(this.data.form.data.sate == de.titus.form.Constants.STATE.SUBMITED)
-				 this.element.hide();
-			 else if (this.data.form.doValidate()) {
+			if (this.data.form.data.state == de.titus.form.Constants.STATE.SUBMITED) {
+				this.data.element.hide();
+				return;
+			} else if (this.data.form.doValidate()) {
 				this.data.stepControlNext.prop("disabled", false);
 				this.data.stepControlFinish.prop("disabled", false);
 				this.data.stepControlSubmit.prop("disabled", false);
 				
-				if((this.data.form.data.pages.length - 1) > this.data.form.data.currentPage){
+				if ((this.data.form.data.pages.length - 1) > this.data.form.data.currentPage) {
 					this.data.stepControlNext.show();
 					this.data.stepControlFinish.hide();
 					this.data.stepControlSubmit.hide();
-				}
-				else if(this.data.form.data.state == de.titus.form.Constants.STATE.PAGES){
+				} else if (this.data.form.data.state == de.titus.form.Constants.STATE.PAGES) {
 					this.data.stepControlNext.hide();
 					this.data.stepControlFinish.show();
 					this.data.stepControlSubmit.hide();
-				}
-				else if(this.data.form.data.state == de.titus.form.Constants.STATE.SUMMARY){
+				} else if (this.data.form.data.state == de.titus.form.Constants.STATE.SUMMARY) {
 					this.data.stepControlNext.hide();
 					this.data.stepControlFinish.hide();
 					this.data.stepControlSubmit.show();
-				}				
+				}
 			} else {
 				this.data.stepControlNext.prop("disabled", true);
 				this.data.stepControlFinish.prop("disabled", true);
@@ -535,7 +570,7 @@
 				de.titus.form.StepControl.LOGGER.logDebug("__StepBackHandle()");
 			
 			if (this.data.form.data.currentPage > 0) {
-				this.data.form.prevPage();					
+				this.data.form.prevPage();
 			}
 		};
 		
@@ -567,29 +602,37 @@
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.form.StepPanel", function() {
 		de.titus.form.StepPanel = function(aForm) {
-			if(de.titus.form.StepPanel.LOGGER.isDebugEnabled())
+			if (de.titus.form.StepPanel.LOGGER.isDebugEnabled())
 				de.titus.form.StepPanel.LOGGER.logDebug("constructor");
 			
 			this.data = {};
 			this.data.element = aForm.data.element.find("[" + de.titus.form.Setup.prefix + "-step-panel" + "]");
 			this.data.stepPanel = undefined;
-			this.data.form = aForm;		
+			this.data.stepPanelSummaryState = this.data.element.find("[" + de.titus.form.Setup.prefix + "-step='" + de.titus.form.Constants.STATE.SUMMARY + "']");
+			this.data.stepPanelSubmitedState = this.data.element.find("[" + de.titus.form.Setup.prefix + "-step='" + de.titus.form.Constants.STATE.SUBMITED + "']");
+			this.data.form = aForm;
 			this.init();
 		};
 		
 		de.titus.form.StepPanel.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.StepPanel");
 		
 		de.titus.form.StepPanel.prototype.init = function() {
-			if(de.titus.form.StepPanel.LOGGER.isDebugEnabled())
+			if (de.titus.form.StepPanel.LOGGER.isDebugEnabled())
 				de.titus.form.StepPanel.LOGGER.logDebug("init()");
 			
 		};
 		
-		de.titus.form.StepPanel.prototype.update = function(){
-			if(de.titus.form.StepPanel.LOGGER.isDebugEnabled())
+		de.titus.form.StepPanel.prototype.update = function() {
+			if (de.titus.form.StepPanel.LOGGER.isDebugEnabled())
 				de.titus.form.StepPanel.LOGGER.logDebug("update()");
 			this.data.element.find(".activ").removeClass("activ")
-			this.data.element.find("[" + de.titus.form.Setup.prefix + "-step='" + this.data.form.currentPage().data.step + "']").addClass("activ");
+
+			if (this.data.form.data.state == de.titus.form.Constants.STATE.SUMMARY && this.data.stepPanelSummaryState != undefined) 
+				this.data.stepPanelSummaryState.addClass("activ");
+			 else if (this.data.form.data.state == de.titus.form.Constants.STATE.SUBMITED && this.data.stepPanelSubmitedState != undefined)
+				this.data.stepPanelSubmitedState.addClass("activ");
+			 else
+				this.data.element.find("[" + de.titus.form.Setup.prefix + "-step='" + this.data.form.currentPage().data.step + "']").addClass("activ");
 		};
 	});
 })($);

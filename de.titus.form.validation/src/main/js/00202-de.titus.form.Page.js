@@ -26,8 +26,8 @@
 		
 
 		de.titus.form.Page.prototype.initFields = function(aElement) {
-			if(de.titus.form.Formular.LOGGER.isDebugEnabled())
-				de.titus.form.Formular.LOGGER.logDebug("initFields()");
+			if(de.titus.form.Page.LOGGER.isDebugEnabled())
+				de.titus.form.Page.LOGGER.logDebug("initFields()");
 			
 			if (aElement.attr(de.titus.form.Setup.prefix + "-field") != undefined) {
 				var field = aElement.FormularField(this.data.dataController);
@@ -42,20 +42,31 @@
 		
 		
 		de.titus.form.Page.prototype.checkCondition = function(){
+			if(de.titus.form.Page.LOGGER.isDebugEnabled())
+				de.titus.form.Page.LOGGER.logDebug("checkCondition()");
 			
 			this.data.activ = true;
 			return this.data.activ;
 		};		
 		
 		de.titus.form.Page.prototype.show = function(){
+			if(de.titus.form.Page.LOGGER.isDebugEnabled())
+				de.titus.form.Page.LOGGER.logDebug("show()");
+			
 			this.data.element.show();
 		};
 		
 		de.titus.form.Page.prototype.hide = function(){
+			if(de.titus.form.Page.LOGGER.isDebugEnabled())
+				de.titus.form.Page.LOGGER.logDebug("hide()");
+			
 			this.data.element.hide();
 		};
 		
 		de.titus.form.Page.prototype.showSummary = function(){
+			if(de.titus.form.Page.LOGGER.isDebugEnabled())
+				de.titus.form.Page.LOGGER.logDebug("showSummary()");
+			
 			if(!this.data.activ)
 				return;
 			
@@ -66,6 +77,9 @@
 		};
 		
 		de.titus.form.Page.prototype.doValidate = function(){
+			if(de.titus.form.Page.LOGGER.isDebugEnabled())
+				de.titus.form.Page.LOGGER.logDebug("doValidate()");
+			
 			for(var i = 0; i < this.data.fields.length; i++)
 				if(this.data.fields[i].data.activ && !this.data.fields[i].data.valid)
 					return false;
