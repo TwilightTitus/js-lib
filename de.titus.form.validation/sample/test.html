@@ -7,34 +7,63 @@
 		<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/>
 		<script type="application/javascript" src="js/jquery-2.1.4.min.js"></script>
 		<script type="application/javascript" src="js/bootstrap.min.js"></script>
-		<script type="application/javascript" src="../../de.titus.jquery.plugins/dist/2.6.0/de.titus.jquery.plugins.min-2.6.0.js"></script>
+		<script type="application/javascript" src="../../de.titus.jquery.plugins/dist/2.11.0/de.titus.jquery.plugins.2.11.0.min.js"></script>
 		<script type="application/javascript" src="../dist/1.0.0/de.titus.form-1.0.0.js"></script>
 		<style type="text/css">
-			[form-dependencies] {display: none;}
+			[data-form-dependencies] {display: none;}
 			div#log {display: none;}
 			div#log-container:hover #log{display: block;}
-			.form-invalid input,
-			.form-invalid select,
-			.form-invalid textarea{border-color: red;}
+			.data-form-invalid input,
+			.data-form-invalid select,
+			.data-form-invalid textarea{border-color: red;}
 		</style>
 	</head>
 	<body >
-		<div form-name="" form-template-folder="" form-validator="">
-			<div form-field="singletext" form-field-type="text" form-validator=""></div>
-			<div form-field="number" form-field-type="number" form-validator=""></div>
-			<div form-field="date" form-field-type="date" form-validator=""></div>
-			<div form-field="file" form-field-type="file" form-validator=""></div>
-			<div form-field="multitext" form-field-type="multitext" form-validator=""></div>
-			<div form-field="multifieldlist" form-field-type="multifieldlist">
-				<div form-multifieldlist-template="">
-					<div form-field="singletext" form-field-type="text" form-validator=""></div>
-					<div form-field="number" form-field-type="number" form-validator=""></div>
-					<div form-field="date" form-field-type="date" form-validator=""></div>
-					<div form-field="file" form-field-type="file" form-validator=""></div>
-					<div form-field="multitext" form-field-type="multitext" form-validator=""></div>
-				</div>						
-			</div> 
-		
+		<div data-form="" data-form-name="" data-form-validator="">		
+			<div data-form-page="" data-form-condition="">			
+				<div data-form-field="singletext" data-form-field-type="text" data-form-validator="" data-form-condition="">singletext</div>
+				<div data-form-field="number" data-form-field-type="number" data-form-validator="" data-form-condition="">number</div>
+				<div data-form-field="date" data-form-field-type="date" data-form-validator="" data-form-condition="">date</div>
+				<div data-form-field="file" data-form-field-type="file" data-form-validator="" data-form-condition="">file</div>
+				<div data-form-field="multitext" data-form-field-type="multitext" data-form-validator="" data-form-condition="">list</div>
+				<div data-form-field="list" data-form-field-type="list" data-form-condition="">list
+					<div data-form-field="" data-form-field-type="text" data-form-validator="" data-form-condition="">text</div>	
+				</div>
+				<div>
+					<div data-form-page-back="" data-form-condition=""></div>
+					<div data-form-page-next="" data-form-condition=""></div>
+				</div>
+			</div>
+			
+			<div data-form-page="" data-form-condition="">			
+				<div data-form-field="singletext" data-form-field-type="text" data-form-validator="" data-form-condition=""></div>
+				<div data-form-field="number" data-form-field-type="number" data-form-validator="" data-form-condition=""></div>
+				<div data-form-field="date" data-form-field-type="date" data-form-validator="" data-form-condition=""></div>
+				<div data-form-field="file" data-form-field-type="file" data-form-validator="" data-form-condition=""></div>
+				<div data-form-field="multitext" data-form-field-type="multitext" data-form-validator="" data-form-condition=""></div>
+				<div data-form-field="list" data-form-field-type="list" data-form-condition="">
+					<div data-form-field="" data-form-field-type="text" data-form-validator="" data-form-condition=""></div>	
+				</div>
+				<div>
+					<div data-form-page-back="" data-form-condition=""></div>
+					<div data-form-page-next="" data-form-condition=""></div>
+				</div>
+			</div>
+			
+			<div data-form-page="" data-form-condition="">			
+				<div data-form-field="singletext" data-form-field-type="text" data-form-validator="" data-form-condition=""></div>
+				<div data-form-field="number" data-form-field-type="number" data-form-validator="" data-form-condition=""></div>
+				<div data-form-field="date" data-form-field-type="date" data-form-validator="" data-form-condition=""></div>
+				<div data-form-field="file" data-form-field-type="file" data-form-validator="" data-form-condition=""></div>
+				<div data-form-field="multitext" data-form-field-type="multitext" data-form-validator="" data-form-condition=""></div>
+				<div data-form-field="list" data-form-field-type="list" data-form-condition="">
+					<div data-form-field="" data-form-field-type="text" data-form-validator="" data-form-condition=""></div>	
+				</div>
+				<div>
+					<div data-form-page-back="" data-form-condition=""></div>
+					<div data-form-page-next="" data-form-condition=""></div>
+				</div>
+			</div>
 		</div>
 		<div id="log-container">
 			<h4>log</h4>
@@ -42,7 +71,7 @@
 		</div>
 		<script type="application/javascript">
 			$(document).ready(function(){
-				$('[form-name]').Form();
+				$('[data-form]').Formular();
 			});		
 		</script>
 		

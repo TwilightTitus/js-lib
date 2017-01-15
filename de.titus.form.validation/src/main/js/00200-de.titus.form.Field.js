@@ -1,177 +1,75 @@
-de.titus.core.Namespace.create("de.titus.form.Field", function() {
-
-	de.titus.form.Field = function(aData){
-		if(de.titus.form.Field.LOGGER.isDebugEnabled()){
-			de.titus.form.Field.LOGGER.logDebug("call de.titus.form.Field.prototype.constructor()");
-		}
-		if(aData != undefined)
-			this.init(aData);
-	};
-	
-	de.titus.form.Field.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.Field");
-	
-	de.titus.form.Field.prototype.init = function(aData){
-		if(de.titus.form.Field.LOGGER.isDebugEnabled()){
-			de.titus.form.Field.LOGGER.logDebug("call de.titus.form.Field.prototype.init()");
-		}
-		this.data = {
-			"element": undefined,
-			"fieldname": undefined,
-			"type": undefined,
-			"validators": undefined,
-			"dependents": undefined,
-			"dependencies": undefined,
-			"load": undefined,
-			"form": undefined,
-			"values": undefined,
-			"validData": {"valid": false, "message": ""},
-			"validateTimeout": 300
+(function() {
+	"use strict";
+	de.titus.core.Namespace.create("de.titus.form.Field", function() {
+		de.titus.form.Field = function(aElement, aDataController) {
+			this.element = aElement;
+			this.dataController = aDataController;
+			this.name = aElement.attr(de.titus.form.Setup.prefix + "-field");
+			this.type = aElement.attr(de.titus.form.Setup.prefix + "-field-type");
+			
+			var initializeFunction = de.titus.form.Setup.fieldtypes[this.type] || de.titus.form.Setup.fieldtypes["testField"];
+			if (initializeFunction == undefined || typeof initializeFunction !== "function")
+				throw "The fieldtype \"" + this.type + "\" is not available!";
+			
+			this.fieldController = initializeFunction(this.element, this.name, de.titus.form.Field.prototype.doValueChange.bind(this));
 		};
-		$.extend(true, this.data, aData);
-		
-		
-		this.data.element.data("de.titus.form.Field", this);
-		return;
-	};
+	});
 	
-	de.titus.form.Field.prototype.getElement = function(){
-		if(de.titus.form.Field.LOGGER.isDebugEnabled()){
-			de.titus.form.Field.LOGGER.logDebug("call de.titus.form.Field.prototype.getElement()");
-		}
-		return this.data.element;
-	};
-	
-	de.titus.form.Field.prototype.getForm = function(){
-		if(de.titus.form.Field.LOGGER.isDebugEnabled()){
-			de.titus.form.Field.LOGGER.logDebug("call de.titus.form.Field.prototype.getForm()");
-		}
-		return this.data.form;
-	};
-	
-	de.titus.form.Field.prototype.getFieldname = function(){
-		if(de.titus.form.Field.LOGGER.isDebugEnabled()){
-			de.titus.form.Field.LOGGER.logDebug("call de.titus.form.Field.prototype.getFieldname()");
-		}
-		return this.data.fieldname;
-	};
-	
-	de.titus.form.Field.prototype.getValidators = function(){
-		if(de.titus.form.Field.LOGGER.isDebugEnabled()){
-			de.titus.form.Field.LOGGER.logDebug("call de.titus.form.Field.prototype.getValidators()");
-		}
-		return this.data.validators;
-	};
-	
-	de.titus.form.Field.prototype.getDependents = function(){
-		if(de.titus.form.Field.LOGGER.isDebugEnabled()){
-			de.titus.form.Field.LOGGER.logDebug("call de.titus.form.Field.prototype.getDependents()");
-		}
-		return this.data.dependents;
-	};
-	
-	de.titus.form.Field.prototype.getDependencies = function(){
-		if(de.titus.form.Field.LOGGER.isDebugEnabled()){
-			de.titus.form.Field.LOGGER.logDebug("call de.titus.form.Field.prototype.getDependencies()");
-		}
-		return this.data.dependencies;
-	};
-	
-	de.titus.form.Field.prototype.getValues = function(){
-		if(de.titus.form.Field.LOGGER.isDebugEnabled()){
-			de.titus.form.Field.LOGGER.logDebug("call de.titus.form.Field.prototype.getValues()");
-		}
-		return this.data.values;
-	};
-		
-	de.titus.form.Field.prototype.show = function(show){
-		if(de.titus.form.Field.LOGGER.isDebugEnabled()){
-			de.titus.form.Field.LOGGER.logDebug("call de.titus.form.Field.prototype.show()");
-		}
-		if(show)		
-			this.data.element.show();
+	de.titus.form.Field.prototype.doConditionCheck = function() {
+		if (this.isConditionSatisfied())
+			this.dataController.showField(this.dataController.data);
 		else
-			this.data.element.hide();
-		return;
+			this.dataController.hideField();
 	};
 	
-	de.titus.form.Field.prototype.doLoad = function(){
-		if(de.titus.form.Field.LOGGER.isDebugEnabled()){
-			de.titus.form.Field.LOGGER.logDebug("call de.titus.form.Field.prototype.doLoad()");
-		}
-		return;
-	};
-	
-	de.titus.form.Field.prototype.readValues = function(){
-		if(de.titus.form.Field.LOGGER.isDebugEnabled()){
-			de.titus.form.Field.LOGGER.logDebug("call de.titus.form.Field.prototype.readValue()");
-		}
-		return "";
-	};
-	
-	de.titus.form.Field.prototype.doReset = function(){
-		if(de.titus.form.Field.LOGGER.isDebugEnabled()){
-			de.titus.form.Field.LOGGER.logDebug("call de.titus.form.Field.prototype.doReset()");
-		}
-		this.data.values = [];
-		this.data.form.clearMessage(this.data.fieldname);
-		this.data.element.removeClass("form-invalid");
-	};
-	
-	de.titus.form.Field.prototype.isValid = function(force){
-		if(de.titus.form.Field.LOGGER.isDebugEnabled()){
-			de.titus.form.Field.LOGGER.logDebug("call de.titus.form.Field.prototype.isValid()");
-		}
-		if(force)
-			this.__isInputValid();
+	de.titus.form.Field.prototype.isConditionSatisfied = function() {
 		
-		return this.data.validData.valid;
+		// TODO
+		return true; // if condition is satisfied
 	};
 	
-	de.titus.form.Field.prototype.__isInputValid = function(){
-		if(de.titus.form.Field.LOGGER.isDebugEnabled()){
-			de.titus.form.Field.LOGGER.logDebug("call de.titus.form.Field.prototype.__isInputValid()");
+	de.titus.form.Field.prototype.doValueChange = function(aEvent) {
+		console.log("doValueChange");
+		console.log(aEvent);
+		if (aEvent != undefined) {
+			if (typeof aEvent.preventDefault === "function")
+				aEvent.preventDefault();
+			if (typeof aEvent.stopPropagation === "function")
+				aEvent.stopPropagation();
 		}
-		this.__executeValidators();
 		
-
-		if(this.data.validData != undefined && !this.data.validData.valid){
-			this.data.form.printMessage(this.data.validData.message, this.data.fieldname);
-			this.data.element.addClass("form-invalid");
-		}
-		else{
-			this.data.form.clearMessage(this.data.fieldname);
-			this.data.element.removeClass("form-invalid");
-		}
-		return this.data.validData.valid;
+		var value = this.fieldController.getValue();
+		if (this.isValid(value))
+			this.dataController.changeValue(this.name, value);
+		else
+			this.dataController.changeValue(this.name, null);
+		
+		this.element.trigger(de.titus.form.Constants.EVENTS.FIELD_VALUE_CHANGED);
 	};
 	
-	de.titus.form.Field.prototype.__executeValidators = function(){
-		if(de.titus.form.Field.LOGGER.isDebugEnabled()){
-			de.titus.form.Field.LOGGER.logDebug("call de.titus.form.Field.prototype.__executeValidators()");
-		}
-		if(this.data.validators != undefined && this.data.validators.length > 0){
-			var count = this.data.validators.length;
-			for(var i = 0; i < count; i++){
-				var validator = this.data.validators[i];
-				this.data.validData = validator.doValidate(this.data.values, this);
-				if(!this.data.validData.valid)
-					return;	
+	de.titus.form.Field.prototype.isValid = function(aValue) {
+		console.log("isValid");
+		// TODO
+		this.fieldController.setValied(true, "Not Valid!");
+		return true;// if value valied!
+	};
+	
+	$.fn.FormField = function(aDataController) {
+		if (this.length == undefined || this.length == 0)
+			return;
+		else if (this.length > 1) {
+			var result = [];
+			this.each(function() {
+				result.push($(this).FormField(aDataController));
+			});
+			return result;
+		} else {
+			var data = this.data("de.titus.form.Field");
+			if (data == undefined) {
+				data = new de.titus.form.Field(this, aDataController);
+				this.data("de.titus.form.Field", data);
 			}
-		}			
-		this.data.validData = {"valid": true, "message": ""};
-		return;
-	};
-	
-	de.titus.form.Field.prototype.__valueChangeEvent = function(){
-		if(de.titus.form.Field.LOGGER.isDebugEnabled()){
-			de.titus.form.Field.LOGGER.logDebug("call de.titus.form.Field.prototype.__valueChangeEvent()");
+			return data;
 		}
-		this.data.values = this.readValues();		
-		if(this.__isInputValid().valid)
-			this.data.form.fireEvent("valid", this);
-		else
-			this.data.form.fireEvent("invalid", this);
-		return;
 	};
-	
-});
+})();
