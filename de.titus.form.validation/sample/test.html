@@ -10,17 +10,34 @@
 		<script type="application/javascript" src="../../de.titus.jquery.plugins/dist/2.11.0/de.titus.jquery.plugins.2.11.0.min.js"></script>
 		<script type="application/javascript" src="../dist/1.0.0/de.titus.form-1.0.0.js"></script>
 		<style type="text/css">
-			[data-form-dependencies] {display: none;}
+			[data-form-page] {display: none;}
 			div#log {display: none;}
 			div#log-container:hover #log{display: block;}
 			.data-form-invalid input,
 			.data-form-invalid select,
 			.data-form-invalid textarea{border-color: red;}
+			.activ{background-color: yellow;}
 		</style>
+		<script type="text/javascript">
+		var config = [
+			{"filter": "", "logLevel": "DEBUG", "appenders":["de.titus.logging.MemoryAppender"]},
+			{"filter": "de.titus", "logLevel": "DEBUG", "appenders":["de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender"]}
+		];
+		
+		
+		de.titus.logging.LoggerFactory.getInstance().setConfig(config);
+		
+		
+		</script>
 	</head>
 	<body >
-		<div data-form="" data-form-name="" data-form-validator="">		
-			<div data-form-page="" data-form-condition="">			
+		<div data-form="" data-form-name="" data-form-validator="" data-form-submit="" data-form-cancel="">	
+			<div data-form-step-panel="">
+				<span data-form-step="step1">Step 1</span>
+				<span data-form-step="step2">Step 2</span>
+				<span data-form-step="step3">Step 3</span>
+			</div>			
+			<div data-form-page=""  data-form-step="step1" data-form-condition="">			
 				<div data-form-field="singletext" data-form-field-type="text" data-form-validator="" data-form-condition="">singletext</div>
 				<div data-form-field="number" data-form-field-type="number" data-form-validator="" data-form-condition="">number</div>
 				<div data-form-field="date" data-form-field-type="date" data-form-validator="" data-form-condition="">date</div>
@@ -29,13 +46,9 @@
 				<div data-form-field="list" data-form-field-type="list" data-form-condition="">list
 					<div data-form-field="" data-form-field-type="text" data-form-validator="" data-form-condition="">text</div>	
 				</div>
-				<div>
-					<div data-form-page-back="" data-form-condition=""></div>
-					<div data-form-page-next="" data-form-condition=""></div>
-				</div>
 			</div>
 			
-			<div data-form-page="" data-form-condition="">			
+			<div data-form-page="" data-form-step="step2" data-form-condition="">			
 				<div data-form-field="singletext" data-form-field-type="text" data-form-validator="" data-form-condition=""></div>
 				<div data-form-field="number" data-form-field-type="number" data-form-validator="" data-form-condition=""></div>
 				<div data-form-field="date" data-form-field-type="date" data-form-validator="" data-form-condition=""></div>
@@ -44,13 +57,9 @@
 				<div data-form-field="list" data-form-field-type="list" data-form-condition="">
 					<div data-form-field="" data-form-field-type="text" data-form-validator="" data-form-condition=""></div>	
 				</div>
-				<div>
-					<div data-form-page-back="" data-form-condition=""></div>
-					<div data-form-page-next="" data-form-condition=""></div>
-				</div>
 			</div>
 			
-			<div data-form-page="" data-form-condition="">			
+			<div data-form-page="" data-form-step="step3" data-form-condition="">			
 				<div data-form-field="singletext" data-form-field-type="text" data-form-validator="" data-form-condition=""></div>
 				<div data-form-field="number" data-form-field-type="number" data-form-validator="" data-form-condition=""></div>
 				<div data-form-field="date" data-form-field-type="date" data-form-validator="" data-form-condition=""></div>
@@ -58,16 +67,18 @@
 				<div data-form-field="multitext" data-form-field-type="multitext" data-form-validator="" data-form-condition=""></div>
 				<div data-form-field="list" data-form-field-type="list" data-form-condition="">
 					<div data-form-field="" data-form-field-type="text" data-form-validator="" data-form-condition=""></div>	
-				</div>
-				<div>
-					<div data-form-page-back="" data-form-condition=""></div>
-					<div data-form-page-next="" data-form-condition=""></div>
-				</div>
+				</div>				
+			</div>
+			
+			<div data-form-step-control="">
+				<div data-form-step-back="">back</div>
+				<div data-form-step-next="">next</div>
+				<div data-form-step-finish="">submit</div>
 			</div>
 		</div>
 		<div id="log-container">
 			<h4>log</h4>
-			<div id="log" logging-properties='{"remote":{"url":"logging.properties.json"}}'></div>
+			<div id="log"></div>
 		</div>
 		<script type="application/javascript">
 			$(document).ready(function(){

@@ -2,35 +2,59 @@
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.form.Field", function() {
 		de.titus.form.Field = function(aElement, aDataController) {
-			this.element = aElement;
-			this.dataController = aDataController;
-			this.name = aElement.attr(de.titus.form.Setup.prefix + "-field");
-			this.type = aElement.attr(de.titus.form.Setup.prefix + "-field-type");
+			if(de.titus.form.Field.LOGGER.isDebugEnabled())
+				de.titus.form.Field.LOGGER.logDebug("constructor");
 			
-			var initializeFunction = de.titus.form.Setup.fieldtypes[this.type] || de.titus.form.Setup.fieldtypes["testField"];
+			this.data = {};
+			this.data.element = aElement;
+			this.data.dataController = aDataController;
+			this.data.name = aElement.attr(de.titus.form.Setup.prefix + "-field");
+			this.data.type = aElement.attr(de.titus.form.Setup.prefix + "-field-type");
+			this.data.activ = false;
+			this.data.valid = false;
+			
+			var initializeFunction = de.titus.form.Setup.fieldtypes[this.data.type] || de.titus.form.Setup.fieldtypes["testField"];
 			if (initializeFunction == undefined || typeof initializeFunction !== "function")
-				throw "The fieldtype \"" + this.type + "\" is not available!";
+				throw "The fieldtype \"" + this.data.type + "\" is not available!";
 			
-			this.fieldController = initializeFunction(this.element, this.name, de.titus.form.Field.prototype.doValueChange.bind(this));
+			this.fieldController = initializeFunction(this.data.element, this.data.name, de.titus.form.Field.prototype.doValueChange.bind(this));
 		};
 	});
 	
+	de.titus.form.Field.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.Field");
+	
 	de.titus.form.Field.prototype.doConditionCheck = function() {
-		if (this.isConditionSatisfied())
-			this.dataController.showField(this.dataController.data);
+		if(de.titus.form.Field.LOGGER.isDebugEnabled())
+			de.titus.form.Field.LOGGER.logDebug("doConditionCheck()");
+		
+		this.data.activ = false;		
+		if (this.isConditionSatisfied()){
+			this.fieldController.showField(this.data.dataController.data);
+			this.data.activ = true;
+		}
 		else
-			this.dataController.hideField();
+			this.fieldController.hideField();
 	};
 	
 	de.titus.form.Field.prototype.isConditionSatisfied = function() {
+		if(de.titus.form.Field.LOGGER.isDebugEnabled())
+			de.titus.form.Field.LOGGER.logDebug("isConditionSatisfied()");
 		
 		// TODO
 		return true; // if condition is satisfied
 	};
 	
+	de.titus.form.Field.prototype.showSummary = function(){
+		if(!this.data.activ)
+			return;
+		
+		this.fieldController.showSummary();
+	};
+	
 	de.titus.form.Field.prototype.doValueChange = function(aEvent) {
-		console.log("doValueChange");
-		console.log(aEvent);
+		if(de.titus.form.Field.LOGGER.isDebugEnabled())
+			de.titus.form.Field.LOGGER.logDebug("doValueChange()");
+		
 		if (aEvent != undefined) {
 			if (typeof aEvent.preventDefault === "function")
 				aEvent.preventDefault();
@@ -39,28 +63,31 @@
 		}
 		
 		var value = this.fieldController.getValue();
-		if (this.isValid(value))
-			this.dataController.changeValue(this.name, value);
+		if (this.doValidate(value))
+			this.data.dataController.changeValue(this.data.name, value);
 		else
-			this.dataController.changeValue(this.name, null);
+			this.data.dataController.changeValue(this.data.name, null);
 		
-		this.element.trigger(de.titus.form.Constants.EVENTS.FIELD_VALUE_CHANGED);
+		this.data.element.trigger(de.titus.form.Constants.EVENTS.FIELD_VALUE_CHANGED);
 	};
 	
-	de.titus.form.Field.prototype.isValid = function(aValue) {
-		console.log("isValid");
+	de.titus.form.Field.prototype.doValidate = function(aValue) {
+		if(de.titus.form.Field.LOGGER.isDebugEnabled())
+			de.titus.form.Field.LOGGER.logDebug("isValid()");
 		// TODO
-		this.fieldController.setValied(true, "Not Valid!");
-		return true;// if value valied!
+		this.fieldController.setValid(true, "Not Valid!");
+		
+		this.data.valid = true;
+		return this.data.valid;// if value valied!
 	};
 	
-	$.fn.FormField = function(aDataController) {
+	$.fn.FormularField = function(aDataController) {
 		if (this.length == undefined || this.length == 0)
 			return;
 		else if (this.length > 1) {
 			var result = [];
 			this.each(function() {
-				result.push($(this).FormField(aDataController));
+				result.push($(this).FormularField(aDataController));
 			});
 			return result;
 		} else {

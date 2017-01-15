@@ -14,14 +14,18 @@
 			this.element.show();
 		};
 		
+		de.titus.form.FieldController.prototype.showSummary = function(){
+			
+		};
+		
 		de.titus.form.FieldController.prototype.hideField = function() {
 			console.log("hideField");
 			this.element.hide()
 		};
 		
-		de.titus.form.FieldController.prototype.setValied = function(isValied, aMessage) {
+		de.titus.form.FieldController.prototype.setValid = function(isValid, aMessage) {
 			console.log("setValied");
-			if (!isValied) {
+			if (!isValid) {
 				alert(this.fieldname + ": " + aMessage);
 			}
 			alert(this.fieldname);
