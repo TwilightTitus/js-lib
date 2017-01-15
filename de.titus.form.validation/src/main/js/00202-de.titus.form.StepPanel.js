@@ -23,7 +23,7 @@
 		de.titus.form.StepPanel.prototype.update = function(){
 			if(de.titus.form.StepPanel.LOGGER.isDebugEnabled())
 				de.titus.form.StepPanel.LOGGER.logDebug("update()");
-							
+			this.data.element.find(".activ").removeClass("activ")
 			this.data.element.find("[" + de.titus.form.Setup.prefix + "-step='" + this.data.form.currentPage().data.step + "']").addClass("activ");
 		};
 	});

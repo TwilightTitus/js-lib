@@ -3,11 +3,12 @@
 	de.titus.core.Namespace.create("de.titus.form.PageUtils", function() {
 		de.titus.form.PageUtils.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.PageUtils");
 		
-		de.titus.form.PageUtils.findBackPage = function(thePages, aCurrentIndex){
+		de.titus.form.PageUtils.findPrevPage = function(thePages, aCurrentIndex){
 			if(de.titus.form.PageUtils.LOGGER.isDebugEnabled())
-				de.titus.form.PageUtils.LOGGER.logDebug("findBackPage()");
+				de.titus.form.PageUtils.LOGGER.logDebug("findPrevPage() -> aCurrentIndex: " + aCurrentIndex);
 			
 			for(var i = (aCurrentIndex - 1); i >= 0; i--){
+				de.titus.form.PageUtils.LOGGER.logDebug(i);
 				var page = thePages[i];
 				if(page.checkCondition())
 					return page;
