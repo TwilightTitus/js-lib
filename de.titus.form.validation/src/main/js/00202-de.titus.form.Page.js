@@ -5,6 +5,7 @@
 			if(de.titus.form.Page.LOGGER.isDebugEnabled())
 				de.titus.form.Page.LOGGER.logDebug("constructor");
 			this.data = {};
+			this.data.number = undefined;
 			this.data.element = aElement;
 			this.data.name = aElement.attr(de.titus.form.Setup.prefix + "-page");
 			this.data.step = aElement.attr(de.titus.form.Setup.prefix + "-step");

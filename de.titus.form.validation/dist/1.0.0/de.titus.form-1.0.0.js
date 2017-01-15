@@ -29,8 +29,10 @@
 			FORM_PAGE_INITIALIZED : "form-page-initalized",
 			FORM_PAGE_CHANGED : "form-page-changed",
 			FORM_PAGE_SHOW : "form-page-show",
-			FORM_PAGE_ACTION_BACK : "form-page-action-back",
-			FORM_PAGE_ACTION_NEXT : "form-page-action-next",			
+			
+			FORM_STEP_BACK : "form-step-back",
+			FORM_STEP_NEXT : "form-step-next",
+			FORM_STEP_FINISHED : "form-step-finished",
 			
 			
 			FIELD_VALUE_CHANGED : "form-field-value-changed"			
@@ -177,8 +179,9 @@
 			this.data.element = aElement;
 			this.data.name = aElement.attr(de.titus.form.Setup.prefix);
 			this.data.pages = [];
-			this.data.dataController = new de.titus.form.DataController(function(){});			
-			this.data.currentPage = 1;			
+			this.data.dataController = new de.titus.form.DataController(function(){});
+			this.data.stepControl = undefined;
+			this.data.currentPage = 0;			
 			this.init();
 		};
 		
@@ -187,9 +190,10 @@
 		de.titus.form.Formular.prototype.init = function() {
 			if(de.titus.form.Formular.LOGGER.isDebugEnabled())
 				de.titus.form.Formular.LOGGER.logDebug("init()");		
-			
+			this.data.stepPanel = new de.titus.form.StepPanel(this);
+			this.data.stepControl = new de.titus.form.StepControl(this);
 			this.initPages();
-			this.data.element.FormularStepController(this);
+			
 		};
 
 		de.titus.form.Formular.prototype.initPages = function() {
@@ -199,19 +203,35 @@
 			var pageElements = this.data.element.find("[" + de.titus.form.Setup.prefix + "-page" + "]");
 			if(pageElements.length == 0){
 				var page = this.data.element.FormularPage(this.data.dataController);
+				page.data.number = 1;
 				this.data.pages.push(page);
 				page.show();
 			}
 			else {
 				for(var i = 0; i < pageElements.length; i++){
 					var page =$(pageElements[i]).FormularPage(this.data.dataController);
+					page.data.number = (i + 1);
 					this.data.pages.push(page);
 					if(i > 0)
 						page.hide();
 					else
 						page.show();
 				}
-			}		
+			}
+			
+			this.data.stepPanel.update();
+			this.data.stepControl.update();
+		};
+		
+		de.titus.form.Formular.prototype.doValidate = function(){
+			if(de.titus.form.Formular.LOGGER.isDebugEnabled())
+				de.titus.form.Formular.LOGGER.logDebug("doValidate()");
+			
+			for(var i = 0; i < this.data.pages.length; i++)
+				if(this.data.pages[i].active && !this.data.pages[i].data.valid)
+					return false;
+			
+			return true;
 		};
 		
 		de.titus.form.Formular.prototype.showSummary = function(){
@@ -219,13 +239,33 @@
 				de.titus.form.Formular.LOGGER.logDebug("showSummary()");
 			
 			for(var i = 0; i < this.data.pages.length; i++)
-				if(pages[i].active)
-					pages[i].showSummary();
+				if(this.data.pages[i].active)
+					this.data.pages[i].showSummary();
 		};
 		
 		de.titus.form.Formular.prototype.currentPage = function(){
-			return this.data.pages[this.data.currentPage - 1];
+			if(de.titus.form.Formular.LOGGER.isDebugEnabled())
+				de.titus.form.Formular.LOGGER.logDebug("currentPage() -> current index: " + this.data.currentPage);
+			
+			return this.data.pages[this.data.currentPage];
 		};
+		de.titus.form.Formular.prototype.prevPage = function(){
+			if(de.titus.form.Formular.LOGGER.isDebugEnabled())
+				de.titus.form.Formular.LOGGER.logDebug("prevPage()");
+			
+			this.data.stepPanel.update();
+		};
+		
+		de.titus.form.Formular.prototype.nextPage = function(){
+			if(de.titus.form.Formular.LOGGER.isDebugEnabled())
+				de.titus.form.Formular.LOGGER.logDebug("nextPage()");
+			
+			if(this.data.currentPage < (this.data.pages.length - 1)){
+				var page = de.titus.form.PageUtils.findNextPage(this.data.pages, this.data.currentPage);
+				this.data.currentPage = page.data.number - 1;
+				this.data.stepPanel.update();
+			}
+		};		
 		
 		de.titus.form.Formular.prototype.submit = function(){
 			if(de.titus.form.Formular.LOGGER.isDebugEnabled())
@@ -259,6 +299,7 @@
 			if(de.titus.form.Page.LOGGER.isDebugEnabled())
 				de.titus.form.Page.LOGGER.logDebug("constructor");
 			this.data = {};
+			this.data.number = undefined;
 			this.data.element = aElement;
 			this.data.name = aElement.attr(de.titus.form.Setup.prefix + "-page");
 			this.data.step = aElement.attr(de.titus.form.Setup.prefix + "-step");
@@ -349,64 +390,151 @@
 })($);
 (function() {
 	"use strict";
-	de.titus.core.Namespace.create("de.titus.form.StepController", function() {
-		de.titus.form.StepController = function(aElement, aForm) {
-			if(de.titus.form.StepController.LOGGER.isDebugEnabled())
-				de.titus.form.StepController.LOGGER.logDebug("constructor");
+	de.titus.core.Namespace.create("de.titus.form.PageUtils", function() {
+		de.titus.form.PageUtils.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.PageUtils");
+		
+		de.titus.form.PageUtils.findBackPage = function(thePages, aCurrentIndex){
+			if(de.titus.form.PageUtils.LOGGER.isDebugEnabled())
+				de.titus.form.PageUtils.LOGGER.logDebug("findBackPage()");
+			
+			for(var i = (aCurrentIndex - 1); i >= 0; i--){
+				var page = thePages[i];
+				if(page.checkCondition())
+					return page;
+			}
+			
+			throw "Can't evaluate a previous page!";
+		}
+		
+		de.titus.form.PageUtils.findNextPage = function(thePages, aCurrentIndex){
+			if(de.titus.form.PageUtils.LOGGER.isDebugEnabled())
+				de.titus.form.PageUtils.LOGGER.logDebug("findNextPage() -> aCurrentIndex: " + aCurrentIndex );
+			
+			for(var i = (aCurrentIndex + 1); i < thePages.length; i++){
+				de.titus.form.PageUtils.LOGGER.logDebug(i);
+				var page = thePages[i];
+				if(page.checkCondition())
+					return page;
+			}
+			
+			throw "Can't evaluate a next page!";
+		}
+	});
+})($);
+(function() {
+	"use strict";
+	de.titus.core.Namespace.create("de.titus.form.StepControl", function() {
+		de.titus.form.StepControl = function(aForm) {
+			if (de.titus.form.StepControl.LOGGER.isDebugEnabled())
+				de.titus.form.StepControl.LOGGER.logDebug("constructor");
 			
 			this.data = {};
-			this.data.element = aElement;
-			this.data.stepPanel = undefined;
-			this.data.stepControl = undefined;
+			this.data.element = aForm.data.element.find("[" + de.titus.form.Setup.prefix + "-step-control" + "]");
 			this.data.stepControlBack = undefined;
 			this.data.stepControlNext = undefined;
-			this.data.stepControlFinish= undefined;
+			this.data.stepControlFinish = undefined;
+			this.data.stepControlSubmit = undefined;
+			this.data.form = aForm;
+			this.init();
+		};
+		
+		de.titus.form.StepControl.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.StepControl");
+		
+		de.titus.form.StepControl.prototype.init = function() {
+			if (de.titus.form.StepControl.LOGGER.isDebugEnabled())
+				de.titus.form.StepControl.LOGGER.logDebug("init()");
+			
+			this.data.stepControlBack = this.data.element.find("[" + de.titus.form.Setup.prefix + "-step-back" + "]");
+			this.data.stepControlBack.hide();
+			this.data.stepControlBack.on("click", de.titus.form.StepControl.prototype.__StepBackHandle.bind(this));
+			
+			this.data.stepControlNext = this.data.element.find("[" + de.titus.form.Setup.prefix + "-step-next" + "]");
+			this.data.stepControlNext.on("click", de.titus.form.StepControl.prototype.__StepNextHandle.bind(this));
+			
+			this.data.stepControlFinish = this.data.element.find("[" + de.titus.form.Setup.prefix + "-step-finish" + "]");
+			this.data.stepControlFinish.hide();
+			this.data.stepControlFinish.on("click", de.titus.form.StepControl.prototype.__StepFinishHandle.bind(this));
+			
+			this.data.stepControlSubmit = this.data.element.find("[" + de.titus.form.Setup.prefix + "-step-submit" + "]");
+			this.data.stepControlSubmit.hide();
+			this.data.stepControlSubmit.on("click", de.titus.form.StepControl.prototype.__StepSubmitHandle.bind(this));
+			
+			if (de.titus.form.StepControl.LOGGER.isDebugEnabled())
+				console.log(this);
+		};
+		
+		de.titus.form.StepControl.prototype.update = function() {
+			if (this.data.form.doValidate()) {
+				this.data.stepControlNext.prop("disabled", false);
+				this.data.stepControlFinish.prop("disabled", false);
+				this.data.stepControlSubmit.prop("disabled", false);
+			} else {
+				this.data.stepControlNext.prop("disabled", true);
+				this.data.stepControlFinish.prop("disabled", true);
+				this.data.stepControlSubmit.prop("disabled", true);
+			}
+		};
+		
+		de.titus.form.StepControl.prototype.__StepBackHandle = function(aEvent) {
+			if (de.titus.form.StepControl.LOGGER.isDebugEnabled())
+				de.titus.form.StepControl.LOGGER.logDebug("__StepBackHandle()");
+			
+			if (this.data.form.data.currentPage > 0) {
+				this.data.form.prevPage();
+			}
+		};
+		
+		de.titus.form.StepControl.prototype.__StepNextHandle = function(aEvent) {
+			if (de.titus.form.StepControl.LOGGER.isDebugEnabled())
+				de.titus.form.StepControl.LOGGER.logDebug("__StepNextHandle()");
+			
+			if ((this.data.form.data.pages.length - 1) > this.data.form.data.currentPage) {
+				this.data.form.nextPage();
+			}
+		};
+		
+		de.titus.form.StepControl.prototype.__StepFinishHandle = function(aEvent) {
+			if (de.titus.form.StepControl.LOGGER.isDebugEnabled())
+				de.titus.form.StepControl.LOGGER.logDebug("__StepFinishHandle()");
+			
+			this.data.form.showSummary();
+		};
+		
+		de.titus.form.StepControl.prototype.__StepSubmitHandle = function(aEvent) {
+			if (de.titus.form.StepControl.LOGGER.isDebugEnabled())
+				de.titus.form.StepControl.LOGGER.logDebug("__StepSubmitHandle()");
+			
+			this.data.form.submit();
+		};
+	});
+})($);
+(function() {
+	"use strict";
+	de.titus.core.Namespace.create("de.titus.form.StepPanel", function() {
+		de.titus.form.StepPanel = function(aForm) {
+			if(de.titus.form.StepPanel.LOGGER.isDebugEnabled())
+				de.titus.form.StepPanel.LOGGER.logDebug("constructor");
+			
+			this.data = {};
+			this.data.element = aForm.data.element.find("[" + de.titus.form.Setup.prefix + "-step-panel" + "]");
+			this.data.stepPanel = undefined;
 			this.data.form = aForm;		
 			this.init();
 		};
 		
-		de.titus.form.StepController.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.StepController");
+		de.titus.form.StepPanel.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.StepPanel");
 		
-		de.titus.form.StepController.prototype.init = function() {
-			if(de.titus.form.StepController.LOGGER.isDebugEnabled())
-				de.titus.form.StepController.LOGGER.logDebug("init()");
-			this.initStepPanel();
-			this.initStepControls()
-		};
-		
-		de.titus.form.StepController.prototype.initStepPanel = function() {
-			this.data.stepPanel = this.data.element.find("[" + de.titus.form.Setup.prefix + "-step-panel" + "]");
-			this.data.stepPanel.find("[" + de.titus.form.Setup.prefix + "-step='" + this.data.form.currentPage().data.step + "']").addClass("activ");
-		};
-		
-		de.titus.form.StepController.prototype.initStepControls = function() {
-			this.data.stepControl = this.data.element.find("[" + de.titus.form.Setup.prefix + "-step-control" + "]");			
-			this.data.stepControlBack = this.data.stepControl.find("[" + de.titus.form.Setup.prefix + "-step-back" + "]");
-			this.data.stepControlBack.hide();
+		de.titus.form.StepPanel.prototype.init = function() {
+			if(de.titus.form.StepPanel.LOGGER.isDebugEnabled())
+				de.titus.form.StepPanel.LOGGER.logDebug("init()");
 			
-			this.data.stepControlNext = this.data.stepControl.find("[" + de.titus.form.Setup.prefix + "-step-next" + "]");
-			
-			this.data.stepControlFinish = this.data.stepControl.find("[" + de.titus.form.Setup.prefix + "-step-finish" + "]");
-			this.data.stepControlFinish.hide();			
 		};
 		
-		$.fn.FormularStepController = function(aForm) {
-			if (this.length == undefined || this.length == 0)
-				return;
-			else if (this.length > 1) {
-				var result = [];
-				this.each(function() {
-					result.push($(this).FormularStepController(aForm));
-				});
-				return result;
-			} else {
-				var data = this.data("de.titus.form.StepController");
-				if (data == undefined) {
-					data = new de.titus.form.StepController(this, aForm);
-					this.data("de.titus.form.StepController", data);
-				}
-				return data;
-			}
+		de.titus.form.StepPanel.prototype.update = function(){
+			if(de.titus.form.StepPanel.LOGGER.isDebugEnabled())
+				de.titus.form.StepPanel.LOGGER.logDebug("update()");
+							
+			this.data.element.find("[" + de.titus.form.Setup.prefix + "-step='" + this.data.form.currentPage().data.step + "']").addClass("activ");
 		};
 	});
 })($);
