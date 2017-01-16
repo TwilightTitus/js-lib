@@ -5,6 +5,8 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1"/>
 		<style type="text/css" ></style>
 		<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/>
+		<link rel="stylesheet" type="text/css" href="css/boostrap.addons.css"/>
+		
 		<script type="application/javascript" src="js/jquery-2.1.4.min.js"></script>
 		<script type="application/javascript" src="js/bootstrap.min.js"></script>
 		<script type="application/javascript" src="../../de.titus.jquery.plugins/dist/2.11.0/de.titus.jquery.plugins.2.11.0.min.js"></script>
@@ -16,7 +18,7 @@
 			.data-form-invalid input,
 			.data-form-invalid select,
 			.data-form-invalid textarea{border-color: red;}
-			.activ{background-color: yellow;}
+			
 		</style>
 		<script type="text/javascript">
 		var config = [
@@ -30,65 +32,124 @@
 		
 		</script>
 	</head>
-	<body >
-		<div data-form="" data-form-name="" data-form-validator="" data-form-submit="" data-form-cancel="">	
-			<div data-form-step-panel="">
-				<span data-form-step="step1">Step 1</span>&nbsp;&gt;&nbsp;
-				<span data-form-step="step2">Step 2</span>&nbsp;&gt;&nbsp;
-				<span data-form-step="step3">Step 3</span>&nbsp;&gt;&nbsp;
-				<span data-form-step="form-state-summary">Summary</span>&nbsp;&gt;&nbsp;
-				<span data-form-step="form-state-submited">Submited</span>
-			</div>			
-			<div data-form-page=""  data-form-step="step1" data-form-condition="">
-				<h3>Site 1</h3>
-				<p>			
-					<div data-form-field="singletext" data-form-field-type="text" data-form-validator="" data-form-condition="">singletext</div>
-					<div data-form-field="number" data-form-field-type="number" data-form-validator="" data-form-condition="">number</div>
-					<div data-form-field="date" data-form-field-type="date" data-form-validator="" data-form-condition="">date</div>
-					<div data-form-field="file" data-form-field-type="file" data-form-validator="" data-form-condition="">file</div>
-					<div data-form-field="multitext" data-form-field-type="multitext" data-form-validator="" data-form-condition="">list</div>
-					<div data-form-field="list" data-form-field-type="list" data-form-condition="">list
-						<div data-form-field="" data-form-field-type="text" data-form-validator="" data-form-condition="">text</div>	
-					</div>
-				<p>
-			</div>
-			
-			<div data-form-page="" data-form-step="step2" data-form-condition="">			
-				<h3>Site 2</h3>
-				<p>			
-					<div data-form-field="singletext" data-form-field-type="text" data-form-validator="" data-form-condition="">singletext</div>
-					<div data-form-field="number" data-form-field-type="number" data-form-validator="" data-form-condition="">number</div>
-					<div data-form-field="date" data-form-field-type="date" data-form-validator="" data-form-condition="">date</div>
-					<div data-form-field="file" data-form-field-type="file" data-form-validator="" data-form-condition="">file</div>
-					<div data-form-field="multitext" data-form-field-type="multitext" data-form-validator="" data-form-condition="">list</div>
-					<div data-form-field="list" data-form-field-type="list" data-form-condition="">list
-						<div data-form-field="" data-form-field-type="text" data-form-validator="" data-form-condition="">text</div>	
-					</div>
-				<p>
-			</div>
-			
-			<div data-form-page="" data-form-step="step3" data-form-condition="">			
-				<h3>Site 3</h3>
-				<p>			
-					<div data-form-field="singletext" data-form-field-type="text" data-form-validator="" data-form-condition="">singletext</div>
-					<div data-form-field="number" data-form-field-type="number" data-form-validator="" data-form-condition="">number</div>
-					<div data-form-field="date" data-form-field-type="date" data-form-validator="" data-form-condition="">date</div>
-					<div data-form-field="file" data-form-field-type="file" data-form-validator="" data-form-condition="">file</div>
-					<div data-form-field="multitext" data-form-field-type="multitext" data-form-validator="" data-form-condition="">list</div>
-					<div data-form-field="list" data-form-field-type="list" data-form-condition="">list
-						<div data-form-field="" data-form-field-type="text" data-form-validator="" data-form-condition="">text</div>	
-					</div>
-				<p>		
-			</div>
-			
-			<div data-form-step-control="">
-				<div data-form-step-back="">back</div>
-				<div data-form-step-next="">next</div>
-				<div data-form-step-finish="">summary</div>
-				<div data-form-step-submit="">submit</div>
-			</div>
+	<body>
+		<div class="container">
+			<form action=""  data-form="" data-form-name="" data-form-validator="" data-form-submit="" data-form-cancel="">	
+				<div class="row form-group" data-form-step-panel="">
+			        <div class="col-xs-12">
+			            <ul class="nav nav-pills nav-justified thumbnail setup-panel">
+			                <li data-form-step="1">
+			                	<a>
+				                    <span class="list-group-item-heading">User Info</span>
+			                    </a>
+			                </li>
+			                <li data-form-step="2">
+			                	<a>
+			                    	<span class="list-group-item-heading">Address</span>
+			                    </a>
+			                </li>
+			                <li data-form-step="3">
+			                	<a>
+			                    	<span class="list-group-item-heading">Hobbies</span>
+			                    </a>
+			                </li>
+			                <li data-form-step="form-state-summary">
+			                	<a>
+			                    	<span class="list-group-item-heading">Summary</span>
+			                    </a>
+			                </li>
+			                <li data-form-step="form-state-submited">
+			                	<a>
+			                    	<span class="list-group-item-heading">Submited</span>
+			                    </a>
+			                </li>
+			            </ul>
+			        </div>
+				</div>
+				
+				<div data-form-page=""  data-form-step="1" data-form-condition="">
+					<h3>User Info</h3>
+					<p>			
+						<div class="form-group" data-form-field="name" data-form-field-type="text" data-form-validator="" data-form-condition="">
+							<label for="name">name:</label>
+	    					<input type="text" class="form-control" name="name" />					
+						</div>
+						<div class="form-group" data-form-field="givenname" data-form-field-type="text" data-form-validator="" data-form-condition="">
+							<label for="givenname">given name:</label>
+	    					<input type="text" class="form-control" name="givenname" />					
+						</div>
+						<div class="form-group" data-form-field="age" data-form-field-type="number" data-form-validator="" data-form-condition="">
+							<label for="age">age:</label>
+	    					<input type="number" class="form-control" name="age" />					
+						</div>
+						<div data-form-field="image" data-form-field-type="file" data-form-validator="" data-form-condition="">
+							<div class="input-group">
+								 <label class="input-group-btn">
+							    	<span class="btn btn-primary">
+							        	Browse&hellip; <input type="file" style="display: none;">
+							        </span>
+							    </label>
+							    <input type="text" class="form-control" readonly="readonly" />						   
+							</div>
+						</div>
+					<p>
+				</div>			
+				<div data-form-page="" data-form-step="2" data-form-condition="">			
+					<h3>Address</h3>
+					<p>			
+						<div class="form-group" data-form-field="street" data-form-field-type="text" data-form-validator="" data-form-condition="">
+							<label for="street">street:</label>
+	    					<input type="text" class="form-control" name="street" />					
+						</div>
+						<div class="form-group" data-form-field="zip" data-form-field-type="text" data-form-validator="" data-form-condition="">
+							<label for="zip">zip:</label>
+	    					<input type="number" class="form-control" name="zip" />					
+						</div>
+						<div class="form-group" data-form-field="town" data-form-field-type="number" data-form-validator="" data-form-condition="">
+							<label for="town">town:</label>
+	    					<input type="text" class="form-control" name="town" />					
+						</div>
+						<div data-form-field="date" data-form-field-type="date" data-form-validator="" data-form-condition="">
+							<label for="date">Since when do they live there?</label>
+	    					<input type="date" class="form-control" name="date" />	
+						</div>
+					<p>
+				</div>
+				
+				<div data-form-page="" data-form-step="3" data-form-condition="">			
+					<h3>Hobbies</h3>
+					<p>						
+						<div data-form-field="hobbys" data-form-field-type="checklist" data-form-condition="">
+							<label for="date">Since when do they live there?</label>
+							<div class="checkbox">
+								<label><input type="checkbox" value="football"/>football</label>
+							</div>
+							<div class="checkbox">
+								<label><input type="checkbox" value="baseball"/>baseball</label>
+							</div>
+							<div class="checkbox">
+								<label><input type="checkbox" value="basketball"/>basketball</label>
+							</div>
+							<div class="checkbox">
+								<label><input type="checkbox" value="other"/><input type="text" class="form-control" name="other" /></label>
+							</div>
+						</div>
+						<div data-form-field="date" data-form-field-type="date" data-form-validator="" data-form-condition="">
+							<label for="date">Something about me:</label>
+	    					<textarea class="form-control" rows="5" id="comment"></textarea>
+						</div>					
+					<p>		
+				</div>
+				
+				<div data-form-step-control="">
+					<button data-form-step-back="" type="button" class="btn btn-primary pull-left">previous step</button>
+					<button data-form-step-next="" type="button" class="btn btn-primary pull-right">next step</button>
+					<button data-form-step-summary="" type="button" class="btn btn-primary pull-right">summary</button>
+					<button data-form-step-submit="" type="button" class="btn btn-primary pull-right">submit</button>
+				</div>
+			</form>
 		</div>
-		<div id="log-container">
+		<div class="container" id="log-container">
 			<h4>log</h4>
 			<div id="log"></div>
 		</div>		

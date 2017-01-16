@@ -9,7 +9,7 @@
 			this.data.element = aForm.data.element.find("[" + de.titus.form.Setup.prefix + "-step-control" + "]");
 			this.data.stepControlBack = undefined;
 			this.data.stepControlNext = undefined;
-			this.data.stepControlFinish = undefined;
+			this.data.stepControlSummary = undefined;
 			this.data.stepControlSubmit = undefined;
 			this.data.form = aForm;
 			this.init();
@@ -28,9 +28,9 @@
 			this.data.stepControlNext = this.data.element.find("[" + de.titus.form.Setup.prefix + "-step-next" + "]");
 			this.data.stepControlNext.on("click", de.titus.form.StepControl.prototype.__StepNextHandle.bind(this));
 			
-			this.data.stepControlFinish = this.data.element.find("[" + de.titus.form.Setup.prefix + "-step-finish" + "]");
-			this.data.stepControlFinish.hide();
-			this.data.stepControlFinish.on("click", de.titus.form.StepControl.prototype.__StepFinishHandle.bind(this));
+			this.data.stepControlSummary = this.data.element.find("[" + de.titus.form.Setup.prefix + "-step-summary" + "]");
+			this.data.stepControlSummary.hide();
+			this.data.stepControlSummary.on("click", de.titus.form.StepControl.prototype.__StepSummaryHandle.bind(this));
 			
 			this.data.stepControlSubmit = this.data.element.find("[" + de.titus.form.Setup.prefix + "-step-submit" + "]");
 			this.data.stepControlSubmit.hide();
@@ -46,25 +46,25 @@
 				return;
 			} else if (this.data.form.doValidate()) {
 				this.data.stepControlNext.prop("disabled", false);
-				this.data.stepControlFinish.prop("disabled", false);
+				this.data.stepControlSummary.prop("disabled", false);
 				this.data.stepControlSubmit.prop("disabled", false);
 				
 				if ((this.data.form.data.pages.length - 1) > this.data.form.data.currentPage) {
 					this.data.stepControlNext.show();
-					this.data.stepControlFinish.hide();
+					this.data.stepControlSummary.hide();
 					this.data.stepControlSubmit.hide();
 				} else if (this.data.form.data.state == de.titus.form.Constants.STATE.PAGES) {
 					this.data.stepControlNext.hide();
-					this.data.stepControlFinish.show();
+					this.data.stepControlSummary.show();
 					this.data.stepControlSubmit.hide();
 				} else if (this.data.form.data.state == de.titus.form.Constants.STATE.SUMMARY) {
 					this.data.stepControlNext.hide();
-					this.data.stepControlFinish.hide();
+					this.data.stepControlSummary.hide();
 					this.data.stepControlSubmit.show();
 				}
 			} else {
 				this.data.stepControlNext.prop("disabled", true);
-				this.data.stepControlFinish.prop("disabled", true);
+				this.data.stepControlSummary.prop("disabled", true);
 				this.data.stepControlSubmit.prop("disabled", true);
 			}
 			
@@ -92,9 +92,9 @@
 			}
 		};
 		
-		de.titus.form.StepControl.prototype.__StepFinishHandle = function(aEvent) {
+		de.titus.form.StepControl.prototype.__StepSummaryHandle = function(aEvent) {
 			if (de.titus.form.StepControl.LOGGER.isDebugEnabled())
-				de.titus.form.StepControl.LOGGER.logDebug("__StepFinishHandle()");
+				de.titus.form.StepControl.LOGGER.logDebug("__StepSummaryHandle()");
 			
 			this.data.form.showSummary();
 		};

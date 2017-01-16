@@ -25,14 +25,14 @@
 		de.titus.form.StepPanel.prototype.update = function() {
 			if (de.titus.form.StepPanel.LOGGER.isDebugEnabled())
 				de.titus.form.StepPanel.LOGGER.logDebug("update()");
-			this.data.element.find(".activ").removeClass("activ")
+			this.data.element.find(".active").removeClass("active")
 
 			if (this.data.form.data.state == de.titus.form.Constants.STATE.SUMMARY && this.data.stepPanelSummaryState != undefined) 
-				this.data.stepPanelSummaryState.addClass("activ");
+				this.data.stepPanelSummaryState.addClass("active");
 			 else if (this.data.form.data.state == de.titus.form.Constants.STATE.SUBMITED && this.data.stepPanelSubmitedState != undefined)
-				this.data.stepPanelSubmitedState.addClass("activ");
+				this.data.stepPanelSubmitedState.addClass("active");
 			 else
-				this.data.element.find("[" + de.titus.form.Setup.prefix + "-step='" + this.data.form.currentPage().data.step + "']").addClass("activ");
+				this.data.element.find("[" + de.titus.form.Setup.prefix + "-step='" + this.data.form.currentPage().data.step + "']").addClass("active");
 		};
 	});
 })($);

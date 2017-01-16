@@ -13,7 +13,7 @@
 			this.data.activ = false;
 			this.data.valid = false;
 			
-			var initializeFunction = de.titus.form.Setup.fieldtypes[this.data.type] || de.titus.form.Setup.fieldtypes["testField"];
+			var initializeFunction = de.titus.form.Setup.fieldtypes[this.data.type] || de.titus.form.Setup.fieldtypes["default"];
 			if (initializeFunction == undefined || typeof initializeFunction !== "function")
 				throw "The fieldtype \"" + this.data.type + "\" is not available!";
 			
