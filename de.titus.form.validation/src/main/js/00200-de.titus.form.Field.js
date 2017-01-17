@@ -13,15 +13,25 @@
 			this.data.activ = false;
 			this.data.valid = false;
 			
-			var initializeFunction = de.titus.form.Setup.fieldtypes[this.data.type] || de.titus.form.Setup.fieldtypes["default"];
-			if (initializeFunction == undefined || typeof initializeFunction !== "function")
-				throw "The fieldtype \"" + this.data.type + "\" is not available!";
 			
-			this.fieldController = initializeFunction(this.data.element, this.data.name, de.titus.form.Field.prototype.doValueChange.bind(this));
+			this.init();
 		};
 	});
 	
 	de.titus.form.Field.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.Field");
+	
+	de.titus.form.Field.prototype.init = function() {
+		if(de.titus.form.Field.LOGGER.isDebugEnabled())
+			de.titus.form.Field.LOGGER.logDebug("init()");
+		
+
+		var initializeFunction = de.titus.form.Setup.fieldtypes[this.data.type] || de.titus.form.Setup.fieldtypes["default"];
+		if (initializeFunction == undefined || typeof initializeFunction !== "function")
+			throw "The fieldtype \"" + this.data.type + "\" is not available!";
+		
+		this.fieldController = initializeFunction(this.data.element, this.data.name, de.titus.form.Field.prototype.doValueChange.bind(this));		
+		this.doValidate(this.fieldController.getValue());
+	};
 	
 	de.titus.form.Field.prototype.doConditionCheck = function() {
 		if(de.titus.form.Field.LOGGER.isDebugEnabled())
@@ -45,6 +55,9 @@
 	};
 	
 	de.titus.form.Field.prototype.showSummary = function(){
+		if(de.titus.form.Field.LOGGER.isDebugEnabled())
+			de.titus.form.Field.LOGGER.logDebug("showSummary()");
+		
 		if(!this.data.activ)
 			return;
 		

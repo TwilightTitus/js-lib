@@ -9,8 +9,10 @@
 			this.data.element = aElement;
 			this.data.name = aElement.attr(de.titus.form.Setup.prefix + "-page");
 			this.data.step = aElement.attr(de.titus.form.Setup.prefix + "-step");
-			this.data.dataController = aDataController;
-			this.data.fields = {};
+			this.data.formDataController = aDataController;
+			this.data.dataController = new de.titus.form.DataControllerProxy(de.titus.form.Page.prototype.valueChangeListener.bind(this), this.data.formDataController);
+			this.data.fieldMap = {};
+			this.data.fields = [];
 			this.data.activ = false;
 			
 			this.init();
@@ -24,6 +26,11 @@
 			this.initFields(this.data.element);
 		};
 		
+		de.titus.form.Page.prototype.valueChangeListener = function(aName, aValue) {
+			for(var i = 0; i < this.data.fields.length; i++)
+				this.data.fields[i].doConditionCheck();
+		};
+		
 
 		de.titus.form.Page.prototype.initFields = function(aElement) {
 			if(de.titus.form.Page.LOGGER.isDebugEnabled())
@@ -31,7 +38,8 @@
 			
 			if (aElement.attr(de.titus.form.Setup.prefix + "-field") != undefined) {
 				var field = aElement.FormularField(this.data.dataController);
-				this.data.fields[field.name] = field;				
+				this.data.fieldMap[field.name] = field;
+				this.data.fields.push(field);
 			} else {
 				var children = aElement.children();
 				for (var i = 0; i < children.length; i++) {
@@ -44,7 +52,7 @@
 		de.titus.form.Page.prototype.checkCondition = function(){
 			if(de.titus.form.Page.LOGGER.isDebugEnabled())
 				de.titus.form.Page.LOGGER.logDebug("checkCondition()");
-			
+			//TODO
 			this.data.activ = true;
 			return this.data.activ;
 		};		
@@ -52,6 +60,9 @@
 		de.titus.form.Page.prototype.show = function(){
 			if(de.titus.form.Page.LOGGER.isDebugEnabled())
 				de.titus.form.Page.LOGGER.logDebug("show()");
+			
+			for(var i = 0; i < this.data.fields.length; i++)
+				this.data.fields[i].doConditionCheck();
 			
 			this.data.element.show();
 		};

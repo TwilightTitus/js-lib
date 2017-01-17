@@ -57,6 +57,8 @@
 		de.titus.form.Formular.prototype.valueChanged = function() {
 			if (de.titus.form.Formular.LOGGER.isDebugEnabled())
 				de.titus.form.Formular.LOGGER.logDebug("valueChanged()");
+			
+			
 		};
 		
 		de.titus.form.Formular.prototype.doValidate = function() {
@@ -102,12 +104,16 @@
 					if(i != this.data.currentPage)
 						this.data.pages[i].hide();
 				
+				this.data.pages[this.data.currentPage].show();
+				
 				this.data.stepPanel.update();
 				this.data.stepControl.update();
 				
 			} else if (this.data.currentPage > 0) {
+				this.data.pages[this.data.currentPage].hide();
 				var page = de.titus.form.PageUtils.findPrevPage(this.data.pages, this.data.currentPage);
 				this.data.currentPage = page.data.number - 1;
+				this.data.pages[this.data.currentPage].show();
 				this.data.state = de.titus.form.Constants.STATE.PAGES;
 				this.data.stepPanel.update();
 				this.data.stepControl.update();
@@ -119,21 +125,27 @@
 			if (de.titus.form.Formular.LOGGER.isDebugEnabled())
 				de.titus.form.Formular.LOGGER.logDebug("nextPage()");
 			
+			
 			if (this.data.currentPage < (this.data.pages.length - 1)) {
+				if(!this.data.pages[this.data.currentPage].doValidate())
+					return;
+				
 				var page = de.titus.form.PageUtils.findNextPage(this.data.pages, this.data.currentPage);
 				if (page != undefined) {
 					this.data.state = de.titus.form.Constants.STATE.PAGES;
+					this.data.pages[this.data.currentPage].hide();
 					this.data.currentPage = page.data.number - 1;
+					this.data.pages[this.data.currentPage].show();					
 					this.data.stepPanel.update();
 					this.data.stepControl.update();
 					return;
 				}
+			}else{			
+    			this.data.state = de.titus.form.Constants.STATE.SUMMARY;
+    			this.showSummary();
+    			this.data.stepPanel.update();
+    			this.data.stepControl.update();
 			}
-			
-			this.data.state = de.titus.form.Constants.STATE.SUMMARY;
-			this.showSummary();
-			this.data.stepPanel.update();
-			this.data.stepControl.update();
 		};
 		
 		de.titus.form.Formular.prototype.submit = function() {
