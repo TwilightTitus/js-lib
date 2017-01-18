@@ -11,8 +11,9 @@
 			this.data.pages = [];
 			this.data.dataController = new de.titus.form.DataController(de.titus.form.Formular.prototype.valueChanged.bind(this));
 			this.data.stepControl = undefined;
-			this.data.currentPage = 0;
+			this.data.currentPage = -1;
 			this.data.state = de.titus.form.Constants.STATE.PAGES;
+			this.expressionResolver = new de.titus.core.ExpressionResolver();
 			this.init();
 		};
 		
@@ -21,11 +22,27 @@
 		de.titus.form.Formular.prototype.init = function() {
 			if (de.titus.form.Formular.LOGGER.isDebugEnabled())
 				de.titus.form.Formular.LOGGER.logDebug("init()");
-			
+				
+			if(this.data.element.is("form"))
+				this.data.element.on("submit", function(aEvent){ aEvent.preventDefault(); aEvent.stopPropagation();});
+					
+			this.initAction();
 			this.data.stepPanel = new de.titus.form.StepPanel(this);
 			this.data.stepControl = new de.titus.form.StepControl(this);
 			this.initPages();
 			
+		};
+		
+		de.titus.form.Formular.prototype.initAction = function() {
+			var initAction = this.data.element.attr("data-form-init");
+			if(initAction != undefined && initAction != ""){
+				var data = this.expressionResolver.resolveExpression(initAction, this.data, undefined);
+				if(typeof data === "function")
+					data = data(this.data.element, this);
+				
+				if(typeof data === "object")				
+					this.data.dataController.data = data;				
+			}
 		};
 		
 		de.titus.form.Formular.prototype.initPages = function() {
@@ -50,6 +67,8 @@
 				}
 			}
 			
+			var page = de.titus.form.PageUtils.findNextPage(this.data.pages, -1);
+			this.data.currentPage = page.data.number - 1;
 			this.data.stepPanel.update();
 			this.data.stepControl.update();
 		};
@@ -155,6 +174,34 @@
 			this.data.state = de.titus.form.Constants.STATE.SUBMITED;
 			this.data.stepPanel.update();
 			this.data.stepControl.update();
+			var data = this.data.dataController.data;
+			if (de.titus.form.Formular.LOGGER.isDebugEnabled())
+				de.titus.form.Formular.LOGGER.logDebug("submit() -> data: " + JSON.stringify(data));
+			
+			var action = this.data.element.attr("data-form-submit");
+			if(action != undefined && action != ""){
+				if (de.titus.form.Formular.LOGGER.isDebugEnabled())
+					de.titus.form.Formular.LOGGER.logDebug("submit() -> use a submit action!"); 
+				var data = this.expressionResolver.resolveExpression(action, data, undefined);
+				if(typeof data === "function")
+					data(form);
+			}else{
+				if (de.titus.form.Formular.LOGGER.isDebugEnabled())
+					de.titus.form.Formular.LOGGER.logDebug("submit() -> use a default ajax!");
+				
+				var action = this.data.element.attr("action");
+				var method = this.data.element.attr("method") || "post";
+				var contentType = this.data.element.attr("enctype") || "application/json";
+				
+				var request = {
+					"url" : action,
+					"type": method,
+					"contentType": contentType,
+					"data": contentType == "application/json"? JSON.stringify(data): data
+				};
+				//TODO Response processing
+				$.ajax(request);
+			}
 		};
 	});
 	
