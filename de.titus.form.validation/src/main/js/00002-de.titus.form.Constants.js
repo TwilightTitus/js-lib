@@ -23,5 +23,10 @@
 		SUMMARY : "form-state-summary",
 		SUBMITED : "form-state-submited",
 		};
+		
+		de.titus.form.Constants.ATTRIBUTE ={
+				VALIDATION : "-validtation",
+				CONDITION : "-condition"
+		}
 	});
 })();

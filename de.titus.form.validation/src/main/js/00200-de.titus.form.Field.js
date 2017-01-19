@@ -77,9 +77,9 @@
 		
 		var value = this.fieldController.getValue();
 		if (this.doValidate(value))
-			this.data.dataController.changeValue(this.data.name, value);
+			this.data.dataController.changeValue(this.data.name, value, this);
 		else
-			this.data.dataController.changeValue(this.data.name, null);
+			this.data.dataController.changeValue(this.data.name, null, this);
 		
 		this.data.element.trigger(de.titus.form.Constants.EVENTS.FIELD_VALUE_CHANGED);
 	};

@@ -43,6 +43,11 @@
 		SUMMARY : "form-state-summary",
 		SUBMITED : "form-state-submited",
 		};
+		
+		de.titus.form.Constants.ATTRIBUTE ={
+				VALIDATION : "-validtation",
+				CONDITION : "-condition"
+		}
 	});
 })();
 (function(){
@@ -131,9 +136,9 @@
 		
 		var value = this.fieldController.getValue();
 		if (this.doValidate(value))
-			this.data.dataController.changeValue(this.data.name, value);
+			this.data.dataController.changeValue(this.data.name, value, this);
 		else
-			this.data.dataController.changeValue(this.data.name, null);
+			this.data.dataController.changeValue(this.data.name, null, this);
 		
 		this.data.element.trigger(de.titus.form.Constants.EVENTS.FIELD_VALUE_CHANGED);
 	};
@@ -177,7 +182,7 @@
 		
 		de.titus.form.DataController.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.DataController");
 		
-		de.titus.form.DataController.prototype.changeValue = function(aName, aValue){
+		de.titus.form.DataController.prototype.changeValue = function(aName, aValue, aField){
 			if(de.titus.form.DataController.LOGGER.isDebugEnabled())
 				de.titus.form.DataController.LOGGER.logDebug("changeValue()");
 			
@@ -205,11 +210,11 @@
 		
 		de.titus.form.DataControllerProxy.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.DataControllerProxy");
 		
-		de.titus.form.DataControllerProxy.prototype.changeValue = function(aName, aValue){
+		de.titus.form.DataControllerProxy.prototype.changeValue = function(aName, aValue, aField){
 			if(de.titus.form.DataControllerProxy.LOGGER.isDebugEnabled())
 				de.titus.form.DataControllerProxy.LOGGER.logDebug("changeValue()");			
-			this.dataController.changeValue(aName, aValue);
-			this.changeListener(aName, aValue);
+			this.dataController.changeValue(aName, aValue, aField);
+			this.changeListener(aName, aValue, aField);
 		};				
 	});	
 })();
@@ -446,7 +451,7 @@
 (function() {
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.form.Page", function() {
-		de.titus.form.Page = function(aElement, aDataController) {
+		de.titus.form.Page = function(aElement, aDataController, aExpressionResolver) {
 			if(de.titus.form.Page.LOGGER.isDebugEnabled())
 				de.titus.form.Page.LOGGER.logDebug("constructor");
 			this.data = {};
@@ -454,6 +459,7 @@
 			this.data.element = aElement;
 			this.data.name = aElement.attr(de.titus.form.Setup.prefix + "-page");
 			this.data.step = aElement.attr(de.titus.form.Setup.prefix + "-step");
+			this.data.expressionResolver = aExpressionResolver || new de.titus.core.ExpressionResolver();
 			this.data.formDataController = aDataController;
 			this.data.dataController = new de.titus.form.DataControllerProxy(de.titus.form.Page.prototype.valueChangeListener.bind(this), this.data.formDataController);
 			this.data.fieldMap = {};
@@ -497,8 +503,21 @@
 		de.titus.form.Page.prototype.checkCondition = function(){
 			if(de.titus.form.Page.LOGGER.isDebugEnabled())
 				de.titus.form.Page.LOGGER.logDebug("checkCondition()");
-			//TODO
-			this.data.activ = true;
+			
+			this.data.activ = false;
+			var condition = this.data.element.attr(de.titus.form.Setup.prefix + de.titus.form.Constants.ATTRIBUTE.CONDITION);
+			if(condition != undefined && condition.trim() != ""){
+				
+				var data = this.data.dataController.data;
+				var condition = this.data.expressionResolver.resolveExpression(condition, data, false);
+				if(typeof condition === "function")
+					this.data.activ = condition(data, this);
+				else
+					this.data.activ = condition === true; 
+			}
+			else			
+				this.data.activ = true;
+			
 			return this.data.activ;
 		};		
 		

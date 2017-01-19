@@ -1,7 +1,7 @@
 (function() {
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.form.Page", function() {
-		de.titus.form.Page = function(aElement, aDataController) {
+		de.titus.form.Page = function(aElement, aDataController, aExpressionResolver) {
 			if(de.titus.form.Page.LOGGER.isDebugEnabled())
 				de.titus.form.Page.LOGGER.logDebug("constructor");
 			this.data = {};
@@ -9,6 +9,7 @@
 			this.data.element = aElement;
 			this.data.name = aElement.attr(de.titus.form.Setup.prefix + "-page");
 			this.data.step = aElement.attr(de.titus.form.Setup.prefix + "-step");
+			this.data.expressionResolver = aExpressionResolver || new de.titus.core.ExpressionResolver();
 			this.data.formDataController = aDataController;
 			this.data.dataController = new de.titus.form.DataControllerProxy(de.titus.form.Page.prototype.valueChangeListener.bind(this), this.data.formDataController);
 			this.data.fieldMap = {};
@@ -52,8 +53,21 @@
 		de.titus.form.Page.prototype.checkCondition = function(){
 			if(de.titus.form.Page.LOGGER.isDebugEnabled())
 				de.titus.form.Page.LOGGER.logDebug("checkCondition()");
-			//TODO
-			this.data.activ = true;
+			
+			this.data.activ = false;
+			var condition = this.data.element.attr(de.titus.form.Setup.prefix + de.titus.form.Constants.ATTRIBUTE.CONDITION);
+			if(condition != undefined && condition.trim() != ""){
+				
+				var data = this.data.dataController.data;
+				var condition = this.data.expressionResolver.resolveExpression(condition, data, false);
+				if(typeof condition === "function")
+					this.data.activ = condition(data, this);
+				else
+					this.data.activ = condition === true; 
+			}
+			else			
+				this.data.activ = true;
+			
 			return this.data.activ;
 		};		
 		

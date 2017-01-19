@@ -8,11 +8,11 @@
 		
 		de.titus.form.DataControllerProxy.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.DataControllerProxy");
 		
-		de.titus.form.DataControllerProxy.prototype.changeValue = function(aName, aValue){
+		de.titus.form.DataControllerProxy.prototype.changeValue = function(aName, aValue, aField){
 			if(de.titus.form.DataControllerProxy.LOGGER.isDebugEnabled())
 				de.titus.form.DataControllerProxy.LOGGER.logDebug("changeValue()");			
-			this.dataController.changeValue(aName, aValue);
-			this.changeListener(aName, aValue);
+			this.dataController.changeValue(aName, aValue, aField);
+			this.changeListener(aName, aValue, aField);
 		};				
 	});	
 })();

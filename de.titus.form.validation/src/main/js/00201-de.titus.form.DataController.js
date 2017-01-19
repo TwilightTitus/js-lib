@@ -8,7 +8,7 @@
 		
 		de.titus.form.DataController.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.DataController");
 		
-		de.titus.form.DataController.prototype.changeValue = function(aName, aValue){
+		de.titus.form.DataController.prototype.changeValue = function(aName, aValue, aField){
 			if(de.titus.form.DataController.LOGGER.isDebugEnabled())
 				de.titus.form.DataController.LOGGER.logDebug("changeValue()");
 			
