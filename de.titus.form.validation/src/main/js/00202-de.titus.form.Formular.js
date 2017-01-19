@@ -77,7 +77,8 @@
 			if (de.titus.form.Formular.LOGGER.isDebugEnabled())
 				de.titus.form.Formular.LOGGER.logDebug("valueChanged()");
 			
-			
+			this.data.stepPanel.update();
+			this.data.stepControl.update();
 		};
 		
 		de.titus.form.Formular.prototype.doValidate = function() {
@@ -85,7 +86,7 @@
 				de.titus.form.Formular.LOGGER.logDebug("doValidate()");
 			
 			for (var i = 0; i < this.data.pages.length; i++)
-				if (this.data.pages[i].active && !this.data.pages[i].data.valid)
+				if (this.data.pages[i].data.active && !this.data.pages[i].doValidate())
 					return false;
 			
 			return true;
@@ -96,7 +97,7 @@
 				de.titus.form.Formular.LOGGER.logDebug("showSummary()");
 			
 			for (var i = 0; i < this.data.pages.length; i++)
-				if (this.data.pages[i].data.activ)
+				if (this.data.pages[i].data.active)
 					this.data.pages[i].showSummary();
 			
 			this.data.state = de.titus.form.Constants.STATE.SUMMARY;
@@ -104,7 +105,7 @@
 			this.data.stepControl.update();
 		};
 		
-		de.titus.form.Formular.prototype.currentPage = function() {
+		de.titus.form.Formular.prototype.getCurrentPage = function() {
 			if (de.titus.form.Formular.LOGGER.isDebugEnabled())
 				de.titus.form.Formular.LOGGER.logDebug("currentPage() -> current index: " + this.data.currentPage);
 			

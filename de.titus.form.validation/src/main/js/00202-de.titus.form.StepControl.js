@@ -35,37 +35,36 @@
 			this.data.stepControlSubmit = this.data.element.find("[" + de.titus.form.Setup.prefix + "-step-submit" + "]");
 			this.data.stepControlSubmit.hide();
 			this.data.stepControlSubmit.on("click", de.titus.form.StepControl.prototype.__StepSubmitHandle.bind(this));
-			
-			if (de.titus.form.StepControl.LOGGER.isDebugEnabled())
-				console.log(this);
 		};
 		
 		de.titus.form.StepControl.prototype.update = function() {
 			if (this.data.form.data.state == de.titus.form.Constants.STATE.SUBMITED) {
 				this.data.element.hide();
 				return;
-			} else if (this.data.form.doValidate()) {
-				this.data.stepControlNext.prop("disabled", false);
-				this.data.stepControlSummary.prop("disabled", false);
-				this.data.stepControlSubmit.prop("disabled", false);
-				
+			} else {
 				if ((this.data.form.data.pages.length - 1) > this.data.form.data.currentPage) {
-					this.data.stepControlNext.show();
+					if (this.data.form.getCurrentPage().doValidate())
+						this.data.stepControlNext.show();
+					else
+						this.data.stepControlNext.hide();
+					
 					this.data.stepControlSummary.hide();
 					this.data.stepControlSubmit.hide();
 				} else if (this.data.form.data.state == de.titus.form.Constants.STATE.PAGES) {
 					this.data.stepControlNext.hide();
-					this.data.stepControlSummary.show();
+					if (this.data.form.getCurrentPage().doValidate())
+						this.data.stepControlSummary.show();
+					else
+						this.data.stepControlSummary.hide();
 					this.data.stepControlSubmit.hide();
 				} else if (this.data.form.data.state == de.titus.form.Constants.STATE.SUMMARY) {
 					this.data.stepControlNext.hide();
 					this.data.stepControlSummary.hide();
-					this.data.stepControlSubmit.show();
+					if(this.data.form.doValidate())
+						this.data.stepControlSubmit.show();
+					else
+						this.data.stepControlSubmit.hide();
 				}
-			} else {
-				this.data.stepControlNext.prop("disabled", true);
-				this.data.stepControlSummary.prop("disabled", true);
-				this.data.stepControlSubmit.prop("disabled", true);
 			}
 			
 			if (this.data.form.data.currentPage > 0)

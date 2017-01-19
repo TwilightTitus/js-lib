@@ -15,7 +15,7 @@
 			this.data.conditionHandle = new de.titus.form.Condition(this.data.element,this.data.dataController,this.data.expressionResolver);
 			this.data.fieldMap = {};
 			this.data.fields = [];
-			this.data.activ = false;
+			this.data.active = false;
 			
 			this.init();
 		};
@@ -56,12 +56,12 @@
 			if(de.titus.form.Page.LOGGER.isDebugEnabled())
 				de.titus.form.Page.LOGGER.logDebug("checkCondition()");
 			
-			this.data.activ = this.data.conditionHandle.doCheck();
-			if(!this.data.activ)
+			this.data.active = this.data.conditionHandle.doCheck();
+			if(!this.data.active)
 				for(var i = 0; i < this.data.fields.length; i++)
 					this.data.fields[i].setInactiv();
 			
-			return this.data.activ;
+			return this.data.active;
 		};		
 		
 		de.titus.form.Page.prototype.show = function(){
@@ -85,12 +85,12 @@
 			if(de.titus.form.Page.LOGGER.isDebugEnabled())
 				de.titus.form.Page.LOGGER.logDebug("showSummary()");
 			
-			if(!this.data.activ)
+			if(!this.data.active)
 				return;
 			
 			this.show();
 			for(var i = 0; i < this.data.fields.length; i++)
-				if(this.data.fields[i].data.activ)
+				if(this.data.fields[i].data.active)
 					this.data.fields[i].showSummary();
 		};
 		
@@ -99,7 +99,7 @@
 				de.titus.form.Page.LOGGER.logDebug("doValidate()");
 			
 			for(var i = 0; i < this.data.fields.length; i++)
-				if(this.data.fields[i].data.activ && !this.data.fields[i].data.valid)
+				if(this.data.fields[i].data.active && !this.data.fields[i].data.valid)
 					return false;
 			
 			return true;

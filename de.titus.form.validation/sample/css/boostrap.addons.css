@@ -21,3 +21,9 @@ div#log-container:hover #log {
 [data-form-validation].active{
 	display: block;
 }
+.form-state-submited {
+	
+}
+.text-danger.text-danger{
+	color: #a94442;
+}

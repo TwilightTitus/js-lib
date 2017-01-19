@@ -13,7 +13,7 @@
 			this.data.expressionResolver = aExpressionResolver || new de.titus.core.ExpressionResolver();
 			this.data.conditionHandle = new de.titus.form.Condition(this.data.element,this.data.dataController,this.data.expressionResolver); 
 			this.data.validationHandle = new de.titus.form.Validation(this.data.element,this.data.dataController,this.data.expressionResolver);
-			this.data.activ = undefined;
+			this.data.active = undefined;
 			this.data.valid = false;
 			
 			this.init();
@@ -40,20 +40,31 @@
 			de.titus.form.Field.LOGGER.logDebug("doConditionCheck()");
 		
 		var activ = this.data.conditionHandle.doCheck();
-		if (this.data.activ != activ && activ)
+		if (this.data.active != activ && activ)
 			this.fieldController.showField(this.data.dataController.data);
-		else if (this.data.activ != activ &&  !activ)
+		else if (this.data.active != activ &&  !activ)
 			this.setInactiv();
 		else{
 			//No Change
 		}
 		
-		this.data.activ = activ;
+		this.data.active = activ;
 		
 		if(de.titus.form.Field.LOGGER.isDebugEnabled())
-			de.titus.form.Field.LOGGER.logDebug("doConditionCheck() -> result: " + this.data.activ);
+			de.titus.form.Field.LOGGER.logDebug("doConditionCheck() -> result: " + this.data.active);
 		
-		return this.data.activ;
+		if(this.data.active){
+			this.data.element.trigger(de.titus.form.Constants.EVENTS.FIELD_ACTIVE);
+			this.data.element.removeClass(de.titus.form.Constants.EVENTS.FIELD_INACTIVE);
+			this.data.element.addClass(de.titus.form.Constants.EVENTS.FIELD_ACTIVE);
+		}
+		else{
+			this.data.element.trigger(de.titus.form.Constants.EVENTS.FIELD_INACTIVE);
+			this.data.element.removeClass(de.titus.form.Constants.EVENTS.FIELD_ACTIVE);
+			this.data.element.addClass(de.titus.form.Constants.EVENTS.FIELD_INACTIVE);
+		}
+		
+		return this.data.active;
 	};
 	
 	de.titus.form.Field.prototype.setInactiv = function() {
@@ -67,7 +78,7 @@
 		if(de.titus.form.Field.LOGGER.isDebugEnabled())
 			de.titus.form.Field.LOGGER.logDebug("showSummary()");
 		
-		if(!this.data.activ)
+		if(!this.data.active)
 			return;
 		
 		this.fieldController.showSummary();
@@ -88,7 +99,7 @@
 		if (this.doValidate(value))
 			this.data.dataController.changeValue(this.data.name, value, this);
 		else
-			this.data.dataController.changeValue(this.data.name, null, this);
+			this.data.dataController.changeValue(this.data.name, undefined, this);
 		
 		this.data.element.trigger(de.titus.form.Constants.EVENTS.FIELD_VALUE_CHANGED);
 	};
@@ -97,11 +108,23 @@
 		if(de.titus.form.Field.LOGGER.isDebugEnabled())
 			de.titus.form.Field.LOGGER.logDebug("doValidate() -> field: " + this.data.name);		
 		
-		this.data.valid = this.data.validationHandle.doCheck();		
+		this.data.valid = this.data.validationHandle.doCheck(aValue);		
 		this.fieldController.setValid(this.data.valid, "");
 		
+		if(this.data.valid){
+			this.data.element.trigger(de.titus.form.Constants.EVENTS.FIELD_VALID);
+			this.data.element.removeClass(de.titus.form.Constants.EVENTS.FIELD_INVALID);
+			this.data.element.addClass(de.titus.form.Constants.EVENTS.FIELD_VALID);
+		}
+		else{
+			this.data.element.trigger(de.titus.form.Constants.EVENTS.FIELD_INVALID);
+			this.data.element.removeClass(de.titus.form.Constants.EVENTS.FIELD_VALID);
+			this.data.element.addClass(de.titus.form.Constants.EVENTS.FIELD_INVALID);
+		}
+		
+		
 		if(de.titus.form.Field.LOGGER.isDebugEnabled())
-			de.titus.form.Field.LOGGER.logDebug("doValidate() -> field: " + this.data.name + " - result: " + this.data.activ);
+			de.titus.form.Field.LOGGER.logDebug("doValidate() -> field: " + this.data.name + " - result: " + this.data.valid);
 		
 		return this.data.valid;
 	};
