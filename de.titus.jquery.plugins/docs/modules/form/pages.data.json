@@ -1,0 +1,10 @@
+{
+	"pages": [
+		{
+		"tag":"Form",
+		"title": "This is a client side form engine.",
+		"teaser": "You make html, we make the logic. Simple to use, simple to extends, simple to design!",
+		"data":"modules/form/chapters/summary.chapter.data.json"
+		}
+	]
+}
