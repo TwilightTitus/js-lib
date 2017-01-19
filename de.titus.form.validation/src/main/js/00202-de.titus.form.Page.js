@@ -27,7 +27,8 @@
 			this.initFields(this.data.element);
 		};
 		
-		de.titus.form.Page.prototype.valueChangeListener = function(aName, aValue) {
+		de.titus.form.Page.prototype.valueChangeListener = function(aName, aValue, aField) {
+			this.data.formDataController.changeValue(aName, aValue, aField);
 			for(var i = 0; i < this.data.fields.length; i++)
 				this.data.fields[i].doConditionCheck();
 		};
@@ -38,7 +39,7 @@
 				de.titus.form.Page.LOGGER.logDebug("initFields()");
 			
 			if (aElement.attr(de.titus.form.Setup.prefix + "-field") != undefined) {
-				var field = aElement.FormularField(this.data.dataController);
+				var field = aElement.FormularField(this.data.dataController, this.data.expressionResolver);
 				this.data.fieldMap[field.name] = field;
 				this.data.fields.push(field);
 			} else {
@@ -58,7 +59,7 @@
 			var condition = this.data.element.attr(de.titus.form.Setup.prefix + de.titus.form.Constants.ATTRIBUTE.CONDITION);
 			if(condition != undefined && condition.trim() != ""){
 				
-				var data = this.data.dataController.data;
+				var data = this.data.dataController.getData();
 				var condition = this.data.expressionResolver.resolveExpression(condition, data, false);
 				if(typeof condition === "function")
 					this.data.activ = condition(data, this);
@@ -67,6 +68,10 @@
 			}
 			else			
 				this.data.activ = true;
+			
+			if(!this.data.activ)
+				for(var i = 0; i < this.data.fields.length; i++)
+					this.data.fields[i].setInactiv();
 			
 			return this.data.activ;
 		};		

@@ -51,7 +51,7 @@
 			
 			var pageElements = this.data.element.find("[" + de.titus.form.Setup.prefix + "-page" + "]");
 			if (pageElements.length == 0) {
-				var page = this.data.element.FormularPage(this.data.dataController);
+				var page = this.data.element.FormularPage(this.data.dataController, this.expressionResolver);
 				page.data.number = 1;
 				this.data.pages.push(page);
 				page.show();
@@ -174,7 +174,7 @@
 			this.data.state = de.titus.form.Constants.STATE.SUBMITED;
 			this.data.stepPanel.update();
 			this.data.stepControl.update();
-			var data = this.data.dataController.data;
+			var data = this.data.dataController.getData();
 			if (de.titus.form.Formular.LOGGER.isDebugEnabled())
 				de.titus.form.Formular.LOGGER.logDebug("submit() -> data: " + JSON.stringify(data));
 			

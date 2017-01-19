@@ -1,7 +1,7 @@
 (function() {
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.form.Field", function() {
-		de.titus.form.Field = function(aElement, aDataController) {
+		de.titus.form.Field = function(aElement, aDataController, aExpressionResolver) {
 			if(de.titus.form.Field.LOGGER.isDebugEnabled())
 				de.titus.form.Field.LOGGER.logDebug("constructor");
 			
@@ -10,6 +10,8 @@
 			this.data.dataController = aDataController;
 			this.data.name = aElement.attr(de.titus.form.Setup.prefix + "-field");
 			this.data.type = aElement.attr(de.titus.form.Setup.prefix + "-field-type");
+			this.data.expressionResolver = aExpressionResolver || new de.titus.core.ExpressionResolver();
+			this.data.conditionHandle = new de.titus.form.Condition(this.data.element,this.data.dataController,this.data.expressionResolver); 
 			this.data.activ = false;
 			this.data.valid = false;
 			
@@ -37,21 +39,25 @@
 		if(de.titus.form.Field.LOGGER.isDebugEnabled())
 			de.titus.form.Field.LOGGER.logDebug("doConditionCheck()");
 		
-		this.data.activ = false;		
-		if (this.isConditionSatisfied()){
+		var activ = this.data.conditionHandle.doCheck();
+		if (this.data.activ != activ && activ)
 			this.fieldController.showField(this.data.dataController.data);
-			this.data.activ = true;
+		else if (this.data.activ != activ &&  !activ)
+			this.setInactiv();
+		else{
+			//No Change
 		}
-		else
-			this.fieldController.hideField();
+		
+		this.data.activ = activ;
+		
+		return this.data.activ;		
 	};
 	
-	de.titus.form.Field.prototype.isConditionSatisfied = function() {
+	de.titus.form.Field.prototype.setInactiv = function() {
 		if(de.titus.form.Field.LOGGER.isDebugEnabled())
-			de.titus.form.Field.LOGGER.logDebug("isConditionSatisfied()");
-		
-		// TODO
-		return true; // if condition is satisfied
+			de.titus.form.Field.LOGGER.logDebug("setInactiv()");
+		this.data.dataController.changeValue(this.data.name, null, this);
+		this.fieldController.hideField();
 	};
 	
 	de.titus.form.Field.prototype.showSummary = function(){

@@ -2,27 +2,36 @@
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.form.DataController", function() {
 		de.titus.form.DataController = function(aChangeListener) {
+			if(de.titus.form.DataController.LOGGER.isDebugEnabled())
+				de.titus.form.DataController.LOGGER.logDebug("constructor");
+			
 			this.data = {};
 			this.changeListener = aChangeListener;
 		};
 		
 		de.titus.form.DataController.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.DataController");
 		
-		de.titus.form.DataController.prototype.changeValue = function(aName, aValue, aField){
+		de.titus.form.DataController.prototype.getData = function(){
+			if(de.titus.form.DataController.LOGGER.isDebugEnabled())
+				de.titus.form.DataController.LOGGER.logDebug("getData()");
+			return this.data;
+		};
+		
+		de.titus.form.DataController.prototype.changeValue = function(aName, aValue, aField, aCallback){
 			if(de.titus.form.DataController.LOGGER.isDebugEnabled())
 				de.titus.form.DataController.LOGGER.logDebug("changeValue()");
 			
-			if(aValue == undefined && this.data[aName] != undefined){
-				this.data[aName] = null;
-			}
-			else{			
-        		this.data[aName] = aValue;
+			if(aValue != this.data[aName] ){
+				this.data[aName] = aValue;
+			
+				if(de.titus.form.DataController.LOGGER.isDebugEnabled())
+					de.titus.form.DataController.LOGGER.logDebug("changeValue() -> new data: " + JSON.stringify(this.data));
+			
+				this.changeListener(aName, aValue, aField);
+				if(aCallback != undefined)
+					aCallback(aName, aValue, aField);
 			}
 			
-			if(de.titus.form.DataController.LOGGER.isDebugEnabled())
-				de.titus.form.DataController.LOGGER.logDebug("changeValue() -> new data: " + JSON.stringify(this.data));
-			
-			this.changeListener(aName, aValue);
 		};				
 	});	
 })();

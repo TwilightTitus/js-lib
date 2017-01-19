@@ -69,12 +69,12 @@
 				
 				<div data-form-page=""  data-form-step="1" data-form-condition="">
 					<h3>User Info</h3>
-					<p>			
+					<p>	
 						<div class="form-group" data-form-field="name" data-form-field-type="text" data-form-validation="" data-form-condition="">
 							<label for="name">name:</label>
 	    					<input type="text" class="form-control" name="name" />					
 						</div>
-						<div class="form-group" data-form-field="givenname" data-form-field-type="text" data-form-validation="" data-form-condition="">
+						<div class="form-group" data-form-field="givenname" data-form-field-type="text" data-form-validation="" data-form-condition="name != undefined && name.trim() != ''">
 							<label for="givenname">given name:</label>
 	    					<input type="text" class="form-control" name="givenname" />					
 						</div>

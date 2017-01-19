@@ -59,8 +59,63 @@
 	});	
 })();(function() {
 	"use strict";
+	de.titus.core.Namespace.create("de.titus.form.Condition", function() {
+		de.titus.form.Condition = function(aElement, aDataController, aExpressionResolver) {
+			if(de.titus.form.Condition.LOGGER.isDebugEnabled())
+				de.titus.form.Condition.LOGGER.logDebug("constructor");
+			
+			this.data = {};
+			this.data.element = aElement;
+			this.data.dataController = aDataController;
+			this.data.expressionResolver = aExpressionResolver;
+			this.data.state = false;
+		};
+		
+		de.titus.form.Condition.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.Condition");
+		
+		de.titus.form.Condition.prototype.doCheck = function(aCallback, callOnlyByChange) {
+			if(de.titus.form.Condition.LOGGER.isDebugEnabled())
+				de.titus.form.Condition.LOGGER.logDebug("doCheck()");
+				
+			var state = false;
+			var condition = this.data.element.attr(de.titus.form.Setup.prefix + de.titus.form.Constants.ATTRIBUTE.CONDITION);
+			if(condition != undefined && condition.trim() != ""){
+				
+				var data = this.data.dataController.getData();
+				if(de.titus.form.Condition.LOGGER.isDebugEnabled())
+					de.titus.form.Condition.LOGGER.logDebug("doCheck() -> data: " + JSON.stringify(data));
+				
+				var condition = this.data.expressionResolver.resolveExpression(condition, data, false);
+				if(typeof condition === "function")
+					state = condition(data, this);
+				else
+					state = condition === true; 
+			}
+			else			
+				state = true;	
+			
+			if(aCallback == undefined)
+				this.data.state = state;
+			else if(aCallback != undefined && callOnlyByChange && this.data.state != state){
+				this.data.state = state;
+				aCallback(this.data.state);
+			}
+			else if(aCallback != undefined && callOnlyByChange && this.data.state == state){
+				this.data.state = state;
+			}
+			else{
+				this.data.state = state;
+				aCallback(this.data.state);
+			}
+			
+			return this.data.state;					
+		};		
+	});	
+})();
+(function() {
+	"use strict";
 	de.titus.core.Namespace.create("de.titus.form.Field", function() {
-		de.titus.form.Field = function(aElement, aDataController) {
+		de.titus.form.Field = function(aElement, aDataController, aExpressionResolver) {
 			if(de.titus.form.Field.LOGGER.isDebugEnabled())
 				de.titus.form.Field.LOGGER.logDebug("constructor");
 			
@@ -69,6 +124,8 @@
 			this.data.dataController = aDataController;
 			this.data.name = aElement.attr(de.titus.form.Setup.prefix + "-field");
 			this.data.type = aElement.attr(de.titus.form.Setup.prefix + "-field-type");
+			this.data.expressionResolver = aExpressionResolver || new de.titus.core.ExpressionResolver();
+			this.data.conditionHandle = new de.titus.form.Condition(this.data.element,this.data.dataController,this.data.expressionResolver); 
 			this.data.activ = false;
 			this.data.valid = false;
 			
@@ -96,21 +153,25 @@
 		if(de.titus.form.Field.LOGGER.isDebugEnabled())
 			de.titus.form.Field.LOGGER.logDebug("doConditionCheck()");
 		
-		this.data.activ = false;		
-		if (this.isConditionSatisfied()){
+		var activ = this.data.conditionHandle.doCheck();
+		if (this.data.activ != activ && activ)
 			this.fieldController.showField(this.data.dataController.data);
-			this.data.activ = true;
+		else if (this.data.activ != activ &&  !activ)
+			this.setInactiv();
+		else{
+			//No Change
 		}
-		else
-			this.fieldController.hideField();
+		
+		this.data.activ = activ;
+		
+		return this.data.activ;		
 	};
 	
-	de.titus.form.Field.prototype.isConditionSatisfied = function() {
+	de.titus.form.Field.prototype.setInactiv = function() {
 		if(de.titus.form.Field.LOGGER.isDebugEnabled())
-			de.titus.form.Field.LOGGER.logDebug("isConditionSatisfied()");
-		
-		// TODO
-		return true; // if condition is satisfied
+			de.titus.form.Field.LOGGER.logDebug("setInactiv()");
+		this.data.dataController.changeValue(this.data.name, null, this);
+		this.fieldController.hideField();
 	};
 	
 	de.titus.form.Field.prototype.showSummary = function(){
@@ -176,27 +237,36 @@
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.form.DataController", function() {
 		de.titus.form.DataController = function(aChangeListener) {
+			if(de.titus.form.DataController.LOGGER.isDebugEnabled())
+				de.titus.form.DataController.LOGGER.logDebug("constructor");
+			
 			this.data = {};
 			this.changeListener = aChangeListener;
 		};
 		
 		de.titus.form.DataController.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.DataController");
 		
-		de.titus.form.DataController.prototype.changeValue = function(aName, aValue, aField){
+		de.titus.form.DataController.prototype.getData = function(){
+			if(de.titus.form.DataController.LOGGER.isDebugEnabled())
+				de.titus.form.DataController.LOGGER.logDebug("getData()");
+			return this.data;
+		};
+		
+		de.titus.form.DataController.prototype.changeValue = function(aName, aValue, aField, aCallback){
 			if(de.titus.form.DataController.LOGGER.isDebugEnabled())
 				de.titus.form.DataController.LOGGER.logDebug("changeValue()");
 			
-			if(aValue == undefined && this.data[aName] != undefined){
-				this.data[aName] = null;
-			}
-			else{			
-        		this.data[aName] = aValue;
+			if(aValue != this.data[aName] ){
+				this.data[aName] = aValue;
+			
+				if(de.titus.form.DataController.LOGGER.isDebugEnabled())
+					de.titus.form.DataController.LOGGER.logDebug("changeValue() -> new data: " + JSON.stringify(this.data));
+			
+				this.changeListener(aName, aValue, aField);
+				if(aCallback != undefined)
+					aCallback(aName, aValue, aField);
 			}
 			
-			if(de.titus.form.DataController.LOGGER.isDebugEnabled())
-				de.titus.form.DataController.LOGGER.logDebug("changeValue() -> new data: " + JSON.stringify(this.data));
-			
-			this.changeListener(aName, aValue);
 		};				
 	});	
 })();
@@ -204,17 +274,27 @@
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.form.DataControllerProxy", function() {
 		de.titus.form.DataControllerProxy = function(aChangeListener, aDataController) {
+			if(de.titus.form.DataControllerProxy.LOGGER.isDebugEnabled())
+				de.titus.form.DataControllerProxy.LOGGER.logDebug("constructor");
+			
 			this.dataController = aDataController;
 			this.changeListener = aChangeListener;
 		};
 		
 		de.titus.form.DataControllerProxy.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.DataControllerProxy");
 		
+		de.titus.form.DataControllerProxy.prototype.getData = function(){
+			if(de.titus.form.DataControllerProxy.LOGGER.isDebugEnabled())
+				de.titus.form.DataControllerProxy.LOGGER.logDebug("getData()");
+				
+			return this.dataController.getData();
+		};
+		
 		de.titus.form.DataControllerProxy.prototype.changeValue = function(aName, aValue, aField){
 			if(de.titus.form.DataControllerProxy.LOGGER.isDebugEnabled())
 				de.titus.form.DataControllerProxy.LOGGER.logDebug("changeValue()");			
-			this.dataController.changeValue(aName, aValue, aField);
-			this.changeListener(aName, aValue, aField);
+			
+			this.dataController.changeValue(aName, aValue, aField, this.changeListener);
 		};				
 	});	
 })();
@@ -271,7 +351,7 @@
 			
 			var pageElements = this.data.element.find("[" + de.titus.form.Setup.prefix + "-page" + "]");
 			if (pageElements.length == 0) {
-				var page = this.data.element.FormularPage(this.data.dataController);
+				var page = this.data.element.FormularPage(this.data.dataController, this.expressionResolver);
 				page.data.number = 1;
 				this.data.pages.push(page);
 				page.show();
@@ -394,7 +474,7 @@
 			this.data.state = de.titus.form.Constants.STATE.SUBMITED;
 			this.data.stepPanel.update();
 			this.data.stepControl.update();
-			var data = this.data.dataController.data;
+			var data = this.data.dataController.getData();
 			if (de.titus.form.Formular.LOGGER.isDebugEnabled())
 				de.titus.form.Formular.LOGGER.logDebug("submit() -> data: " + JSON.stringify(data));
 			
@@ -477,7 +557,8 @@
 			this.initFields(this.data.element);
 		};
 		
-		de.titus.form.Page.prototype.valueChangeListener = function(aName, aValue) {
+		de.titus.form.Page.prototype.valueChangeListener = function(aName, aValue, aField) {
+			this.data.formDataController.changeValue(aName, aValue, aField);
 			for(var i = 0; i < this.data.fields.length; i++)
 				this.data.fields[i].doConditionCheck();
 		};
@@ -488,7 +569,7 @@
 				de.titus.form.Page.LOGGER.logDebug("initFields()");
 			
 			if (aElement.attr(de.titus.form.Setup.prefix + "-field") != undefined) {
-				var field = aElement.FormularField(this.data.dataController);
+				var field = aElement.FormularField(this.data.dataController, this.data.expressionResolver);
 				this.data.fieldMap[field.name] = field;
 				this.data.fields.push(field);
 			} else {
@@ -508,7 +589,7 @@
 			var condition = this.data.element.attr(de.titus.form.Setup.prefix + de.titus.form.Constants.ATTRIBUTE.CONDITION);
 			if(condition != undefined && condition.trim() != ""){
 				
-				var data = this.data.dataController.data;
+				var data = this.data.dataController.getData();
 				var condition = this.data.expressionResolver.resolveExpression(condition, data, false);
 				if(typeof condition === "function")
 					this.data.activ = condition(data, this);
@@ -517,6 +598,10 @@
 			}
 			else			
 				this.data.activ = true;
+			
+			if(!this.data.activ)
+				for(var i = 0; i < this.data.fields.length; i++)
+					this.data.fields[i].setInactiv();
 			
 			return this.data.activ;
 		};		
