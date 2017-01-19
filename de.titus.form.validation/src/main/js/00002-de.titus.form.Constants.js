@@ -25,7 +25,7 @@
 		};
 		
 		de.titus.form.Constants.ATTRIBUTE ={
-				VALIDATION : "-validtation",
+				VALIDATION : "-validation",
 				CONDITION : "-condition"
 		}
 	});

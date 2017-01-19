@@ -12,9 +12,9 @@
 			this.data.type = aElement.attr(de.titus.form.Setup.prefix + "-field-type");
 			this.data.expressionResolver = aExpressionResolver || new de.titus.core.ExpressionResolver();
 			this.data.conditionHandle = new de.titus.form.Condition(this.data.element,this.data.dataController,this.data.expressionResolver); 
-			this.data.activ = false;
+			this.data.validationHandle = new de.titus.form.Validation(this.data.element,this.data.dataController,this.data.expressionResolver);
+			this.data.activ = undefined;
 			this.data.valid = false;
-			
 			
 			this.init();
 		};
@@ -50,7 +50,10 @@
 		
 		this.data.activ = activ;
 		
-		return this.data.activ;		
+		if(de.titus.form.Field.LOGGER.isDebugEnabled())
+			de.titus.form.Field.LOGGER.logDebug("doConditionCheck() -> result: " + this.data.activ);
+		
+		return this.data.activ;
 	};
 	
 	de.titus.form.Field.prototype.setInactiv = function() {
@@ -92,12 +95,15 @@
 	
 	de.titus.form.Field.prototype.doValidate = function(aValue) {
 		if(de.titus.form.Field.LOGGER.isDebugEnabled())
-			de.titus.form.Field.LOGGER.logDebug("isValid()");
-		// TODO
-		this.fieldController.setValid(true, "Not Valid!");
+			de.titus.form.Field.LOGGER.logDebug("doValidate() -> field: " + this.data.name);		
 		
-		this.data.valid = true;
-		return this.data.valid;// if value valied!
+		this.data.valid = this.data.validationHandle.doCheck();		
+		this.fieldController.setValid(this.data.valid, "");
+		
+		if(de.titus.form.Field.LOGGER.isDebugEnabled())
+			de.titus.form.Field.LOGGER.logDebug("doValidate() -> field: " + this.data.name + " - result: " + this.data.activ);
+		
+		return this.data.valid;
 	};
 	
 	$.fn.FormularField = function(aDataController) {

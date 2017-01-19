@@ -12,6 +12,7 @@
 			this.data.expressionResolver = aExpressionResolver || new de.titus.core.ExpressionResolver();
 			this.data.formDataController = aDataController;
 			this.data.dataController = new de.titus.form.DataControllerProxy(de.titus.form.Page.prototype.valueChangeListener.bind(this), this.data.formDataController);
+			this.data.conditionHandle = new de.titus.form.Condition(this.data.element,this.data.dataController,this.data.expressionResolver);
 			this.data.fieldMap = {};
 			this.data.fields = [];
 			this.data.activ = false;
@@ -55,20 +56,7 @@
 			if(de.titus.form.Page.LOGGER.isDebugEnabled())
 				de.titus.form.Page.LOGGER.logDebug("checkCondition()");
 			
-			this.data.activ = false;
-			var condition = this.data.element.attr(de.titus.form.Setup.prefix + de.titus.form.Constants.ATTRIBUTE.CONDITION);
-			if(condition != undefined && condition.trim() != ""){
-				
-				var data = this.data.dataController.getData();
-				var condition = this.data.expressionResolver.resolveExpression(condition, data, false);
-				if(typeof condition === "function")
-					this.data.activ = condition(data, this);
-				else
-					this.data.activ = condition === true; 
-			}
-			else			
-				this.data.activ = true;
-			
+			this.data.activ = this.data.conditionHandle.doCheck();
 			if(!this.data.activ)
 				for(var i = 0; i < this.data.fields.length; i++)
 					this.data.fields[i].setInactiv();

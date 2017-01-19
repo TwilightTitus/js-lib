@@ -12,12 +12,7 @@
 		<script type="application/javascript" src="../../de.titus.jquery.plugins/dist/2.11.0/de.titus.jquery.plugins.2.11.0.min.js"></script>
 		<script type="application/javascript" src="../dist/1.0.0/de.titus.form-1.0.0.js"></script>
 		<style type="text/css">
-			[data-form-page] {display: none;}
-			div#log {display: none;}
-			div#log-container:hover #log{display: block;}
-			.data-form-invalid input,
-			.data-form-invalid select,
-			.data-form-invalid textarea{border-color: red;}
+			
 			
 		</style>
 		<script type="text/javascript">
@@ -70,9 +65,11 @@
 				<div data-form-page=""  data-form-step="1" data-form-condition="">
 					<h3>User Info</h3>
 					<p>	
-						<div class="form-group" data-form-field="name" data-form-field-type="text" data-form-validation="" data-form-condition="">
+						<div class="form-group" data-form-field="name" data-form-field-type="text" data-form-condition="">
 							<label for="name">name:</label>
-	    					<input type="text" class="form-control" name="name" />					
+	    					<input type="text" class="form-control" name="name" />
+	    					<div data-form-validation="value != undefined && value.trim() != ''">Enter your name!</div>
+	    					<div data-form-validation="value.length > 5">Your name is to short!</div>				
 						</div>
 						<div class="form-group" data-form-field="givenname" data-form-field-type="text" data-form-validation="" data-form-condition="name != undefined && name.trim() != ''">
 							<label for="givenname">given name:</label>
