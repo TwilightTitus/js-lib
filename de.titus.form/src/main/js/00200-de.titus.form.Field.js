@@ -33,7 +33,7 @@
 			throw "The fieldtype \"" + this.data.type + "\" is not available!";
 		
 		this.fieldController = initializeFunction(this.data.element, this.data.name, de.titus.form.Field.prototype.doValueChange.bind(this));		
-		this.doValidate(this.fieldController.getValue());
+		this.data.element.on(de.titus.form.Constants.EVENTS.FIELD_VALUE_CHANGED, de.titus.form.Field.prototype.doValueChange.bind(this));
 	};
 	
 	de.titus.form.Field.prototype.doConditionCheck = function() {
@@ -59,6 +59,7 @@
 			this.data.element.trigger(de.titus.form.Constants.EVENTS.FIELD_ACTIVE);
 			this.data.element.removeClass(de.titus.form.Constants.EVENTS.FIELD_INACTIVE);
 			this.data.element.addClass(de.titus.form.Constants.EVENTS.FIELD_ACTIVE);
+			this.doValidate(this.fieldController.getValue());
 		}
 		else{
 			this.data.element.trigger(de.titus.form.Constants.EVENTS.FIELD_INACTIVE);
@@ -72,7 +73,7 @@
 	de.titus.form.Field.prototype.setInactiv = function() {
 		if(de.titus.form.Field.LOGGER.isDebugEnabled())
 			de.titus.form.Field.LOGGER.logDebug("setInactiv()");
-		this.data.dataController.changeValue(this.data.name, null, this);
+		this.data.dataController.changeValue(this.data.name, undefined, this);
 		this.fieldController.hideField();
 	};
 	
@@ -89,14 +90,7 @@
 	
 	de.titus.form.Field.prototype.doValueChange = function(aEvent) {
 		if(de.titus.form.Field.LOGGER.isDebugEnabled())
-			de.titus.form.Field.LOGGER.logDebug("doValueChange()");
-		
-		if (aEvent != undefined) {
-			if (typeof aEvent.preventDefault === "function")
-				aEvent.preventDefault();
-			if (typeof aEvent.stopPropagation === "function")
-				aEvent.stopPropagation();
-		}
+			de.titus.form.Field.LOGGER.logDebug("doValueChange() -> event type: " + (aEvent != undefined ? aEvent.type : ""));		
 		
 		var value = this.fieldController.getValue();
 		if (this.doValidate(value))
@@ -104,7 +98,13 @@
 		else
 			this.data.dataController.changeValue(this.data.name, undefined, this);
 		
-		this.data.element.trigger(de.titus.form.Constants.EVENTS.FIELD_VALUE_CHANGED);
+                if (aEvent == undefined)
+                    this.data.element.trigger($.Event(de.titus.form.Constants.EVENTS.FIELD_VALUE_CHANGED));
+                else if (aEvent.type != de.titus.form.Constants.EVENTS.FIELD_VALUE_CHANGED) {
+                    aEvent.preventDefault();
+                    aEvent.stopPropagation();
+                    this.data.element.trigger($.Event(de.titus.form.Constants.EVENTS.FIELD_VALUE_CHANGED));
+    		}
 	};
 	
 	de.titus.form.Field.prototype.doValidate = function(aValue) {

@@ -19,8 +19,10 @@
 				de.titus.form.Condition.LOGGER.logDebug("doCheck()");
 				
 			var state = false;
-			var condition = this.data.element.attr(de.titus.form.Setup.prefix + de.titus.form.Constants.ATTRIBUTE.CONDITION);
+			var condition = this.data.element.attr(de.titus.form.Setup.prefix + de.titus.form.Constants.ATTRIBUTE.CONDITION);			
 			if(condition != undefined && condition.trim() != ""){
+				if(de.titus.form.Condition.LOGGER.isDebugEnabled())
+					de.titus.form.Condition.LOGGER.logDebug("doCheck() -> condition: " + condition);
 				
 				var data = this.data.dataController.getData();
 				if(de.titus.form.Condition.LOGGER.isDebugEnabled())
