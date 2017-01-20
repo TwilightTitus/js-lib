@@ -110,15 +110,22 @@
 			this.element.show();
 		};
 		
-		DefaultFieldController.prototype.showSummary = function() {
+		DefaultFieldController.prototype.showSummary = function(isSummary) {
 			if (DefaultFieldController.LOGGER.isDebugEnabled())
 				DefaultFieldController.LOGGER.logDebug("showSummary()");
 			
-			if (this.type == "select")
-				this.element.find("select").prop("disabled", true);
-			else
-				this.element.find("input, textarea").prop("disabled", true);
-			
+			if(isSummary){
+				if (this.type == "select")
+					this.element.find("select").prop("disabled", true);
+				else
+					this.element.find("input, textarea").prop("disabled", true);
+			}
+			else{
+				if (this.type == "select")
+					this.element.find("select").prop("disabled", false);
+				else
+					this.element.find("input, textarea").prop("disabled", false);
+			}			
 		};
 		
 		DefaultFieldController.prototype.hideField = function() {

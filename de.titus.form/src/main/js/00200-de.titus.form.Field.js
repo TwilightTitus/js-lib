@@ -13,6 +13,7 @@
 			this.data.expressionResolver = aExpressionResolver || new de.titus.core.ExpressionResolver();
 			this.data.conditionHandle = new de.titus.form.Condition(this.data.element,this.data.dataController,this.data.expressionResolver); 
 			this.data.validationHandle = new de.titus.form.Validation(this.data.element,this.data.dataController,this.data.expressionResolver);
+			this.data.summary = false;
 			this.data.active = undefined;
 			this.data.valid = false;
 			
@@ -41,12 +42,13 @@
 		
 		var activ = this.data.conditionHandle.doCheck();
 		if (this.data.active != activ && activ)
-			this.fieldController.showField(this.data.dataController.data);
+			this.fieldController.showField(this.data.dataController.getData(this.data.name), this.data.dataController.getData());
 		else if (this.data.active != activ &&  !activ)
 			this.setInactiv();
-		else{
-			//No Change
-		}
+		else if(this.data.summary)
+			this.fieldController.showSummary(false);
+		
+		this.data.summary = false;
 		
 		this.data.active = activ;
 		
@@ -81,7 +83,8 @@
 		if(!this.data.active)
 			return;
 		
-		this.fieldController.showSummary();
+		this.data.summary = true;
+		this.fieldController.showSummary(true);
 	};
 	
 	de.titus.form.Field.prototype.doValueChange = function(aEvent) {

@@ -4,7 +4,7 @@
 			var pathes = [];
 			
 			this.each(function() {
-				var element = fiduciagad.$(this);
+				var element = $(this);
 				if(element[0].id != undefined && element[0].id != "")
 					pathes.push("#" + element[0].id);
 				else {

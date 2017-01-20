@@ -11,11 +11,11 @@
 		
 		DataControllerProxy.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("DataControllerProxy");
 		
-		DataControllerProxy.prototype.getData = function(){
+		DataControllerProxy.prototype.getData = function(aName){
 			if(DataControllerProxy.LOGGER.isDebugEnabled())
-				DataControllerProxy.LOGGER.logDebug("getData()");
+				DataControllerProxy.LOGGER.logDebug("getData() -> aName: " + aName);
 				
-			return this.dataController.getData();
+			return this.dataController.getData(aName);
 		};
 		
 		DataControllerProxy.prototype.changeValue = function(aName, aValue, aField){

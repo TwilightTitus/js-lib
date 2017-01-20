@@ -449,7 +449,7 @@ de.titus.core.Namespace.create("de.titus.core.DomHelper", function() {
 			var pathes = [];
 			
 			this.each(function() {
-				var element = fiduciagad.$(this);
+				var element = $(this);
 				if(element[0].id != undefined && element[0].id != "")
 					pathes.push("#" + element[0].id);
 				else {
@@ -3411,6 +3411,7 @@ de.titus.core.Namespace.create("de.titus.jstl.javascript.polyfills", function() 
 			this.data.expressionResolver = aExpressionResolver || new de.titus.core.ExpressionResolver();
 			this.data.conditionHandle = new de.titus.form.Condition(this.data.element,this.data.dataController,this.data.expressionResolver); 
 			this.data.validationHandle = new de.titus.form.Validation(this.data.element,this.data.dataController,this.data.expressionResolver);
+			this.data.summary = false;
 			this.data.active = undefined;
 			this.data.valid = false;
 			
@@ -3439,12 +3440,13 @@ de.titus.core.Namespace.create("de.titus.jstl.javascript.polyfills", function() 
 		
 		var activ = this.data.conditionHandle.doCheck();
 		if (this.data.active != activ && activ)
-			this.fieldController.showField(this.data.dataController.data);
+			this.fieldController.showField(this.data.dataController.getData(this.data.name), this.data.dataController.getData());
 		else if (this.data.active != activ &&  !activ)
 			this.setInactiv();
-		else{
-			//No Change
-		}
+		else if(this.data.summary)
+			this.fieldController.showSummary(false);
+		
+		this.data.summary = false;
 		
 		this.data.active = activ;
 		
@@ -3479,7 +3481,8 @@ de.titus.core.Namespace.create("de.titus.jstl.javascript.polyfills", function() 
 		if(!this.data.active)
 			return;
 		
-		this.fieldController.showSummary();
+		this.data.summary = true;
+		this.fieldController.showSummary(true);
 	};
 	
 	de.titus.form.Field.prototype.doValueChange = function(aEvent) {
@@ -3615,9 +3618,11 @@ de.titus.core.Namespace.create("de.titus.jstl.javascript.polyfills", function() 
 		
 		de.titus.form.DataController.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.DataController");
 		
-		de.titus.form.DataController.prototype.getData = function(){
+		de.titus.form.DataController.prototype.getData = function(aName){
 			if(de.titus.form.DataController.LOGGER.isDebugEnabled())
-				de.titus.form.DataController.LOGGER.logDebug("getData()");
+				de.titus.form.DataController.LOGGER.logDebug("getData() -> aName: " + aName);
+			if(aName)
+				return this.data[aName];
 			return this.data;
 		};
 		
@@ -3652,11 +3657,11 @@ de.titus.core.Namespace.create("de.titus.jstl.javascript.polyfills", function() 
 		
 		DataControllerProxy.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("DataControllerProxy");
 		
-		DataControllerProxy.prototype.getData = function(){
+		DataControllerProxy.prototype.getData = function(aName){
 			if(DataControllerProxy.LOGGER.isDebugEnabled())
-				DataControllerProxy.LOGGER.logDebug("getData()");
+				DataControllerProxy.LOGGER.logDebug("getData() -> aName: " + aName);
 				
-			return this.dataController.getData();
+			return this.dataController.getData(aName);
 		};
 		
 		DataControllerProxy.prototype.changeValue = function(aName, aValue, aField){
@@ -3725,7 +3730,6 @@ de.titus.core.Namespace.create("de.titus.jstl.javascript.polyfills", function() 
 				var page = this.data.element.FormularPage(this.data.dataController, this.expressionResolver);
 				page.data.number = 1;
 				this.data.pages.push(page);
-				page.show();
 			} else {
 				for (var i = 0; i < pageElements.length; i++) {
 					var page = $(pageElements[i]).FormularPage(this.data.dataController);
@@ -3733,12 +3737,11 @@ de.titus.core.Namespace.create("de.titus.jstl.javascript.polyfills", function() 
 					this.data.pages.push(page);
 					if (i > 0)
 						page.hide();
-					else
-						page.show();
 				}
 			}
 			
 			var page = de.titus.form.PageUtils.findNextPage(this.data.pages, -1);
+			page.show();
 			this.data.currentPage = page.data.number - 1;
 			this.data.stepPanel.update();
 			this.data.stepControl.update();
@@ -4382,15 +4385,22 @@ de.titus.core.Namespace.create("de.titus.jstl.javascript.polyfills", function() 
 			this.element.show();
 		};
 		
-		DefaultFieldController.prototype.showSummary = function() {
+		DefaultFieldController.prototype.showSummary = function(isSummary) {
 			if (DefaultFieldController.LOGGER.isDebugEnabled())
 				DefaultFieldController.LOGGER.logDebug("showSummary()");
 			
-			if (this.type == "select")
-				this.element.find("select").prop("disabled", true);
-			else
-				this.element.find("input, textarea").prop("disabled", true);
-			
+			if(isSummary){
+				if (this.type == "select")
+					this.element.find("select").prop("disabled", true);
+				else
+					this.element.find("input, textarea").prop("disabled", true);
+			}
+			else{
+				if (this.type == "select")
+					this.element.find("select").prop("disabled", false);
+				else
+					this.element.find("input, textarea").prop("disabled", false);
+			}			
 		};
 		
 		DefaultFieldController.prototype.hideField = function() {

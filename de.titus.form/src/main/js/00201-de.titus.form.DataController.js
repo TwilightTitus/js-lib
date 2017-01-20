@@ -11,9 +11,11 @@
 		
 		de.titus.form.DataController.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.DataController");
 		
-		de.titus.form.DataController.prototype.getData = function(){
+		de.titus.form.DataController.prototype.getData = function(aName){
 			if(de.titus.form.DataController.LOGGER.isDebugEnabled())
-				de.titus.form.DataController.LOGGER.logDebug("getData()");
+				de.titus.form.DataController.LOGGER.logDebug("getData() -> aName: " + aName);
+			if(aName)
+				return this.data[aName];
 			return this.data;
 		};
 		

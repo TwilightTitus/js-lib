@@ -54,7 +54,6 @@
 				var page = this.data.element.FormularPage(this.data.dataController, this.expressionResolver);
 				page.data.number = 1;
 				this.data.pages.push(page);
-				page.show();
 			} else {
 				for (var i = 0; i < pageElements.length; i++) {
 					var page = $(pageElements[i]).FormularPage(this.data.dataController);
@@ -62,12 +61,11 @@
 					this.data.pages.push(page);
 					if (i > 0)
 						page.hide();
-					else
-						page.show();
 				}
 			}
 			
 			var page = de.titus.form.PageUtils.findNextPage(this.data.pages, -1);
+			page.show();
 			this.data.currentPage = page.data.number - 1;
 			this.data.stepPanel.update();
 			this.data.stepControl.update();
