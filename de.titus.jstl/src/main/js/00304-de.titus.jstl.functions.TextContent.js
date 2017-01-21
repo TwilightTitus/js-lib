@@ -1,20 +1,19 @@
 de.titus.core.Namespace.create("de.titus.jstl.functions.TextContent", function() {
-	de.titus.jstl.functions.TextContent = function() {
-	};
-	de.titus.jstl.functions.TextContent.prototype = new de.titus.jstl.IFunction();
-	de.titus.jstl.functions.TextContent.prototype.constructor = de.titus.jstl.functions.TextContent;
+	var TextContent = function() {};
+	TextContent.prototype = new de.titus.jstl.IFunction();
+	TextContent.prototype.constructor = TextContent;
 	
 	/**********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************
 	 * static variables
 	 *********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
-	de.titus.jstl.functions.TextContent.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.TextContent");
+	TextContent.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.TextContent");
 	
 	/**********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************
 	 * functions
 	 *********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
-	de.titus.jstl.functions.TextContent.prototype.run = function(aElement, aDataContext, aProcessor) {
-		if (de.titus.jstl.functions.TextContent.LOGGER.isDebugEnabled())
-			de.titus.jstl.functions.TextContent.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
+	TextContent.prototype.run = function(aElement, aDataContext, aProcessor) {
+		if (TextContent.LOGGER.isDebugEnabled())
+			TextContent.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
 		
 		var processor = aProcessor || new de.titus.jstl.Processor();
 		var expressionResolver = processor.expressionResolver || new de.titus.core.ExpressionResolver();
@@ -35,7 +34,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.TextContent", function()
 					text = text.trim();
 
 				text = expressionResolver.resolveText(text, aDataContext);
-				var contentFunction = de.titus.jstl.functions.TextContent.CONTENTTYPE[contenttype];
+				var contentFunction = TextContent.CONTENTTYPE[contenttype];
 				if (contentFunction)
 					contentFunction(node, text, aElement, processor, aDataContext);
 			});
@@ -44,7 +43,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.TextContent", function()
 		return new de.titus.jstl.FunctionResult(true, true);
 	};
 	
-	de.titus.jstl.functions.TextContent.prototype.normalize = function(node) {
+	TextContent.prototype.normalize = function(node) {
 		if (!node) {
 			return;
 		}
@@ -60,21 +59,21 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.TextContent", function()
 	}
 	
 	
-	de.titus.jstl.functions.TextContent.CONTENTTYPE = {};
-	de.titus.jstl.functions.TextContent.CONTENTTYPE["html"] = function(aNode, aText, aBaseElement, aProcessor, aDataContext) {
+	TextContent.CONTENTTYPE = {};
+	TextContent.CONTENTTYPE["html"] = function(aNode, aText, aBaseElement, aProcessor, aDataContext) {
 		$(aNode).replaceWith($.parseHTML(aText));
 	};
-	de.titus.jstl.functions.TextContent.CONTENTTYPE["text/html"] = de.titus.jstl.functions.TextContent.CONTENTTYPE["html"];
+	TextContent.CONTENTTYPE["text/html"] = TextContent.CONTENTTYPE["html"];
 	
-	de.titus.jstl.functions.TextContent.CONTENTTYPE["json"] = function(aNode, aText, aBaseElement, aProcessor, aDataContext) {
+	TextContent.CONTENTTYPE["json"] = function(aNode, aText, aBaseElement, aProcessor, aDataContext) {
 		if (typeof aText === "string")
 			aNode.textContent = aText;
 		else
 			aNode.textContent = JSON.stringify(aText);
 	};
-	de.titus.jstl.functions.TextContent.CONTENTTYPE["application/json"] = de.titus.jstl.functions.TextContent.CONTENTTYPE["json"];
+	TextContent.CONTENTTYPE["application/json"] = TextContent.CONTENTTYPE["json"];
 	
-	de.titus.jstl.functions.TextContent.CONTENTTYPE["text"] = function(aNode, aText, aBaseElement, aProcessor, aDataContext) {
+	TextContent.CONTENTTYPE["text"] = function(aNode, aText, aBaseElement, aProcessor, aDataContext) {
 		var text = aText;
 		var addAsHtml = false;
 		
@@ -100,5 +99,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.TextContent", function()
 		else
 			aNode.textContent = text;
 	};
-	de.titus.jstl.functions.TextContent.CONTENTTYPE["text/plain"] = de.titus.jstl.functions.TextContent.CONTENTTYPE["text"];
+	TextContent.CONTENTTYPE["text/plain"] = TextContent.CONTENTTYPE["text"];
+	
+	de.titus.jstl.functions.TextContent = TextContent;
 });

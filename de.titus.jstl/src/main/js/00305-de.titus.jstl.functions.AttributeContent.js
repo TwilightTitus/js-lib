@@ -1,21 +1,20 @@
 de.titus.core.Namespace.create("de.titus.jstl.functions.AttributeContent", function() {
-	de.titus.jstl.functions.AttributeContent = function() {
-	};
-	de.titus.jstl.functions.AttributeContent.prototype = new de.titus.jstl.IFunction();
-	de.titus.jstl.functions.AttributeContent.prototype.constructor = de.titus.jstl.functions.AttributeContent;
+	var AttributeContent = function() {};
+	AttributeContent.prototype = new de.titus.jstl.IFunction();
+	AttributeContent.prototype.constructor = AttributeContent;
 	
 	/***************************************************************************
 	 * static variables
 	 **************************************************************************/
-	de.titus.jstl.functions.AttributeContent.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.AttributeContent");
+	AttributeContent.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.AttributeContent");
 	
 	/***************************************************************************
 	 * functions
 	 **************************************************************************/
 	
-	de.titus.jstl.functions.AttributeContent.prototype.run = function(aElement, aDataContext, aProcessor) {
-		if (de.titus.jstl.functions.AttributeContent.LOGGER.isDebugEnabled())
-			de.titus.jstl.functions.AttributeContent.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
+	AttributeContent.prototype.run = function(aElement, aDataContext, aProcessor) {
+		if (AttributeContent.LOGGER.isDebugEnabled())
+			AttributeContent.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
 		
 		var processor = aProcessor || new de.titus.jstl.Processor();
 		var expressionResolver = processor.expressionResolver || new de.titus.core.ExpressionResolver();
@@ -29,13 +28,13 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.AttributeContent", funct
 						try {
 							var newValue = expressionResolver.resolveText(value, aDataContext);
 							if (value != newValue) {
-								if (de.titus.jstl.functions.AttributeContent.LOGGER.isDebugEnabled()) {
-									de.titus.jstl.functions.AttributeContent.LOGGER.logDebug("Change attribute \"" + name + "\" from \"" + value + "\" to \"" + newValue + "\"!");
+								if (AttributeContent.LOGGER.isDebugEnabled()) {
+									AttributeContent.LOGGER.logDebug("Change attribute \"" + name + "\" from \"" + value + "\" to \"" + newValue + "\"!");
 								}
 								aElement.attr(name, newValue);
 							}
 						} catch (e) {
-							de.titus.jstl.functions.AttributeContent.LOGGER.logError("Can't process attribute\"" + name + "\" with value \"" + value + "\"!");
+							AttributeContent.LOGGER.logError("Can't process attribute\"" + name + "\" with value \"" + value + "\"!");
 						}
 					}
 				}
@@ -45,4 +44,5 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.AttributeContent", funct
 		return new de.titus.jstl.FunctionResult(true, true);
 	};
 	
+	de.titus.jstl.functions.AttributeContent = AttributeContent;	
 });

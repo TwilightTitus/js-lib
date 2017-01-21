@@ -1,22 +1,22 @@
 de.titus.core.Namespace.create("de.titus.jstl.functions.Include", function() {
-	de.titus.jstl.functions.Include = function() {
+	var Include = function() {
 		this.cache = {};
 	};
-	de.titus.jstl.functions.Include.prototype = new de.titus.jstl.IFunction("include");
-	de.titus.jstl.functions.Include.prototype.constructor = de.titus.jstl.functions.Include;
+	Include.prototype = new de.titus.jstl.IFunction("include");
+	Include.prototype.constructor = Include;
 	
 	/***************************************************************************
 	 * static variables
 	 **************************************************************************/
-	de.titus.jstl.functions.Include.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.Include");
+	Include.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.Include");
 	
 	/***************************************************************************
 	 * functions
 	 **************************************************************************/
 	
-	de.titus.jstl.functions.Include.prototype.run = function(aElement, aDataContext, aProcessor) {
-		if (de.titus.jstl.functions.Include.LOGGER.isDebugEnabled())
-			de.titus.jstl.functions.Include.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
+	Include.prototype.run = function(aElement, aDataContext, aProcessor) {
+		if (Include.LOGGER.isDebugEnabled())
+			Include.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
 		
 		var processor = aProcessor || new de.titus.jstl.Processor();
 		var expressionResolver = processor.expressionResolver || new de.titus.jstl.ExpressionResolver();
@@ -28,7 +28,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Include", function() {
 		return new de.titus.jstl.FunctionResult(true, false);
 	};
 	
-	de.titus.jstl.functions.Include.prototype.internalProcessing = function(anIncludeExpression, aElement, aDataContext, aProcessor, anExpressionResolver) {
+	Include.prototype.internalProcessing = function(anIncludeExpression, aElement, aDataContext, aProcessor, anExpressionResolver) {
 		var url = anExpressionResolver.resolveText(anIncludeExpression, aDataContext);
 		var disableCaching = url.indexOf("?") >= 0 || aElement.attr(aProcessor.config.attributePrefix + this.attributeName + "-cache-disabled") != undefined;
 		var content = "";
@@ -61,7 +61,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Include", function() {
 		}
 	};
 	
-	de.titus.jstl.functions.Include.prototype.getOptions = function(aElement, aDataContext, aProcessor, anExpressionResolver) {
+	Include.prototype.getOptions = function(aElement, aDataContext, aProcessor, anExpressionResolver) {
 		var options = aElement.attr(aProcessor.config.attributePrefix + this.attributeName + "-options");
 		if (options != undefined) {
 			options = anExpressionResolver.resolveText(options, aDataContext);
@@ -72,7 +72,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Include", function() {
 		return {};
 	};
 	
-	de.titus.jstl.functions.Include.prototype.getIncludeMode = function(aElement, aDataContext, aProcessor, anExpressionResolver) {
+	Include.prototype.getIncludeMode = function(aElement, aDataContext, aProcessor, anExpressionResolver) {
 		var mode = aElement.attr(aProcessor.config.attributePrefix + this.attributeName + "-mode");
 		if (mode == undefined)
 			return "replace";
@@ -84,9 +84,9 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Include", function() {
 		return "replace";
 	};
 	
-	de.titus.jstl.functions.Include.prototype.addHtml = function(aElement, aTemplate, aIncludeMode, aProcessor, aDataContext) {
-		if (de.titus.jstl.functions.Include.LOGGER.isDebugEnabled())
-			de.titus.jstl.functions.Include.LOGGER.logDebug("execute addHtml(" + aElement + ", " + aTemplate + ", " + aIncludeMode + ")");
+	Include.prototype.addHtml = function(aElement, aTemplate, aIncludeMode, aProcessor, aDataContext) {
+		if (Include.LOGGER.isDebugEnabled())
+			Include.LOGGER.logDebug("execute addHtml(" + aElement + ", " + aTemplate + ", " + aIncludeMode + ")");
 		var content = $("<div/>");
 		content.html(aTemplate);
 		aProcessor.compute(content, aDataContext);
@@ -109,8 +109,8 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Include", function() {
 		{
 			aElement.empty();
 			content.contents().appendTo(aElement);
-		}
-		
+		}		
 	};
 	
+	de.titus.jstl.functions.Include = Include;	
 });

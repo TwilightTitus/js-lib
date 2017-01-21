@@ -1,20 +1,19 @@
 de.titus.core.Namespace.create("de.titus.jstl.functions.Choose", function() {
-	de.titus.jstl.functions.Choose = function() {
-	};
-	de.titus.jstl.functions.Choose.prototype = new de.titus.jstl.IFunction("choose");
-	de.titus.jstl.functions.Choose.prototype.constructor = de.titus.jstl.functions.Choose;
+	varChoose = function() {};
+	Choose.prototype = new de.titus.jstl.IFunction("choose");
+	Choose.prototype.constructor = Choose;
 	
 	/***************************************************************************
 	 * static variables
 	 **************************************************************************/
-	de.titus.jstl.functions.Choose.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.Choose");
+	Choose.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.Choose");
 	
 	/***************************************************************************
 	 * functions
 	 **************************************************************************/
-	de.titus.jstl.functions.Choose.prototype.run = function(aElement, aDataContext, aProcessor) {
-		if (de.titus.jstl.functions.Choose.LOGGER.isDebugEnabled())
-			de.titus.jstl.functions.Choose.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
+	Choose.prototype.run = function(aElement, aDataContext, aProcessor) {
+		if (Choose.LOGGER.isDebugEnabled())
+			Choose.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
 		
 		var processor = aProcessor || new de.titus.jstl.Processor();
 		var expressionResolver = processor.expressionResolver || new de.titus.core.ExpressionResolver();
@@ -28,9 +27,9 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Choose", function() {
 		return new de.titus.jstl.FunctionResult(true, true);
 	};
 	
-	de.titus.jstl.functions.Choose.prototype.processChilds = function(aChooseElement, aDataContext, aProcessor, aExpressionResolver) {
-		if (de.titus.jstl.functions.Choose.LOGGER.isDebugEnabled())
-			de.titus.jstl.functions.Choose.LOGGER.logDebug("execute processChilds(" + aChooseElement + ", " + aDataContext + ", " + aProcessor + ", " + aExpressionResolver + ")");
+	Choose.prototype.processChilds = function(aChooseElement, aDataContext, aProcessor, aExpressionResolver) {
+		if (Choose.LOGGER.isDebugEnabled())
+			Choose.LOGGER.logDebug("execute processChilds(" + aChooseElement + ", " + aDataContext + ", " + aProcessor + ", " + aExpressionResolver + ")");
 		
 		var childs = aChooseElement.children();
 		var resolved = false;
@@ -38,20 +37,20 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Choose", function() {
 		childs.each(function() {			
 			var child = $(this);
 			if (!resolved && $__THIS__$.processChild(aChooseElement, child, aDataContext, aProcessor, aExpressionResolver)) {
-				if (de.titus.jstl.functions.Choose.LOGGER.isTraceEnabled())
-					de.titus.jstl.functions.Choose.LOGGER.logTrace("compute child: " + child);
+				if (Choose.LOGGER.isTraceEnabled())
+					Choose.LOGGER.logTrace("compute child: " + child);
 				resolved = true;
 			} else {
-				if (de.titus.jstl.functions.Choose.LOGGER.isTraceEnabled())
-					de.titus.jstl.functions.Choose.LOGGER.logTrace("remove child: " + child);
+				if (Choose.LOGGER.isTraceEnabled())
+					Choose.LOGGER.logTrace("remove child: " + child);
 				child.remove();
 			}
 		});
 	};
 	
-	de.titus.jstl.functions.Choose.prototype.processChild = function(aChooseElement, aElement, aDataContext, aProcessor, aExpressionResolver) {
-		if (de.titus.jstl.functions.Choose.LOGGER.isDebugEnabled())
-			de.titus.jstl.functions.Choose.LOGGER.logDebug("execute processChild(" + aChooseElement + ", " + aElement + ", " + aDataContext + ", " + aProcessor + ", " + aExpressionResolver + ")");
+	Choose.prototype.processChild = function(aChooseElement, aElement, aDataContext, aProcessor, aExpressionResolver) {
+		if (Choose.LOGGER.isDebugEnabled())
+			Choose.LOGGER.logDebug("execute processChild(" + aChooseElement + ", " + aElement + ", " + aDataContext + ", " + aProcessor + ", " + aExpressionResolver + ")");
 		
 		if (this.processWhenElement(aChooseElement, aElement, aDataContext, aProcessor, aExpressionResolver)) {
 			return true;
@@ -62,9 +61,9 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Choose", function() {
 		}
 	};
 	
-	de.titus.jstl.functions.Choose.prototype.processWhenElement = function(aChooseElement, aElement, aDataContext, aProcessor, aExpressionResolver) {
-		if (de.titus.jstl.functions.Choose.LOGGER.isDebugEnabled())
-			de.titus.jstl.functions.Choose.LOGGER.logDebug("execute processWhenElement(" + aChooseElement + ", " + aElement + ", " + aDataContext + ", " + aProcessor + ", " + aExpressionResolver + ")");
+	Choose.prototype.processWhenElement = function(aChooseElement, aElement, aDataContext, aProcessor, aExpressionResolver) {
+		if (Choose.LOGGER.isDebugEnabled())
+			Choose.LOGGER.logDebug("execute processWhenElement(" + aChooseElement + ", " + aElement + ", " + aDataContext + ", " + aProcessor + ", " + aExpressionResolver + ")");
 		
 		var expression = aElement.attr(aProcessor.config.attributePrefix + 'when');
 		if (expression != undefined) {
@@ -73,9 +72,9 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Choose", function() {
 		return false;
 	};
 	
-	de.titus.jstl.functions.Choose.prototype.processOtherwiseElement = function(aChooseElement, aElement, aDataContext, aProcessor, aExpressionResolver) {
-		if (de.titus.jstl.functions.Choose.LOGGER.isDebugEnabled())
-			de.titus.jstl.functions.Choose.LOGGER.logDebug("execute processOtherwiseElement(" + aChooseElement + ", " + aElement + ", " + aDataContext + ", " + aProcessor + ", " + aExpressionResolver + ")");
+	Choose.prototype.processOtherwiseElement = function(aChooseElement, aElement, aDataContext, aProcessor, aExpressionResolver) {
+		if (Choose.LOGGER.isDebugEnabled())
+			Choose.LOGGER.logDebug("execute processOtherwiseElement(" + aChooseElement + ", " + aElement + ", " + aDataContext + ", " + aProcessor + ", " + aExpressionResolver + ")");
 		
 		var expression = aElement.attr(aProcessor.config.attributePrefix + 'otherwise');
 		if (expression != undefined) {
@@ -84,4 +83,6 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Choose", function() {
 		return false;
 	};
 	
+	
+	de.titus.jstl.functions.Choose = Choose;
 });

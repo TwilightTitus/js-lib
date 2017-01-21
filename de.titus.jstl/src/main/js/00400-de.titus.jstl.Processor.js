@@ -14,7 +14,7 @@
 		 * }
 		 * </code>
 		 */
-		de.titus.jstl.Processor = function(aConfig) {
+		var Processor = function(aConfig) {
 			
 			this.config = {
 			"element" : undefined,
@@ -36,15 +36,15 @@
 		/***********************************************************************
 		 * static variables
 		 **********************************************************************/
-		de.titus.jstl.Processor.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.Processor");
+		Processor.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.Processor");
 		
 		/***********************************************************************
 		 * functions
 		 **********************************************************************/
 		
-		de.titus.jstl.Processor.prototype.compute = /* boolean */function(aElement, aDataContext) {
-			if (de.titus.jstl.Processor.LOGGER.isDebugEnabled())
-				de.titus.jstl.Processor.LOGGER.logDebug("execute compute(" + (aElement != undefined ? aElement.prop("tagName") : aElement) + ", " + aDataContext + ")");
+		Processor.prototype.compute = /* boolean */function(aElement, aDataContext) {
+			if (Processor.LOGGER.isDebugEnabled())
+				Processor.LOGGER.logDebug("execute compute(" + (aElement != undefined ? aElement.prop("tagName") : aElement) + ", " + aDataContext + ")");
 			if (aElement == undefined)
 				return this.internalComputeRoot();
 			
@@ -56,7 +56,7 @@
 			return this.internalComputeElement(aElement, aDataContext, events, false);
 		};
 		
-		de.titus.jstl.Processor.prototype.internalComputeRoot = /* boolean */function() {
+		Processor.prototype.internalComputeRoot = /* boolean */function() {
 			
 			var events = this.getEvents(this.config.element) || {};
 			if (this.config.onLoad)
@@ -70,7 +70,7 @@
 			return this.internalComputeElement(this.config.element, this.config.data, events, true);
 		};
 		
-		de.titus.jstl.Processor.prototype.internalComputeElement = /* boolean */function(aElement, aDataContext, theEvents, isRoot) {
+		Processor.prototype.internalComputeElement = /* boolean */function(aElement, aDataContext, theEvents, isRoot) {
 			var dataContext = aDataContext || this.config.data;
 			if (!isRoot) {
 				var ignore = aElement.attr(this.config.attributePrefix + "ignore");
@@ -128,7 +128,7 @@
 			return processResult;
 		};
 		
-		de.titus.jstl.Processor.prototype.isElementProcessable = function(aElement) {
+		Processor.prototype.isElementProcessable = function(aElement) {
 			var tagname = aElement.tagName();
 			if (tagname != undefined) {
 				if (tagname == "br")
@@ -139,9 +139,9 @@
 			return false;
 		};
 		
-		de.titus.jstl.Processor.prototype.internalExecuteFunction = /* boolean */function(aElement, aDataContext) {
-			if (de.titus.jstl.Processor.LOGGER.isDebugEnabled())
-				de.titus.jstl.Processor.LOGGER.logDebug("execute internalExecuteFunction(" + aElement + ", " + aDataContext + ")");
+		Processor.prototype.internalExecuteFunction = /* boolean */function(aElement, aDataContext) {
+			if (Processor.LOGGER.isDebugEnabled())
+				Processor.LOGGER.logDebug("execute internalExecuteFunction(" + aElement + ", " + aDataContext + ")");
 			
 			var functions = de.titus.jstl.FunctionRegistry.getInstance().functions;
 			var result = new de.titus.jstl.FunctionResult();
@@ -159,9 +159,9 @@
 			return result;
 		};
 		
-		de.titus.jstl.Processor.prototype.internalComputeChilds = /* boolean */function(aElement, aDataContext) {
-			if (de.titus.jstl.Processor.LOGGER.isDebugEnabled())
-				de.titus.jstl.Processor.LOGGER.logDebug("execute internalComputeChilds(" + aElement + ", " + aDataContext + ")");
+		Processor.prototype.internalComputeChilds = /* boolean */function(aElement, aDataContext) {
+			if (Processor.LOGGER.isDebugEnabled())
+				Processor.LOGGER.logDebug("execute internalComputeChilds(" + aElement + ", " + aDataContext + ")");
 			
 			var childs = aElement.children();
 			if (childs == undefined)
@@ -178,7 +178,7 @@
 			
 		};
 		
-		de.titus.jstl.Processor.prototype.getEvents = function(aElement) {
+		Processor.prototype.getEvents = function(aElement) {
 			var events = {};
 			
 			var onLoad = aElement.attr(this.config.attributePrefix + "load");
@@ -195,9 +195,9 @@
 			return events;
 		};
 		
-		de.titus.jstl.Processor.prototype.isFunctionNeeded = function(aFunction, aElement) {
-			if (de.titus.jstl.Processor.LOGGER.isDebugEnabled())
-				de.titus.jstl.Processor.LOGGER.logDebug("execute isFunctionNeeded(" + aFunction + ", " + aElement + ")");
+		Processor.prototype.isFunctionNeeded = function(aFunction, aElement) {
+			if (Processor.LOGGER.isDebugEnabled())
+				Processor.LOGGER.logDebug("execute isFunctionNeeded(" + aFunction + ", " + aElement + ")");
 			
 			var executeFunction = true;
 			if (aFunction.attributeName != undefined && aFunction.attributeName != "") {
@@ -208,9 +208,9 @@
 			return executeFunction;
 		};
 		
-		de.titus.jstl.Processor.prototype.executeFunction = function(aFunction, aElement, aDataContext, aCurrentFunctionResult) {
-			if (de.titus.jstl.Processor.LOGGER.isDebugEnabled())
-				de.titus.jstl.Processor.LOGGER.logDebug("execute executeFunction(" + aFunction + ", " + aElement + ", " + aDataContext + ", " + aCurrentFunctionResult + ")");
+		Processor.prototype.executeFunction = function(aFunction, aElement, aDataContext, aCurrentFunctionResult) {
+			if (Processor.LOGGER.isDebugEnabled())
+				Processor.LOGGER.logDebug("execute executeFunction(" + aFunction + ", " + aElement + ", " + aDataContext + ", " + aCurrentFunctionResult + ")");
 			
 			var result = aFunction.run(aElement, aDataContext, this);
 			if (result != undefined) {
@@ -221,7 +221,7 @@
 			return aCurrentFunctionResult;
 		};
 		
-		de.titus.jstl.Processor.prototype.onReady = function(aFunction) {
+		Processor.prototype.onReady = function(aFunction) {
 			if (aFunction) {
 				// this.onReadyEvent.push(aFunction);
 				this.config.element.on(de.titus.jstl.Constants.EVENTS.onReady, function(anEvent) {
@@ -233,12 +233,14 @@
 					try {
 						this.onReadyEvent[i](this.config.element, this);
 					} catch (e) {
-						de.titus.jstl.Processor.LOGGER.logError("Error by process an on ready event! -> " + (e.message || e));
+						Processor.LOGGER.logError("Error by process an on ready event! -> " + (e.message || e));
 					}
 				}
 				
 				this.config.element.trigger(de.titus.jstl.Constants.EVENTS.onReady, this);
 			}
 		};
+		
+		de.titus.jstl.Processor = jstl.Processor;
 	});
 })(jQuery);

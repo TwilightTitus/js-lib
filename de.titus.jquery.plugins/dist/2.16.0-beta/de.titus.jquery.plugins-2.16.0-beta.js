@@ -2094,15 +2094,17 @@ de.titus.core.Namespace.create("de.titus.logging.HtmlAppender", function() {
  */
 
 de.titus.core.Namespace.create("de.titus.jstl.Constants", function() {
-	de.titus.jstl.Constants = {};
-	de.titus.jstl.Constants.EVENTS = {};
-	de.titus.jstl.Constants.EVENTS.onStart = "jstl-on-start";
-	de.titus.jstl.Constants.EVENTS.onLoad = "jstl-on-load";
-	de.titus.jstl.Constants.EVENTS.onSuccess = "jstl-on-success";
-	de.titus.jstl.Constants.EVENTS.onFail = "jstl-on-fail";
-	de.titus.jstl.Constants.EVENTS.onReady = "jstl-on-ready";
-	
-});de.titus.core.Namespace.create("de.titus.jstl.FunctionRegistry", function() {	
+	de.titus.jstl.Constants = {
+		EVENTS : {
+		onStart : "jstl-on-start",
+		onLoad : "jstl-on-load",
+		onSuccess : "jstl-on-success",
+		onFail : "jstl-on-fail",
+		onReady : "jstl-on-ready"
+		}
+	};	
+});
+de.titus.core.Namespace.create("de.titus.jstl.FunctionRegistry", function() {	
 	de.titus.jstl.FunctionRegistry = function(){
 		this.functions = new Array();
 	};
@@ -2135,60 +2137,60 @@ de.titus.core.Namespace.create("de.titus.jstl.IFunction", function() {
 	de.titus.jstl.IFunction.prototype.run = /*de.titus.jstl.FunctionResult*/ function(aElement, aDataContext, aProcessor){return true;};
 	
 });
-de.titus.core.Namespace.create("de.titus.jstl.functions.If", function() {	
-	de.titus.jstl.functions.If = function(){};
-	de.titus.jstl.functions.If.prototype = new de.titus.jstl.IFunction("if");
-	de.titus.jstl.functions.If.prototype.constructor = de.titus.jstl.functions.If;
-	
-	/****************************************************************
-	 * static variables
-	 ***************************************************************/
-	de.titus.jstl.functions.If.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.If");
-	
-	
-	de.titus.jstl.functions.If.prototype.run = /*boolean*/function(aElement, aDataContext, aProcessor){
-		if(de.titus.jstl.functions.If.LOGGER.isDebugEnabled())
-			de.titus.jstl.functions.If.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
+(function() {
+	de.titus.core.Namespace.create("de.titus.jstl.functions.If", function() {
+		var If = function() {};
+		If.prototype = new de.titus.jstl.IFunction("if");
+		If.prototype.constructor = If;
 		
+		/***********************************************************************
+		 * static variables
+		 **********************************************************************/
+		If.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.If");
 		
-		var processor = aProcessor || new de.titus.jstl.Processor();
-		var expressionResolver = processor.expressionResolver || new de.titus.core.ExpressionResolver();
-		
-		var expression = aElement.attr(processor.config.attributePrefix + this.attributeName);
-		if(expression != undefined){
-			var expressionResult = expressionResolver.resolveExpression(expression, aDataContext, false);
-			if(typeof expressionResult === "function")
-				expressionResult = expressionResult(aElement, aDataContext, aProcessor);
+		If.prototype.run = /* boolean */function(aElement, aDataContext, aProcessor) {
+			if (If.LOGGER.isDebugEnabled())
+				If.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
 			
+			var processor = aProcessor || new de.titus.jstl.Processor();
+			var expressionResolver = processor.expressionResolver || new de.titus.core.ExpressionResolver();
 			
-			expressionResult = expressionResult == true || expressionResult == "true";
-			if(!expressionResult){
-				aElement.remove();
-				return new de.titus.jstl.FunctionResult(false, false);
+			var expression = aElement.attr(processor.config.attributePrefix + this.attributeName);
+			if (expression != undefined) {
+				var expressionResult = expressionResolver.resolveExpression(expression, aDataContext, false);
+				if (typeof expressionResult === "function")
+					expressionResult = expressionResult(aElement, aDataContext, aProcessor);
+				
+				expressionResult = expressionResult == true || expressionResult == "true";
+				if (!expressionResult) {
+					aElement.remove();
+					return new de.titus.jstl.FunctionResult(false, false);
+				}
 			}
-		}
+			
+			return new de.titus.jstl.FunctionResult(true, true);
+		};
 		
-		return new de.titus.jstl.FunctionResult(true, true);
-	};
-	
-});
+		de.titus.jstl.functions.If = If;
+		
+	});
+})();
 de.titus.core.Namespace.create("de.titus.jstl.functions.Choose", function() {
-	de.titus.jstl.functions.Choose = function() {
-	};
-	de.titus.jstl.functions.Choose.prototype = new de.titus.jstl.IFunction("choose");
-	de.titus.jstl.functions.Choose.prototype.constructor = de.titus.jstl.functions.Choose;
+	varChoose = function() {};
+	Choose.prototype = new de.titus.jstl.IFunction("choose");
+	Choose.prototype.constructor = Choose;
 	
 	/***************************************************************************
 	 * static variables
 	 **************************************************************************/
-	de.titus.jstl.functions.Choose.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.Choose");
+	Choose.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.Choose");
 	
 	/***************************************************************************
 	 * functions
 	 **************************************************************************/
-	de.titus.jstl.functions.Choose.prototype.run = function(aElement, aDataContext, aProcessor) {
-		if (de.titus.jstl.functions.Choose.LOGGER.isDebugEnabled())
-			de.titus.jstl.functions.Choose.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
+	Choose.prototype.run = function(aElement, aDataContext, aProcessor) {
+		if (Choose.LOGGER.isDebugEnabled())
+			Choose.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
 		
 		var processor = aProcessor || new de.titus.jstl.Processor();
 		var expressionResolver = processor.expressionResolver || new de.titus.core.ExpressionResolver();
@@ -2202,9 +2204,9 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Choose", function() {
 		return new de.titus.jstl.FunctionResult(true, true);
 	};
 	
-	de.titus.jstl.functions.Choose.prototype.processChilds = function(aChooseElement, aDataContext, aProcessor, aExpressionResolver) {
-		if (de.titus.jstl.functions.Choose.LOGGER.isDebugEnabled())
-			de.titus.jstl.functions.Choose.LOGGER.logDebug("execute processChilds(" + aChooseElement + ", " + aDataContext + ", " + aProcessor + ", " + aExpressionResolver + ")");
+	Choose.prototype.processChilds = function(aChooseElement, aDataContext, aProcessor, aExpressionResolver) {
+		if (Choose.LOGGER.isDebugEnabled())
+			Choose.LOGGER.logDebug("execute processChilds(" + aChooseElement + ", " + aDataContext + ", " + aProcessor + ", " + aExpressionResolver + ")");
 		
 		var childs = aChooseElement.children();
 		var resolved = false;
@@ -2212,20 +2214,20 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Choose", function() {
 		childs.each(function() {			
 			var child = $(this);
 			if (!resolved && $__THIS__$.processChild(aChooseElement, child, aDataContext, aProcessor, aExpressionResolver)) {
-				if (de.titus.jstl.functions.Choose.LOGGER.isTraceEnabled())
-					de.titus.jstl.functions.Choose.LOGGER.logTrace("compute child: " + child);
+				if (Choose.LOGGER.isTraceEnabled())
+					Choose.LOGGER.logTrace("compute child: " + child);
 				resolved = true;
 			} else {
-				if (de.titus.jstl.functions.Choose.LOGGER.isTraceEnabled())
-					de.titus.jstl.functions.Choose.LOGGER.logTrace("remove child: " + child);
+				if (Choose.LOGGER.isTraceEnabled())
+					Choose.LOGGER.logTrace("remove child: " + child);
 				child.remove();
 			}
 		});
 	};
 	
-	de.titus.jstl.functions.Choose.prototype.processChild = function(aChooseElement, aElement, aDataContext, aProcessor, aExpressionResolver) {
-		if (de.titus.jstl.functions.Choose.LOGGER.isDebugEnabled())
-			de.titus.jstl.functions.Choose.LOGGER.logDebug("execute processChild(" + aChooseElement + ", " + aElement + ", " + aDataContext + ", " + aProcessor + ", " + aExpressionResolver + ")");
+	Choose.prototype.processChild = function(aChooseElement, aElement, aDataContext, aProcessor, aExpressionResolver) {
+		if (Choose.LOGGER.isDebugEnabled())
+			Choose.LOGGER.logDebug("execute processChild(" + aChooseElement + ", " + aElement + ", " + aDataContext + ", " + aProcessor + ", " + aExpressionResolver + ")");
 		
 		if (this.processWhenElement(aChooseElement, aElement, aDataContext, aProcessor, aExpressionResolver)) {
 			return true;
@@ -2236,9 +2238,9 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Choose", function() {
 		}
 	};
 	
-	de.titus.jstl.functions.Choose.prototype.processWhenElement = function(aChooseElement, aElement, aDataContext, aProcessor, aExpressionResolver) {
-		if (de.titus.jstl.functions.Choose.LOGGER.isDebugEnabled())
-			de.titus.jstl.functions.Choose.LOGGER.logDebug("execute processWhenElement(" + aChooseElement + ", " + aElement + ", " + aDataContext + ", " + aProcessor + ", " + aExpressionResolver + ")");
+	Choose.prototype.processWhenElement = function(aChooseElement, aElement, aDataContext, aProcessor, aExpressionResolver) {
+		if (Choose.LOGGER.isDebugEnabled())
+			Choose.LOGGER.logDebug("execute processWhenElement(" + aChooseElement + ", " + aElement + ", " + aDataContext + ", " + aProcessor + ", " + aExpressionResolver + ")");
 		
 		var expression = aElement.attr(aProcessor.config.attributePrefix + 'when');
 		if (expression != undefined) {
@@ -2247,9 +2249,9 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Choose", function() {
 		return false;
 	};
 	
-	de.titus.jstl.functions.Choose.prototype.processOtherwiseElement = function(aChooseElement, aElement, aDataContext, aProcessor, aExpressionResolver) {
-		if (de.titus.jstl.functions.Choose.LOGGER.isDebugEnabled())
-			de.titus.jstl.functions.Choose.LOGGER.logDebug("execute processOtherwiseElement(" + aChooseElement + ", " + aElement + ", " + aDataContext + ", " + aProcessor + ", " + aExpressionResolver + ")");
+	Choose.prototype.processOtherwiseElement = function(aChooseElement, aElement, aDataContext, aProcessor, aExpressionResolver) {
+		if (Choose.LOGGER.isDebugEnabled())
+			Choose.LOGGER.logDebug("execute processOtherwiseElement(" + aChooseElement + ", " + aElement + ", " + aDataContext + ", " + aProcessor + ", " + aExpressionResolver + ")");
 		
 		var expression = aElement.attr(aProcessor.config.attributePrefix + 'otherwise');
 		if (expression != undefined) {
@@ -2258,25 +2260,26 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Choose", function() {
 		return false;
 	};
 	
+	
+	de.titus.jstl.functions.Choose = Choose;
 });
 de.titus.core.Namespace.create("de.titus.jstl.functions.Foreach", function() {
-	de.titus.jstl.functions.Foreach = function() {
-	};
-	de.titus.jstl.functions.Foreach.prototype = new de.titus.jstl.IFunction("foreach");
-	de.titus.jstl.functions.Foreach.prototype.constructor = de.titus.jstl.functions.Foreach;
+	var Foreach = function() {};
+	Foreach.prototype = new de.titus.jstl.IFunction("foreach");
+	Foreach.prototype.constructor = Foreach;
 	
 	/***************************************************************************
 	 * static variables
 	 **************************************************************************/
-	de.titus.jstl.functions.Foreach.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.Foreach");
+	Foreach.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.Foreach");
 	
 	/***************************************************************************
 	 * functions
 	 **************************************************************************/
 	
-	de.titus.jstl.functions.Foreach.prototype.run = function(aElement, aDataContext, aProcessor) {
-		if (de.titus.jstl.functions.Foreach.LOGGER.isDebugEnabled())
-			de.titus.jstl.functions.Foreach.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
+	Foreach.prototype.run = function(aElement, aDataContext, aProcessor) {
+		if (Foreach.LOGGER.isDebugEnabled())
+			Foreach.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
 		
 		var processor = aProcessor || new de.titus.jstl.Processor();
 		var expressionResolver = processor.expressionResolver || new de.titus.core.ExpressionResolver();
@@ -2289,9 +2292,9 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Foreach", function() {
 		return new de.titus.jstl.FunctionResult(true, true);
 	};
 	
-	de.titus.jstl.functions.Foreach.prototype.internalProcession = function(aExpression, aElement, aDataContext, aProcessor, anExpressionResolver) {
-		if (de.titus.jstl.functions.Foreach.LOGGER.isDebugEnabled())
-			de.titus.jstl.functions.Foreach.LOGGER.logDebug("execute processList(" + aElement + ", " + aDataContext + ", " + aProcessor + ", " + anExpressionResolver + ")");
+	Foreach.prototype.internalProcession = function(aExpression, aElement, aDataContext, aProcessor, anExpressionResolver) {
+		if (Foreach.LOGGER.isDebugEnabled())
+			Foreach.LOGGER.logDebug("execute processList(" + aElement + ", " + aDataContext + ", " + aProcessor + ", " + anExpressionResolver + ")");
 		
 		var tempalte = this.getRepeatableContent(aElement);
 		aElement.empty();
@@ -2302,7 +2305,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Foreach", function() {
 		var statusName = this.getStatusName(aElement, aProcessor);
 		var list = undefined;
 		if (aExpression == "") {
-			de.titus.jstl.functions.Foreach.LOGGER.logWarn("No list data specified. Using the data context!");
+			Foreach.LOGGER.logWarn("No list data specified. Using the data context!");
 			list = aDataContext;
 		} else
 			list = anExpressionResolver.resolveExpression(aExpression, aDataContext, new Array());
@@ -2315,7 +2318,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Foreach", function() {
 		}
 	};
 	
-	de.titus.jstl.functions.Foreach.prototype.processList = function(aListData, aTemplate, aVarname, aStatusName, aBreakCondition, aElement, aDataContext, aProcessor, anExpressionResolver) {
+	Foreach.prototype.processList = function(aListData, aTemplate, aVarname, aStatusName, aBreakCondition, aElement, aDataContext, aProcessor, anExpressionResolver) {
 		if (aListData == undefined || aListData.length == undefined || aListData.length < 1)
 			return;
 		
@@ -2342,7 +2345,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Foreach", function() {
 		}
 	};
 	
-	de.titus.jstl.functions.Foreach.prototype.processMap = function(aMap, aTemplate, aVarname, aStatusName, aBreakCondition, aElement, aDataContext, aProcessor, anExpressionResolver) {
+	Foreach.prototype.processMap = function(aMap, aTemplate, aVarname, aStatusName, aBreakCondition, aElement, aDataContext, aProcessor, anExpressionResolver) {
 		var count = 0;
 		for ( var name in aMap)
 			count++;
@@ -2372,7 +2375,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Foreach", function() {
 		}
 	};
 	
-	de.titus.jstl.functions.Foreach.prototype.processBreakCondition = function(aContext, aBreakCondition, aElement, aProcessor) {
+	Foreach.prototype.processBreakCondition = function(aContext, aBreakCondition, aElement, aProcessor) {
 		var expressionResolver = aProcessor.expressionResolver || new de.titus.jstl.ExpressionResolver();
 		var expressionResult = expressionResolver.resolveExpression(aBreakCondition, aContext, false);
 		if (typeof expressionResult === "function")
@@ -2381,12 +2384,12 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Foreach", function() {
 		return expressionResult == true || expressionResult == "true";
 	};
 	
-	de.titus.jstl.functions.Foreach.prototype.processNewContent = function(aNewContent, aNewContext, aElement, aProcessor) {		
+	Foreach.prototype.processNewContent = function(aNewContent, aNewContext, aElement, aProcessor) {		
 		aProcessor.compute(	aNewContent, aNewContext);
 		aElement.append(aNewContent.contents());
 	};
 	
-	de.titus.jstl.functions.Foreach.prototype.getVarname = function(aElement, aProcessor) {
+	Foreach.prototype.getVarname = function(aElement, aProcessor) {
 		var varname = aElement.attr(aProcessor.config.attributePrefix + this.attributeName + "-var");
 		if (varname == undefined)
 			return "itemVar";
@@ -2394,7 +2397,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Foreach", function() {
 		return varname;
 	};
 	
-	de.titus.jstl.functions.Foreach.prototype.getStatusName = function(aElement, aProcessor) {
+	Foreach.prototype.getStatusName = function(aElement, aProcessor) {
 		var statusName = aElement.attr(aProcessor.config.attributePrefix + this.attributeName + "-status");
 		if (statusName == undefined)
 			return "statusVar";
@@ -2402,27 +2405,28 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Foreach", function() {
 		return statusName;
 	};
 	
-	de.titus.jstl.functions.Foreach.prototype.getRepeatableContent = function(aElement) {
+	Foreach.prototype.getRepeatableContent = function(aElement) {
 		return aElement.html();
 	};
+	
+	de.titus.jstl.functions.Foreach = Foreach;
 });
 de.titus.core.Namespace.create("de.titus.jstl.functions.TextContent", function() {
-	de.titus.jstl.functions.TextContent = function() {
-	};
-	de.titus.jstl.functions.TextContent.prototype = new de.titus.jstl.IFunction();
-	de.titus.jstl.functions.TextContent.prototype.constructor = de.titus.jstl.functions.TextContent;
+	var TextContent = function() {};
+	TextContent.prototype = new de.titus.jstl.IFunction();
+	TextContent.prototype.constructor = TextContent;
 	
 	/**********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************
 	 * static variables
 	 *********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
-	de.titus.jstl.functions.TextContent.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.TextContent");
+	TextContent.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.TextContent");
 	
 	/**********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************
 	 * functions
 	 *********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
-	de.titus.jstl.functions.TextContent.prototype.run = function(aElement, aDataContext, aProcessor) {
-		if (de.titus.jstl.functions.TextContent.LOGGER.isDebugEnabled())
-			de.titus.jstl.functions.TextContent.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
+	TextContent.prototype.run = function(aElement, aDataContext, aProcessor) {
+		if (TextContent.LOGGER.isDebugEnabled())
+			TextContent.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
 		
 		var processor = aProcessor || new de.titus.jstl.Processor();
 		var expressionResolver = processor.expressionResolver || new de.titus.core.ExpressionResolver();
@@ -2443,7 +2447,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.TextContent", function()
 					text = text.trim();
 
 				text = expressionResolver.resolveText(text, aDataContext);
-				var contentFunction = de.titus.jstl.functions.TextContent.CONTENTTYPE[contenttype];
+				var contentFunction = TextContent.CONTENTTYPE[contenttype];
 				if (contentFunction)
 					contentFunction(node, text, aElement, processor, aDataContext);
 			});
@@ -2452,7 +2456,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.TextContent", function()
 		return new de.titus.jstl.FunctionResult(true, true);
 	};
 	
-	de.titus.jstl.functions.TextContent.prototype.normalize = function(node) {
+	TextContent.prototype.normalize = function(node) {
 		if (!node) {
 			return;
 		}
@@ -2468,21 +2472,21 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.TextContent", function()
 	}
 	
 	
-	de.titus.jstl.functions.TextContent.CONTENTTYPE = {};
-	de.titus.jstl.functions.TextContent.CONTENTTYPE["html"] = function(aNode, aText, aBaseElement, aProcessor, aDataContext) {
+	TextContent.CONTENTTYPE = {};
+	TextContent.CONTENTTYPE["html"] = function(aNode, aText, aBaseElement, aProcessor, aDataContext) {
 		$(aNode).replaceWith($.parseHTML(aText));
 	};
-	de.titus.jstl.functions.TextContent.CONTENTTYPE["text/html"] = de.titus.jstl.functions.TextContent.CONTENTTYPE["html"];
+	TextContent.CONTENTTYPE["text/html"] = TextContent.CONTENTTYPE["html"];
 	
-	de.titus.jstl.functions.TextContent.CONTENTTYPE["json"] = function(aNode, aText, aBaseElement, aProcessor, aDataContext) {
+	TextContent.CONTENTTYPE["json"] = function(aNode, aText, aBaseElement, aProcessor, aDataContext) {
 		if (typeof aText === "string")
 			aNode.textContent = aText;
 		else
 			aNode.textContent = JSON.stringify(aText);
 	};
-	de.titus.jstl.functions.TextContent.CONTENTTYPE["application/json"] = de.titus.jstl.functions.TextContent.CONTENTTYPE["json"];
+	TextContent.CONTENTTYPE["application/json"] = TextContent.CONTENTTYPE["json"];
 	
-	de.titus.jstl.functions.TextContent.CONTENTTYPE["text"] = function(aNode, aText, aBaseElement, aProcessor, aDataContext) {
+	TextContent.CONTENTTYPE["text"] = function(aNode, aText, aBaseElement, aProcessor, aDataContext) {
 		var text = aText;
 		var addAsHtml = false;
 		
@@ -2508,26 +2512,27 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.TextContent", function()
 		else
 			aNode.textContent = text;
 	};
-	de.titus.jstl.functions.TextContent.CONTENTTYPE["text/plain"] = de.titus.jstl.functions.TextContent.CONTENTTYPE["text"];
+	TextContent.CONTENTTYPE["text/plain"] = TextContent.CONTENTTYPE["text"];
+	
+	de.titus.jstl.functions.TextContent = TextContent;
 });
 de.titus.core.Namespace.create("de.titus.jstl.functions.AttributeContent", function() {
-	de.titus.jstl.functions.AttributeContent = function() {
-	};
-	de.titus.jstl.functions.AttributeContent.prototype = new de.titus.jstl.IFunction();
-	de.titus.jstl.functions.AttributeContent.prototype.constructor = de.titus.jstl.functions.AttributeContent;
+	var AttributeContent = function() {};
+	AttributeContent.prototype = new de.titus.jstl.IFunction();
+	AttributeContent.prototype.constructor = AttributeContent;
 	
 	/***************************************************************************
 	 * static variables
 	 **************************************************************************/
-	de.titus.jstl.functions.AttributeContent.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.AttributeContent");
+	AttributeContent.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.AttributeContent");
 	
 	/***************************************************************************
 	 * functions
 	 **************************************************************************/
 	
-	de.titus.jstl.functions.AttributeContent.prototype.run = function(aElement, aDataContext, aProcessor) {
-		if (de.titus.jstl.functions.AttributeContent.LOGGER.isDebugEnabled())
-			de.titus.jstl.functions.AttributeContent.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
+	AttributeContent.prototype.run = function(aElement, aDataContext, aProcessor) {
+		if (AttributeContent.LOGGER.isDebugEnabled())
+			AttributeContent.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
 		
 		var processor = aProcessor || new de.titus.jstl.Processor();
 		var expressionResolver = processor.expressionResolver || new de.titus.core.ExpressionResolver();
@@ -2541,13 +2546,13 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.AttributeContent", funct
 						try {
 							var newValue = expressionResolver.resolveText(value, aDataContext);
 							if (value != newValue) {
-								if (de.titus.jstl.functions.AttributeContent.LOGGER.isDebugEnabled()) {
-									de.titus.jstl.functions.AttributeContent.LOGGER.logDebug("Change attribute \"" + name + "\" from \"" + value + "\" to \"" + newValue + "\"!");
+								if (AttributeContent.LOGGER.isDebugEnabled()) {
+									AttributeContent.LOGGER.logDebug("Change attribute \"" + name + "\" from \"" + value + "\" to \"" + newValue + "\"!");
 								}
 								aElement.attr(name, newValue);
 							}
 						} catch (e) {
-							de.titus.jstl.functions.AttributeContent.LOGGER.logError("Can't process attribute\"" + name + "\" with value \"" + value + "\"!");
+							AttributeContent.LOGGER.logError("Can't process attribute\"" + name + "\" with value \"" + value + "\"!");
 						}
 					}
 				}
@@ -2557,25 +2562,25 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.AttributeContent", funct
 		return new de.titus.jstl.FunctionResult(true, true);
 	};
 	
+	de.titus.jstl.functions.AttributeContent = AttributeContent;	
 });
 de.titus.core.Namespace.create("de.titus.jstl.functions.Data", function() {
-	de.titus.jstl.functions.Data = function() {
-	};
-	de.titus.jstl.functions.Data.prototype = new de.titus.jstl.IFunction("data");
-	de.titus.jstl.functions.Data.prototype.constructor = de.titus.jstl.functions.Data;
+	var Data = function() {};
+	Data.prototype = new de.titus.jstl.IFunction("data");
+	Data.prototype.constructor = Data;
 	
 	/**********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************
 	 * static variables
 	 *********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
-	de.titus.jstl.functions.Data.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.Data");
+	Data.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.Data");
 	
 	/**********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************
 	 * functions
 	 *********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
 	
-	de.titus.jstl.functions.Data.prototype.run = function(aElement, aDataContext, aProcessor) {
-		if (de.titus.jstl.functions.Data.LOGGER.isDebugEnabled())
-			de.titus.jstl.functions.Data.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
+	Data.prototype.run = function(aElement, aDataContext, aProcessor) {
+		if (Data.LOGGER.isDebugEnabled())
+			Data.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
 		
 		var processor = aProcessor || new de.titus.jstl.Processor();
 		var expressionResolver = processor.expressionResolver || new de.titus.core.ExpressionResolver();
@@ -2588,7 +2593,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Data", function() {
 		return new de.titus.jstl.FunctionResult(true, true);
 	};
 	
-	de.titus.jstl.functions.Data.prototype.internalProcessing = function(anExpression, aElement, aDataContext, aProcessor, anExpressionResolver) {
+	Data.prototype.internalProcessing = function(anExpression, aElement, aDataContext, aProcessor, anExpressionResolver) {
 		var varname = this.getVarname(aElement, aDataContext, aProcessor, anExpressionResolver);
 		var mode = this.getMode(aElement, aProcessor, anExpressionResolver);
 		if (this[mode] != undefined && typeof this[mode] === "function")
@@ -2597,7 +2602,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Data", function() {
 			this["direct"].call(this, anExpression, aElement, varname, aDataContext, aProcessor, anExpressionResolver);
 	};
 	
-	de.titus.jstl.functions.Data.prototype.getOptions = function(aElement, aDataContext, aProcessor, anExpressionResolver) {
+	Data.prototype.getOptions = function(aElement, aDataContext, aProcessor, anExpressionResolver) {
 		var options = aElement.attr(aProcessor.config.attributePrefix + this.attributeName + "-options");
 		if (options != undefined) {
 			options = anExpressionResolver.resolveText(options, aDataContext);
@@ -2608,20 +2613,20 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Data", function() {
 		return {};
 	};
 	
-	de.titus.jstl.functions.Data.prototype.getMode = function(aElement, aProcessor, anExpressionResolver) {
+	Data.prototype.getMode = function(aElement, aProcessor, anExpressionResolver) {
 		return aElement.attr(aProcessor.config.attributePrefix + this.attributeName + "-mode") || "direct";
 	};
 	
-	de.titus.jstl.functions.Data.prototype.getVarname = function(aElement, aDataContext, aProcessor, anExpressionResolver) {
+	Data.prototype.getVarname = function(aElement, aDataContext, aProcessor, anExpressionResolver) {
 		return aElement.attr(aProcessor.config.attributePrefix + this.attributeName + "-var");
 	};
 	
-	de.titus.jstl.functions.Data.prototype["direct"] = function(anExpression, aElement, aVarname, aDataContext, aProcessor, anExpressionResolver) {
+	Data.prototype["direct"] = function(anExpression, aElement, aVarname, aDataContext, aProcessor, anExpressionResolver) {
 		var newData = anExpressionResolver.resolveExpression(anExpression, aDataContext);
 		this.addNewData(newData, aVarname, aDataContext, aProcessor, anExpressionResolver);
 	};
 	
-	de.titus.jstl.functions.Data.prototype["remote"] = function(anExpression, aElement, aVarname, aDataContext, aProcessor, anExpressionResolver) {		
+	Data.prototype["remote"] = function(anExpression, aElement, aVarname, aDataContext, aProcessor, anExpressionResolver) {		
 		var $__THIS__$ = this;		
 		var url = anExpressionResolver.resolveText(anExpression, aDataContext);
 		var option = this.getOptions(aElement, aDataContext, aProcessor, anExpressionResolver);
@@ -2644,41 +2649,43 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Data", function() {
 		$.ajax(ajaxSettings);
 	};
 	
-	de.titus.jstl.functions.Data.prototype["url-parameter"] = function(anExpression, aElement, aVarname, aDataContext, aProcessor, anExpressionResolver) {
+	Data.prototype["url-parameter"] = function(anExpression, aElement, aVarname, aDataContext, aProcessor, anExpressionResolver) {
 		var parameterName = anExpressionResolver.resolveText(anExpression, aDataContext);
 		var value = de.titus.core.Page.getInstance().getUrl().getParameter(parameterName);
 		this.addNewData(value, aVarname, aDataContext, aProcessor, anExpressionResolver);
 	};
 	
-	de.titus.jstl.functions.Data.prototype.addNewData = function(aNewData, aVarname, aDataContext, aProcessor, anExpressionResolver) {
-		if (de.titus.jstl.functions.Data.LOGGER.isDebugEnabled())
-			de.titus.jstl.functions.Data.LOGGER.logDebug("execute addNewData(" + aNewData + ", " + aVarname + ", " + aDataContext + ", " + aProcessor + ", " + anExpressionResolver + ")");
+	Data.prototype.addNewData = function(aNewData, aVarname, aDataContext, aProcessor, anExpressionResolver) {
+		if (Data.LOGGER.isDebugEnabled())
+			Data.LOGGER.logDebug("execute addNewData(" + aNewData + ", " + aVarname + ", " + aDataContext + ", " + aProcessor + ", " + anExpressionResolver + ")");
 		if (aVarname == undefined) {
 			$.extend(true, aDataContext, aNewData);
 		} else {
 			aDataContext[aVarname] = aNewData;
 		}
 	};
+	
+	de.titus.jstl.functions.Data = Data;
 });
 de.titus.core.Namespace.create("de.titus.jstl.functions.Include", function() {
-	de.titus.jstl.functions.Include = function() {
+	var Include = function() {
 		this.cache = {};
 	};
-	de.titus.jstl.functions.Include.prototype = new de.titus.jstl.IFunction("include");
-	de.titus.jstl.functions.Include.prototype.constructor = de.titus.jstl.functions.Include;
+	Include.prototype = new de.titus.jstl.IFunction("include");
+	Include.prototype.constructor = Include;
 	
 	/***************************************************************************
 	 * static variables
 	 **************************************************************************/
-	de.titus.jstl.functions.Include.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.Include");
+	Include.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.Include");
 	
 	/***************************************************************************
 	 * functions
 	 **************************************************************************/
 	
-	de.titus.jstl.functions.Include.prototype.run = function(aElement, aDataContext, aProcessor) {
-		if (de.titus.jstl.functions.Include.LOGGER.isDebugEnabled())
-			de.titus.jstl.functions.Include.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
+	Include.prototype.run = function(aElement, aDataContext, aProcessor) {
+		if (Include.LOGGER.isDebugEnabled())
+			Include.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
 		
 		var processor = aProcessor || new de.titus.jstl.Processor();
 		var expressionResolver = processor.expressionResolver || new de.titus.jstl.ExpressionResolver();
@@ -2690,7 +2697,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Include", function() {
 		return new de.titus.jstl.FunctionResult(true, false);
 	};
 	
-	de.titus.jstl.functions.Include.prototype.internalProcessing = function(anIncludeExpression, aElement, aDataContext, aProcessor, anExpressionResolver) {
+	Include.prototype.internalProcessing = function(anIncludeExpression, aElement, aDataContext, aProcessor, anExpressionResolver) {
 		var url = anExpressionResolver.resolveText(anIncludeExpression, aDataContext);
 		var disableCaching = url.indexOf("?") >= 0 || aElement.attr(aProcessor.config.attributePrefix + this.attributeName + "-cache-disabled") != undefined;
 		var content = "";
@@ -2723,7 +2730,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Include", function() {
 		}
 	};
 	
-	de.titus.jstl.functions.Include.prototype.getOptions = function(aElement, aDataContext, aProcessor, anExpressionResolver) {
+	Include.prototype.getOptions = function(aElement, aDataContext, aProcessor, anExpressionResolver) {
 		var options = aElement.attr(aProcessor.config.attributePrefix + this.attributeName + "-options");
 		if (options != undefined) {
 			options = anExpressionResolver.resolveText(options, aDataContext);
@@ -2734,7 +2741,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Include", function() {
 		return {};
 	};
 	
-	de.titus.jstl.functions.Include.prototype.getIncludeMode = function(aElement, aDataContext, aProcessor, anExpressionResolver) {
+	Include.prototype.getIncludeMode = function(aElement, aDataContext, aProcessor, anExpressionResolver) {
 		var mode = aElement.attr(aProcessor.config.attributePrefix + this.attributeName + "-mode");
 		if (mode == undefined)
 			return "replace";
@@ -2746,9 +2753,9 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Include", function() {
 		return "replace";
 	};
 	
-	de.titus.jstl.functions.Include.prototype.addHtml = function(aElement, aTemplate, aIncludeMode, aProcessor, aDataContext) {
-		if (de.titus.jstl.functions.Include.LOGGER.isDebugEnabled())
-			de.titus.jstl.functions.Include.LOGGER.logDebug("execute addHtml(" + aElement + ", " + aTemplate + ", " + aIncludeMode + ")");
+	Include.prototype.addHtml = function(aElement, aTemplate, aIncludeMode, aProcessor, aDataContext) {
+		if (Include.LOGGER.isDebugEnabled())
+			Include.LOGGER.logDebug("execute addHtml(" + aElement + ", " + aTemplate + ", " + aIncludeMode + ")");
 		var content = $("<div/>");
 		content.html(aTemplate);
 		aProcessor.compute(content, aDataContext);
@@ -2771,29 +2778,28 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Include", function() {
 		{
 			aElement.empty();
 			content.contents().appendTo(aElement);
-		}
-		
+		}		
 	};
 	
+	de.titus.jstl.functions.Include = Include;	
 });
 de.titus.core.Namespace.create("de.titus.jstl.functions.AddAttribute", function() {
-	de.titus.jstl.functions.AddAttribute = function() {
-	};
-	de.titus.jstl.functions.AddAttribute.prototype = new de.titus.jstl.IFunction("add-attribute");
-	de.titus.jstl.functions.AddAttribute.prototype.constructor = de.titus.jstl.functions.AddAttribute;
+	var AddAttribute = function() {};
+	AddAttribute.prototype = new de.titus.jstl.IFunction("add-attribute");
+	AddAttribute.prototype.constructor = AddAttribute;
 	
 	/***************************************************************************
 	 * static variables
 	 **************************************************************************/
-	de.titus.jstl.functions.AddAttribute.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.AddAttribute");
+	AddAttribute.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.AddAttribute");
 	
 	/***************************************************************************
 	 * functions
 	 **************************************************************************/
 	
-	de.titus.jstl.functions.AddAttribute.prototype.run = function(aElement, aDataContext, aProcessor) {
-		if (de.titus.jstl.functions.AddAttribute.LOGGER.isDebugEnabled())
-			de.titus.jstl.functions.AddAttribute.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
+	AddAttribute.prototype.run = function(aElement, aDataContext, aProcessor) {
+		if (AddAttribute.LOGGER.isDebugEnabled())
+			AddAttribute.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
 		
 		var processor = aProcessor || new de.titus.jstl.Processor();
 		var expressionResolver = processor.expressionResolver || new de.titus.core.ExpressionResolver();
@@ -2814,39 +2820,39 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.AddAttribute", function(
 		return new de.titus.jstl.FunctionResult(true, true);
 	};
 	
-	de.titus.jstl.functions.AddAttribute.prototype.processArray = function(theDataArray, aElement, aDataContext, aProcessor) {
+	AddAttribute.prototype.processArray = function(theDataArray, aElement, aDataContext, aProcessor) {
 		for (var i = 0; i < theDataArray.length; i++) {
 			this.processObject(theDataArray[i], aElement, aDataContext, aProcessor);
 		}
 	};
 	
-	de.titus.jstl.functions.AddAttribute.prototype.processObject = function(theData, aElement, aDataContext, aProcessor) {
+	AddAttribute.prototype.processObject = function(theData, aElement, aDataContext, aProcessor) {
 		if (theData.name != undefined) {
 			aElement.attr(theData.name, theData.value);
 		} else {
-			de.titus.jstl.functions.AddAttribute.LOGGER.logError("run processObject (" + theData + ", " + aElement + ", " + aDataContext + ", " + aProcessor + ") -> No attribute name defined!");
+			AddAttribute.LOGGER.logError("run processObject (" + theData + ", " + aElement + ", " + aDataContext + ", " + aProcessor + ") -> No attribute name defined!");
 		}
 	};
 	
+	de.titus.jstl.functions.AddAttribute = AddAttribute;
 });
 de.titus.core.Namespace.create("de.titus.jstl.functions.Databind", function() {
-	de.titus.jstl.functions.Databind = function() {
-	};
-	de.titus.jstl.functions.Databind.prototype = new de.titus.jstl.IFunction("databind");
-	de.titus.jstl.functions.Databind.prototype.constructor = de.titus.jstl.functions.Databind;
+	var Databind = function() {};
+	Databind.prototype = new de.titus.jstl.IFunction("databind");
+	Databind.prototype.constructor = Databind;
 	
 	/**********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************
 	 * static variables
 	 *********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
-	de.titus.jstl.functions.Databind.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.Databind");
+	Databind.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.Databind");
 	
 	/**********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************
 	 * functions
 	 *********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
 	
-	de.titus.jstl.functions.Databind.prototype.run = function(aElement, aDataContext, aProcessor) {
-		if (de.titus.jstl.functions.Databind.LOGGER.isDebugEnabled())
-			de.titus.jstl.functions.Databind.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
+	Databind.prototype.run = function(aElement, aDataContext, aProcessor) {
+		if (Databind.LOGGER.isDebugEnabled())
+			Databind.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
 		
 		var expressionResolver = aProcessor.expressionResolver || new de.titus.core.ExpressionResolver();
 		
@@ -2860,40 +2866,43 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Databind", function() {
 		return new de.titus.jstl.FunctionResult(true, true);
 	};
 	
-	de.titus.jstl.functions.Databind.prototype.getVarname = function(aElement, aDataContext, aProcessor, anExpressionResolver) {
+	Databind.prototype.getVarname = function(aElement, aDataContext, aProcessor, anExpressionResolver) {
 		return aElement.attr(aProcessor.config.attributePrefix + this.attributeName + "-name");
 	};
 	
-	de.titus.jstl.functions.Databind.prototype.getValue = function(aElement, aDataContext, aProcessor, anExpressionResolver) {
+	Databind.prototype.getValue = function(aElement, aDataContext, aProcessor, anExpressionResolver) {
 		var valueString =  aElement.attr(aProcessor.config.attributePrefix + this.attributeName);
 		
 		return anExpressionResolver.resolveExpression(valueString, aDataContext, undefined);
 	};
+	
+	de.titus.jstl.functions.Databind = Databind;
 });
 de.titus.core.Namespace.create("de.titus.jstl.functions.Eventbind", function() {
-	de.titus.jstl.functions.Eventbind = function() {
-	};
-	de.titus.jstl.functions.Eventbind.prototype = new de.titus.jstl.IFunction("eventbind");
-	de.titus.jstl.functions.Eventbind.prototype.constructor = de.titus.jstl.functions.Eventbind;
+	var Eventbind = function() {};
+	Eventbind.prototype = new de.titus.jstl.IFunction("eventbind");
+	Eventbind.prototype.constructor = Eventbind;
 	
 	/**********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************
 	 * static variables
 	 *********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
-	de.titus.jstl.functions.Eventbind.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.Eventbind");
+	Eventbind.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.Eventbind");
 	
 	/**********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************
 	 * functions
 	 *********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
 	
-	de.titus.jstl.functions.Eventbind.prototype.run = function(aElement, aDataContext, aProcessor) {
-		if (de.titus.jstl.functions.Eventbind.LOGGER.isDebugEnabled())
-			de.titus.jstl.functions.Eventbind.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
+	Eventbind.prototype.run = function(aElement, aDataContext, aProcessor) {
+		if (Eventbind.LOGGER.isDebugEnabled())
+			Eventbind.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
 		
 		aElement.de_titus_core_EventBind(aDataContext);
 		
 		return new de.titus.jstl.FunctionResult(true, true);
 	};
 	
+	
+	de.titus.jstl.functions.Eventbind = Eventbind;
 });
 (function($) {
 	de.titus.core.Namespace.create("de.titus.jstl.Processor", function() {
@@ -2911,7 +2920,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Eventbind", function() {
 		 * }
 		 * </code>
 		 */
-		de.titus.jstl.Processor = function(aConfig) {
+		var Processor = function(aConfig) {
 			
 			this.config = {
 			"element" : undefined,
@@ -2933,15 +2942,15 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Eventbind", function() {
 		/***********************************************************************
 		 * static variables
 		 **********************************************************************/
-		de.titus.jstl.Processor.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.Processor");
+		Processor.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.Processor");
 		
 		/***********************************************************************
 		 * functions
 		 **********************************************************************/
 		
-		de.titus.jstl.Processor.prototype.compute = /* boolean */function(aElement, aDataContext) {
-			if (de.titus.jstl.Processor.LOGGER.isDebugEnabled())
-				de.titus.jstl.Processor.LOGGER.logDebug("execute compute(" + (aElement != undefined ? aElement.prop("tagName") : aElement) + ", " + aDataContext + ")");
+		Processor.prototype.compute = /* boolean */function(aElement, aDataContext) {
+			if (Processor.LOGGER.isDebugEnabled())
+				Processor.LOGGER.logDebug("execute compute(" + (aElement != undefined ? aElement.prop("tagName") : aElement) + ", " + aDataContext + ")");
 			if (aElement == undefined)
 				return this.internalComputeRoot();
 			
@@ -2953,7 +2962,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Eventbind", function() {
 			return this.internalComputeElement(aElement, aDataContext, events, false);
 		};
 		
-		de.titus.jstl.Processor.prototype.internalComputeRoot = /* boolean */function() {
+		Processor.prototype.internalComputeRoot = /* boolean */function() {
 			
 			var events = this.getEvents(this.config.element) || {};
 			if (this.config.onLoad)
@@ -2967,7 +2976,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Eventbind", function() {
 			return this.internalComputeElement(this.config.element, this.config.data, events, true);
 		};
 		
-		de.titus.jstl.Processor.prototype.internalComputeElement = /* boolean */function(aElement, aDataContext, theEvents, isRoot) {
+		Processor.prototype.internalComputeElement = /* boolean */function(aElement, aDataContext, theEvents, isRoot) {
 			var dataContext = aDataContext || this.config.data;
 			if (!isRoot) {
 				var ignore = aElement.attr(this.config.attributePrefix + "ignore");
@@ -3025,7 +3034,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Eventbind", function() {
 			return processResult;
 		};
 		
-		de.titus.jstl.Processor.prototype.isElementProcessable = function(aElement) {
+		Processor.prototype.isElementProcessable = function(aElement) {
 			var tagname = aElement.tagName();
 			if (tagname != undefined) {
 				if (tagname == "br")
@@ -3036,9 +3045,9 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Eventbind", function() {
 			return false;
 		};
 		
-		de.titus.jstl.Processor.prototype.internalExecuteFunction = /* boolean */function(aElement, aDataContext) {
-			if (de.titus.jstl.Processor.LOGGER.isDebugEnabled())
-				de.titus.jstl.Processor.LOGGER.logDebug("execute internalExecuteFunction(" + aElement + ", " + aDataContext + ")");
+		Processor.prototype.internalExecuteFunction = /* boolean */function(aElement, aDataContext) {
+			if (Processor.LOGGER.isDebugEnabled())
+				Processor.LOGGER.logDebug("execute internalExecuteFunction(" + aElement + ", " + aDataContext + ")");
 			
 			var functions = de.titus.jstl.FunctionRegistry.getInstance().functions;
 			var result = new de.titus.jstl.FunctionResult();
@@ -3056,9 +3065,9 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Eventbind", function() {
 			return result;
 		};
 		
-		de.titus.jstl.Processor.prototype.internalComputeChilds = /* boolean */function(aElement, aDataContext) {
-			if (de.titus.jstl.Processor.LOGGER.isDebugEnabled())
-				de.titus.jstl.Processor.LOGGER.logDebug("execute internalComputeChilds(" + aElement + ", " + aDataContext + ")");
+		Processor.prototype.internalComputeChilds = /* boolean */function(aElement, aDataContext) {
+			if (Processor.LOGGER.isDebugEnabled())
+				Processor.LOGGER.logDebug("execute internalComputeChilds(" + aElement + ", " + aDataContext + ")");
 			
 			var childs = aElement.children();
 			if (childs == undefined)
@@ -3075,7 +3084,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Eventbind", function() {
 			
 		};
 		
-		de.titus.jstl.Processor.prototype.getEvents = function(aElement) {
+		Processor.prototype.getEvents = function(aElement) {
 			var events = {};
 			
 			var onLoad = aElement.attr(this.config.attributePrefix + "load");
@@ -3092,9 +3101,9 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Eventbind", function() {
 			return events;
 		};
 		
-		de.titus.jstl.Processor.prototype.isFunctionNeeded = function(aFunction, aElement) {
-			if (de.titus.jstl.Processor.LOGGER.isDebugEnabled())
-				de.titus.jstl.Processor.LOGGER.logDebug("execute isFunctionNeeded(" + aFunction + ", " + aElement + ")");
+		Processor.prototype.isFunctionNeeded = function(aFunction, aElement) {
+			if (Processor.LOGGER.isDebugEnabled())
+				Processor.LOGGER.logDebug("execute isFunctionNeeded(" + aFunction + ", " + aElement + ")");
 			
 			var executeFunction = true;
 			if (aFunction.attributeName != undefined && aFunction.attributeName != "") {
@@ -3105,9 +3114,9 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Eventbind", function() {
 			return executeFunction;
 		};
 		
-		de.titus.jstl.Processor.prototype.executeFunction = function(aFunction, aElement, aDataContext, aCurrentFunctionResult) {
-			if (de.titus.jstl.Processor.LOGGER.isDebugEnabled())
-				de.titus.jstl.Processor.LOGGER.logDebug("execute executeFunction(" + aFunction + ", " + aElement + ", " + aDataContext + ", " + aCurrentFunctionResult + ")");
+		Processor.prototype.executeFunction = function(aFunction, aElement, aDataContext, aCurrentFunctionResult) {
+			if (Processor.LOGGER.isDebugEnabled())
+				Processor.LOGGER.logDebug("execute executeFunction(" + aFunction + ", " + aElement + ", " + aDataContext + ", " + aCurrentFunctionResult + ")");
 			
 			var result = aFunction.run(aElement, aDataContext, this);
 			if (result != undefined) {
@@ -3118,7 +3127,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Eventbind", function() {
 			return aCurrentFunctionResult;
 		};
 		
-		de.titus.jstl.Processor.prototype.onReady = function(aFunction) {
+		Processor.prototype.onReady = function(aFunction) {
 			if (aFunction) {
 				// this.onReadyEvent.push(aFunction);
 				this.config.element.on(de.titus.jstl.Constants.EVENTS.onReady, function(anEvent) {
@@ -3130,13 +3139,15 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Eventbind", function() {
 					try {
 						this.onReadyEvent[i](this.config.element, this);
 					} catch (e) {
-						de.titus.jstl.Processor.LOGGER.logError("Error by process an on ready event! -> " + (e.message || e));
+						Processor.LOGGER.logError("Error by process an on ready event! -> " + (e.message || e));
 					}
 				}
 				
 				this.config.element.trigger(de.titus.jstl.Constants.EVENTS.onReady, this);
 			}
 		};
+		
+		de.titus.jstl.Processor = jstl.Processor;
 	});
 })(jQuery);
 de.titus.core.Namespace.create("de.titus.jstl.Setup", function() {
@@ -3318,7 +3329,7 @@ de.titus.core.Namespace.create("de.titus.jstl.javascript.polyfills", function() 
 		FIELD_INACTIVE : "form-field-inactive",
 		FIELD_VALUE_CHANGED : "form-field-value-changed",
 		FIELD_VALID : "form-field-valid",
-		FIELD_INVALID : "form-field-invalid"		
+		FIELD_INVALID : "form-field-invalid"
 		};
 		
 		de.titus.form.Constants.STATE = {
@@ -3327,11 +3338,12 @@ de.titus.core.Namespace.create("de.titus.jstl.javascript.polyfills", function() 
 		SUBMITED : "form-state-submited",
 		};
 		
-		de.titus.form.Constants.ATTRIBUTE ={
-				VALIDATION : "-validation",
-				VALIDATION_FAIL_ACTION : "-validation-fail-action",
-				CONDITION : "-condition"
+		de.titus.form.Constants.ATTRIBUTE = {
+		VALIDATION : "-validation",
+		VALIDATION_FAIL_ACTION : "-validation-fail-action",
+		CONDITION : "-condition"
 		}
+		
 	});
 })();
 (function(){
@@ -3344,9 +3356,9 @@ de.titus.core.Namespace.create("de.titus.jstl.javascript.polyfills", function() 
 })();(function() {
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.form.Condition", function() {
-		de.titus.form.Condition = function(aElement, aDataController, aExpressionResolver) {
-			if(de.titus.form.Condition.LOGGER.isDebugEnabled())
-				de.titus.form.Condition.LOGGER.logDebug("constructor");
+		var Condition = function(aElement, aDataController, aExpressionResolver) {
+			if(Condition.LOGGER.isDebugEnabled())
+				Condition.LOGGER.logDebug("constructor");
 			
 			this.data = {};
 			this.data.element = aElement;
@@ -3355,21 +3367,21 @@ de.titus.core.Namespace.create("de.titus.jstl.javascript.polyfills", function() 
 			this.data.state = false;
 		};
 		
-		de.titus.form.Condition.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.Condition");
+		Condition.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.Condition");
 		
-		de.titus.form.Condition.prototype.doCheck = function(aCallback, callOnlyByChange) {
-			if(de.titus.form.Condition.LOGGER.isDebugEnabled())
-				de.titus.form.Condition.LOGGER.logDebug("doCheck()");
+		Condition.prototype.doCheck = function(aCallback, callOnlyByChange) {
+			if(Condition.LOGGER.isDebugEnabled())
+				Condition.LOGGER.logDebug("doCheck()");
 				
 			var state = false;
 			var condition = this.data.element.attr(de.titus.form.Setup.prefix + de.titus.form.Constants.ATTRIBUTE.CONDITION);			
 			if(condition != undefined && condition.trim() != ""){
-				if(de.titus.form.Condition.LOGGER.isDebugEnabled())
-					de.titus.form.Condition.LOGGER.logDebug("doCheck() -> condition: " + condition);
+				if(Condition.LOGGER.isDebugEnabled())
+					Condition.LOGGER.logDebug("doCheck() -> condition: " + condition);
 				
 				var data = this.data.dataController.getData();
-				if(de.titus.form.Condition.LOGGER.isDebugEnabled())
-					de.titus.form.Condition.LOGGER.logDebug("doCheck() -> data: " + JSON.stringify(data));
+				if(Condition.LOGGER.isDebugEnabled())
+					Condition.LOGGER.logDebug("doCheck() -> data: " + JSON.stringify(data));
 				
 				var condition = this.data.expressionResolver.resolveExpression(condition, data, false);
 				if(typeof condition === "function")
@@ -3395,15 +3407,17 @@ de.titus.core.Namespace.create("de.titus.jstl.javascript.polyfills", function() 
 			}
 			
 			return this.data.state;					
-		};		
+		};
+		
+		de.titus.form.Condition = Condition
 	});	
 })();
 (function() {
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.form.Field", function() {
-		de.titus.form.Field = function(aElement, aDataController, aExpressionResolver) {
-			if(de.titus.form.Field.LOGGER.isDebugEnabled())
-				de.titus.form.Field.LOGGER.logDebug("constructor");
+		var Field = function(aElement, aDataController, aExpressionResolver) {
+			if (Field.LOGGER.isDebugEnabled())
+				Field.LOGGER.logDebug("constructor");
 			
 			this.data = {};
 			this.data.element = aElement;
@@ -3411,152 +3425,150 @@ de.titus.core.Namespace.create("de.titus.jstl.javascript.polyfills", function() 
 			this.data.name = aElement.attr(de.titus.form.Setup.prefix + "-field");
 			this.data.type = aElement.attr(de.titus.form.Setup.prefix + "-field-type");
 			this.data.expressionResolver = aExpressionResolver || new de.titus.core.ExpressionResolver();
-			this.data.conditionHandle = new de.titus.form.Condition(this.data.element,this.data.dataController,this.data.expressionResolver); 
-			this.data.validationHandle = new de.titus.form.Validation(this.data.element,this.data.dataController,this.data.expressionResolver);
+			this.data.conditionHandle = new de.titus.form.Condition(this.data.element, this.data.dataController, this.data.expressionResolver);
+			this.data.validationHandle = new de.titus.form.Validation(this.data.element, this.data.dataController, this.data.expressionResolver);
 			this.data.summary = false;
 			this.data.active = undefined;
 			this.data.valid = false;
 			
 			this.init();
 		};
-	});
-	
-	de.titus.form.Field.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.Field");
-	
-	de.titus.form.Field.prototype.init = function() {
-		if(de.titus.form.Field.LOGGER.isDebugEnabled())
-			de.titus.form.Field.LOGGER.logDebug("init()");
 		
-
-		var initializeFunction = de.titus.form.Setup.fieldtypes[this.data.type] || de.titus.form.Setup.fieldtypes["default"];
-		if (initializeFunction == undefined || typeof initializeFunction !== "function")
-			throw "The fieldtype \"" + this.data.type + "\" is not available!";
+		Field.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.Field");
 		
-		this.fieldController = initializeFunction(this.data.element, this.data.name, de.titus.form.Field.prototype.doValueChange.bind(this));		
-		this.data.element.on(de.titus.form.Constants.EVENTS.FIELD_VALUE_CHANGED, de.titus.form.Field.prototype.doValueChange.bind(this));
-	};
-	
-	de.titus.form.Field.prototype.doConditionCheck = function() {
-		if(de.titus.form.Field.LOGGER.isDebugEnabled())
-			de.titus.form.Field.LOGGER.logDebug("doConditionCheck()");
+		Field.prototype.init = function() {
+			if (Field.LOGGER.isDebugEnabled())
+				Field.LOGGER.logDebug("init()");
+			
+			var initializeFunction = de.titus.form.Setup.fieldtypes[this.data.type] || de.titus.form.Setup.fieldtypes["default"];
+			if (initializeFunction == undefined || typeof initializeFunction !== "function")
+				throw "The fieldtype \"" + this.data.type + "\" is not available!";
+			
+			this.fieldController = initializeFunction(this.data.element, this.data.name, Field.prototype.doValueChange.bind(this));
+			this.data.element.on(de.titus.form.Constants.EVENTS.FIELD_VALUE_CHANGED, Field.prototype.doValueChange.bind(this));
+		};
 		
-		var activ = this.data.conditionHandle.doCheck();
-		if (this.data.active != activ && activ)
-			this.fieldController.showField(this.data.dataController.getData(this.data.name), this.data.dataController.getData());
-		else if (this.data.active != activ &&  !activ)
-			this.setInactiv();
-		else if(this.data.summary)
-			this.fieldController.showSummary(false);
-		
-		this.data.summary = false;
-		
-		this.data.active = activ;
-		
-		if(de.titus.form.Field.LOGGER.isDebugEnabled())
-			de.titus.form.Field.LOGGER.logDebug("doConditionCheck() -> result: " + this.data.active);
-		
-		if(this.data.active){
-			this.data.element.trigger(de.titus.form.Constants.EVENTS.FIELD_ACTIVE);
-			this.data.element.removeClass(de.titus.form.Constants.EVENTS.FIELD_INACTIVE);
-			this.data.element.addClass(de.titus.form.Constants.EVENTS.FIELD_ACTIVE);
-			this.doValidate(this.fieldController.getValue());
-		}
-		else{
-			this.data.element.trigger(de.titus.form.Constants.EVENTS.FIELD_INACTIVE);
-			this.data.element.removeClass(de.titus.form.Constants.EVENTS.FIELD_ACTIVE);
-			this.data.element.addClass(de.titus.form.Constants.EVENTS.FIELD_INACTIVE);
-		}
-		
-		return this.data.active;
-	};
-	
-	de.titus.form.Field.prototype.setInactiv = function() {
-		if(de.titus.form.Field.LOGGER.isDebugEnabled())
-			de.titus.form.Field.LOGGER.logDebug("setInactiv()");
-		this.data.dataController.changeValue(this.data.name, undefined, this);
-		this.fieldController.hideField();
-	};
-	
-	de.titus.form.Field.prototype.showSummary = function(){
-		if(de.titus.form.Field.LOGGER.isDebugEnabled())
-			de.titus.form.Field.LOGGER.logDebug("showSummary()");
-		
-		if(!this.data.active)
-			return;
-		
-		this.data.summary = true;
-		this.fieldController.showSummary(true);
-	};
-	
-	de.titus.form.Field.prototype.doValueChange = function(aEvent) {
-		if(de.titus.form.Field.LOGGER.isDebugEnabled())
-			de.titus.form.Field.LOGGER.logDebug("doValueChange() -> event type: " + (aEvent != undefined ? aEvent.type : ""));		
-		
-		var value = this.fieldController.getValue();
-		if (this.doValidate(value))
-			this.data.dataController.changeValue(this.data.name, value, this);
-		else
-			this.data.dataController.changeValue(this.data.name, undefined, this);
-		
-                if (aEvent == undefined)
-                    this.data.element.trigger($.Event(de.titus.form.Constants.EVENTS.FIELD_VALUE_CHANGED));
-                else if (aEvent.type != de.titus.form.Constants.EVENTS.FIELD_VALUE_CHANGED) {
-                    aEvent.preventDefault();
-                    aEvent.stopPropagation();
-                    this.data.element.trigger($.Event(de.titus.form.Constants.EVENTS.FIELD_VALUE_CHANGED));
-    		}
-	};
-	
-	de.titus.form.Field.prototype.doValidate = function(aValue) {
-		if(de.titus.form.Field.LOGGER.isDebugEnabled())
-			de.titus.form.Field.LOGGER.logDebug("doValidate() -> field: " + this.data.name);		
-		
-		this.data.valid = this.data.validationHandle.doCheck(aValue);		
-		this.fieldController.setValid(this.data.valid, "");
-		
-		if(this.data.valid){
-			this.data.element.trigger(de.titus.form.Constants.EVENTS.FIELD_VALID);
-			this.data.element.removeClass(de.titus.form.Constants.EVENTS.FIELD_INVALID);
-			this.data.element.addClass(de.titus.form.Constants.EVENTS.FIELD_VALID);
-		}
-		else{
-			this.data.element.trigger(de.titus.form.Constants.EVENTS.FIELD_INVALID);
-			this.data.element.removeClass(de.titus.form.Constants.EVENTS.FIELD_VALID);
-			this.data.element.addClass(de.titus.form.Constants.EVENTS.FIELD_INVALID);
-		}
-		
-		
-		if(de.titus.form.Field.LOGGER.isDebugEnabled())
-			de.titus.form.Field.LOGGER.logDebug("doValidate() -> field: " + this.data.name + " - result: " + this.data.valid);
-		
-		return this.data.valid;
-	};
-	
-	$.fn.FormularField = function(aDataController) {
-		if (this.length == undefined || this.length == 0)
-			return;
-		else if (this.length > 1) {
-			var result = [];
-			this.each(function() {
-				result.push($(this).FormularField(aDataController));
-			});
-			return result;
-		} else {
-			var data = this.data("de.titus.form.Field");
-			if (data == undefined) {
-				data = new de.titus.form.Field(this, aDataController);
-				this.data("de.titus.form.Field", data);
+		Field.prototype.doConditionCheck = function() {
+			if (Field.LOGGER.isDebugEnabled())
+				Field.LOGGER.logDebug("doConditionCheck()");
+			
+			var activ = this.data.conditionHandle.doCheck();
+			if (this.data.active != activ && activ)
+				this.fieldController.showField(this.data.dataController.getData(this.data.name), this.data.dataController.getData());
+			else if (this.data.active != activ && !activ)
+				this.setInactiv();
+			else if (this.data.summary)
+				this.fieldController.showSummary(false);
+			
+			this.data.summary = false;
+			
+			this.data.active = activ;
+			
+			if (Field.LOGGER.isDebugEnabled())
+				Field.LOGGER.logDebug("doConditionCheck() -> result: " + this.data.active);
+			
+			if (this.data.active) {
+				this.data.element.trigger(de.titus.form.Constants.EVENTS.FIELD_ACTIVE);
+				this.data.element.removeClass(de.titus.form.Constants.EVENTS.FIELD_INACTIVE);
+				this.data.element.addClass(de.titus.form.Constants.EVENTS.FIELD_ACTIVE);
+				this.doValidate(this.fieldController.getValue());
+			} else {
+				this.data.element.trigger(de.titus.form.Constants.EVENTS.FIELD_INACTIVE);
+				this.data.element.removeClass(de.titus.form.Constants.EVENTS.FIELD_ACTIVE);
+				this.data.element.addClass(de.titus.form.Constants.EVENTS.FIELD_INACTIVE);
 			}
-			return data;
-		}
-	};
+			
+			return this.data.active;
+		};
+		
+		Field.prototype.setInactiv = function() {
+			if (Field.LOGGER.isDebugEnabled())
+				Field.LOGGER.logDebug("setInactiv()");
+			this.data.dataController.changeValue(this.data.name, undefined, this);
+			this.fieldController.hideField();
+		};
+		
+		Field.prototype.showSummary = function() {
+			if (Field.LOGGER.isDebugEnabled())
+				Field.LOGGER.logDebug("showSummary()");
+			
+			if (!this.data.active)
+				return;
+			
+			this.data.summary = true;
+			this.fieldController.showSummary(true);
+		};
+		
+		Field.prototype.doValueChange = function(aEvent) {
+			if (Field.LOGGER.isDebugEnabled())
+				Field.LOGGER.logDebug("doValueChange() -> event type: " + (aEvent != undefined ? aEvent.type : ""));
+			
+			var value = this.fieldController.getValue();
+			if (this.doValidate(value))
+				this.data.dataController.changeValue(this.data.name, value, this);
+			else
+				this.data.dataController.changeValue(this.data.name, undefined, this);
+			
+			if (aEvent == undefined)
+				this.data.element.trigger($.Event(de.titus.form.Constants.EVENTS.FIELD_VALUE_CHANGED));
+			else if (aEvent.type != de.titus.form.Constants.EVENTS.FIELD_VALUE_CHANGED) {
+				aEvent.preventDefault();
+				aEvent.stopPropagation();
+				this.data.element.trigger($.Event(de.titus.form.Constants.EVENTS.FIELD_VALUE_CHANGED));
+			}
+		};
+		
+		Field.prototype.doValidate = function(aValue) {
+			if (Field.LOGGER.isDebugEnabled())
+				Field.LOGGER.logDebug("doValidate() -> field: " + this.data.name);
+			
+			this.data.valid = this.data.validationHandle.doCheck(aValue);
+			this.fieldController.setValid(this.data.valid, "");
+			
+			if (this.data.valid) {
+				this.data.element.trigger(de.titus.form.Constants.EVENTS.FIELD_VALID);
+				this.data.element.removeClass(de.titus.form.Constants.EVENTS.FIELD_INVALID);
+				this.data.element.addClass(de.titus.form.Constants.EVENTS.FIELD_VALID);
+			} else {
+				this.data.element.trigger(de.titus.form.Constants.EVENTS.FIELD_INVALID);
+				this.data.element.removeClass(de.titus.form.Constants.EVENTS.FIELD_VALID);
+				this.data.element.addClass(de.titus.form.Constants.EVENTS.FIELD_INVALID);
+			}
+			
+			if (Field.LOGGER.isDebugEnabled())
+				Field.LOGGER.logDebug("doValidate() -> field: " + this.data.name + " - result: " + this.data.valid);
+			
+			return this.data.valid;
+		};
+		
+		de.titus.form.Field = Field;
+		
+		$.fn.FormularField = function(aDataController) {
+			if (this.length == undefined || this.length == 0)
+				return;
+			else if (this.length > 1) {
+				var result = [];
+				this.each(function() {
+					result.push($(this).FormularField(aDataController));
+				});
+				return result;
+			} else {
+				var data = this.data("de.titus.form.Field");
+				if (data == undefined) {
+					data = new de.titus.form.Field(this, aDataController);
+					this.data("de.titus.form.Field", data);
+				}
+				return data;
+			}
+		};
+	});
 })();
 (function() {
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.form.Validation", function() {
-		de.titus.form.Validation = function(aElement, aDataController, aExpressionResolver) {
-			if(de.titus.form.Validation.LOGGER.isDebugEnabled())
-				de.titus.form.Validation.LOGGER.logDebug("constructor");
+		var Validation = function(aElement, aDataController, aExpressionResolver) {
+			if(Validation.LOGGER.isDebugEnabled())
+				Validation.LOGGER.logDebug("constructor");
 			
 			this.data = {};
 			this.data.element = aElement;
@@ -3565,11 +3577,11 @@ de.titus.core.Namespace.create("de.titus.jstl.javascript.polyfills", function() 
 			this.data.state = false;
 		};
 		
-		de.titus.form.Validation.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.Validation");
+		Validation.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.Validation");
 		
-		de.titus.form.Validation.prototype.doCheck = function(aValue) {
-			if(de.titus.form.Validation.LOGGER.isDebugEnabled())
-				de.titus.form.Validation.LOGGER.logDebug("doCheck()");
+		Validation.prototype.doCheck = function(aValue) {
+			if(Validation.LOGGER.isDebugEnabled())
+				Validation.LOGGER.logDebug("doCheck()");
 			
 			this.data.state = true;
 			var validationAttr = de.titus.form.Setup.prefix + de.titus.form.Constants.ATTRIBUTE.VALIDATION;
@@ -3584,8 +3596,8 @@ de.titus.core.Namespace.create("de.titus.jstl.javascript.polyfills", function() 
 				var element = $(validationElements[i]);
 				var validation = element.attr(validationAttr);
 				if(validation != undefined && validation.trim() != ""){
-					if(de.titus.form.Validation.LOGGER.isDebugEnabled())
-						de.titus.form.Validation.LOGGER.logDebug("doCheck() -> expression: " + validation);
+					if(Validation.LOGGER.isDebugEnabled())
+						Validation.LOGGER.logDebug("doCheck() -> expression: " + validation);
 					
 					var validation = this.data.expressionResolver.resolveExpression(validation, data, false);
 					if(typeof validation === "function")
@@ -3600,56 +3612,62 @@ de.titus.core.Namespace.create("de.titus.jstl.javascript.polyfills", function() 
 				}
 			}
 			
-			if(de.titus.form.Validation.LOGGER.isDebugEnabled())
-				de.titus.form.Validation.LOGGER.logDebug("doCheck() -> result: " + this.data.state);
+			if(Validation.LOGGER.isDebugEnabled())
+				Validation.LOGGER.logDebug("doCheck() -> result: " + this.data.state);
 					
 			return this.data.state;					
-		};		
+		};
+		
+		de.titus.form.Validation = Validation;
 	});	
 })();
 (function() {
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.form.DataController", function() {
-		de.titus.form.DataController = function(aChangeListener) {
-			if(de.titus.form.DataController.LOGGER.isDebugEnabled())
-				de.titus.form.DataController.LOGGER.logDebug("constructor");
+		var DataController = function(aChangeListener) {
+			if (DataController.LOGGER.isDebugEnabled())
+				DataController.LOGGER.logDebug("constructor");
 			
 			this.data = {};
 			this.changeListener = aChangeListener;
 		};
 		
-		de.titus.form.DataController.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.DataController");
+		DataController.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.DataController");
 		
-		de.titus.form.DataController.prototype.getData = function(aName){
-			if(de.titus.form.DataController.LOGGER.isDebugEnabled())
-				de.titus.form.DataController.LOGGER.logDebug("getData() -> aName: " + aName);
-			if(aName)
+		DataController.prototype.getData = function(aName) {
+			if (DataController.LOGGER.isDebugEnabled())
+				DataController.LOGGER.logDebug("getData() -> aName: " + aName);
+			
+			if (aName)
 				return this.data[aName];
-			return this.data;
+			else
+				return this.data;
 		};
 		
-		de.titus.form.DataController.prototype.changeValue = function(aName, aValue, aField, aCallback){
-			if(de.titus.form.DataController.LOGGER.isDebugEnabled())
-				de.titus.form.DataController.LOGGER.logDebug("changeValue()");
+		DataController.prototype.changeValue = function(aName, aValue, aField, aCallback) {
+			if (DataController.LOGGER.isDebugEnabled())
+				DataController.LOGGER.logDebug("changeValue()");
 			
-			if(aValue != this.data[aName] ){
+			if (aValue != this.data[aName]) {
 				this.data[aName] = aValue;
-			
-				if(de.titus.form.DataController.LOGGER.isDebugEnabled())
-					de.titus.form.DataController.LOGGER.logDebug("changeValue() -> new data: " + JSON.stringify(this.data));
-			
+				
+				if (DataController.LOGGER.isDebugEnabled())
+					DataController.LOGGER.logDebug("changeValue() -> new data: " + JSON.stringify(this.data));
+				
 				this.changeListener(aName, aValue, aField);
-				if(aCallback != undefined)
+				if (aCallback != undefined)
 					aCallback(aName, aValue, aField);
 			}
 			
-		};				
-	});	
+		};
+		
+		de.titus.form.DataController = DataController;
+	});
 })();
 (function() {
 	"use strict";
-	de.titus.core.Namespace.create("DataControllerProxy", function() {
-		DataControllerProxy = function(aChangeListener, aDataController) {
+	de.titus.core.Namespace.create("de.titus.form.DataControllerProxy", function() {
+		var DataControllerProxy = function(aChangeListener, aDataController) {
 			if(DataControllerProxy.LOGGER.isDebugEnabled())
 				DataControllerProxy.LOGGER.logDebug("constructor");
 			
@@ -3657,7 +3675,7 @@ de.titus.core.Namespace.create("de.titus.jstl.javascript.polyfills", function() 
 			this.changeListener = aChangeListener;
 		};
 		
-		DataControllerProxy.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("DataControllerProxy");
+		DataControllerProxy.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.DataControllerProxy");
 		
 		DataControllerProxy.prototype.getData = function(aName){
 			if(DataControllerProxy.LOGGER.isDebugEnabled())
@@ -3677,253 +3695,253 @@ de.titus.core.Namespace.create("de.titus.jstl.javascript.polyfills", function() 
 	});	
 })();
 (function() {
-    "use strict";
-    de.titus.core.Namespace.create("Formular", function() {
-	Formular = function(aElement) {
-	    if (Formular.LOGGER.isDebugEnabled())
-		Formular.LOGGER.logDebug("constructor");
-
-	    this.data = {};
-	    this.data.element = aElement;
-	    this.data.name = aElement.attr(de.titus.form.Setup.prefix);
-	    this.data.pages = [];
-	    this.data.dataController = new de.titus.form.DataController(Formular.prototype.valueChanged.bind(this));
-	    this.data.stepControl = undefined;
-	    this.data.currentPage = -1;
-	    this.data.state = de.titus.form.Constants.STATE.PAGES;
-	    this.expressionResolver = new de.titus.core.ExpressionResolver();
-	    this.init();
-	};
-
-	Formular.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("Formular");
-
-	Formular.prototype.init = function() {
-	    if (Formular.LOGGER.isDebugEnabled())
-		Formular.LOGGER.logDebug("init()");
-
-	    if (this.data.element.is("form"))
-		this.data.element.on("submit", function(aEvent) {
-		    aEvent.preventDefault();
-		    aEvent.stopPropagation();
-		});
-
-	    this.initAction();
-	    this.data.stepPanel = new de.titus.form.StepPanel(this);
-	    this.data.stepControl = new de.titus.form.StepControl(this);
-	    this.initPages();
-	    this.initEvents();
-
-	};
-
-	Formular.prototype.initAction = function() {
-	    var initAction = this.data.element.attr("data-form-init");
-	    if (initAction != undefined && initAction != "") {
-		var data = this.expressionResolver.resolveExpression(initAction, this.data, undefined);
-		if (typeof data === "function")
-		    data = data(this.data.element, this);
-
-		if (typeof data === "object")
-		    this.data.dataController.data = data;
-	    }
-	};
-
-	Formular.prototype.initPages = function() {
-	    if (Formular.LOGGER.isDebugEnabled())
-		Formular.LOGGER.logDebug("initPages()");
-
-	    var pageElements = this.data.element.find("[" + de.titus.form.Setup.prefix + "-page" + "]");
-	    if (pageElements.length == 0) {
-		var page = this.data.element.FormularPage(this.data.dataController, this.expressionResolver);
-		page.data.number = 1;
-		this.data.pages.push(page);
-	    } else {
-		for (var i = 0; i < pageElements.length; i++) {
-		    var page = $(pageElements[i]).FormularPage(this.data.dataController);
-		    page.data.number = (i + 1);
-		    this.data.pages.push(page);
-		    if (i > 0)
-			page.hide();
-		}
-	    }
-
-	    var page = de.titus.form.PageUtils.findNextPage(this.data.pages, -1);
-	    page.show();
-	    this.data.currentPage = page.data.number - 1;
-	    this.data.stepPanel.update();
-	    this.data.stepControl.update();
-	};
-
-	Formular.prototype.initEvents = function() {
-	    this.data.element.on(de.titus.form.Constants.EVENTS.FIELD_ACTIVE, Formular.prototype.valueChanged.bind(this));
-	    this.data.element.on(de.titus.form.Constants.EVENTS.FIELD_INACTIVE, Formular.prototype.valueChanged.bind(this));
-	    this.data.element.on(de.titus.form.Constants.EVENTS.FIELD_VALUE_CHANGED, Formular.prototype.valueChanged.bind(this));
-	    this.data.element.on(de.titus.form.Constants.EVENTS.FIELD_VALID, Formular.prototype.valueChanged.bind(this));
-	    this.data.element.on(de.titus.form.Constants.EVENTS.FIELD_INVALID, Formular.prototype.valueChanged.bind(this));
-	};
-
-	Formular.prototype.valueChanged = function() {
-	    if (Formular.LOGGER.isDebugEnabled())
-		Formular.LOGGER.logDebug("valueChanged()");
-
-	    this.data.stepPanel.update();
-	    this.data.stepControl.update();
-	};
-
-	Formular.prototype.doValidate = function() {
-	    if (Formular.LOGGER.isDebugEnabled())
-		Formular.LOGGER.logDebug("doValidate()");
-
-	    for (var i = 0; i < this.data.pages.length; i++)
-		if (this.data.pages[i].data.active && !this.data.pages[i].doValidate())
-		    return false;
-
-	    return true;
-	};
-
-	Formular.prototype.showSummary = function() {
-	    if (Formular.LOGGER.isDebugEnabled())
-		Formular.LOGGER.logDebug("showSummary()");
-
-	    for (var i = 0; i < this.data.pages.length; i++)
-		if (this.data.pages[i].data.active)
-		    this.data.pages[i].showSummary();
-
-	    this.data.state = de.titus.form.Constants.STATE.SUMMARY;
-	    this.data.stepPanel.update();
-	    this.data.stepControl.update();
-	};
-
-	Formular.prototype.getCurrentPage = function() {
-	    if (Formular.LOGGER.isDebugEnabled())
-		Formular.LOGGER.logDebug("currentPage() -> current index: " + this.data.currentPage);
-
-	    return this.data.pages[this.data.currentPage];
-	};
-
-	Formular.prototype.prevPage = function() {
-	    if (Formular.LOGGER.isDebugEnabled())
-		Formular.LOGGER.logDebug("prevPage()");
-
-	    if (this.data.state == de.titus.form.Constants.STATE.SUBMITED)
-		return;
-	    else if (this.data.state == de.titus.form.Constants.STATE.SUMMARY) {
-		this.data.state = de.titus.form.Constants.STATE.PAGES;
-		for (var i = 0; i < this.data.pages.length; i++)
-		    if (i != this.data.currentPage)
-			this.data.pages[i].hide();
-
-		this.data.pages[this.data.currentPage].show();
-
-		this.data.stepPanel.update();
-		this.data.stepControl.update();
-
-	    } else if (this.data.currentPage > 0) {
-		this.data.pages[this.data.currentPage].hide();
-		var page = de.titus.form.PageUtils.findPrevPage(this.data.pages, this.data.currentPage);
-		this.data.currentPage = page.data.number - 1;
-		this.data.pages[this.data.currentPage].show();
-		this.data.state = de.titus.form.Constants.STATE.PAGES;
-		this.data.stepPanel.update();
-		this.data.stepControl.update();
-	    }
-
-	};
-
-	Formular.prototype.nextPage = function() {
-	    if (Formular.LOGGER.isDebugEnabled())
-		Formular.LOGGER.logDebug("nextPage()");
-
-	    if (this.data.currentPage < (this.data.pages.length - 1)) {
-		if (!this.data.pages[this.data.currentPage].doValidate())
-		    return;
-
-		var page = de.titus.form.PageUtils.findNextPage(this.data.pages, this.data.currentPage);
-		if (page != undefined) {
-		    this.data.state = de.titus.form.Constants.STATE.PAGES;
-		    this.data.pages[this.data.currentPage].hide();
-		    this.data.currentPage = page.data.number - 1;
-		    this.data.pages[this.data.currentPage].show();
-		    this.data.stepPanel.update();
-		    this.data.stepControl.update();
-		    return;
-		}
-	    } else {
-		this.data.state = de.titus.form.Constants.STATE.SUMMARY;
-		this.showSummary();
-		this.data.stepPanel.update();
-		this.data.stepControl.update();
-	    }
-	};
-
-	Formular.prototype.submit = function() {
-	    if (Formular.LOGGER.isDebugEnabled())
-		Formular.LOGGER.logDebug("submit()");
-
-	    this.data.state = de.titus.form.Constants.STATE.SUBMITED;
-	    this.data.stepPanel.update();
-	    this.data.stepControl.update();
-	    var data = this.data.dataController.getData();
-	    if (Formular.LOGGER.isDebugEnabled())
-		Formular.LOGGER.logDebug("submit() -> data: " + JSON.stringify(data));
-
-	    var action = this.data.element.attr("data-form-submit");
-	    if (action != undefined && action != "") {
-		if (Formular.LOGGER.isDebugEnabled())
-		    Formular.LOGGER.logDebug("submit() -> use a submit action!");
-		var data = this.expressionResolver.resolveExpression(action, data, undefined);
-		if (typeof data === "function")
-		    data(form);
-	    } else {
-		if (Formular.LOGGER.isDebugEnabled())
-		    Formular.LOGGER.logDebug("submit() -> use a default ajax!");
-
-		var action = this.data.element.attr("action");
-		var method = this.data.element.attr("method") || "post";
-		var contentType = this.data.element.attr("enctype") || "application/json";
-
-		var request = {
-		"url" : action,
-		"type" : method,
-		"contentType" : contentType,
-		"data" : contentType == "application/json" ? JSON.stringify(data) : data
+	"use strict";
+	de.titus.core.Namespace.create("de.titus.form.Formular", function() {
+		var Formular = function(aElement) {
+			if (Formular.LOGGER.isDebugEnabled())
+				Formular.LOGGER.logDebug("constructor");
+			
+			this.data = {};
+			this.data.element = aElement;
+			this.data.name = aElement.attr(de.titus.form.Setup.prefix);
+			this.data.pages = [];
+			this.data.dataController = new de.titus.form.DataController(Formular.prototype.valueChanged.bind(this));
+			this.data.stepControl = undefined;
+			this.data.currentPage = -1;
+			this.data.state = de.titus.form.Constants.STATE.PAGES;
+			this.expressionResolver = new de.titus.core.ExpressionResolver();
+			this.init();
 		};
-		// TODO Response processing
-		$.ajax(request);
-	    }
+		
+		Formular.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.Formular");
+		
+		Formular.prototype.init = function() {
+			if (Formular.LOGGER.isDebugEnabled())
+				Formular.LOGGER.logDebug("init()");
+			
+			if (this.data.element.is("form"))
+				this.data.element.on("submit", function(aEvent) {
+					aEvent.preventDefault();
+					aEvent.stopPropagation();
+				});
+			
+			this.initAction();
+			this.data.stepPanel = new de.titus.form.StepPanel(this);
+			this.data.stepControl = new de.titus.form.StepControl(this);
+			this.initPages();
+			this.initEvents();
+			
+		};
+		
+		Formular.prototype.initAction = function() {
+			var initAction = this.data.element.attr("data-form-init");
+			if (initAction != undefined && initAction != "") {
+				var data = this.expressionResolver.resolveExpression(initAction, this.data, undefined);
+				if (typeof data === "function")
+					data = data(this.data.element, this);
+				
+				if (typeof data === "object")
+					this.data.dataController.data = data;
+			}
+		};
+		
+		Formular.prototype.initPages = function() {
+			if (Formular.LOGGER.isDebugEnabled())
+				Formular.LOGGER.logDebug("initPages()");
+			
+			var pageElements = this.data.element.find("[" + de.titus.form.Setup.prefix + "-page" + "]");
+			if (pageElements.length == 0) {
+				var page = this.data.element.FormularPage(this.data.dataController, this.expressionResolver);
+				page.data.number = 1;
+				this.data.pages.push(page);
+			} else {
+				for (var i = 0; i < pageElements.length; i++) {
+					var page = $(pageElements[i]).FormularPage(this.data.dataController);
+					page.data.number = (i + 1);
+					this.data.pages.push(page);
+					if (i > 0)
+						page.hide();
+				}
+			}
+			
+			var page = de.titus.form.PageUtils.findNextPage(this.data.pages, -1);
+			page.show();
+			this.data.currentPage = page.data.number - 1;
+			this.data.stepPanel.update();
+			this.data.stepControl.update();
+		};
+		
+		Formular.prototype.initEvents = function() {
+			this.data.element.on(de.titus.form.Constants.EVENTS.FIELD_ACTIVE, Formular.prototype.valueChanged.bind(this));
+			this.data.element.on(de.titus.form.Constants.EVENTS.FIELD_INACTIVE, Formular.prototype.valueChanged.bind(this));
+			this.data.element.on(de.titus.form.Constants.EVENTS.FIELD_VALUE_CHANGED, Formular.prototype.valueChanged.bind(this));
+			this.data.element.on(de.titus.form.Constants.EVENTS.FIELD_VALID, Formular.prototype.valueChanged.bind(this));
+			this.data.element.on(de.titus.form.Constants.EVENTS.FIELD_INVALID, Formular.prototype.valueChanged.bind(this));
+		};
+		
+		Formular.prototype.valueChanged = function() {
+			if (Formular.LOGGER.isDebugEnabled())
+				Formular.LOGGER.logDebug("valueChanged()");
+			
+			this.data.stepPanel.update();
+			this.data.stepControl.update();
+		};
+		
+		Formular.prototype.doValidate = function() {
+			if (Formular.LOGGER.isDebugEnabled())
+				Formular.LOGGER.logDebug("doValidate()");
+			
+			for (var i = 0; i < this.data.pages.length; i++)
+				if (this.data.pages[i].data.active && !this.data.pages[i].doValidate())
+					return false;
+			
+			return true;
+		};
+		
+		Formular.prototype.showSummary = function() {
+			if (Formular.LOGGER.isDebugEnabled())
+				Formular.LOGGER.logDebug("showSummary()");
+			
+			for (var i = 0; i < this.data.pages.length; i++)
+				if (this.data.pages[i].data.active)
+					this.data.pages[i].showSummary();
+			
+			this.data.state = de.titus.form.Constants.STATE.SUMMARY;
+			this.data.stepPanel.update();
+			this.data.stepControl.update();
+		};
+		
+		Formular.prototype.getCurrentPage = function() {
+			if (Formular.LOGGER.isDebugEnabled())
+				Formular.LOGGER.logDebug("currentPage() -> current index: " + this.data.currentPage);
+			
+			return this.data.pages[this.data.currentPage];
+		};
+		
+		Formular.prototype.prevPage = function() {
+			if (Formular.LOGGER.isDebugEnabled())
+				Formular.LOGGER.logDebug("prevPage()");
+			
+			if (this.data.state == de.titus.form.Constants.STATE.SUBMITED)
+				return;
+			else if (this.data.state == de.titus.form.Constants.STATE.SUMMARY) {
+				this.data.state = de.titus.form.Constants.STATE.PAGES;
+				for (var i = 0; i < this.data.pages.length; i++)
+					if (i != this.data.currentPage)
+						this.data.pages[i].hide();
+				
+				this.data.pages[this.data.currentPage].show();
+				
+				this.data.stepPanel.update();
+				this.data.stepControl.update();
+				
+			} else if (this.data.currentPage > 0) {
+				this.data.pages[this.data.currentPage].hide();
+				var page = de.titus.form.PageUtils.findPrevPage(this.data.pages, this.data.currentPage);
+				this.data.currentPage = page.data.number - 1;
+				this.data.pages[this.data.currentPage].show();
+				this.data.state = de.titus.form.Constants.STATE.PAGES;
+				this.data.stepPanel.update();
+				this.data.stepControl.update();
+			}
+			
+		};
+		
+		Formular.prototype.nextPage = function() {
+			if (Formular.LOGGER.isDebugEnabled())
+				Formular.LOGGER.logDebug("nextPage()");
+			
+			if (this.data.currentPage < (this.data.pages.length - 1)) {
+				if (!this.data.pages[this.data.currentPage].doValidate())
+					return;
+				
+				var page = de.titus.form.PageUtils.findNextPage(this.data.pages, this.data.currentPage);
+				if (page != undefined) {
+					this.data.state = de.titus.form.Constants.STATE.PAGES;
+					this.data.pages[this.data.currentPage].hide();
+					this.data.currentPage = page.data.number - 1;
+					this.data.pages[this.data.currentPage].show();
+					this.data.stepPanel.update();
+					this.data.stepControl.update();
+					return;
+				}
+			} else {
+				this.data.state = de.titus.form.Constants.STATE.SUMMARY;
+				this.showSummary();
+				this.data.stepPanel.update();
+				this.data.stepControl.update();
+			}
+		};
+		
+		Formular.prototype.submit = function() {
+			if (Formular.LOGGER.isDebugEnabled())
+				Formular.LOGGER.logDebug("submit()");
+			
+			this.data.state = de.titus.form.Constants.STATE.SUBMITED;
+			this.data.stepPanel.update();
+			this.data.stepControl.update();
+			var data = this.data.dataController.getData();
+			if (Formular.LOGGER.isDebugEnabled())
+				Formular.LOGGER.logDebug("submit() -> data: " + JSON.stringify(data));
+			
+			var action = this.data.element.attr("data-form-submit");
+			if (action != undefined && action != "") {
+				if (Formular.LOGGER.isDebugEnabled())
+					Formular.LOGGER.logDebug("submit() -> use a submit action!");
+				var data = this.expressionResolver.resolveExpression(action, data, undefined);
+				if (typeof data === "function")
+					data(form);
+			} else {
+				if (Formular.LOGGER.isDebugEnabled())
+					Formular.LOGGER.logDebug("submit() -> use a default ajax!");
+				
+				var action = this.data.element.attr("action");
+				var method = this.data.element.attr("method") || "post";
+				var contentType = this.data.element.attr("enctype") || "application/json";
+				
+				var request = {
+				"url" : action,
+				"type" : method,
+				"contentType" : contentType,
+				"data" : contentType == "application/json" ? JSON.stringify(data) : data
+				};
+				// TODO Response processing
+				$.ajax(request);
+			}
+		};
+		
+		de.titus.form.Formular = Formular;
+	});
+	
+	$.fn.Formular = function() {
+		if (this.length == undefined || this.length == 0)
+			return;
+		else if (this.length > 1) {
+			var result = [];
+			this.each(function() {
+				result.push($(this).Formular());
+			});
+			return result;
+		} else {
+			var data = this.data("Formular");
+			if (data == undefined) {
+				data = new de.titus.form.Formular(this);
+				this.data("Formular", data);
+			}
+			return data;
+		}
 	};
-
-	de.titus.form.Formular = Formular;
-    });
-
-    $.fn.Formular = function() {
-	if (this.length == undefined || this.length == 0)
-	    return;
-	else if (this.length > 1) {
-	    var result = [];
-	    this.each(function() {
-		result.push($(this).Formular());
-	    });
-	    return result;
-	} else {
-	    var data = this.data("Formular");
-	    if (data == undefined) {
-		data = new de.titus.form.Formular(this);
-		this.data("Formular", data);
-	    }
-	    return data;
-	}
-    };
-
-    $(document).ready(function() {
-	$('[data-form]').Formular();
-    });
+	
+	$(document).ready(function() {
+		$('[data-form]').Formular();
+	});
 })($);
 (function() {
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.form.Page", function() {
-		de.titus.form.Page = function(aElement, aDataController, aExpressionResolver) {
-			if(de.titus.form.Page.LOGGER.isDebugEnabled())
-				de.titus.form.Page.LOGGER.logDebug("constructor");
+		var Page = function(aElement, aDataController, aExpressionResolver) {
+			if(Page.LOGGER.isDebugEnabled())
+				Page.LOGGER.logDebug("constructor");
 			this.data = {};
 			this.data.number = undefined;
 			this.data.element = aElement;
@@ -3931,7 +3949,7 @@ de.titus.core.Namespace.create("de.titus.jstl.javascript.polyfills", function() 
 			this.data.step = aElement.attr(de.titus.form.Setup.prefix + "-step");
 			this.data.expressionResolver = aExpressionResolver || new de.titus.core.ExpressionResolver();
 			this.data.formDataController = aDataController;
-			this.data.dataController = new de.titus.form.DataControllerProxy(de.titus.form.Page.prototype.valueChangeListener.bind(this), this.data.formDataController);
+			this.data.dataController = new de.titus.form.DataControllerProxy(Page.prototype.valueChangeListener.bind(this), this.data.formDataController);
 			this.data.conditionHandle = new de.titus.form.Condition(this.data.element,this.data.dataController,this.data.expressionResolver);
 			this.data.fieldMap = {};
 			this.data.fields = [];
@@ -3940,24 +3958,24 @@ de.titus.core.Namespace.create("de.titus.jstl.javascript.polyfills", function() 
 			this.init();
 		};
 		
-		de.titus.form.Page.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.Page");
+		Page.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.Page");
 		
-		de.titus.form.Page.prototype.init = function() {
-			if(de.titus.form.Page.LOGGER.isDebugEnabled())
-				de.titus.form.Page.LOGGER.logDebug("init()");
+		Page.prototype.init = function() {
+			if(Page.LOGGER.isDebugEnabled())
+				Page.LOGGER.logDebug("init()");
 			this.initFields(this.data.element);
 		};
 		
-		de.titus.form.Page.prototype.valueChangeListener = function(aName, aValue, aField) {
+		Page.prototype.valueChangeListener = function(aName, aValue, aField) {
 			this.data.formDataController.changeValue(aName, aValue, aField);
 			for(var i = 0; i < this.data.fields.length; i++)
 				this.data.fields[i].doConditionCheck();
 		};
 		
 
-		de.titus.form.Page.prototype.initFields = function(aElement) {
-			if(de.titus.form.Page.LOGGER.isDebugEnabled())
-				de.titus.form.Page.LOGGER.logDebug("initFields()");
+		Page.prototype.initFields = function(aElement) {
+			if(Page.LOGGER.isDebugEnabled())
+				Page.LOGGER.logDebug("initFields()");
 			
 			if (aElement.attr(de.titus.form.Setup.prefix + "-field") != undefined) {
 				var field = aElement.FormularField(this.data.dataController, this.data.expressionResolver);
@@ -3972,9 +3990,9 @@ de.titus.core.Namespace.create("de.titus.jstl.javascript.polyfills", function() 
 		};
 		
 		
-		de.titus.form.Page.prototype.checkCondition = function(){
-			if(de.titus.form.Page.LOGGER.isDebugEnabled())
-				de.titus.form.Page.LOGGER.logDebug("checkCondition()");
+		Page.prototype.checkCondition = function(){
+			if(Page.LOGGER.isDebugEnabled())
+				Page.LOGGER.logDebug("checkCondition()");
 			
 			this.data.active = this.data.conditionHandle.doCheck();
 			if(!this.data.active)
@@ -3984,9 +4002,9 @@ de.titus.core.Namespace.create("de.titus.jstl.javascript.polyfills", function() 
 			return this.data.active;
 		};		
 		
-		de.titus.form.Page.prototype.show = function(){
-			if(de.titus.form.Page.LOGGER.isDebugEnabled())
-				de.titus.form.Page.LOGGER.logDebug("show()");
+		Page.prototype.show = function(){
+			if(Page.LOGGER.isDebugEnabled())
+				Page.LOGGER.logDebug("show()");
 			
 			for(var i = 0; i < this.data.fields.length; i++)
 				this.data.fields[i].doConditionCheck();
@@ -3994,16 +4012,16 @@ de.titus.core.Namespace.create("de.titus.jstl.javascript.polyfills", function() 
 			this.data.element.show();
 		};
 		
-		de.titus.form.Page.prototype.hide = function(){
-			if(de.titus.form.Page.LOGGER.isDebugEnabled())
-				de.titus.form.Page.LOGGER.logDebug("hide()");
+		Page.prototype.hide = function(){
+			if(Page.LOGGER.isDebugEnabled())
+				Page.LOGGER.logDebug("hide()");
 			
 			this.data.element.hide();
 		};
 		
-		de.titus.form.Page.prototype.showSummary = function(){
-			if(de.titus.form.Page.LOGGER.isDebugEnabled())
-				de.titus.form.Page.LOGGER.logDebug("showSummary()");
+		Page.prototype.showSummary = function(){
+			if(Page.LOGGER.isDebugEnabled())
+				Page.LOGGER.logDebug("showSummary()");
 			
 			if(!this.data.active)
 				return;
@@ -4014,9 +4032,9 @@ de.titus.core.Namespace.create("de.titus.jstl.javascript.polyfills", function() 
 					this.data.fields[i].showSummary();
 		};
 		
-		de.titus.form.Page.prototype.doValidate = function(){
-			if(de.titus.form.Page.LOGGER.isDebugEnabled())
-				de.titus.form.Page.LOGGER.logDebug("doValidate()");
+		Page.prototype.doValidate = function(){
+			if(Page.LOGGER.isDebugEnabled())
+				Page.LOGGER.logDebug("doValidate()");
 			
 			for(var i = 0; i < this.data.fields.length; i++)
 				if(this.data.fields[i].data.active && !this.data.fields[i].data.valid)
@@ -4025,6 +4043,7 @@ de.titus.core.Namespace.create("de.titus.jstl.javascript.polyfills", function() 
 			return true;
 		};
 		
+		de.titus.form.Page = Page;
 		
 		$.fn.FormularPage = function(aDataController) {
 			if (this.length == undefined || this.length == 0)
@@ -4038,7 +4057,7 @@ de.titus.core.Namespace.create("de.titus.jstl.javascript.polyfills", function() 
 			} else {
 				var data = this.data("de.titus.form.Page");
 				if (data == undefined) {
-					data = new de.titus.form.Page(this, aDataController);
+					data = new Page(this, aDataController);
 					this.data("de.titus.form.Page", data);
 				}
 				return data;
@@ -4049,14 +4068,15 @@ de.titus.core.Namespace.create("de.titus.jstl.javascript.polyfills", function() 
 (function() {
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.form.PageUtils", function() {
-		de.titus.form.PageUtils.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.PageUtils");
+		var PageUtils = {};		
+		PageUtils.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.PageUtils");
 		
-		de.titus.form.PageUtils.findPrevPage = function(thePages, aCurrentIndex){
-			if(de.titus.form.PageUtils.LOGGER.isDebugEnabled())
-				de.titus.form.PageUtils.LOGGER.logDebug("findPrevPage() -> aCurrentIndex: " + aCurrentIndex);
+		PageUtils.findPrevPage = function(thePages, aCurrentIndex){
+			if(PageUtils.LOGGER.isDebugEnabled())
+				PageUtils.LOGGER.logDebug("findPrevPage() -> aCurrentIndex: " + aCurrentIndex);
 			
 			for(var i = (aCurrentIndex - 1); i >= 0; i--){
-				de.titus.form.PageUtils.LOGGER.logDebug(i);
+				PageUtils.LOGGER.logDebug(i);
 				var page = thePages[i];
 				if(page.checkCondition())
 					return page;
@@ -4065,12 +4085,12 @@ de.titus.core.Namespace.create("de.titus.jstl.javascript.polyfills", function() 
 			throw "Can't evaluate a previous page!";
 		}
 		
-		de.titus.form.PageUtils.findNextPage = function(thePages, aCurrentIndex){
-			if(de.titus.form.PageUtils.LOGGER.isDebugEnabled())
-				de.titus.form.PageUtils.LOGGER.logDebug("findNextPage() -> aCurrentIndex: " + aCurrentIndex );
+		PageUtils.findNextPage = function(thePages, aCurrentIndex){
+			if(PageUtils.LOGGER.isDebugEnabled())
+				PageUtils.LOGGER.logDebug("findNextPage() -> aCurrentIndex: " + aCurrentIndex );
 			
 			for(var i = (aCurrentIndex + 1); i < thePages.length; i++){
-				de.titus.form.PageUtils.LOGGER.logDebug(i);
+				PageUtils.LOGGER.logDebug(i);
 				var page = thePages[i];
 				if(page.checkCondition())
 					return page;
@@ -4078,14 +4098,15 @@ de.titus.core.Namespace.create("de.titus.jstl.javascript.polyfills", function() 
 			
 			throw "Can't evaluate a next page!";
 		}
+		de.titus.form.PageUtils = PageUtils;
 	});
 })($);
 (function() {
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.form.StepControl", function() {
-		de.titus.form.StepControl = function(aForm) {
-			if (de.titus.form.StepControl.LOGGER.isDebugEnabled())
-				de.titus.form.StepControl.LOGGER.logDebug("constructor");
+		var StepControl = function(aForm) {
+			if (StepControl.LOGGER.isDebugEnabled())
+				StepControl.LOGGER.logDebug("constructor");
 			
 			this.data = {};
 			this.data.element = aForm.data.element.find("[" + de.titus.form.Setup.prefix + "-step-control" + "]");
@@ -4097,29 +4118,29 @@ de.titus.core.Namespace.create("de.titus.jstl.javascript.polyfills", function() 
 			this.init();
 		};
 		
-		de.titus.form.StepControl.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.StepControl");
+		StepControl.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.StepControl");
 		
-		de.titus.form.StepControl.prototype.init = function() {
-			if (de.titus.form.StepControl.LOGGER.isDebugEnabled())
-				de.titus.form.StepControl.LOGGER.logDebug("init()");
+		StepControl.prototype.init = function() {
+			if (StepControl.LOGGER.isDebugEnabled())
+				StepControl.LOGGER.logDebug("init()");
 			
 			this.data.stepControlBack = this.data.element.find("[" + de.titus.form.Setup.prefix + "-step-back" + "]");
 			this.data.stepControlBack.hide();
-			this.data.stepControlBack.on("click", de.titus.form.StepControl.prototype.__StepBackHandle.bind(this));
+			this.data.stepControlBack.on("click", StepControl.prototype.__StepBackHandle.bind(this));
 			
 			this.data.stepControlNext = this.data.element.find("[" + de.titus.form.Setup.prefix + "-step-next" + "]");
-			this.data.stepControlNext.on("click", de.titus.form.StepControl.prototype.__StepNextHandle.bind(this));
+			this.data.stepControlNext.on("click", StepControl.prototype.__StepNextHandle.bind(this));
 			
 			this.data.stepControlSummary = this.data.element.find("[" + de.titus.form.Setup.prefix + "-step-summary" + "]");
 			this.data.stepControlSummary.hide();
-			this.data.stepControlSummary.on("click", de.titus.form.StepControl.prototype.__StepSummaryHandle.bind(this));
+			this.data.stepControlSummary.on("click", StepControl.prototype.__StepSummaryHandle.bind(this));
 			
 			this.data.stepControlSubmit = this.data.element.find("[" + de.titus.form.Setup.prefix + "-step-submit" + "]");
 			this.data.stepControlSubmit.hide();
-			this.data.stepControlSubmit.on("click", de.titus.form.StepControl.prototype.__StepSubmitHandle.bind(this));
+			this.data.stepControlSubmit.on("click", StepControl.prototype.__StepSubmitHandle.bind(this));
 		};
 		
-		de.titus.form.StepControl.prototype.update = function() {
+		StepControl.prototype.update = function() {
 			if (this.data.form.data.state == de.titus.form.Constants.STATE.SUBMITED) {
 				this.data.element.hide();
 				return;
@@ -4155,45 +4176,47 @@ de.titus.core.Namespace.create("de.titus.jstl.javascript.polyfills", function() 
 				this.data.stepControlBack.hide();
 		};
 		
-		de.titus.form.StepControl.prototype.__StepBackHandle = function(aEvent) {
-			if (de.titus.form.StepControl.LOGGER.isDebugEnabled())
-				de.titus.form.StepControl.LOGGER.logDebug("__StepBackHandle()");
+		StepControl.prototype.__StepBackHandle = function(aEvent) {
+			if (StepControl.LOGGER.isDebugEnabled())
+				StepControl.LOGGER.logDebug("__StepBackHandle()");
 			
 			if (this.data.form.data.currentPage > 0) {
 				this.data.form.prevPage();
 			}
 		};
 		
-		de.titus.form.StepControl.prototype.__StepNextHandle = function(aEvent) {
-			if (de.titus.form.StepControl.LOGGER.isDebugEnabled())
-				de.titus.form.StepControl.LOGGER.logDebug("__StepNextHandle()");
+		StepControl.prototype.__StepNextHandle = function(aEvent) {
+			if (StepControl.LOGGER.isDebugEnabled())
+				StepControl.LOGGER.logDebug("__StepNextHandle()");
 			
 			if ((this.data.form.data.pages.length - 1) > this.data.form.data.currentPage) {
 				this.data.form.nextPage();
 			}
 		};
 		
-		de.titus.form.StepControl.prototype.__StepSummaryHandle = function(aEvent) {
-			if (de.titus.form.StepControl.LOGGER.isDebugEnabled())
-				de.titus.form.StepControl.LOGGER.logDebug("__StepSummaryHandle()");
+		StepControl.prototype.__StepSummaryHandle = function(aEvent) {
+			if (StepControl.LOGGER.isDebugEnabled())
+				StepControl.LOGGER.logDebug("__StepSummaryHandle()");
 			
 			this.data.form.showSummary();
 		};
 		
-		de.titus.form.StepControl.prototype.__StepSubmitHandle = function(aEvent) {
-			if (de.titus.form.StepControl.LOGGER.isDebugEnabled())
-				de.titus.form.StepControl.LOGGER.logDebug("__StepSubmitHandle()");
+		StepControl.prototype.__StepSubmitHandle = function(aEvent) {
+			if (StepControl.LOGGER.isDebugEnabled())
+				StepControl.LOGGER.logDebug("__StepSubmitHandle()");
 			
 			this.data.form.submit();
 		};
+		
+		de.titus.form.StepControl = StepControl;
 	});
 })($);
 (function() {
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.form.StepPanel", function() {
-		de.titus.form.StepPanel = function(aForm) {
-			if (de.titus.form.StepPanel.LOGGER.isDebugEnabled())
-				de.titus.form.StepPanel.LOGGER.logDebug("constructor");
+		var StepPanel = function(aForm) {
+			if (StepPanel.LOGGER.isDebugEnabled())
+				StepPanel.LOGGER.logDebug("constructor");
 			
 			this.data = {};
 			this.data.element = aForm.data.element.find("[" + de.titus.form.Setup.prefix + "-step-panel" + "]");
@@ -4204,17 +4227,17 @@ de.titus.core.Namespace.create("de.titus.jstl.javascript.polyfills", function() 
 			this.init();
 		};
 		
-		de.titus.form.StepPanel.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.StepPanel");
+		StepPanel.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.StepPanel");
 		
-		de.titus.form.StepPanel.prototype.init = function() {
-			if (de.titus.form.StepPanel.LOGGER.isDebugEnabled())
-				de.titus.form.StepPanel.LOGGER.logDebug("init()");
+		StepPanel.prototype.init = function() {
+			if (StepPanel.LOGGER.isDebugEnabled())
+				StepPanel.LOGGER.logDebug("init()");
 			
 		};
 		
-		de.titus.form.StepPanel.prototype.update = function() {
-			if (de.titus.form.StepPanel.LOGGER.isDebugEnabled())
-				de.titus.form.StepPanel.LOGGER.logDebug("update()");
+		StepPanel.prototype.update = function() {
+			if (StepPanel.LOGGER.isDebugEnabled())
+				StepPanel.LOGGER.logDebug("update()");
 			this.data.element.find(".active").removeClass("active")
 
 			if (this.data.form.data.state == de.titus.form.Constants.STATE.SUMMARY && this.data.stepPanelSummaryState != undefined) 
@@ -4224,6 +4247,8 @@ de.titus.core.Namespace.create("de.titus.jstl.javascript.polyfills", function() 
 			 else
 				this.data.element.find("[" + de.titus.form.Setup.prefix + "-step='" + this.data.form.getCurrentPage().data.step + "']").addClass("active");
 		};
+		
+		de.titus.form.StepPanel = StepPanel;
 	});
 })($);
 (function() {
@@ -4288,8 +4313,8 @@ de.titus.core.Namespace.create("de.titus.jstl.javascript.polyfills", function() 
 })();
 (function() {
 	"use strict";
-	de.titus.core.Namespace.create("DefaultFieldController", function() {
-		DefaultFieldController = function(aElement, aFieldname, aValueChangeListener) {
+	de.titus.core.Namespace.create("de.titus.form.DefaultFieldController", function() {
+		var DefaultFieldController = function(aElement, aFieldname, aValueChangeListener) {
 			if (DefaultFieldController.LOGGER.isDebugEnabled())
 				DefaultFieldController.LOGGER.logDebug("constructor");
 			
@@ -4303,7 +4328,7 @@ de.titus.core.Namespace.create("de.titus.jstl.javascript.polyfills", function() 
 			
 			this.init();
 		};
-		DefaultFieldController.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("DefaultFieldController");
+		DefaultFieldController.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.DefaultFieldController");
 		
 		DefaultFieldController.prototype.init = function() {
 			if (DefaultFieldController.LOGGER.isDebugEnabled())
@@ -4464,6 +4489,13 @@ de.titus.core.Namespace.create("de.titus.jstl.javascript.polyfills", function() 
 			this.element = aElement;
 			this.fieldname = aFieldname;
 			this.valueChangeListener = aValueChangeListener;
+			/*
+			 * Every time if your field make a value change call the valueChangeLister 
+			 * or trigger the following jquery event on this.element: 
+			 * 
+			 * this.element.tigger(de.titus.form.Constants.EVENTS.FIELD_VALUE_CHANGED);
+			 */
+			
 		};
 		template.FieldController.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("template.FieldController");
 				
