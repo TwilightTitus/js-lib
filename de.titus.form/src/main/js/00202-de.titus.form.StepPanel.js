@@ -1,9 +1,9 @@
 (function() {
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.form.StepPanel", function() {
-		de.titus.form.StepPanel = function(aForm) {
-			if (de.titus.form.StepPanel.LOGGER.isDebugEnabled())
-				de.titus.form.StepPanel.LOGGER.logDebug("constructor");
+		var StepPanel = function(aForm) {
+			if (StepPanel.LOGGER.isDebugEnabled())
+				StepPanel.LOGGER.logDebug("constructor");
 			
 			this.data = {};
 			this.data.element = aForm.data.element.find("[" + de.titus.form.Setup.prefix + "-step-panel" + "]");
@@ -14,17 +14,17 @@
 			this.init();
 		};
 		
-		de.titus.form.StepPanel.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.StepPanel");
+		StepPanel.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.StepPanel");
 		
-		de.titus.form.StepPanel.prototype.init = function() {
-			if (de.titus.form.StepPanel.LOGGER.isDebugEnabled())
-				de.titus.form.StepPanel.LOGGER.logDebug("init()");
+		StepPanel.prototype.init = function() {
+			if (StepPanel.LOGGER.isDebugEnabled())
+				StepPanel.LOGGER.logDebug("init()");
 			
 		};
 		
-		de.titus.form.StepPanel.prototype.update = function() {
-			if (de.titus.form.StepPanel.LOGGER.isDebugEnabled())
-				de.titus.form.StepPanel.LOGGER.logDebug("update()");
+		StepPanel.prototype.update = function() {
+			if (StepPanel.LOGGER.isDebugEnabled())
+				StepPanel.LOGGER.logDebug("update()");
 			this.data.element.find(".active").removeClass("active")
 
 			if (this.data.form.data.state == de.titus.form.Constants.STATE.SUMMARY && this.data.stepPanelSummaryState != undefined) 
@@ -34,5 +34,7 @@
 			 else
 				this.data.element.find("[" + de.titus.form.Setup.prefix + "-step='" + this.data.form.getCurrentPage().data.step + "']").addClass("active");
 		};
+		
+		de.titus.form.StepPanel = StepPanel;
 	});
 })($);

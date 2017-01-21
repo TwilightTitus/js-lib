@@ -1,9 +1,9 @@
 (function() {
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.form.StepControl", function() {
-		de.titus.form.StepControl = function(aForm) {
-			if (de.titus.form.StepControl.LOGGER.isDebugEnabled())
-				de.titus.form.StepControl.LOGGER.logDebug("constructor");
+		var StepControl = function(aForm) {
+			if (StepControl.LOGGER.isDebugEnabled())
+				StepControl.LOGGER.logDebug("constructor");
 			
 			this.data = {};
 			this.data.element = aForm.data.element.find("[" + de.titus.form.Setup.prefix + "-step-control" + "]");
@@ -15,29 +15,29 @@
 			this.init();
 		};
 		
-		de.titus.form.StepControl.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.StepControl");
+		StepControl.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.StepControl");
 		
-		de.titus.form.StepControl.prototype.init = function() {
-			if (de.titus.form.StepControl.LOGGER.isDebugEnabled())
-				de.titus.form.StepControl.LOGGER.logDebug("init()");
+		StepControl.prototype.init = function() {
+			if (StepControl.LOGGER.isDebugEnabled())
+				StepControl.LOGGER.logDebug("init()");
 			
 			this.data.stepControlBack = this.data.element.find("[" + de.titus.form.Setup.prefix + "-step-back" + "]");
 			this.data.stepControlBack.hide();
-			this.data.stepControlBack.on("click", de.titus.form.StepControl.prototype.__StepBackHandle.bind(this));
+			this.data.stepControlBack.on("click", StepControl.prototype.__StepBackHandle.bind(this));
 			
 			this.data.stepControlNext = this.data.element.find("[" + de.titus.form.Setup.prefix + "-step-next" + "]");
-			this.data.stepControlNext.on("click", de.titus.form.StepControl.prototype.__StepNextHandle.bind(this));
+			this.data.stepControlNext.on("click", StepControl.prototype.__StepNextHandle.bind(this));
 			
 			this.data.stepControlSummary = this.data.element.find("[" + de.titus.form.Setup.prefix + "-step-summary" + "]");
 			this.data.stepControlSummary.hide();
-			this.data.stepControlSummary.on("click", de.titus.form.StepControl.prototype.__StepSummaryHandle.bind(this));
+			this.data.stepControlSummary.on("click", StepControl.prototype.__StepSummaryHandle.bind(this));
 			
 			this.data.stepControlSubmit = this.data.element.find("[" + de.titus.form.Setup.prefix + "-step-submit" + "]");
 			this.data.stepControlSubmit.hide();
-			this.data.stepControlSubmit.on("click", de.titus.form.StepControl.prototype.__StepSubmitHandle.bind(this));
+			this.data.stepControlSubmit.on("click", StepControl.prototype.__StepSubmitHandle.bind(this));
 		};
 		
-		de.titus.form.StepControl.prototype.update = function() {
+		StepControl.prototype.update = function() {
 			if (this.data.form.data.state == de.titus.form.Constants.STATE.SUBMITED) {
 				this.data.element.hide();
 				return;
@@ -73,36 +73,38 @@
 				this.data.stepControlBack.hide();
 		};
 		
-		de.titus.form.StepControl.prototype.__StepBackHandle = function(aEvent) {
-			if (de.titus.form.StepControl.LOGGER.isDebugEnabled())
-				de.titus.form.StepControl.LOGGER.logDebug("__StepBackHandle()");
+		StepControl.prototype.__StepBackHandle = function(aEvent) {
+			if (StepControl.LOGGER.isDebugEnabled())
+				StepControl.LOGGER.logDebug("__StepBackHandle()");
 			
 			if (this.data.form.data.currentPage > 0) {
 				this.data.form.prevPage();
 			}
 		};
 		
-		de.titus.form.StepControl.prototype.__StepNextHandle = function(aEvent) {
-			if (de.titus.form.StepControl.LOGGER.isDebugEnabled())
-				de.titus.form.StepControl.LOGGER.logDebug("__StepNextHandle()");
+		StepControl.prototype.__StepNextHandle = function(aEvent) {
+			if (StepControl.LOGGER.isDebugEnabled())
+				StepControl.LOGGER.logDebug("__StepNextHandle()");
 			
 			if ((this.data.form.data.pages.length - 1) > this.data.form.data.currentPage) {
 				this.data.form.nextPage();
 			}
 		};
 		
-		de.titus.form.StepControl.prototype.__StepSummaryHandle = function(aEvent) {
-			if (de.titus.form.StepControl.LOGGER.isDebugEnabled())
-				de.titus.form.StepControl.LOGGER.logDebug("__StepSummaryHandle()");
+		StepControl.prototype.__StepSummaryHandle = function(aEvent) {
+			if (StepControl.LOGGER.isDebugEnabled())
+				StepControl.LOGGER.logDebug("__StepSummaryHandle()");
 			
 			this.data.form.showSummary();
 		};
 		
-		de.titus.form.StepControl.prototype.__StepSubmitHandle = function(aEvent) {
-			if (de.titus.form.StepControl.LOGGER.isDebugEnabled())
-				de.titus.form.StepControl.LOGGER.logDebug("__StepSubmitHandle()");
+		StepControl.prototype.__StepSubmitHandle = function(aEvent) {
+			if (StepControl.LOGGER.isDebugEnabled())
+				StepControl.LOGGER.logDebug("__StepSubmitHandle()");
 			
 			this.data.form.submit();
 		};
+		
+		de.titus.form.StepControl = StepControl;
 	});
 })($);

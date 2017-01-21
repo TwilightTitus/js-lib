@@ -80,20 +80,20 @@
 	    					<input type="number" class="form-control" name="age" />
 	    					<div class="text-danger help-block " data-form-validation="value != undefined && value > 0">Age must be greater then zero!</div>
 						</div>
-						<div data-form-field="image" data-form-field-type="file" data-form-condition="">
+						<div data-form-field="file" data-form-field-type="file" data-form-condition="">
 							<div class="input-group">
 								 <label class="input-group-btn">
 							    	<span class="btn btn-primary">
-							        	Browse&hellip; <input type="file" style="display: none;" accept="image/*" />
+							        	Browse&hellip; <input type="file" style="display: none;" accept="*/*" />
 							        </span>
 							    </label>
 							    <input type="text" class="form-control" readonly="readonly" />						   
 							</div>
-							<div class="help-block text-danger" data-form-validation="value != undefined && value.trim() != ''">Select a image!</div>
+							<div class="help-block text-danger" data-form-validation="value != undefined && value.trim() != ''">Select a file!</div>
 						</div>
 					<p>
 				</div>			
-				<div data-form-page="" data-form-step="2" data-form-condition="name != undefined && name.trim() != ''">			
+				<div data-form-page="" data-form-step="2" data-form-condition="age >= 18">			
 					<h3>Address</h3>
 					<p>			
 						<div class="form-group" data-form-field="street" data-form-field-type="text" data-form-condition="">

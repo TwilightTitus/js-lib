@@ -1,7 +1,7 @@
 (function() {
 	"use strict";
-	de.titus.core.Namespace.create("DefaultFieldController", function() {
-		DefaultFieldController = function(aElement, aFieldname, aValueChangeListener) {
+	de.titus.core.Namespace.create("de.titus.form.DefaultFieldController", function() {
+		var DefaultFieldController = function(aElement, aFieldname, aValueChangeListener) {
 			if (DefaultFieldController.LOGGER.isDebugEnabled())
 				DefaultFieldController.LOGGER.logDebug("constructor");
 			
@@ -15,7 +15,7 @@
 			
 			this.init();
 		};
-		DefaultFieldController.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("DefaultFieldController");
+		DefaultFieldController.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.DefaultFieldController");
 		
 		DefaultFieldController.prototype.init = function() {
 			if (DefaultFieldController.LOGGER.isDebugEnabled())

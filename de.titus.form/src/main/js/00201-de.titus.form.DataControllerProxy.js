@@ -1,7 +1,7 @@
 (function() {
 	"use strict";
-	de.titus.core.Namespace.create("DataControllerProxy", function() {
-		DataControllerProxy = function(aChangeListener, aDataController) {
+	de.titus.core.Namespace.create("de.titus.form.DataControllerProxy", function() {
+		var DataControllerProxy = function(aChangeListener, aDataController) {
 			if(DataControllerProxy.LOGGER.isDebugEnabled())
 				DataControllerProxy.LOGGER.logDebug("constructor");
 			
@@ -9,7 +9,7 @@
 			this.changeListener = aChangeListener;
 		};
 		
-		DataControllerProxy.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("DataControllerProxy");
+		DataControllerProxy.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.DataControllerProxy");
 		
 		DataControllerProxy.prototype.getData = function(aName){
 			if(DataControllerProxy.LOGGER.isDebugEnabled())

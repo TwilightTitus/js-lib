@@ -19,7 +19,7 @@
 		FIELD_INACTIVE : "form-field-inactive",
 		FIELD_VALUE_CHANGED : "form-field-value-changed",
 		FIELD_VALID : "form-field-valid",
-		FIELD_INVALID : "form-field-invalid"		
+		FIELD_INVALID : "form-field-invalid"
 		};
 		
 		de.titus.form.Constants.STATE = {
@@ -28,10 +28,11 @@
 		SUBMITED : "form-state-submited",
 		};
 		
-		de.titus.form.Constants.ATTRIBUTE ={
-				VALIDATION : "-validation",
-				VALIDATION_FAIL_ACTION : "-validation-fail-action",
-				CONDITION : "-condition"
+		de.titus.form.Constants.ATTRIBUTE = {
+		VALIDATION : "-validation",
+		VALIDATION_FAIL_ACTION : "-validation-fail-action",
+		CONDITION : "-condition"
 		}
+		
 	});
 })();

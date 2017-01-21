@@ -7,6 +7,13 @@
 			this.element = aElement;
 			this.fieldname = aFieldname;
 			this.valueChangeListener = aValueChangeListener;
+			/*
+			 * Every time if your field make a value change call the valueChangeLister 
+			 * or trigger the following jquery event on this.element: 
+			 * 
+			 * this.element.tigger(de.titus.form.Constants.EVENTS.FIELD_VALUE_CHANGED);
+			 */
+			
 		};
 		template.FieldController.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("template.FieldController");
 				

@@ -1,9 +1,9 @@
 (function() {
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.form.Validation", function() {
-		de.titus.form.Validation = function(aElement, aDataController, aExpressionResolver) {
-			if(de.titus.form.Validation.LOGGER.isDebugEnabled())
-				de.titus.form.Validation.LOGGER.logDebug("constructor");
+		var Validation = function(aElement, aDataController, aExpressionResolver) {
+			if(Validation.LOGGER.isDebugEnabled())
+				Validation.LOGGER.logDebug("constructor");
 			
 			this.data = {};
 			this.data.element = aElement;
@@ -12,11 +12,11 @@
 			this.data.state = false;
 		};
 		
-		de.titus.form.Validation.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.Validation");
+		Validation.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.Validation");
 		
-		de.titus.form.Validation.prototype.doCheck = function(aValue) {
-			if(de.titus.form.Validation.LOGGER.isDebugEnabled())
-				de.titus.form.Validation.LOGGER.logDebug("doCheck()");
+		Validation.prototype.doCheck = function(aValue) {
+			if(Validation.LOGGER.isDebugEnabled())
+				Validation.LOGGER.logDebug("doCheck()");
 			
 			this.data.state = true;
 			var validationAttr = de.titus.form.Setup.prefix + de.titus.form.Constants.ATTRIBUTE.VALIDATION;
@@ -31,8 +31,8 @@
 				var element = $(validationElements[i]);
 				var validation = element.attr(validationAttr);
 				if(validation != undefined && validation.trim() != ""){
-					if(de.titus.form.Validation.LOGGER.isDebugEnabled())
-						de.titus.form.Validation.LOGGER.logDebug("doCheck() -> expression: " + validation);
+					if(Validation.LOGGER.isDebugEnabled())
+						Validation.LOGGER.logDebug("doCheck() -> expression: " + validation);
 					
 					var validation = this.data.expressionResolver.resolveExpression(validation, data, false);
 					if(typeof validation === "function")
@@ -47,10 +47,12 @@
 				}
 			}
 			
-			if(de.titus.form.Validation.LOGGER.isDebugEnabled())
-				de.titus.form.Validation.LOGGER.logDebug("doCheck() -> result: " + this.data.state);
+			if(Validation.LOGGER.isDebugEnabled())
+				Validation.LOGGER.logDebug("doCheck() -> result: " + this.data.state);
 					
 			return this.data.state;					
-		};		
+		};
+		
+		de.titus.form.Validation = Validation;
 	});	
 })();
