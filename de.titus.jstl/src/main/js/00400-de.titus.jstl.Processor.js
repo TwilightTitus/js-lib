@@ -241,6 +241,6 @@
 			}
 		};
 		
-		de.titus.jstl.Processor = jstl.Processor;
+		de.titus.jstl.Processor = Processor;
 	});
 })(jQuery);

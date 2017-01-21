@@ -93,7 +93,7 @@ de.titus.core.Namespace.create("de.titus.jstl.IFunction", function() {
 	});
 })();
 de.titus.core.Namespace.create("de.titus.jstl.functions.Choose", function() {
-	varChoose = function() {};
+	var Choose = function() {};
 	Choose.prototype = new de.titus.jstl.IFunction("choose");
 	Choose.prototype.constructor = Choose;
 	
@@ -1064,7 +1064,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Eventbind", function() {
 			}
 		};
 		
-		de.titus.jstl.Processor = jstl.Processor;
+		de.titus.jstl.Processor = Processor;
 	});
 })(jQuery);
 de.titus.core.Namespace.create("de.titus.jstl.Setup", function() {

@@ -1,5 +1,5 @@
 de.titus.core.Namespace.create("de.titus.jstl.functions.Choose", function() {
-	varChoose = function() {};
+	var Choose = function() {};
 	Choose.prototype = new de.titus.jstl.IFunction("choose");
 	Choose.prototype.constructor = Choose;
 	
