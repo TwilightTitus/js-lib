@@ -1,21 +1,23 @@
 (function() {
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.form.DefaultFieldController", function() {
-		var DefaultFieldController = function(aElement, aFieldname, aValueChangeListener) {
+		var DefaultFieldController = function(aElement) {
 			if (DefaultFieldController.LOGGER.isDebugEnabled())
 				DefaultFieldController.LOGGER.logDebug("constructor");
 			
 			this.element = aElement;
-			this.fieldname = aFieldname;
-			this.valueChangeListener = aValueChangeListener;
 			this.input = undefined;
 			this.type = undefined;
 			this.filedata = undefined;
 			this.timeoutId == undefined;
-			
 			this.init();
 		};
 		DefaultFieldController.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.DefaultFieldController");
+		
+		DefaultFieldController.prototype.valueChanged = function(aEvent) {
+			aEvent.preventDefault();
+			this.element.trigger(de.titus.form.Constants.EVENTS.FIELD_VALUE_CHANGED);
+		};
 		
 		DefaultFieldController.prototype.init = function() {
 			if (DefaultFieldController.LOGGER.isDebugEnabled())
@@ -23,29 +25,27 @@
 			
 			if (this.element.find("select").length == 1) {
 				this.type = "select";
-				this.element.find("select").on("change", this.valueChangeListener);
+				this.element.find("select").on("change", DefaultFieldController.prototype.valueChanged.bind(this));
 			} else {
-				if (this.element.find("input[type='radio']").length > 0){
+				if (this.element.find("input[type='radio']").length > 0) {
 					this.type = "radio";
-					this.element.find("input[type='radio']").on("change", this.valueChangeListener);
+					this.element.find("input[type='radio']").on("change", DefaultFieldController.prototype.valueChanged.bind(this));
 				}
-				if (this.element.find("input[type='checkbox']").length > 0){
+				if (this.element.find("input[type='checkbox']").length > 0) {
 					this.type = "checkbox";
-					this.element.find("input[type='checkbox']").on("change", this.valueChangeListener);
-				}
-				else if (this.element.find("input[type='file']").length == 1){
+					this.element.find("input[type='checkbox']").on("change", DefaultFieldController.prototype.valueChanged.bind(this));
+				} else if (this.element.find("input[type='file']").length == 1) {
 					this.type = "file";
 					this.element.find("input[type='file']").on("change", DefaultFieldController.prototype.readFileData.bind(this));
-				}
-				else{
+				} else {
 					this.type = "text";
-					this.element.find("input, textarea").on("keyup change", (function(aEvent){
-						if(this.timeoutId != undefined){
+					this.element.find("input, textarea").on("keyup change", (function(aEvent) {
+						if (this.timeoutId != undefined) {
 							window.clearTimeout(this.timeoutId);
 						}
 						
-						this.timeoutId = window.setTimeout((function(){
-							this.valueChangeListener(aEvent);
+						this.timeoutId = window.setTimeout((function() {
+							this.valueChanged(aEvent);
 						}).bind(this), 300);
 						
 					}).bind(this));
@@ -55,7 +55,7 @@
 			
 			if (DefaultFieldController.LOGGER.isDebugEnabled())
 				DefaultFieldController.LOGGER.logDebug("init() -> detect type: " + this.type);
-		};		
+		};
 		
 		DefaultFieldController.prototype.readFileData = function(aEvent) {
 			if (DefaultFieldController.LOGGER.isDebugEnabled())
@@ -81,25 +81,21 @@
 				else
 					$__THIS__$.fileData = reader.result;
 				
-				if(count == 0)
-					$__THIS__$.valueChangeListener(aEvent);
+				if (count == 0)
+					$__THIS__$.element.trigger(de.titus.form.Constants.EVENTS.FIELD_VALUE_CHANGED);
 			}, false);
 			
 			var textField = this.element.find("input[type='text'][readonly]");
-			if(textField.length == 1)
+			if (textField.length == 1)
 				textField.val("");
-			for (var i = 0; i < input.files.length; i++){
+			for (var i = 0; i < input.files.length; i++) {
 				reader.readAsDataURL(input.files[i]);
-				if(textField.length == 1)
-					textField.val(textField.val() != "" ? textField.val() + ", " + input.files[i].name : input.files[i].name);				
+				if (textField.length == 1)
+					textField.val(textField.val() != "" ? textField.val() + ", " + input.files[i].name : input.files[i].name);
 			}
-			
-			
-			
-			
 		};
-
-		DefaultFieldController.prototype.showField = function(aData) {
+		
+		DefaultFieldController.prototype.showField = function(aValue, aData) {
 			if (DefaultFieldController.LOGGER.isDebugEnabled())
 				DefaultFieldController.LOGGER.logDebug("showField()");
 			
@@ -110,35 +106,22 @@
 			this.element.show();
 		};
 		
-		DefaultFieldController.prototype.showSummary = function(isSummary) {
+		DefaultFieldController.prototype.showSummary = function() {
 			if (DefaultFieldController.LOGGER.isDebugEnabled())
 				DefaultFieldController.LOGGER.logDebug("showSummary()");
 			
-			if(isSummary){
-				if (this.type == "select")
-					this.element.find("select").prop("disabled", true);
-				else
-					this.element.find("input, textarea").prop("disabled", true);
-			}
-			else{
-				if (this.type == "select")
-					this.element.find("select").prop("disabled", false);
-				else
-					this.element.find("input, textarea").prop("disabled", false);
-			}			
+			if (this.type == "select")
+				this.element.find("select").prop("disabled", true);
+			else
+				this.element.find("input, textarea").prop("disabled", true);
+			
 		};
 		
 		DefaultFieldController.prototype.hideField = function() {
 			if (DefaultFieldController.LOGGER.isDebugEnabled())
-				DefaultFieldController.LOGGER.logDebug("hideField()");		
+				DefaultFieldController.LOGGER.logDebug("hideField()");
 			
 			this.element.hide()
-		};
-		
-		DefaultFieldController.prototype.setValid = function(isValid, aMessage) {
-			if (DefaultFieldController.LOGGER.isDebugEnabled())
-				DefaultFieldController.LOGGER.logDebug("setValid() -> " + isValid + " - \"" + aMessage + "\"");
-			
 		};
 		
 		DefaultFieldController.prototype.getValue = function() {
@@ -149,12 +132,13 @@
 				return this.element.find("select").val();
 			else if (this.type == "radio")
 				return this.element.find("input:checked").val();
-			else if (this.type == "checkbox"){
+			else if (this.type == "checkbox") {
 				var result = [];
-				this.element.find("input:checked").each(function(){result.push($(this).val());});
+				this.element.find("input:checked").each(function() {
+					result.push($(this).val());
+				});
 				return result;
-			}
-			else if (this.type == "file")
+			} else if (this.type == "file")
 				return this.fileData;
 			else
 				return this.element.find("input, textarea").first().val();

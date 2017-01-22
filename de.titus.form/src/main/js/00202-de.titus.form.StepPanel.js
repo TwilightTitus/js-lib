@@ -27,12 +27,15 @@
 				StepPanel.LOGGER.logDebug("update()");
 			this.data.element.find(".active").removeClass("active")
 
-			if (this.data.form.data.state == de.titus.form.Constants.STATE.SUMMARY && this.data.stepPanelSummaryState != undefined) 
+			if (this.data.form.data.state == de.titus.form.Constants.STATE.SUMMARY && this.data.stepPanelSummaryState != undefined)
 				this.data.stepPanelSummaryState.addClass("active");
-			 else if (this.data.form.data.state == de.titus.form.Constants.STATE.SUBMITED && this.data.stepPanelSubmitedState != undefined)
+			else if (this.data.form.data.state == de.titus.form.Constants.STATE.SUBMITED && this.data.stepPanelSubmitedState != undefined)
 				this.data.stepPanelSubmitedState.addClass("active");
-			 else
-				this.data.element.find("[" + de.titus.form.Setup.prefix + "-step='" + this.data.form.getCurrentPage().data.step + "']").addClass("active");
+			else {
+				var page = this.data.form.getCurrentPage();
+				if (page)
+					this.data.element.find("[" + de.titus.form.Setup.prefix + "-step='" + page.data.step + "']").addClass("active");
+			}
 		};
 		
 		de.titus.form.StepPanel = StepPanel;

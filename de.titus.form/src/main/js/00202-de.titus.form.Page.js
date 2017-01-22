@@ -10,8 +10,7 @@
 			this.data.name = aElement.attr(de.titus.form.Setup.prefix + "-page");
 			this.data.step = aElement.attr(de.titus.form.Setup.prefix + "-step");
 			this.data.expressionResolver = aExpressionResolver || new de.titus.core.ExpressionResolver();
-			this.data.formDataController = aDataController;
-			this.data.dataController = new de.titus.form.DataControllerProxy(Page.prototype.valueChangeListener.bind(this), this.data.formDataController);
+			this.data.dataController = aDataController;
 			this.data.conditionHandle = new de.titus.form.Condition(this.data.element,this.data.dataController,this.data.expressionResolver);
 			this.data.fieldMap = {};
 			this.data.fields = [];
@@ -25,11 +24,12 @@
 		Page.prototype.init = function() {
 			if(Page.LOGGER.isDebugEnabled())
 				Page.LOGGER.logDebug("init()");
+			
+			this.data.element.on(de.titus.form.Constants.EVENTS.FIELD_VALUE_CHANGED, Page.prototype.valueChangeListener.bind(this));
 			this.initFields(this.data.element);
 		};
 		
-		Page.prototype.valueChangeListener = function(aName, aValue, aField) {
-			this.data.formDataController.changeValue(aName, aValue, aField);
+		Page.prototype.valueChangeListener = function(aEvent) {
 			for(var i = 0; i < this.data.fields.length; i++)
 				this.data.fields[i].doConditionCheck();
 		};

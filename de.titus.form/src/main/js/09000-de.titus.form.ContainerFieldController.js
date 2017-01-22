@@ -43,12 +43,6 @@
 			this.element.hide()
 		};
 		
-		de.titus.form.ContainerFieldController.prototype.setValid = function(isValid, aMessage) {
-			if (de.titus.form.ContainerFieldController.LOGGER.isDebugEnabled())
-				de.titus.form.ContainerFieldController.LOGGER.logDebug("setValid() -> " + isValid + " - \"" + aMessage + "\"");
-			
-		};
-		
 		de.titus.form.ContainerFieldController.prototype.getValue = function() {
 			
 		};

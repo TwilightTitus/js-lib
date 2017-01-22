@@ -42,8 +42,10 @@
 				this.data.element.hide();
 				return;
 			} else {
+							
 				if ((this.data.form.data.pages.length - 1) > this.data.form.data.currentPage) {
-					if (this.data.form.getCurrentPage().doValidate())
+					var page = this.data.form.getCurrentPage();
+					if (page && page.doValidate())
 						this.data.stepControlNext.show();
 					else
 						this.data.stepControlNext.hide();
@@ -51,8 +53,9 @@
 					this.data.stepControlSummary.hide();
 					this.data.stepControlSubmit.hide();
 				} else if (this.data.form.data.state == de.titus.form.Constants.STATE.PAGES) {
+					var page = this.data.form.getCurrentPage();
 					this.data.stepControlNext.hide();
-					if (this.data.form.getCurrentPage().doValidate())
+					if (page && page.doValidate())
 						this.data.stepControlSummary.show();
 					else
 						this.data.stepControlSummary.hide();

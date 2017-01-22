@@ -9,7 +9,7 @@
 			this.data.element = aElement;
 			this.data.name = aElement.attr(de.titus.form.Setup.prefix);
 			this.data.pages = [];
-			this.data.dataController = new de.titus.form.DataController(Formular.prototype.valueChanged.bind(this));
+			this.data.dataController = new de.titus.form.DataController();
 			this.data.stepControl = undefined;
 			this.data.currentPage = -1;
 			this.data.state = de.titus.form.Constants.STATE.PAGES;
@@ -28,12 +28,12 @@
 					aEvent.preventDefault();
 					aEvent.stopPropagation();
 				});
-			
+
 			this.initAction();
 			this.data.stepPanel = new de.titus.form.StepPanel(this);
 			this.data.stepControl = new de.titus.form.StepControl(this);
-			this.initPages();
 			this.initEvents();
+			this.initPages();
 			
 		};
 		
@@ -63,8 +63,7 @@
 					var page = $(pageElements[i]).FormularPage(this.data.dataController);
 					page.data.number = (i + 1);
 					this.data.pages.push(page);
-					if (i > 0)
-						page.hide();
+					page.hide();
 				}
 			}
 			

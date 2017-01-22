@@ -1,12 +1,11 @@
 (function() {
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.form.DataController", function() {
-		var DataController = function(aChangeListener) {
+		var DataController = function() {
 			if (DataController.LOGGER.isDebugEnabled())
 				DataController.LOGGER.logDebug("constructor");
 			
 			this.data = {};
-			this.changeListener = aChangeListener;
 		};
 		
 		DataController.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.DataController");
@@ -21,7 +20,7 @@
 				return this.data;
 		};
 		
-		DataController.prototype.changeValue = function(aName, aValue, aField, aCallback) {
+		DataController.prototype.changeValue = function(aName, aValue, aField) {
 			if (DataController.LOGGER.isDebugEnabled())
 				DataController.LOGGER.logDebug("changeValue()");
 			
@@ -29,11 +28,7 @@
 				this.data[aName] = aValue;
 				
 				if (DataController.LOGGER.isDebugEnabled())
-					DataController.LOGGER.logDebug("changeValue() -> new data: " + JSON.stringify(this.data));
-				
-				this.changeListener(aName, aValue, aField);
-				if (aCallback != undefined)
-					aCallback(aName, aValue, aField);
+					DataController.LOGGER.logDebug("changeValue() -> new data: " + JSON.stringify(this.data));				
 			}
 			
 		};

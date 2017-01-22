@@ -13,7 +13,8 @@
 			this.data.expressionResolver = aExpressionResolver || new de.titus.core.ExpressionResolver();
 			this.data.conditionHandle = new de.titus.form.Condition(this.data.element, this.data.dataController, this.data.expressionResolver);
 			this.data.validationHandle = new de.titus.form.Validation(this.data.element, this.data.dataController, this.data.expressionResolver);
-			this.data.summary = false;
+			this.data.messageHandle = new de.titus.form.Message(this.data.element, this.data.dataController, this.data.expressionResolver);
+			this.data.firstCall = true;
 			this.data.active = undefined;
 			this.data.valid = false;
 			
@@ -29,41 +30,40 @@
 			var initializeFunction = de.titus.form.Setup.fieldtypes[this.data.type] || de.titus.form.Setup.fieldtypes["default"];
 			if (initializeFunction == undefined || typeof initializeFunction !== "function")
 				throw "The fieldtype \"" + this.data.type + "\" is not available!";
-			
-			this.fieldController = initializeFunction(this.data.element, this.data.name, Field.prototype.doValueChange.bind(this));
+
 			this.data.element.on(de.titus.form.Constants.EVENTS.FIELD_VALUE_CHANGED, Field.prototype.doValueChange.bind(this));
+			this.fieldController = initializeFunction(this.data.element);
 		};
 		
 		Field.prototype.doConditionCheck = function() {
 			if (Field.LOGGER.isDebugEnabled())
 				Field.LOGGER.logDebug("doConditionCheck()");
 			
-			var activ = this.data.conditionHandle.doCheck();
-			if (this.data.active != activ && activ)
+			this.data.active = this.data.conditionHandle.doCheck();			
+			if (this.data.active)
 				this.fieldController.showField(this.data.dataController.getData(this.data.name), this.data.dataController.getData());
-			else if (this.data.active != activ && !activ)
-				this.setInactiv();
-			else if (this.data.summary)
-				this.fieldController.showSummary(false);
-			
-			this.data.summary = false;
-			
-			this.data.active = activ;
-			
-			if (Field.LOGGER.isDebugEnabled())
-				Field.LOGGER.logDebug("doConditionCheck() -> result: " + this.data.active);
+			else
+				this.setInactiv();			
 			
 			if (this.data.active) {
 				this.data.element.trigger(de.titus.form.Constants.EVENTS.FIELD_ACTIVE);
 				this.data.element.removeClass(de.titus.form.Constants.EVENTS.FIELD_INACTIVE);
-				this.data.element.addClass(de.titus.form.Constants.EVENTS.FIELD_ACTIVE);
-				this.doValidate(this.fieldController.getValue());
+				this.data.element.addClass(de.titus.form.Constants.EVENTS.FIELD_ACTIVE);				
 			} else {
 				this.data.element.trigger(de.titus.form.Constants.EVENTS.FIELD_INACTIVE);
 				this.data.element.removeClass(de.titus.form.Constants.EVENTS.FIELD_ACTIVE);
 				this.data.element.addClass(de.titus.form.Constants.EVENTS.FIELD_INACTIVE);
 			}
 			
+			if(this.data.firstCall){
+				this.data.firstCall = false;
+				this.data.element.trigger(de.titus.form.Constants.EVENTS.FIELD_VALUE_CHANGED);				
+			}
+			
+			if (Field.LOGGER.isDebugEnabled())
+				Field.LOGGER.logDebug("doConditionCheck() -> result: " + this.data.active);
+			
+			this.data.messageHandle.showMessage();
 			return this.data.active;
 		};
 		
@@ -81,8 +81,7 @@
 			if (!this.data.active)
 				return;
 			
-			this.data.summary = true;
-			this.fieldController.showSummary(true);
+			this.fieldController.showSummary();
 		};
 		
 		Field.prototype.doValueChange = function(aEvent) {
@@ -102,15 +101,15 @@
 				aEvent.stopPropagation();
 				this.data.element.trigger($.Event(de.titus.form.Constants.EVENTS.FIELD_VALUE_CHANGED));
 			}
+			
+			this.data.messageHandle.showMessage();
 		};
 		
 		Field.prototype.doValidate = function(aValue) {
 			if (Field.LOGGER.isDebugEnabled())
 				Field.LOGGER.logDebug("doValidate() -> field: " + this.data.name);
 			
-			this.data.valid = this.data.validationHandle.doCheck(aValue);
-			this.fieldController.setValid(this.data.valid, "");
-			
+			this.data.valid = this.data.validationHandle.doCheck(aValue);			
 			if (this.data.valid) {
 				this.data.element.trigger(de.titus.form.Constants.EVENTS.FIELD_VALID);
 				this.data.element.removeClass(de.titus.form.Constants.EVENTS.FIELD_INVALID);

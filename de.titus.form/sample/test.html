@@ -68,17 +68,21 @@
 						<div class="form-group" data-form-field="name" data-form-field-type="text" data-form-condition="">
 							<label class="control-label" for="name">name:</label>							
 	    					<input type="text" class="form-control" name="name" />
-	    					<div class="help-block text-danger" data-form-validation="value != undefined && value.trim() != ''">Enter your name!</div>					
+	    					<div class="help-block text-danger" data-form-validation="value == undefined || value.trim() == ''">Enter your name!</div>				
 						</div>
 						<div class="form-group" data-form-field="givenname" data-form-field-type="text" data-form-condition="name != undefined && name.trim() != ''">
 							<label for="givenname">given name:</label>
 	    					<input type="text" class="form-control" name="givenname" />
-	    					<div class="help-block text-danger" data-form-validation="value != undefined && value.trim() != ''">Enter your given name!</div>					
+	    					<div class="help-block text-danger" data-form-validation="value == undefined || value.trim() == ''">Enter your given name!</div>					
 						</div>
 						<div class="form-group" data-form-field="age" data-form-field-type="number" data-form-condition="">
 							<label for="age">age:</label>
 	    					<input type="number" class="form-control" name="age" />
-	    					<div class="text-danger help-block " data-form-validation="value != undefined && value > 0">Age must be greater then zero!</div>
+	    					<div class="text-danger help-block " data-form-validation="value == undefined || value.trim() == ''">Enter your age</div>
+	    					<div class="text-danger help-block " data-form-validation="value < 0">You are not born? Really?</div>
+	    					<div class="text-info help-block " data-form-message="name != undefined && name == 'Child'">Your name is Child? If you are age like a child?</div>
+	    					<div class="text-info help-block " data-form-message="age != undefined && age < 14">Your are a child.</div>
+	    					<div class="text-info help-block " data-form-message="age != undefined && age >= 14 && age < 18">Your are a Teenager.</div>
 						</div>
 						<div data-form-field="file" data-form-field-type="file" data-form-condition="">
 							<div class="input-group">
@@ -89,7 +93,7 @@
 							    </label>
 							    <input type="text" class="form-control" readonly="readonly" />						   
 							</div>
-							<div class="help-block text-danger" data-form-validation="value != undefined && value.trim() != ''">Select a file!</div>
+							<div class="help-block text-danger" data-form-validation="value == undefined || value.trim() == ''">Select a file!</div>
 						</div>
 					<p>
 				</div>			

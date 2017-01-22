@@ -6,7 +6,6 @@
 				DataControllerProxy.LOGGER.logDebug("constructor");
 			
 			this.dataController = aDataController;
-			this.changeListener = aChangeListener;
 		};
 		
 		DataControllerProxy.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.DataControllerProxy");
@@ -22,7 +21,7 @@
 			if(DataControllerProxy.LOGGER.isDebugEnabled())
 				DataControllerProxy.LOGGER.logDebug("changeValue()");			
 			
-			this.dataController.changeValue(aName, aValue, aField, this.changeListener);
+			this.dataController.changeValue(aName, aValue, aField);
 		};	
 		
 		de.titus.form.DataControllerProxy = DataControllerProxy;

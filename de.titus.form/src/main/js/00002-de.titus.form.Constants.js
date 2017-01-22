@@ -31,7 +31,8 @@
 		de.titus.form.Constants.ATTRIBUTE = {
 		VALIDATION : "-validation",
 		VALIDATION_FAIL_ACTION : "-validation-fail-action",
-		CONDITION : "-condition"
+		CONDITION : "-condition",
+		MESSAGE : "-message"
 		}
 		
 	});

@@ -15,10 +15,10 @@ div#log-container:hover #log {
 	border-color: red;
 }
 
-[data-form-validation] {
+[data-form-validation], [data-form-message] {
 	display: none;
 }
-[data-form-validation].active{
+[data-form-validation].active, [data-form-message].active{
 	display: block;
 }
 .form-state-submited {
