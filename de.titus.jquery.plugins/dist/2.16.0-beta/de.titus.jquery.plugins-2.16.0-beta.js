@@ -2626,7 +2626,8 @@ de.titus.core.Namespace.create("de.titus.jstl.javascript.polyfills", function() 
 		de.titus.form.Constants.ATTRIBUTE = {
 		VALIDATION : "-validation",
 		VALIDATION_FAIL_ACTION : "-validation-fail-action",
-		CONDITION : "-condition"
+		CONDITION : "-condition",
+		MESSAGE : "-message"
 		}
 		
 	});
@@ -2712,6 +2713,7 @@ de.titus.core.Namespace.create("de.titus.jstl.javascript.polyfills", function() 
 			this.data.expressionResolver = aExpressionResolver || new de.titus.core.ExpressionResolver();
 			this.data.conditionHandle = new de.titus.form.Condition(this.data.element, this.data.dataController, this.data.expressionResolver);
 			this.data.validationHandle = new de.titus.form.Validation(this.data.element, this.data.dataController, this.data.expressionResolver);
+			this.data.messageHandle = new de.titus.form.Message(this.data.element, this.data.dataController, this.data.expressionResolver);
 			this.data.firstCall = true;
 			this.data.active = undefined;
 			this.data.valid = false;
@@ -2761,6 +2763,7 @@ de.titus.core.Namespace.create("de.titus.jstl.javascript.polyfills", function() 
 			if (Field.LOGGER.isDebugEnabled())
 				Field.LOGGER.logDebug("doConditionCheck() -> result: " + this.data.active);
 			
+			this.data.messageHandle.showMessage();
 			return this.data.active;
 		};
 		
@@ -2798,6 +2801,8 @@ de.titus.core.Namespace.create("de.titus.jstl.javascript.polyfills", function() 
 				aEvent.stopPropagation();
 				this.data.element.trigger($.Event(de.titus.form.Constants.EVENTS.FIELD_VALUE_CHANGED));
 			}
+			
+			this.data.messageHandle.showMessage();
 		};
 		
 		Field.prototype.doValidate = function(aValue) {
@@ -2845,9 +2850,66 @@ de.titus.core.Namespace.create("de.titus.jstl.javascript.polyfills", function() 
 })();
 (function() {
 	"use strict";
+	de.titus.core.Namespace.create("de.titus.form.Message", function() {
+		var Message = function(aElement, aDataController, aExpressionResolver) {
+			if (Message.LOGGER.isDebugEnabled())
+				Message.LOGGER.logDebug("constructor");
+			
+			this.data = {
+			element : aElement,
+			dataController : aDataController,
+			expressionResolver : aExpressionResolver
+			};
+		};
+		
+		Message.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.Message");
+		
+		Message.prototype.showMessage = function() {
+			if (Message.LOGGER.isDebugEnabled())
+				Message.LOGGER.logDebug("showMessage()");
+			
+			var messageAttr = de.titus.form.Setup.prefix + de.titus.form.Constants.ATTRIBUTE.MESSAGE;
+			var messages = this.data.element.find("[" + messageAttr + "]");
+			messages.removeClass("active");
+			var data = this.data.dataController.getData();
+			
+			for (var i = 0; i < messages.length; i++) {
+				var element = $(messages[i]);
+				var expression = element.attr(messageAttr);
+				if (expression != undefined && expression.trim() != "") {
+					if (Message.LOGGER.isDebugEnabled())
+						Message.LOGGER.logDebug("showMessage() -> expression: \"" + expression + "\"; data: \"" + JSON.stringify(data) + "\"");
+					
+					var result = false;
+					var result = this.data.expressionResolver.resolveExpression(expression, data, false);
+					if (typeof result === "function")
+						result = result(data.value, data.data, this) || false;
+					else
+						result = result === true;
+					
+					if (Message.LOGGER.isDebugEnabled())
+						Message.LOGGER.logDebug("showMessage() -> expression: \"" + expression + "\"; result: \"" + result + "\"");
+					
+					if (result)
+						element.addClass("active");
+				}
+			}
+		};
+		
+		Message.prototype.doValidate = function(aValue) {
+			if (Message.LOGGER.isDebugEnabled())
+				Message.LOGGER.logDebug("doValidate()");
+			
+		};
+		
+		de.titus.form.Message = Message;
+	});
+})();
+(function() {
+	"use strict";
 	de.titus.core.Namespace.create("de.titus.form.Validation", function() {
 		var Validation = function(aElement, aDataController, aExpressionResolver) {
-			if(Validation.LOGGER.isDebugEnabled())
+			if (Validation.LOGGER.isDebugEnabled())
 				Validation.LOGGER.logDebug("constructor");
 			
 			this.data = {};
@@ -2860,51 +2922,57 @@ de.titus.core.Namespace.create("de.titus.jstl.javascript.polyfills", function() 
 		Validation.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.Validation");
 		
 		Validation.prototype.doCheck = function(aValue) {
-			if(Validation.LOGGER.isDebugEnabled())
+			if (Validation.LOGGER.isDebugEnabled())
 				Validation.LOGGER.logDebug("doCheck()");
 			
-			this.data.state = true;
+			this.data.state = this.doValidate(aValue);
+			
+			if (Validation.LOGGER.isDebugEnabled())
+				Validation.LOGGER.logDebug("doCheck() -> " + this.data.state);
+			return this.data.state;
+		};
+		
+		Validation.prototype.doValidate = function(aValue) {
+			if (Validation.LOGGER.isDebugEnabled())
+				Validation.LOGGER.logDebug("doValidate()");
+			
 			var validationAttr = de.titus.form.Setup.prefix + de.titus.form.Constants.ATTRIBUTE.VALIDATION;
 			var validationElements = this.data.element.find("[" + validationAttr + "]");
 			validationElements.removeClass("active");
 			var data = {
-				value: aValue,
-				data: this.data.dataController.getData()
-			};			
+			value : aValue,
+			data : this.data.dataController.getData()
+			};
 			
-			for(var i = 0; i < validationElements.length; i++){
+			for (var i = 0; i < validationElements.length; i++) {
 				var element = $(validationElements[i]);
 				var validation = element.attr(validationAttr);
-				if(validation != undefined && validation.trim() != ""){
-					if(Validation.LOGGER.isDebugEnabled())
-						Validation.LOGGER.logDebug("doCheck() -> expression: " + validation);
+				if (validation != undefined && validation.trim() != "") {
+					if (Validation.LOGGER.isDebugEnabled())
+						Validation.LOGGER.logDebug("doCheck() -> expression: \"" + validation + "\"; data: \"" + JSON.stringify(data) + "\"");
 					
-					var validation = this.data.expressionResolver.resolveExpression(validation, data, false);
 					var result = false;
-					if(typeof validation === "function")
-						result = validation(data.value, data.data, this) || false;
+					var result = this.data.expressionResolver.resolveExpression(validation, data, false);
+					if (typeof result === "function")
+						result = result(data.value, data.data, this) || false;
 					else
-						result = validation === true;
+						result = result === true;
 					
-					if(Validation.LOGGER.isDebugEnabled())
-						Validation.LOGGER.logDebug("doCheck() -> expression: " + validation + " -> "  + result);
+					if (Validation.LOGGER.isDebugEnabled())
+						Validation.LOGGER.logDebug("doCheck() -> expression: \"" + validation + "\"; result: \"" + result + "\"");
 					
-					if(result){
+					if (result) {
 						element.addClass("active");
-						this.data.state = false;
-						return this.data.state;
+						return false;
 					}
 				}
 			}
 			
-			if(Validation.LOGGER.isDebugEnabled())
-				Validation.LOGGER.logDebug("doCheck() -> result: " + this.data.state);
-					
-			return this.data.state;					
+			return true;
 		};
 		
 		de.titus.form.Validation = Validation;
-	});	
+	});
 })();
 (function() {
 	"use strict";
@@ -2932,14 +3000,18 @@ de.titus.core.Namespace.create("de.titus.jstl.javascript.polyfills", function() 
 			if (DataController.LOGGER.isDebugEnabled())
 				DataController.LOGGER.logDebug("changeValue()");
 			
-			if (aValue != this.data[aName]) {
-				this.data[aName] = aValue;
-				
-				if (DataController.LOGGER.isDebugEnabled())
-					DataController.LOGGER.logDebug("changeValue() -> new data: " + JSON.stringify(this.data));				
-			}
-			
+			var names = aName.split(".");
+			var data = this.data;
+			for (var i = 0; i < (names.length - 1); i++) {
+				if (data[names[i]] == undefined) {
+				    data[names[i]] = {};
+				}
+				data = data[names[i]];
+			}			
+			data[names[names.length - 1]] = aValue;			
 		};
+		
+		
 		
 		de.titus.form.DataController = DataController;
 	});
