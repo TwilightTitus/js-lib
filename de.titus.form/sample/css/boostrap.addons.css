@@ -15,7 +15,7 @@ div#log-container:hover #log {
 	border-color: red;
 }
 
-[data-form-validation], [data-form-message] {
+[data-form-validation], [data-form-message], [data-form-field-list-template]{
 	display: none;
 }
 [data-form-validation].active, [data-form-message].active{

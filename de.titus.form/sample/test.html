@@ -95,6 +95,30 @@
 							</div>
 							<div class="help-block text-danger" data-form-validation="value == undefined || value.trim() == ''">Select a file!</div>
 						</div>
+						<div data-form-field="list" data-form-field-type="list" data-form-condition="">
+							<div data-form-field-list-template="">
+								<div class="form-group" data-form-field="name" data-form-field-type="text" data-form-condition="">
+									<label class="control-label" for="name">name:</label>							
+			    					<input type="text" class="form-control" name="name" />
+			    					<div class="help-block text-danger" data-form-validation="value == undefined || value.trim() == ''">Enter your name!</div>				
+								</div>
+								<div data-form-field="file" data-form-field-type="file" data-form-condition="">
+									<div class="input-group">
+										 <label class="input-group-btn">
+									    	<span class="btn btn-primary">
+									        	Browse&hellip; <input type="file" style="display: none;" accept="*/*" />
+									        </span>
+									    </label>
+									    <input type="text" class="form-control" readonly="readonly" />						   
+									</div>
+									<div class="help-block text-danger" data-form-validation="value == undefined || value.trim() == ''">Select a file!</div>
+								</div>
+							</div>
+							<div data-form-field-list-content=""></div>
+							<div>
+								<button data-form-field-list-add-action="">+</button>
+							</div>
+						</div>
 					<p>
 				</div>			
 				<div data-form-page="" data-form-step="2" data-form-condition="age >= 18">			

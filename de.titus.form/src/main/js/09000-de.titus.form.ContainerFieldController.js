@@ -1,17 +1,11 @@
 (function() {
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.form.ContainerFieldController", function() {
-		de.titus.form.ContainerFieldController = function(aElement, aFieldname, aValueChangeListener) {
+		de.titus.form.ContainerFieldController = function(aElement) {
 			if (de.titus.form.ContainerFieldController.LOGGER.isDebugEnabled())
 				de.titus.form.ContainerFieldController.LOGGER.logDebug("constructor");
 			
 			this.element = aElement;
-			this.fieldname = aFieldname;
-			this.valueChangeListener = aValueChangeListener;
-			this.input = undefined;
-			this.type = undefined;
-			this.filedata = undefined;
-			this.timeoutId == undefined;
 			
 			this.init();
 		};

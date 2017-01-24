@@ -452,10 +452,10 @@
 (function() {
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.form.DataControllerProxy", function() {
-		var DataControllerProxy = function(aChangeListener, aDataController) {
+		var DataControllerProxy = function(aDataController, aName) {
 			if(DataControllerProxy.LOGGER.isDebugEnabled())
 				DataControllerProxy.LOGGER.logDebug("constructor");
-			
+			this.name = aName;
 			this.dataController = aDataController;
 		};
 		
@@ -472,12 +472,53 @@
 			if(DataControllerProxy.LOGGER.isDebugEnabled())
 				DataControllerProxy.LOGGER.logDebug("changeValue()");			
 			
-			this.dataController.changeValue(aName, aValue, aField);
+			this.dataController.changeValue(this.name != undefined ? this.name + "." + aName : aName, aValue, aField);
 		};	
 		
 		de.titus.form.DataControllerProxy = DataControllerProxy;
 	});	
 })();
+(function($) {
+	"use strict";
+	de.titus.core.Namespace.create("de.titus.form.ListFieldDataController", function() {
+		var ListFieldDataController = function(aDataController, aName) {
+			if(ListFieldDataController.LOGGER.isDebugEnabled())
+				ListFieldDataController.LOGGER.logDebug("constructor");
+			this.name = aName;
+			this.internalDataController = new de.titus.form.DataController();
+			this.dataController = aDataController;
+		};
+		
+		ListFieldDataController.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.ListFieldDataController");
+		
+		ListFieldDataController.prototype.getData = function(aName){
+			if(ListFieldDataController.LOGGER.isDebugEnabled())
+				ListFieldDataController.LOGGER.logDebug("getData() -> aName: " + aName);
+			
+			if(aName != undefined){
+				var data = this.dataController.getData();
+				data = $.extend(data, this.internalDataController.getData());
+				return data;
+			}
+			else {
+				var value= this.internalDataController.getData(aName);
+				if(value == undefined)
+					return this.dataController.getData(aName);
+				else
+					return value;
+			}			
+		};
+		
+		ListFieldDataController.prototype.changeValue = function(aName, aValue, aField){
+			if(ListFieldDataController.LOGGER.isDebugEnabled())
+				ListFieldDataController.LOGGER.logDebug("changeValue()");			
+			
+			this.internalDataController.changeValue(aName, aValue, aField);
+		};	
+		
+		de.titus.form.ListFieldDataController = ListFieldDataController;
+	});	
+})($);
 (function() {
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.form.Formular", function() {
@@ -1043,17 +1084,11 @@
 (function() {
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.form.ContainerFieldController", function() {
-		de.titus.form.ContainerFieldController = function(aElement, aFieldname, aValueChangeListener) {
+		de.titus.form.ContainerFieldController = function(aElement) {
 			if (de.titus.form.ContainerFieldController.LOGGER.isDebugEnabled())
 				de.titus.form.ContainerFieldController.LOGGER.logDebug("constructor");
 			
 			this.element = aElement;
-			this.fieldname = aFieldname;
-			this.valueChangeListener = aValueChangeListener;
-			this.input = undefined;
-			this.type = undefined;
-			this.filedata = undefined;
-			this.timeoutId == undefined;
 			
 			this.init();
 		};
@@ -1245,6 +1280,81 @@
 		});
 		
 		de.titus.form.DefaultFieldController = DefaultFieldController;
+	});
+})();
+(function() {
+	"use strict";
+	de.titus.core.Namespace.create("de.titus.form.ListFieldController", function() {
+		var ListFieldController = function(aElement) {
+			if (ListFieldController.LOGGER.isDebugEnabled())
+				ListFieldController.LOGGER.logDebug("constructor");
+			
+			this.element = aElement;
+			this.template = this.element.find("[" + de.titus.form.Setup.prefix + "-field-list-template]");
+			this.content = this.element.find("[" + de.titus.form.Setup.prefix + "-field-list-content]");
+			this.listFields = [];
+			
+			
+			this.init();
+		};
+		ListFieldController.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.ListFieldController");
+		
+		ListFieldController.prototype.init = function() {
+			if (ListFieldController.LOGGER.isDebugEnabled())
+				ListFieldController.LOGGER.logDebug("init()");
+			this.element.find("[" + de.titus.form.Setup.prefix + "-field-list-add-action]").on("click", ListFieldController.prototype.addAction.bind(this));
+		};
+		
+		ListFieldController.prototype.addAction = function(aEvent) {
+			if (ListFieldController.LOGGER.isDebugEnabled())
+				ListFieldController.LOGGER.logDebug("addAction()");
+			
+			var dataController = new de.titus.form.ListFieldDataController(this.element.FormularField().data.dataController);
+			
+			
+			var newRow = this.template.clone();
+			console.log(newRow);
+			newRow.removeAttr(de.titus.form.Setup.prefix + "-field-list-template");
+			newRow.attr(de.titus.form.Setup.prefix + "-field-list-row", "");
+			
+			this.content.append(newRow);
+			newRow.find("[" + de.titus.form.Setup.prefix + "-field]").FormularField(dataController);
+			this.listFields.push(dataController);
+		};		
+
+		ListFieldController.prototype.showField = function(aData) {
+			if (ListFieldController.LOGGER.isDebugEnabled())
+				ListFieldController.LOGGER.logDebug("showField()");
+			
+			this.element.show();
+		};
+		
+		ListFieldController.prototype.hideField = function() {
+			if (ListFieldController.LOGGER.isDebugEnabled())
+				ListFieldController.LOGGER.logDebug("hideField()");
+			
+			this.element.hide()
+		};
+		
+		ListFieldController.prototype.showSummary = function() {
+			if (ListFieldController.LOGGER.isDebugEnabled())
+				ListFieldController.LOGGER.logDebug("showSummary()");
+						
+		};
+		
+		ListFieldController.prototype.getValue = function() {
+			var result = [];
+			for(var i = 0; i < this.listFields.length; i++)
+				result.push(this.listFields[i].internalDataController.getData());
+			
+			return result;
+		};
+		
+		de.titus.form.ListFieldController = ListFieldController; 
+		
+		de.titus.form.Registry.registFieldController("list", function(aElement, aFieldname, aValueChangeListener) {
+			return new ListFieldController(aElement, aFieldname, aValueChangeListener);
+		});
 	});
 })();
 (function() {
