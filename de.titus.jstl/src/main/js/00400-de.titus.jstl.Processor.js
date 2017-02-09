@@ -70,16 +70,31 @@
 			return this.internalComputeElement(this.config.element, this.config.data, events, true);
 		};
 		
-		Processor.prototype.internalComputeElement = /* boolean */function(aElement, aDataContext, theEvents, isRoot) {
+		Processor.prototype.internalComputeElement = function(aElement, aDataContext, theEvents, isRoot) {			
 			var dataContext = aDataContext || this.config.data;
+			dataContext.$element = aElement;			
 			if (!isRoot) {
 				var ignore = aElement.attr(this.config.attributePrefix + "ignore");
 				if (ignore != undefined && ignore != "")
-					ignore = de.titus.core.SpecialFunctions.doEvalWithContext(ignore, aDataContext, false);
+					ignore = de.titus.core.SpecialFunctions.doEvalWithContext(ignore, dataContext, false);
 				
-				if (ignore == true || ignore == "true") {
+				if (ignore == "" || ignore == true || ignore == "true") {
 					return true;
 				}
+				
+				var async = aElement.attr(this.config.attributePrefix + "async");
+				if (async != undefined && async != "")
+					async = de.titus.core.SpecialFunctions.doEvalWithContext(async, dataContext, false);
+				
+				if (async == "" || async == true || async == "true") {
+					//this.onReady((function(aElement, aDataContext){aElement.jstl({data:aDataContext})}).bind(null,aElement, aDataContext));	
+					
+					this.onReady((function(aElement, aDataContext){
+						console.log(aElement, aDataContext);
+						setTimeout($.fn.jstl.bind(aElement,{data:aDataContext}), 10);
+					}).bind(null,aElement, dataContext));
+					return true;
+				}				
 			}
 			
 			if (theEvents.onLoad != undefined && typeof theEvents.onLoad === "function")
@@ -120,9 +135,7 @@
 			
 			if (isRoot) {
 				var processor = this;
-				$(document).ready(function() {
-					processor.onReady();
-				});
+				$(document).ready(function() {processor.onReady();});
 			}
 			
 			return processResult;
@@ -224,7 +237,7 @@
 		Processor.prototype.onReady = function(aFunction) {
 			if (aFunction) {
 				// this.onReadyEvent.push(aFunction);
-				this.config.element.on(de.titus.jstl.Constants.EVENTS.onReady, function(anEvent) {
+				this.config.element.one(de.titus.jstl.Constants.EVENTS.onReady, function(anEvent) {
 					aFunction(anEvent.delegateTarget, anEvent.data);
 				});
 				return this;

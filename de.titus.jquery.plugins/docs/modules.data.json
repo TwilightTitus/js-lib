@@ -18,7 +18,7 @@
 			"data": "modules/jstl/pages.data.json"
 		},
 		"form": {
-			"title": "Form",
+			"title": "Form (alpha)",
 			"data": "modules/form/pages.data.json"
 		}
 	}

@@ -47,11 +47,11 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Include", function() {
 			"dataType" : "html"
 			};
 			ajaxSettings = $.extend(true, ajaxSettings, options);
-			
-			var $__this__$ = this;
+			var $__THIS__$ = this;
 			ajaxSettings.success = function(template) {
-				$__this__$.cache[url] = template;
-				$__this__$.addHtml(aElement, template, includeMode, aProcessor, aDataContext);
+				var $template = $("<div/>").append(template);
+				$__THIS__$.cache[url] = $template 
+				$__THIS__$.addHtml(aElement, $template, includeMode, aProcessor, aDataContext);
 			};
 			
 			ajaxSettings.error = function(error) {
@@ -87,8 +87,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Include", function() {
 	Include.prototype.addHtml = function(aElement, aTemplate, aIncludeMode, aProcessor, aDataContext) {
 		if (Include.LOGGER.isDebugEnabled())
 			Include.LOGGER.logDebug("execute addHtml(" + aElement + ", " + aTemplate + ", " + aIncludeMode + ")");
-		var content = $("<div/>");
-		content.html(aTemplate);
+		var content = aTemplate.clone();
 		aProcessor.compute(content, aDataContext);
 		
 		if (aIncludeMode == "replace"){
@@ -103,7 +102,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Include", function() {
 		}
 		else if (aIncludeMode == "prepend"){
 			content.contents().prependTo(aElement);
-			aElement.prepend(content.html());
+			//aElement.prepend(content.html());
 		}
 		else
 		{
