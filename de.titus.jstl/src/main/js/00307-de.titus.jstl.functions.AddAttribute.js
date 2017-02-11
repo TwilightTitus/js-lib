@@ -16,20 +16,16 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.AddAttribute", function(
 		if (AddAttribute.LOGGER.isDebugEnabled())
 			AddAttribute.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
 		
-		var processor = aProcessor || new de.titus.jstl.Processor();
-		var expressionResolver = processor.resolver || new de.titus.core.ExpressionResolver();
-		
 		var expression = aElement.data(this.attributeName);
-		if (expression != undefined) {
+		if (expression) {			
+			expression = aProcessor.resolver.resolveExpression(expression, aDataContext, false);			
+			if (expression && typeof expression === "function")
+				expression = expression(aElement, aDataContext, aProcessor);			
 			
-			var expressionResult = expressionResolver.resolveExpression(expression, aDataContext, false);
-			
-			if (expressionResult != undefined && typeof expressionResult === "function")
-				expressionResult = expressionResult(aElement, aDataContext, aProcessor);			
-			else if (expressionResult != undefined && typeof expressionResult === "array")
-				this.processArray(expressionResult, aElement, aDataContext, processor);
-			else
-				this.processObject(expressionResult, aElement, aDataContext, processor);
+			if (expression && Array.isArray(expression))
+				this.processArray(expression, aElement, aDataContext, aProcessor);
+			else if (expression && typeof expression === "object")
+				this.processObject(expression, aElement, aDataContext, aProcessor);
 		}
 		
 		return new de.titus.jstl.FunctionResult(true, true);
@@ -42,11 +38,10 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.AddAttribute", function(
 	};
 	
 	AddAttribute.prototype.processObject = function(theData, aElement, aDataContext, aProcessor) {
-		if (theData.name != undefined) {
+		if (theData.name)
 			aElement.attr(theData.name, theData.value);
-		} else {
+		else
 			AddAttribute.LOGGER.logError("run processObject (" + theData + ", " + aElement + ", " + aDataContext + ", " + aProcessor + ") -> No attribute name defined!");
-		}
 	};
 	
 	de.titus.jstl.functions.AddAttribute = AddAttribute;

@@ -16,55 +16,38 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Data", function() {
 		if (Data.LOGGER.isDebugEnabled())
 			Data.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
 		
-		var processor = aProcessor || new de.titus.jstl.Processor();
-		var expressionResolver = processor.resolver || new de.titus.core.ExpressionResolver();
-		
 		var expression = aElement.data(this.attributeName);
-		if (expression != undefined) {
-			this.internalProcessing(expression, aElement, aDataContext, processor, expressionResolver);
-		}
+		if (expression)
+			this.__compute(expression, aElement, aDataContext, aProcessor);
 		
 		return new de.titus.jstl.FunctionResult(true, true);
 	};
 	
-	Data.prototype.internalProcessing = function(anExpression, aElement, aDataContext, aProcessor, anExpressionResolver) {
-		var varname = this.getVarname(aElement, aDataContext, aProcessor, anExpressionResolver);
-		var mode = this.getMode(aElement, aProcessor, anExpressionResolver);
-		if (this[mode] != undefined && typeof this[mode] === "function")
-			this[mode].call(this, anExpression, aElement, varname, aDataContext, aProcessor, anExpressionResolver);
-		else
-			this["direct"].call(this, anExpression, aElement, varname, aDataContext, aProcessor, anExpressionResolver);
+	Data.prototype.__compute = function(anExpression, aElement, aDataContext, aProcessor) {
+		var varname = aElement.data("jstlDataVar");
+		var mode = aElement.data("jstlDataMode") || "direct";
+		this[mode].call(this, anExpression, aElement, varname, aDataContext, aProcessor);
 	};
 	
-	Data.prototype.getOptions = function(aElement, aDataContext, aProcessor, anExpressionResolver) {
-		var options = aElement.attr(aProcessor.config.attributePrefix + this.attributeName + "-options");
-		if (options != undefined) {
-			options = anExpressionResolver.resolveText(options, aDataContext);
-			options = anExpressionResolver.resolveExpression(options, aDataContext);
+	Data.prototype.__options = function(aElement, aDataContext, aProcessor) {
+		var options = aElement.data("jstlDataOptions");
+		if (options) {
+			options = aProcessor.resolver.resolveText(options, aDataContext);
+			options = aProcessor.resolver.resolveExpression(options, aDataContext);
 			return options || {};
-		}
-		
+		}		
 		return {};
+	};	
+	
+	Data.prototype["direct"] = function(anExpression, aElement, aVarname, aDataContext, aProcessor) {
+		var newData = aProcessor.resolver.resolveExpression(anExpression, aDataContext);
+		this.__data(newData, aVarname, aDataContext, aProcessor);
 	};
 	
-	Data.prototype.getMode = function(aElement, aProcessor, anExpressionResolver) {
-		return aElement.attr(aProcessor.config.attributePrefix + this.attributeName + "-mode") || "direct";
-	};
-	
-	Data.prototype.getVarname = function(aElement, aDataContext, aProcessor, anExpressionResolver) {
-		return aElement.attr(aProcessor.config.attributePrefix + this.attributeName + "-var");
-	};
-	
-	Data.prototype["direct"] = function(anExpression, aElement, aVarname, aDataContext, aProcessor, anExpressionResolver) {
-		var newData = anExpressionResolver.resolveExpression(anExpression, aDataContext);
-		this.addNewData(newData, aVarname, aDataContext, aProcessor, anExpressionResolver);
-	};
-	
-	Data.prototype["remote"] = function(anExpression, aElement, aVarname, aDataContext, aProcessor, anExpressionResolver) {		
-		var $__THIS__$ = this;		
-		var url = anExpressionResolver.resolveText(anExpression, aDataContext);
-		var option = this.getOptions(aElement, aDataContext, aProcessor, anExpressionResolver);
-		var dataType = aElement.attr(aProcessor.config.attributePrefix + this.attributeName + "-datatype") || "json";
+	Data.prototype["remote"] = function(anExpression, aElement, aVarname, aDataContext, aProcessor) {		
+		var url = aProcessor.resolver.resolveText(anExpression, aDataContext);
+		var option = this.__options(aElement, aDataContext, aProcessor);
+		var dataType = aElement.data("jstlDataDatatype") || "json";
 		
 		var ajaxSettings = {
 		'url' : de.titus.core.Page.getInstance().buildUrl(url),
@@ -73,30 +56,30 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Data", function() {
 		'dataType' : dataType
 		};
 		ajaxSettings = $.extend(ajaxSettings, option);
+		var $__THIS__$ = this;
 		ajaxSettings.success = function(newData) {
 			var data = newData;
 			if(dataType.toLowerCase() == "xml")
 				data = de.titus.core.Converter.xmlToJson(newData);			
-			$__THIS__$.addNewData(data, aVarname, aDataContext, aProcessor, anExpressionResolver);
+			$__THIS__$.__data(data, aVarname, aDataContext, aProcessor);
 		};
 		
 		$.ajax(ajaxSettings);
 	};
 	
-	Data.prototype["url-parameter"] = function(anExpression, aElement, aVarname, aDataContext, aProcessor, anExpressionResolver) {
-		var parameterName = anExpressionResolver.resolveText(anExpression, aDataContext);
+	Data.prototype["url-parameter"] = function(anExpression, aElement, aVarname, aDataContext, aProcessor) {
+		var parameterName = aProcessor.resolver.resolveText(anExpression, aDataContext);
 		var value = de.titus.core.Page.getInstance().getUrl().getParameter(parameterName);
-		this.addNewData(value, aVarname, aDataContext, aProcessor, anExpressionResolver);
+		this.__data(value, aVarname, aDataContext, aProcessor);
 	};
 	
-	Data.prototype.addNewData = function(aNewData, aVarname, aDataContext, aProcessor, anExpressionResolver) {
+	Data.prototype.__data = function(aNewData, aVarname, aDataContext, aProcessor) {
 		if (Data.LOGGER.isDebugEnabled())
-			Data.LOGGER.logDebug("execute addNewData(" + aNewData + ", " + aVarname + ", " + aDataContext + ", " + aProcessor + ", " + anExpressionResolver + ")");
-		if (aVarname == undefined) {
+			Data.LOGGER.logDebug("execute __data(" + aNewData + ", " + aVarname + ", " + aDataContext + ", " + aProcessor + ")");
+		if (aVarname)
 			$.extend(true, aDataContext, aNewData);
-		} else {
+		else
 			aDataContext[aVarname] = aNewData;
-		}
 	};
 	
 	de.titus.jstl.functions.Data = Data;

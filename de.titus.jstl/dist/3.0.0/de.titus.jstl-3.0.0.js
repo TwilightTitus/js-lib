@@ -54,32 +54,25 @@ de.titus.core.Namespace.create("de.titus.jstl.IFunction", function() {
 	de.titus.jstl.IFunction.prototype.run = /*de.titus.jstl.FunctionResult*/ function(aElement, aDataContext, aProcessor){return true;};
 	
 });
-(function() {
+(function($) {
 	de.titus.core.Namespace.create("de.titus.jstl.functions.If", function() {
 		var If = function() {};
 		If.prototype = new de.titus.jstl.IFunction("jstlIf");
 		If.prototype.constructor = If;
 		
-		/***********************************************************************
-		 * static variables
-		 **********************************************************************/
 		If.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.If");
 		
-		If.prototype.run = /* boolean */function(aElement, aDataContext, aProcessor) {
+		If.prototype.run = function(aElement, aDataContext, aProcessor) {
 			if (If.LOGGER.isDebugEnabled())
 				If.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
 			
-			var processor = aProcessor || new de.titus.jstl.Processor();
-			var expressionResolver = processor.resolver || new de.titus.core.ExpressionResolver();
-			
 			var expression = aElement.data(this.attributeName);
 			if (expression != undefined) {
-				var expressionResult = expressionResolver.resolveExpression(expression, aDataContext, false);
-				if (typeof expressionResult === "function")
-					expressionResult = expressionResult(aElement, aDataContext, aProcessor);
+				var expression = aProcessor.resolver.resolveExpression(expression, aDataContext, false);
+				if (typeof expression === "function")
+					expression = expression(aElement, aDataContext, aProcessor);
 				
-				expressionResult = expressionResult == true || expressionResult == "true";
-				if (!expressionResult) {
+				if (!(expression == true || expression == "true")) {
 					aElement.remove();
 					return new de.titus.jstl.FunctionResult(false, false);
 				}
@@ -88,10 +81,9 @@ de.titus.core.Namespace.create("de.titus.jstl.IFunction", function() {
 			return new de.titus.jstl.FunctionResult(true, true);
 		};
 		
-		de.titus.jstl.functions.If = If;
-		
+		de.titus.jstl.functions.If = If;		
 	});
-})();
+})($);
 de.titus.core.Namespace.create("de.titus.jstl.functions.Choose", function() {
 	var Choose = function() {};
 	Choose.prototype = new de.titus.jstl.IFunction("jstlChoose");
@@ -109,13 +101,9 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Choose", function() {
 		if (Choose.LOGGER.isDebugEnabled())
 			Choose.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
 		
-		var processor = aProcessor || new de.titus.jstl.Processor();
-		var expressionResolver = processor.resolver || new de.titus.core.ExpressionResolver();
-		
 		var expression = aElement.data(this.attributeName);
-		if (expression != undefined) {
-			
-			this.processChilds(aElement, aDataContext, processor, expressionResolver);
+		if (expression != undefined) {			
+			this.processChilds(aElement, aDataContext, aProcessor, aProcessor.resolver);
 			return new de.titus.jstl.FunctionResult(true, true);
 		}		
 		return new de.titus.jstl.FunctionResult(true, true);
@@ -159,10 +147,9 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Choose", function() {
 		if (Choose.LOGGER.isDebugEnabled())
 			Choose.LOGGER.logDebug("execute processWhenElement(" + aChooseElement + ", " + aElement + ", " + aDataContext + ", " + aProcessor + ", " + aExpressionResolver + ")");
 		
-		var expression = aElement.attr(aProcessor.config.attributePrefix + 'when');
-		if (expression != undefined) {
+		var expression = aElement.data("jstlWhen");
+		if (expression != undefined)
 			return aExpressionResolver.resolveExpression(expression, aDataContext, false);
-		}
 		return false;
 	};
 	
@@ -170,13 +157,11 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Choose", function() {
 		if (Choose.LOGGER.isDebugEnabled())
 			Choose.LOGGER.logDebug("execute processOtherwiseElement(" + aChooseElement + ", " + aElement + ", " + aDataContext + ", " + aProcessor + ", " + aExpressionResolver + ")");
 		
-		var expression = aElement.attr(aProcessor.config.attributePrefix + 'otherwise');
-		if (expression != undefined) {
+		var expression = aElement.data("jstlOtherwise");
+		if (expression != undefined)
 			return true;
-		}
 		return false;
-	};
-	
+	};	
 	
 	de.titus.jstl.functions.Choose = Choose;
 });
@@ -201,49 +186,37 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Choose", function() {
 			if (Foreach.LOGGER.isDebugEnabled())
 				Foreach.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
 			
-			var processor = aProcessor || new de.titus.jstl.Processor();
-			var expressionResolver = processor.resolver || new de.titus.core.ExpressionResolver();
-			
 			var expression = aElement.data(this.attributeName);
 			if (expression != undefined) {
-				this.internalProcession(expression, aElement, aDataContext, processor, expressionResolver);
+				this.__compute(expression, aElement, aDataContext, aProcessor, aProcessor.resolver);
 				return new de.titus.jstl.FunctionResult(false, false);
 			}
 			return new de.titus.jstl.FunctionResult(true, true);
 		};
 		
-		Foreach.prototype.internalProcession = function(aExpression, aElement, aDataContext, aProcessor, anExpressionResolver) {
+		Foreach.prototype.__compute = function(aExpression, aElement, aDataContext, aProcessor, anExpressionResolver) {
 			if (Foreach.LOGGER.isDebugEnabled())
-				Foreach.LOGGER.logDebug("execute processList(" + aElement + ", " + aDataContext + ", " + aProcessor + ", " + anExpressionResolver + ")");
+				Foreach.LOGGER.logDebug("execute __compute(" + aElement + ", " + aDataContext + ", " + aProcessor + ", " + anExpressionResolver + ")");
 			
-			var tempalte = this.getRepeatableContent(aElement);
-			aElement.empty();
+			var tempalte = this.__template(aElement);
 			if (tempalte == undefined)
 				return;
+
+			aElement.empty();
 			
-			var varName = this.getVarname(aElement, aProcessor);
-			var statusName = this.getStatusName(aElement, aProcessor);
-			var list = undefined;
-			if (aExpression == "") {
-				Foreach.LOGGER.logWarn("No list data specified. Using the data context!");
-				list = aDataContext;
-			} else
-				list = anExpressionResolver.resolveExpression(aExpression, aDataContext, new Array());
+			var varName = aElement.data("jstlForeachVar") || "itemVar";
+			var statusName = aElement.data("jstlForeachStatus") || "statusVar";
+			var list = anExpressionResolver.resolveExpression(aExpression, aDataContext, aDataContext);
 			
-			var breakCondition = aElement.attr(aProcessor.config.attributePrefix + this.attributeName + "-break-condition");
-			if (list != undefined && (typeof list === "array" || list.length != undefined)) {
-				this.processList(list, tempalte, varName, statusName, breakCondition, aElement, aDataContext, aProcessor, anExpressionResolver);
-			} else if (list != undefined) {
-				this.processMap(list, tempalte, varName, statusName, breakCondition, aElement, aDataContext, aProcessor, anExpressionResolver);
-			}
+			var breakCondition = aElement.data("jstlForeachBreakCondition");
+			if (Array.isArray(list))
+				this.__list(list, tempalte, varName, statusName, breakCondition, aElement, aDataContext, aProcessor);
+			else if (typeof list === "object")
+				this.__map(list, tempalte, varName, statusName, breakCondition, aElement, aDataContext, aProcessor);
 		};
 		
-		Foreach.prototype.processList = function(aListData, aTemplate, aVarname, aStatusName, aBreakCondition, aElement, aDataContext, aProcessor, anExpressionResolver) {
-			if (aListData == undefined || aListData.length == undefined || aListData.length < 1)
-				return;
-			
-			var startIndex = aElement.attr(aProcessor.config.attributePrefix + this.attributeName + "-start-index") || 0;
-			startIndex = anExpressionResolver.resolveExpression(startIndex, aDataContext, 0) || 0;
+		Foreach.prototype.__list = function(aListData, aTemplate, aVarname, aStatusName, aBreakCondition, aElement, aDataContext, aProcessor) {						
+			var startIndex = aProcessor.resolver.resolveExpression(aElement.data("jstlForeachStartIndex"), aDataContext, 0) || 0;
 			for (var i = startIndex; i < aListData.length; i++) {
 				var newContent = aTemplate.clone();
 				var newContext = $.extend({}, aDataContext);
@@ -255,21 +228,15 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Choose", function() {
 				"data" : aListData,
 				"context" : aDataContext
 				};
-				if (aBreakCondition != undefined && this.processBreakCondition(newContext, aBreakCondition, aElement, aProcessor)) {
+				if (aBreakCondition != undefined && this.__break(newContext, aBreakCondition, aElement, aProcessor)) {
 					return;
 				}
 				
-				this.processNewContent(newContent, newContext, aElement, aProcessor);
-				newContext[aVarname] = undefined;
-				newContext[aStatusName] = undefined;
+				this.__computeContent(newContent, newContext, aElement, aProcessor);
 			}
 		};
 		
-		Foreach.prototype.processMap = function(aMap, aTemplate, aVarname, aStatusName, aBreakCondition, aElement, aDataContext, aProcessor, anExpressionResolver) {
-			var count = 0;
-			for ( var name in aMap)
-				count++;
-			
+		Foreach.prototype.__map = function(aMap, aTemplate, aVarname, aStatusName, aBreakCondition, aElement, aDataContext, aProcessor) {			
 			var i = 0;
 			for ( var name in aMap) {
 				var newContent = aTemplate.clone();
@@ -279,120 +246,97 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Choose", function() {
 				"index" : i,
 				"number" : (i + 1),
 				"key" : name,
-				"count" : count,
 				"data" : aMap,
 				"context" : aDataContext
 				};
 				
-				if (aBreakCondition != undefined && this.processBreakCondition(newContext, aBreakCondition, aElement, aProcessor)) {
-					return;
-				}
+				if (aBreakCondition != undefined && this.__break(newContext, aBreakCondition, aElement, aProcessor))
+					return;				
 				
+				this.__computeContent(newContent, newContext, aElement, aProcessor);
 				i++;
-				this.processNewContent(newContent, newContext, aElement, aProcessor);
-				newContext[aVarname] = undefined;
-				newContext[aStatusName] = undefined;
 			}
 		};
 		
-		Foreach.prototype.processBreakCondition = function(aContext, aBreakCondition, aElement, aProcessor) {
-			var expressionResolver = aprocessor.resolver || new de.titus.jstl.ExpressionResolver();
-			var expressionResult = expressionResolver.resolveExpression(aBreakCondition, aContext, false);
-			if (typeof expressionResult === "function")
-				expressionResult = expressionResult(aElement, aContext, aProcessor);
+		Foreach.prototype.__break = function(aContext, aBreakCondition, aElement, aProcessor) {
+			var expression = aProcessor.resolver.resolveExpression(aBreakCondition, aContext, false);
+			if (typeof expression === "function")
+				expression = expression(aElement, aContext, aProcessor);
 			
-			return expressionResult == true || expressionResult == "true";
+			return expression == true || expression == "true";
 		};
 		
-		Foreach.prototype.processNewContent = function(aNewContent, aNewContext, aElement, aProcessor) {
+		Foreach.prototype.__computeContent = function(aNewContent, aNewContext, aElement, aProcessor) {
 			aProcessor.compute(aNewContent, aNewContext);
 			aElement.append(aNewContent.contents());
 		};
 		
-		Foreach.prototype.getVarname = function(aElement, aProcessor) {
-			var varname = aElement.attr(aProcessor.config.attributePrefix + this.attributeName + "-var");
-			if (varname == undefined)
-				return "itemVar";
-			
-			return varname;
-		};
-		
-		Foreach.prototype.getStatusName = function(aElement, aProcessor) {
-			var statusName = aElement.attr(aProcessor.config.attributePrefix + this.attributeName + "-status");
-			if (statusName == undefined)
-				return "statusVar";
-			
-			return statusName;
-		};
-		
-		Foreach.prototype.getRepeatableContent = function(aElement) {
-			return $("<div>").append(aElement.contents());
+		Foreach.prototype.__template = function(aElement) {			
+			var template = aElement.data("de.titus.jstl.functions.Foreach.Template");
+			if(template == undefined){
+				template = $("<div>").append(aElement.contents());
+				aElement.data("de.titus.jstl.functions.Foreach.Template", template);
+			}
+			return template;
 		};
 		
 		de.titus.jstl.functions.Foreach = Foreach;
 	});
 })($);
 de.titus.core.Namespace.create("de.titus.jstl.functions.TextContent", function() {
-	var TextContent = function() {};
+	var TextContent = function() {
+	};
 	TextContent.prototype = new de.titus.jstl.IFunction();
 	TextContent.prototype.constructor = TextContent;
 	
-	/**********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************
+	/***************************************************************************
 	 * static variables
-	 *********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+	 **************************************************************************/
 	TextContent.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.TextContent");
 	
-	/**********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************
+	/***************************************************************************
 	 * functions
-	 *********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+	 **************************************************************************/
 	TextContent.prototype.run = function(aElement, aDataContext, aProcessor) {
 		if (TextContent.LOGGER.isDebugEnabled())
 			TextContent.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
 		
-		var processor = aProcessor || new de.titus.jstl.Processor();
-		var expressionResolver = processor.resolver || new de.titus.core.ExpressionResolver();
 		var ignore = aElement.data("jstlTextIgnore");
-		
-		if (ignore != true || ignore != "true") {
-			
-			if(!aElement.is("pre"))
+		if (!ignore) {			
+			if (!aElement.is("pre"))
 				this.normalize(aElement[0]);
 			
+			var contenttype = aElement.data("jstlTextContentType") || "text";
 			aElement.contents().filter(function() {
 				return this.nodeType === 3 && this.textContent != undefined && this.textContent.trim() != "";
 			}).each(function() {
-				var contenttype = aElement.attr(processor.config.attributePrefix + "text-content-type") || "text";
-				var node = this;
-				var text = node.textContent;
-				if(text)
-					text = text.trim();
-
-				text = expressionResolver.resolveText(text, aDataContext);
-				var contentFunction = TextContent.CONTENTTYPE[contenttype];
-				if (contentFunction)
-					contentFunction(node, text, aElement, processor, aDataContext);
+				var text = this.textContent;
+				if (text) {
+					text = aProcessor.resolver.resolveText(text, aDataContext);
+					var contentFunction = TextContent.CONTENTTYPE[contenttype];
+					if (contentFunction)
+						contentFunction(this, text, aElement, aProcessor, aDataContext);
+				}
 			});
 		}
 		
 		return new de.titus.jstl.FunctionResult(true, true);
 	};
 	
-	TextContent.prototype.normalize = function(node) {
-		if (!node) {
+	TextContent.prototype.normalize = function(aNode) {
+		if (!aNode)
 			return;
-		}
-		if (node.nodeType == 3) {
-			while (node.nextSibling && node.nextSibling.nodeType == 3) {
-				node.nodeValue += node.nextSibling.nodeValue;
-				node.parentNode.removeChild(node.nextSibling);
+		if (aNode.nodeType == 3) {
+			while (aNode.nextSibling && aNode.nextSibling.nodeType == 3) {
+				aNode.nodeValue += aNode.nextSibling.nodeValue;
+				aNode.parentNode.removeChild(aNode.nextSibling);
 			}
 		} else {
-			this.normalize(node.firstChild);
+			this.normalize(aNode.firstChild);
 		}
-		this.normalize(node.nextSibling);
+		this.normalize(aNode.nextSibling);
 	}
-	
-	
+
 	TextContent.CONTENTTYPE = {};
 	TextContent.CONTENTTYPE["html"] = function(aNode, aText, aBaseElement, aProcessor, aDataContext) {
 		$(aNode).replaceWith($.parseHTML(aText));
@@ -411,18 +355,18 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.TextContent", function()
 		var text = aText;
 		var addAsHtml = false;
 		
-		var trimLength = aBaseElement.attr(aProcessor.config.attributePrefix + "text-trim-length");
+		var trimLength = aBaseElement.data("jstlTextTrimLength");
 		if (trimLength != undefined && trimLength != "") {
-			trimLength = aprocessor.resolver.resolveExpression(trimLength, aDataContext, "-1");
+			trimLength = aProcessor.resolver.resolveExpression(trimLength, aDataContext, "-1");
 			trimLength = parseInt(trimLength);
 			if (trimLength && trimLength > 0)
 				text = de.titus.core.StringUtils.trimTextLength(text, trimLength);
 		}
 		
-		var preventformat = aBaseElement.attr(aProcessor.config.attributePrefix + "text-prevent-format");
-		if (preventformat != undefined && preventformat != "false") {
-			preventformat = preventformat == "" || aprocessor.resolver.resolveExpression(preventformat, aDataContext, true) || true;
-			if (preventformat == "true" || preventformat == true) {
+		var preventformat = aBaseElement.data("jstlTextPreventFormat");
+		if (preventformat) {
+			preventformat = aProcessor.resolver.resolveExpression(preventformat, aDataContext, true) || true;
+			if (preventformat) {
 				text = de.titus.core.StringUtils.formatToHtml(text);
 				addAsHtml = true;
 			}
@@ -438,7 +382,8 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.TextContent", function()
 	de.titus.jstl.functions.TextContent = TextContent;
 });
 de.titus.core.Namespace.create("de.titus.jstl.functions.AttributeContent", function() {
-	var AttributeContent = function() {};
+	var AttributeContent = function() {
+	};
 	AttributeContent.prototype = new de.titus.jstl.IFunction();
 	AttributeContent.prototype.constructor = AttributeContent;
 	
@@ -455,26 +400,22 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.AttributeContent", funct
 		if (AttributeContent.LOGGER.isDebugEnabled())
 			AttributeContent.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
 		
-		var processor = aProcessor || new de.titus.jstl.Processor();
-		var expressionResolver = processor.resolver || new de.titus.core.ExpressionResolver();
-		if (aElement.length == 1) {
-			var attributes = aElement[0].attributes || [];
-			for (var i = 0; i< attributes.length; i++) {
-				var name = attributes[i].name;				
-				if (name.indexOf(processor.config.attributePrefix) != 0) {
-					var value = attributes[i].value;
-					if (value != undefined && value != null && value != "" && value != "null") {
-						try {
-							var newValue = expressionResolver.resolveText(value, aDataContext);
-							if (value != newValue) {
-								if (AttributeContent.LOGGER.isDebugEnabled()) {
-									AttributeContent.LOGGER.logDebug("Change attribute \"" + name + "\" from \"" + value + "\" to \"" + newValue + "\"!");
-								}
-								aElement.attr(name, newValue);
+		var attributes = aElement[0].attributes || [];
+		for (var i = 0; i < attributes.length; i++) {
+			var name = attributes[i].name;
+			if (name.indexOf("data-jstl-") != 0) {
+				var value = attributes[i].value;
+				if (value != undefined && value != "") {
+					try {
+						var newValue = aProcessor.resolver.resolveText(value, aDataContext);
+						if (value != newValue) {
+							if (AttributeContent.LOGGER.isDebugEnabled()) {
+								AttributeContent.LOGGER.logDebug("Change attribute \"" + name + "\" from \"" + value + "\" to \"" + newValue + "\"!");
 							}
-						} catch (e) {
-							AttributeContent.LOGGER.logError("Can't process attribute\"" + name + "\" with value \"" + value + "\"!");
+							aElement.attr(name, newValue);
 						}
+					} catch (e) {
+						AttributeContent.LOGGER.logError("Can't process attribute\"" + name + "\" with value \"" + value + "\"!");
 					}
 				}
 			}
@@ -483,7 +424,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.AttributeContent", funct
 		return new de.titus.jstl.FunctionResult(true, true);
 	};
 	
-	de.titus.jstl.functions.AttributeContent = AttributeContent;	
+	de.titus.jstl.functions.AttributeContent = AttributeContent;
 });
 de.titus.core.Namespace.create("de.titus.jstl.functions.Data", function() {
 	var Data = function() {};
@@ -503,55 +444,38 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Data", function() {
 		if (Data.LOGGER.isDebugEnabled())
 			Data.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
 		
-		var processor = aProcessor || new de.titus.jstl.Processor();
-		var expressionResolver = processor.resolver || new de.titus.core.ExpressionResolver();
-		
 		var expression = aElement.data(this.attributeName);
-		if (expression != undefined) {
-			this.internalProcessing(expression, aElement, aDataContext, processor, expressionResolver);
-		}
+		if (expression)
+			this.__compute(expression, aElement, aDataContext, aProcessor);
 		
 		return new de.titus.jstl.FunctionResult(true, true);
 	};
 	
-	Data.prototype.internalProcessing = function(anExpression, aElement, aDataContext, aProcessor, anExpressionResolver) {
-		var varname = this.getVarname(aElement, aDataContext, aProcessor, anExpressionResolver);
-		var mode = this.getMode(aElement, aProcessor, anExpressionResolver);
-		if (this[mode] != undefined && typeof this[mode] === "function")
-			this[mode].call(this, anExpression, aElement, varname, aDataContext, aProcessor, anExpressionResolver);
-		else
-			this["direct"].call(this, anExpression, aElement, varname, aDataContext, aProcessor, anExpressionResolver);
+	Data.prototype.__compute = function(anExpression, aElement, aDataContext, aProcessor) {
+		var varname = aElement.data("jstlDataVar");
+		var mode = aElement.data("jstlDataMode") || "direct";
+		this[mode].call(this, anExpression, aElement, varname, aDataContext, aProcessor);
 	};
 	
-	Data.prototype.getOptions = function(aElement, aDataContext, aProcessor, anExpressionResolver) {
-		var options = aElement.attr(aProcessor.config.attributePrefix + this.attributeName + "-options");
-		if (options != undefined) {
-			options = anExpressionResolver.resolveText(options, aDataContext);
-			options = anExpressionResolver.resolveExpression(options, aDataContext);
+	Data.prototype.__options = function(aElement, aDataContext, aProcessor) {
+		var options = aElement.data("jstlDataOptions");
+		if (options) {
+			options = aProcessor.resolver.resolveText(options, aDataContext);
+			options = aProcessor.resolver.resolveExpression(options, aDataContext);
 			return options || {};
-		}
-		
+		}		
 		return {};
+	};	
+	
+	Data.prototype["direct"] = function(anExpression, aElement, aVarname, aDataContext, aProcessor) {
+		var newData = aProcessor.resolver.resolveExpression(anExpression, aDataContext);
+		this.__data(newData, aVarname, aDataContext, aProcessor);
 	};
 	
-	Data.prototype.getMode = function(aElement, aProcessor, anExpressionResolver) {
-		return aElement.attr(aProcessor.config.attributePrefix + this.attributeName + "-mode") || "direct";
-	};
-	
-	Data.prototype.getVarname = function(aElement, aDataContext, aProcessor, anExpressionResolver) {
-		return aElement.attr(aProcessor.config.attributePrefix + this.attributeName + "-var");
-	};
-	
-	Data.prototype["direct"] = function(anExpression, aElement, aVarname, aDataContext, aProcessor, anExpressionResolver) {
-		var newData = anExpressionResolver.resolveExpression(anExpression, aDataContext);
-		this.addNewData(newData, aVarname, aDataContext, aProcessor, anExpressionResolver);
-	};
-	
-	Data.prototype["remote"] = function(anExpression, aElement, aVarname, aDataContext, aProcessor, anExpressionResolver) {		
-		var $__THIS__$ = this;		
-		var url = anExpressionResolver.resolveText(anExpression, aDataContext);
-		var option = this.getOptions(aElement, aDataContext, aProcessor, anExpressionResolver);
-		var dataType = aElement.attr(aProcessor.config.attributePrefix + this.attributeName + "-datatype") || "json";
+	Data.prototype["remote"] = function(anExpression, aElement, aVarname, aDataContext, aProcessor) {		
+		var url = aProcessor.resolver.resolveText(anExpression, aDataContext);
+		var option = this.__options(aElement, aDataContext, aProcessor);
+		var dataType = aElement.data("jstlDataDatatype") || "json";
 		
 		var ajaxSettings = {
 		'url' : de.titus.core.Page.getInstance().buildUrl(url),
@@ -560,30 +484,30 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Data", function() {
 		'dataType' : dataType
 		};
 		ajaxSettings = $.extend(ajaxSettings, option);
+		var $__THIS__$ = this;
 		ajaxSettings.success = function(newData) {
 			var data = newData;
 			if(dataType.toLowerCase() == "xml")
 				data = de.titus.core.Converter.xmlToJson(newData);			
-			$__THIS__$.addNewData(data, aVarname, aDataContext, aProcessor, anExpressionResolver);
+			$__THIS__$.__data(data, aVarname, aDataContext, aProcessor);
 		};
 		
 		$.ajax(ajaxSettings);
 	};
 	
-	Data.prototype["url-parameter"] = function(anExpression, aElement, aVarname, aDataContext, aProcessor, anExpressionResolver) {
-		var parameterName = anExpressionResolver.resolveText(anExpression, aDataContext);
+	Data.prototype["url-parameter"] = function(anExpression, aElement, aVarname, aDataContext, aProcessor) {
+		var parameterName = aProcessor.resolver.resolveText(anExpression, aDataContext);
 		var value = de.titus.core.Page.getInstance().getUrl().getParameter(parameterName);
-		this.addNewData(value, aVarname, aDataContext, aProcessor, anExpressionResolver);
+		this.__data(value, aVarname, aDataContext, aProcessor);
 	};
 	
-	Data.prototype.addNewData = function(aNewData, aVarname, aDataContext, aProcessor, anExpressionResolver) {
+	Data.prototype.__data = function(aNewData, aVarname, aDataContext, aProcessor) {
 		if (Data.LOGGER.isDebugEnabled())
-			Data.LOGGER.logDebug("execute addNewData(" + aNewData + ", " + aVarname + ", " + aDataContext + ", " + aProcessor + ", " + anExpressionResolver + ")");
-		if (aVarname == undefined) {
+			Data.LOGGER.logDebug("execute __data(" + aNewData + ", " + aVarname + ", " + aDataContext + ", " + aProcessor + ")");
+		if (aVarname)
 			$.extend(true, aDataContext, aNewData);
-		} else {
+		else
 			aDataContext[aVarname] = aNewData;
-		}
 	};
 	
 	de.titus.jstl.functions.Data = Data;
@@ -608,32 +532,30 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Include", function() {
 		if (Include.LOGGER.isDebugEnabled())
 			Include.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
 		
-		var processor = aProcessor || new de.titus.jstl.Processor();
-		var expressionResolver = processor.resolver || new de.titus.core.ExpressionResolver();
 		
 		var expression = aElement.data(this.attributeName);
-		if (expression != undefined) {
-			this.internalProcessing(expression, aElement, aDataContext, processor, expressionResolver);
+		if (expression) {
+			this.__compute(expression, aElement, aDataContext, aProcessor);
 		}
 		return new de.titus.jstl.FunctionResult(true, false);
 	};
 	
-	Include.prototype.internalProcessing = function(anIncludeExpression, aElement, aDataContext, aProcessor, anExpressionResolver) {
-		var url = anExpressionResolver.resolveText(anIncludeExpression, aDataContext);
-		var disableCaching = url.indexOf("?") >= 0 || aElement.attr(aProcessor.config.attributePrefix + this.attributeName + "-cache-disabled") != undefined;
+	Include.prototype.__compute = function(anIncludeExpression, aElement, aDataContext, aProcessor) {
+		var url = aProcessor.resolve.resolveText(anIncludeExpression, aDataContext);
+		var disableCaching = url.indexOf("?") >= 0 || aElement.data("jstlIncludeCacheDisabled") != undefined;
 		var content = "";
 		if (!disableCaching)
 			content = this.cache[url];
 		
-		var includeMode = this.getIncludeMode(aElement, aDataContext, aProcessor, anExpressionResolver);
+		var includeMode = this.__mode(aElement, aDataContext, aProcessor);
 		if (content)
-			this.addHtml(aElement, content, includeMode, aProcessor, aDataContext);
+			this.__include(aElement, content, includeMode, aProcessor, aDataContext);
 		else {
-			var options = this.getOptions(aElement, aDataContext, aProcessor, anExpressionResolver);
+			var options = this.__options(aElement, aDataContext, aProcessor);
 			var ajaxSettings = {
 			'url' : de.titus.core.Page.getInstance().buildUrl(url),
 			'async' : false,
-			'cache' : aElement.attr(aProcessor.config.attributePrefix + this.attributeName + "-ajax-cache-disabled") == undefined,
+			'cache' : aElement.data("jstlIncludeAjaxCacheDisabled") == undefined,
 			"dataType" : "html"
 			};
 			ajaxSettings = $.extend(true, ajaxSettings, options);
@@ -641,7 +563,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Include", function() {
 			ajaxSettings.success = function(template) {
 				var $template = $("<div/>").append(template);
 				$__THIS__$.cache[url] = $template 
-				$__THIS__$.addHtml(aElement, $template, includeMode, aProcessor, aDataContext);
+				$__THIS__$.__include(aElement, $template, includeMode, aProcessor, aDataContext);
 			};
 			
 			ajaxSettings.error = function(error) {
@@ -651,19 +573,19 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Include", function() {
 		}
 	};
 	
-	Include.prototype.getOptions = function(aElement, aDataContext, aProcessor, anExpressionResolver) {
-		var options = aElement.attr(aProcessor.config.attributePrefix + this.attributeName + "-options");
-		if (options != undefined) {
-			options = anExpressionResolver.resolveText(options, aDataContext);
-			options = anExpressionResolver.resolveExpression(options, aDataContext);
+	Include.prototype.__options = function(aElement, aDataContext, aProcessor) {
+		var options = aElement.data("jstlIncludeOptions");
+		if (options) {
+			options = aProcessor.resolver.resolveText(options, aDataContext);
+			options = aProcessor.resolver.resolveExpression(options, aDataContext);
 			return options || {};
 		}
 		
 		return {};
 	};
 	
-	Include.prototype.getIncludeMode = function(aElement, aDataContext, aProcessor, anExpressionResolver) {
-		var mode = aElement.attr(aProcessor.config.attributePrefix + this.attributeName + "-mode");
+	Include.prototype.__mode = function(aElement, aDataContext, aProcessor) {
+		var mode = aElement.data("jstlIcludeMode");
 		if (mode == undefined)
 			return "replace";
 		
@@ -674,31 +596,20 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Include", function() {
 		return "replace";
 	};
 	
-	Include.prototype.addHtml = function(aElement, aTemplate, aIncludeMode, aProcessor, aDataContext) {
+	Include.prototype.__include = function(aElement, aTemplate, aIncludeMode, aProcessor, aDataContext) {
 		if (Include.LOGGER.isDebugEnabled())
-			Include.LOGGER.logDebug("execute addHtml(" + aElement + ", " + aTemplate + ", " + aIncludeMode + ")");
+			Include.LOGGER.logDebug("execute __include(" + aElement + ", " + aTemplate + ", " + aIncludeMode + ")");
 		var content = aTemplate.clone();
 		aProcessor.compute(content, aDataContext);
 		
 		if (aIncludeMode == "replace"){
 			aElement.empty();
 			content.contents().appendTo(aElement);
-			//aElement.html(content.html());
 		}
 		else if (aIncludeMode == "append")
-		{			
 			content.contents().appendTo(aElement);
-			//aElement.append(content.html());
-		}
-		else if (aIncludeMode == "prepend"){
+		else if (aIncludeMode == "prepend")
 			content.contents().prependTo(aElement);
-			//aElement.prepend(content.html());
-		}
-		else
-		{
-			aElement.empty();
-			content.contents().appendTo(aElement);
-		}		
 	};
 	
 	de.titus.jstl.functions.Include = Include;	
@@ -721,20 +632,16 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.AddAttribute", function(
 		if (AddAttribute.LOGGER.isDebugEnabled())
 			AddAttribute.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
 		
-		var processor = aProcessor || new de.titus.jstl.Processor();
-		var expressionResolver = processor.resolver || new de.titus.core.ExpressionResolver();
-		
 		var expression = aElement.data(this.attributeName);
-		if (expression != undefined) {
+		if (expression) {			
+			expression = aProcessor.resolver.resolveExpression(expression, aDataContext, false);			
+			if (expression && typeof expression === "function")
+				expression = expression(aElement, aDataContext, aProcessor);			
 			
-			var expressionResult = expressionResolver.resolveExpression(expression, aDataContext, false);
-			
-			if (expressionResult != undefined && typeof expressionResult === "function")
-				expressionResult = expressionResult(aElement, aDataContext, aProcessor);			
-			else if (expressionResult != undefined && typeof expressionResult === "array")
-				this.processArray(expressionResult, aElement, aDataContext, processor);
-			else
-				this.processObject(expressionResult, aElement, aDataContext, processor);
+			if (expression && Array.isArray(expression))
+				this.processArray(expression, aElement, aDataContext, aProcessor);
+			else if (expression && typeof expression === "object")
+				this.processObject(expression, aElement, aDataContext, aProcessor);
 		}
 		
 		return new de.titus.jstl.FunctionResult(true, true);
@@ -747,11 +654,10 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.AddAttribute", function(
 	};
 	
 	AddAttribute.prototype.processObject = function(theData, aElement, aDataContext, aProcessor) {
-		if (theData.name != undefined) {
+		if (theData.name)
 			aElement.attr(theData.name, theData.value);
-		} else {
+		else
 			AddAttribute.LOGGER.logError("run processObject (" + theData + ", " + aElement + ", " + aDataContext + ", " + aProcessor + ") -> No attribute name defined!");
-		}
 	};
 	
 	de.titus.jstl.functions.AddAttribute = AddAttribute;
@@ -773,12 +679,10 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Databind", function() {
 	Databind.prototype.run = function(aElement, aDataContext, aProcessor) {
 		if (Databind.LOGGER.isDebugEnabled())
 			Databind.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
-		
-		var expressionResolver = aProcessor.resolver || new de.titus.core.ExpressionResolver();
-		
-		var varname = this.getVarname(aElement, aDataContext, aProcessor, expressionResolver);
-		if (varname != undefined && varname.trim().length != 0) {
-			var value = this.getValue(aElement, aDataContext, aProcessor, expressionResolver);
+				
+		var varname = aElement.data("jstlDatabindName");
+		if (varname && varname.trim() != "") {
+			var value = this.__value(aElement, aDataContext, aProcessor);
 			if(value != undefined)
 				aElement.data(varname, value);			
 		}
@@ -786,14 +690,9 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Databind", function() {
 		return new de.titus.jstl.FunctionResult(true, true);
 	};
 	
-	Databind.prototype.getVarname = function(aElement, aDataContext, aProcessor, anExpressionResolver) {
-		return aElement.attr(aProcessor.config.attributePrefix + this.attributeName + "-name");
-	};
 	
-	Databind.prototype.getValue = function(aElement, aDataContext, aProcessor, anExpressionResolver) {
-		var valueString =  aElement.attr(aProcessor.config.attributePrefix + this.attributeName);
-		
-		return anExpressionResolver.resolveExpression(valueString, aDataContext, undefined);
+	Databind.prototype.__value = function(aElement, aDataContext, aProcessor) {
+		return aProcessor.resolver.resolveExpression(aElement.data("jstlDatabind"), aDataContext, undefined);
 	};
 	
 	de.titus.jstl.functions.Databind = Databind;

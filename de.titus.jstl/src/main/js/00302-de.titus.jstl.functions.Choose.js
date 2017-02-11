@@ -15,13 +15,9 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Choose", function() {
 		if (Choose.LOGGER.isDebugEnabled())
 			Choose.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
 		
-		var processor = aProcessor || new de.titus.jstl.Processor();
-		var expressionResolver = processor.resolver || new de.titus.core.ExpressionResolver();
-		
 		var expression = aElement.data(this.attributeName);
-		if (expression != undefined) {
-			
-			this.processChilds(aElement, aDataContext, processor, expressionResolver);
+		if (expression != undefined) {			
+			this.processChilds(aElement, aDataContext, aProcessor, aProcessor.resolver);
 			return new de.titus.jstl.FunctionResult(true, true);
 		}		
 		return new de.titus.jstl.FunctionResult(true, true);
@@ -65,10 +61,9 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Choose", function() {
 		if (Choose.LOGGER.isDebugEnabled())
 			Choose.LOGGER.logDebug("execute processWhenElement(" + aChooseElement + ", " + aElement + ", " + aDataContext + ", " + aProcessor + ", " + aExpressionResolver + ")");
 		
-		var expression = aElement.attr(aProcessor.config.attributePrefix + 'when');
-		if (expression != undefined) {
+		var expression = aElement.data("jstlWhen");
+		if (expression != undefined)
 			return aExpressionResolver.resolveExpression(expression, aDataContext, false);
-		}
 		return false;
 	};
 	
@@ -76,13 +71,11 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Choose", function() {
 		if (Choose.LOGGER.isDebugEnabled())
 			Choose.LOGGER.logDebug("execute processOtherwiseElement(" + aChooseElement + ", " + aElement + ", " + aDataContext + ", " + aProcessor + ", " + aExpressionResolver + ")");
 		
-		var expression = aElement.attr(aProcessor.config.attributePrefix + 'otherwise');
-		if (expression != undefined) {
+		var expression = aElement.data("jstlOtherwise");
+		if (expression != undefined)
 			return true;
-		}
 		return false;
-	};
-	
+	};	
 	
 	de.titus.jstl.functions.Choose = Choose;
 });

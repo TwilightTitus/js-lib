@@ -18,32 +18,30 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Include", function() {
 		if (Include.LOGGER.isDebugEnabled())
 			Include.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
 		
-		var processor = aProcessor || new de.titus.jstl.Processor();
-		var expressionResolver = processor.resolver || new de.titus.core.ExpressionResolver();
 		
 		var expression = aElement.data(this.attributeName);
-		if (expression != undefined) {
-			this.internalProcessing(expression, aElement, aDataContext, processor, expressionResolver);
+		if (expression) {
+			this.__compute(expression, aElement, aDataContext, aProcessor);
 		}
 		return new de.titus.jstl.FunctionResult(true, false);
 	};
 	
-	Include.prototype.internalProcessing = function(anIncludeExpression, aElement, aDataContext, aProcessor, anExpressionResolver) {
-		var url = anExpressionResolver.resolveText(anIncludeExpression, aDataContext);
-		var disableCaching = url.indexOf("?") >= 0 || aElement.attr(aProcessor.config.attributePrefix + this.attributeName + "-cache-disabled") != undefined;
+	Include.prototype.__compute = function(anIncludeExpression, aElement, aDataContext, aProcessor) {
+		var url = aProcessor.resolve.resolveText(anIncludeExpression, aDataContext);
+		var disableCaching = url.indexOf("?") >= 0 || aElement.data("jstlIncludeCacheDisabled") != undefined;
 		var content = "";
 		if (!disableCaching)
 			content = this.cache[url];
 		
-		var includeMode = this.getIncludeMode(aElement, aDataContext, aProcessor, anExpressionResolver);
+		var includeMode = this.__mode(aElement, aDataContext, aProcessor);
 		if (content)
-			this.addHtml(aElement, content, includeMode, aProcessor, aDataContext);
+			this.__include(aElement, content, includeMode, aProcessor, aDataContext);
 		else {
-			var options = this.getOptions(aElement, aDataContext, aProcessor, anExpressionResolver);
+			var options = this.__options(aElement, aDataContext, aProcessor);
 			var ajaxSettings = {
 			'url' : de.titus.core.Page.getInstance().buildUrl(url),
 			'async' : false,
-			'cache' : aElement.attr(aProcessor.config.attributePrefix + this.attributeName + "-ajax-cache-disabled") == undefined,
+			'cache' : aElement.data("jstlIncludeAjaxCacheDisabled") == undefined,
 			"dataType" : "html"
 			};
 			ajaxSettings = $.extend(true, ajaxSettings, options);
@@ -51,7 +49,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Include", function() {
 			ajaxSettings.success = function(template) {
 				var $template = $("<div/>").append(template);
 				$__THIS__$.cache[url] = $template 
-				$__THIS__$.addHtml(aElement, $template, includeMode, aProcessor, aDataContext);
+				$__THIS__$.__include(aElement, $template, includeMode, aProcessor, aDataContext);
 			};
 			
 			ajaxSettings.error = function(error) {
@@ -61,19 +59,19 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Include", function() {
 		}
 	};
 	
-	Include.prototype.getOptions = function(aElement, aDataContext, aProcessor, anExpressionResolver) {
-		var options = aElement.attr(aProcessor.config.attributePrefix + this.attributeName + "-options");
-		if (options != undefined) {
-			options = anExpressionResolver.resolveText(options, aDataContext);
-			options = anExpressionResolver.resolveExpression(options, aDataContext);
+	Include.prototype.__options = function(aElement, aDataContext, aProcessor) {
+		var options = aElement.data("jstlIncludeOptions");
+		if (options) {
+			options = aProcessor.resolver.resolveText(options, aDataContext);
+			options = aProcessor.resolver.resolveExpression(options, aDataContext);
 			return options || {};
 		}
 		
 		return {};
 	};
 	
-	Include.prototype.getIncludeMode = function(aElement, aDataContext, aProcessor, anExpressionResolver) {
-		var mode = aElement.attr(aProcessor.config.attributePrefix + this.attributeName + "-mode");
+	Include.prototype.__mode = function(aElement, aDataContext, aProcessor) {
+		var mode = aElement.data("jstlIcludeMode");
 		if (mode == undefined)
 			return "replace";
 		
@@ -84,31 +82,20 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Include", function() {
 		return "replace";
 	};
 	
-	Include.prototype.addHtml = function(aElement, aTemplate, aIncludeMode, aProcessor, aDataContext) {
+	Include.prototype.__include = function(aElement, aTemplate, aIncludeMode, aProcessor, aDataContext) {
 		if (Include.LOGGER.isDebugEnabled())
-			Include.LOGGER.logDebug("execute addHtml(" + aElement + ", " + aTemplate + ", " + aIncludeMode + ")");
+			Include.LOGGER.logDebug("execute __include(" + aElement + ", " + aTemplate + ", " + aIncludeMode + ")");
 		var content = aTemplate.clone();
 		aProcessor.compute(content, aDataContext);
 		
 		if (aIncludeMode == "replace"){
 			aElement.empty();
 			content.contents().appendTo(aElement);
-			//aElement.html(content.html());
 		}
 		else if (aIncludeMode == "append")
-		{			
 			content.contents().appendTo(aElement);
-			//aElement.append(content.html());
-		}
-		else if (aIncludeMode == "prepend"){
+		else if (aIncludeMode == "prepend")
 			content.contents().prependTo(aElement);
-			//aElement.prepend(content.html());
-		}
-		else
-		{
-			aElement.empty();
-			content.contents().appendTo(aElement);
-		}		
 	};
 	
 	de.titus.jstl.functions.Include = Include;	

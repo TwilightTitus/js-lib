@@ -19,49 +19,37 @@
 			if (Foreach.LOGGER.isDebugEnabled())
 				Foreach.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
 			
-			var processor = aProcessor || new de.titus.jstl.Processor();
-			var expressionResolver = processor.resolver || new de.titus.core.ExpressionResolver();
-			
 			var expression = aElement.data(this.attributeName);
 			if (expression != undefined) {
-				this.internalProcession(expression, aElement, aDataContext, processor, expressionResolver);
+				this.__compute(expression, aElement, aDataContext, aProcessor, aProcessor.resolver);
 				return new de.titus.jstl.FunctionResult(false, false);
 			}
 			return new de.titus.jstl.FunctionResult(true, true);
 		};
 		
-		Foreach.prototype.internalProcession = function(aExpression, aElement, aDataContext, aProcessor, anExpressionResolver) {
+		Foreach.prototype.__compute = function(aExpression, aElement, aDataContext, aProcessor, anExpressionResolver) {
 			if (Foreach.LOGGER.isDebugEnabled())
-				Foreach.LOGGER.logDebug("execute processList(" + aElement + ", " + aDataContext + ", " + aProcessor + ", " + anExpressionResolver + ")");
+				Foreach.LOGGER.logDebug("execute __compute(" + aElement + ", " + aDataContext + ", " + aProcessor + ", " + anExpressionResolver + ")");
 			
-			var tempalte = this.getRepeatableContent(aElement);
-			aElement.empty();
+			var tempalte = this.__template(aElement);
 			if (tempalte == undefined)
 				return;
+
+			aElement.empty();
 			
-			var varName = this.getVarname(aElement, aProcessor);
-			var statusName = this.getStatusName(aElement, aProcessor);
-			var list = undefined;
-			if (aExpression == "") {
-				Foreach.LOGGER.logWarn("No list data specified. Using the data context!");
-				list = aDataContext;
-			} else
-				list = anExpressionResolver.resolveExpression(aExpression, aDataContext, new Array());
+			var varName = aElement.data("jstlForeachVar") || "itemVar";
+			var statusName = aElement.data("jstlForeachStatus") || "statusVar";
+			var list = anExpressionResolver.resolveExpression(aExpression, aDataContext, aDataContext);
 			
-			var breakCondition = aElement.attr(aProcessor.config.attributePrefix + this.attributeName + "-break-condition");
-			if (list != undefined && (typeof list === "array" || list.length != undefined)) {
-				this.processList(list, tempalte, varName, statusName, breakCondition, aElement, aDataContext, aProcessor, anExpressionResolver);
-			} else if (list != undefined) {
-				this.processMap(list, tempalte, varName, statusName, breakCondition, aElement, aDataContext, aProcessor, anExpressionResolver);
-			}
+			var breakCondition = aElement.data("jstlForeachBreakCondition");
+			if (Array.isArray(list))
+				this.__list(list, tempalte, varName, statusName, breakCondition, aElement, aDataContext, aProcessor);
+			else if (typeof list === "object")
+				this.__map(list, tempalte, varName, statusName, breakCondition, aElement, aDataContext, aProcessor);
 		};
 		
-		Foreach.prototype.processList = function(aListData, aTemplate, aVarname, aStatusName, aBreakCondition, aElement, aDataContext, aProcessor, anExpressionResolver) {
-			if (aListData == undefined || aListData.length == undefined || aListData.length < 1)
-				return;
-			
-			var startIndex = aElement.attr(aProcessor.config.attributePrefix + this.attributeName + "-start-index") || 0;
-			startIndex = anExpressionResolver.resolveExpression(startIndex, aDataContext, 0) || 0;
+		Foreach.prototype.__list = function(aListData, aTemplate, aVarname, aStatusName, aBreakCondition, aElement, aDataContext, aProcessor) {						
+			var startIndex = aProcessor.resolver.resolveExpression(aElement.data("jstlForeachStartIndex"), aDataContext, 0) || 0;
 			for (var i = startIndex; i < aListData.length; i++) {
 				var newContent = aTemplate.clone();
 				var newContext = $.extend({}, aDataContext);
@@ -73,21 +61,15 @@
 				"data" : aListData,
 				"context" : aDataContext
 				};
-				if (aBreakCondition != undefined && this.processBreakCondition(newContext, aBreakCondition, aElement, aProcessor)) {
+				if (aBreakCondition != undefined && this.__break(newContext, aBreakCondition, aElement, aProcessor)) {
 					return;
 				}
 				
-				this.processNewContent(newContent, newContext, aElement, aProcessor);
-				newContext[aVarname] = undefined;
-				newContext[aStatusName] = undefined;
+				this.__computeContent(newContent, newContext, aElement, aProcessor);
 			}
 		};
 		
-		Foreach.prototype.processMap = function(aMap, aTemplate, aVarname, aStatusName, aBreakCondition, aElement, aDataContext, aProcessor, anExpressionResolver) {
-			var count = 0;
-			for ( var name in aMap)
-				count++;
-			
+		Foreach.prototype.__map = function(aMap, aTemplate, aVarname, aStatusName, aBreakCondition, aElement, aDataContext, aProcessor) {			
 			var i = 0;
 			for ( var name in aMap) {
 				var newContent = aTemplate.clone();
@@ -97,54 +79,38 @@
 				"index" : i,
 				"number" : (i + 1),
 				"key" : name,
-				"count" : count,
 				"data" : aMap,
 				"context" : aDataContext
 				};
 				
-				if (aBreakCondition != undefined && this.processBreakCondition(newContext, aBreakCondition, aElement, aProcessor)) {
-					return;
-				}
+				if (aBreakCondition != undefined && this.__break(newContext, aBreakCondition, aElement, aProcessor))
+					return;				
 				
+				this.__computeContent(newContent, newContext, aElement, aProcessor);
 				i++;
-				this.processNewContent(newContent, newContext, aElement, aProcessor);
-				newContext[aVarname] = undefined;
-				newContext[aStatusName] = undefined;
 			}
 		};
 		
-		Foreach.prototype.processBreakCondition = function(aContext, aBreakCondition, aElement, aProcessor) {
-			var expressionResolver = aprocessor.resolver || new de.titus.jstl.ExpressionResolver();
-			var expressionResult = expressionResolver.resolveExpression(aBreakCondition, aContext, false);
-			if (typeof expressionResult === "function")
-				expressionResult = expressionResult(aElement, aContext, aProcessor);
+		Foreach.prototype.__break = function(aContext, aBreakCondition, aElement, aProcessor) {
+			var expression = aProcessor.resolver.resolveExpression(aBreakCondition, aContext, false);
+			if (typeof expression === "function")
+				expression = expression(aElement, aContext, aProcessor);
 			
-			return expressionResult == true || expressionResult == "true";
+			return expression == true || expression == "true";
 		};
 		
-		Foreach.prototype.processNewContent = function(aNewContent, aNewContext, aElement, aProcessor) {
+		Foreach.prototype.__computeContent = function(aNewContent, aNewContext, aElement, aProcessor) {
 			aProcessor.compute(aNewContent, aNewContext);
 			aElement.append(aNewContent.contents());
 		};
 		
-		Foreach.prototype.getVarname = function(aElement, aProcessor) {
-			var varname = aElement.attr(aProcessor.config.attributePrefix + this.attributeName + "-var");
-			if (varname == undefined)
-				return "itemVar";
-			
-			return varname;
-		};
-		
-		Foreach.prototype.getStatusName = function(aElement, aProcessor) {
-			var statusName = aElement.attr(aProcessor.config.attributePrefix + this.attributeName + "-status");
-			if (statusName == undefined)
-				return "statusVar";
-			
-			return statusName;
-		};
-		
-		Foreach.prototype.getRepeatableContent = function(aElement) {
-			return $("<div>").append(aElement.contents());
+		Foreach.prototype.__template = function(aElement) {			
+			var template = aElement.data("de.titus.jstl.functions.Foreach.Template");
+			if(template == undefined){
+				template = $("<div>").append(aElement.contents());
+				aElement.data("de.titus.jstl.functions.Foreach.Template", template);
+			}
+			return template;
 		};
 		
 		de.titus.jstl.functions.Foreach = Foreach;
