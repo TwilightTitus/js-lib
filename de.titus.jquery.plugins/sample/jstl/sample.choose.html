@@ -8,16 +8,16 @@
 <link type="text/css" href="style.css" rel="stylesheet" />
 </head>
 <body logging-properties='{"remote":{"url":"logging.properties.json"}}'>
-	<div id="test" jstl-load="load" jstl-success="success"
-		jstl-fail="function(){alert('fail')}">
+	<div id="test" data-jstl-load="load" data-jstl-success="success"
+		data-jstl-fail="function(){alert('fail')}">
 		
 
 		<div>
 			Choose test
-			<div jstl-choose="">
-				<div jstl-when="false">when 1</div>
-				<div jstl-when='false'>when 2</div>
-				<div jstl-otherwise="">otherwise</div>
+			<div data-jstl-choose="">
+				<div data-jstl-when="false">when 1</div>
+				<div data-jstl-when='false'>when 2</div>
+				<div data-jstl-otherwise="">otherwise</div>
 			</div>
 		</div>
 	</div>
@@ -54,7 +54,7 @@
 	        var data = {
 	        test : "text",
 	        "boolean" : false,
-	        "jstlTemplate" : "jstl-template.html",
+	        "jstlTemplate" : "data-jstl-template.html",
 	        "jstlList" : [] };
 	        
 	        for (var i = 0; i < 10; i++) {

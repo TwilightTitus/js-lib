@@ -1,6 +1,6 @@
 de.titus.core.Namespace.create("de.titus.jstl.functions.Databind", function() {
 	var Databind = function() {};
-	Databind.prototype = new de.titus.jstl.IFunction("databind");
+	Databind.prototype = new de.titus.jstl.IFunction("jstlDatabind");
 	Databind.prototype.constructor = Databind;
 	
 	/**********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************
@@ -16,7 +16,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Databind", function() {
 		if (Databind.LOGGER.isDebugEnabled())
 			Databind.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
 		
-		var expressionResolver = aProcessor.expressionResolver || new de.titus.core.ExpressionResolver();
+		var expressionResolver = aProcessor.resolver || new de.titus.core.ExpressionResolver();
 		
 		var varname = this.getVarname(aElement, aDataContext, aProcessor, expressionResolver);
 		if (varname != undefined && varname.trim().length != 0) {

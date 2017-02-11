@@ -1,55 +1,38 @@
 (function($) {
-	de.titus.core.Namespace.create("de.titus.jquery.jstl.plugin", function() {
-		
-		/**
-		 * <code>
-		 * config: {
-		 * "data": dataContext,
-		 * "onLoad": function(){},
-		 * "onSuccess":function(){},
-		 * "onFail": function(){},
-		 * "attributePrefix" : "jstl-" 
-		 * }
-		 * </code>
-		 */
-		
-		$.fn.jstl = function(/* config */aConfig) {
+	"use strict";
+	de.titus.core.Namespace.create("de.titus.jquery.jstl.plugin", function() {		
+		$.fn.jstl = function(aContext) {
 			if (this.length == 0)
 				return;
 			else if (this.length > 1) {
 				return this.each(function() {
-					return $(this).jstl(aConfig);
+					return $(this).jstl(aContext);
 				});
 			} else {
-				var config = {
-					"element" : this
-				};
-				config = $.extend(config, aConfig);
-				var processor = new de.titus.jstl.Processor(config);
+				var processor = new de.titus.jstl.Processor(this, aContext);
 				processor.compute();
 				return processor;
 			}
 		};
 		
-		$.fn.jstlAsync = function(/* config */aConfig) {
+		$.fn.jstlAsync = function(aContext) {
 			if (this.length == 0)
 				return;
 			else if (this.length > 1) {
 				return this.each(function() {
-					return $(this).jstlAsync(aConfig);
+					return $(this).jstlAsync(aContext);
 				});
 			} else {
-				var config = $.extend({"element" : this}, aConfig);
-				setTimeout((function(aConfig){
-						var processor = new de.titus.jstl.Processor(aConfig);
+				setTimeout((function(aElement, aContext){
+						var processor = new de.titus.jstl.Processor(aElement, aContext);
 						processor.compute();
-					}).bind(null, config), 10);
+					}).bind(null, this, aContext), 10);
 				return this;
 			}
 		};
 		
 		$(document).ready(function() {
-			$("[jstl-autorun]").jstlAsync();
+			$("[data-jstl-autorun]").jstlAsync();
 		});
 		
 	});

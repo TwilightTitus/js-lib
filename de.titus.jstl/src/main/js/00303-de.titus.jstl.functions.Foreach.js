@@ -3,7 +3,7 @@
 	de.titus.core.Namespace.create("de.titus.jstl.functions.Foreach", function() {
 		var Foreach = function() {
 		};
-		Foreach.prototype = new de.titus.jstl.IFunction("foreach");
+		Foreach.prototype = new de.titus.jstl.IFunction("jstlForeach");
 		Foreach.prototype.constructor = Foreach;
 		
 		/***********************************************************************
@@ -20,9 +20,9 @@
 				Foreach.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
 			
 			var processor = aProcessor || new de.titus.jstl.Processor();
-			var expressionResolver = processor.expressionResolver || new de.titus.core.ExpressionResolver();
+			var expressionResolver = processor.resolver || new de.titus.core.ExpressionResolver();
 			
-			var expression = aElement.attr(processor.config.attributePrefix + this.attributeName);
+			var expression = aElement.data(this.attributeName);
 			if (expression != undefined) {
 				this.internalProcession(expression, aElement, aDataContext, processor, expressionResolver);
 				return new de.titus.jstl.FunctionResult(false, false);
@@ -114,7 +114,7 @@
 		};
 		
 		Foreach.prototype.processBreakCondition = function(aContext, aBreakCondition, aElement, aProcessor) {
-			var expressionResolver = aProcessor.expressionResolver || new de.titus.jstl.ExpressionResolver();
+			var expressionResolver = aprocessor.resolver || new de.titus.jstl.ExpressionResolver();
 			var expressionResult = expressionResolver.resolveExpression(aBreakCondition, aContext, false);
 			if (typeof expressionResult === "function")
 				expressionResult = expressionResult(aElement, aContext, aProcessor);

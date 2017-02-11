@@ -1,6 +1,6 @@
 de.titus.core.Namespace.create("de.titus.jstl.functions.Data", function() {
 	var Data = function() {};
-	Data.prototype = new de.titus.jstl.IFunction("data");
+	Data.prototype = new de.titus.jstl.IFunction("jstlData");
 	Data.prototype.constructor = Data;
 	
 	/**********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************
@@ -17,9 +17,9 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Data", function() {
 			Data.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
 		
 		var processor = aProcessor || new de.titus.jstl.Processor();
-		var expressionResolver = processor.expressionResolver || new de.titus.core.ExpressionResolver();
+		var expressionResolver = processor.resolver || new de.titus.core.ExpressionResolver();
 		
-		var expression = aElement.attr(processor.config.attributePrefix + this.attributeName);
+		var expression = aElement.data(this.attributeName);
 		if (expression != undefined) {
 			this.internalProcessing(expression, aElement, aDataContext, processor, expressionResolver);
 		}

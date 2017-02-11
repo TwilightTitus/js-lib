@@ -19,9 +19,9 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Include", function() {
 			Include.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
 		
 		var processor = aProcessor || new de.titus.jstl.Processor();
-		var expressionResolver = processor.expressionResolver || new de.titus.jstl.ExpressionResolver();
+		var expressionResolver = processor.resolver || new de.titus.core.ExpressionResolver();
 		
-		var expression = aElement.attr(processor.config.attributePrefix + this.attributeName);
+		var expression = aElement.data(this.attributeName);
 		if (expression != undefined) {
 			this.internalProcessing(expression, aElement, aDataContext, processor, expressionResolver);
 		}

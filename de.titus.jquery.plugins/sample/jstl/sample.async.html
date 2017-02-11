@@ -6,13 +6,13 @@
 <script src="../../dist/2.17.0/de.titus.jquery.plugins.2.17.0.min.js" type="text/javascript"></script>
 <link type="text/css" href="style.css" rel="stylesheet" />
 </head>
-<body logging-properties='{"remote":{"url":"logging.properties.json"}}' jstl-autorun="" jstl-start="alert('start')" jstl-success="console.log('start finished')">
-	<jstl jstl-data="jstl-remote.data.json" jstl-data-mode="remote"/>
+<body logging-properties='{"remote":{"url":"logging.properties.json"}}' data-jstl-autorun="" data-jstl-start="alert('start')" data-jstl-success="console.log('start finished')">
+	<jstl data-jstl-data="data-jstl-remote.data.json" data-jstl-data-mode="remote"/>
 	
-	<div jstl-include="jstl-remote.data.tpl.html" jstl-async="" jstl-success="function(){console.log('async 1');}"></div>
-	<div jstl-include="jstl-remote.data.tpl.html" jstl-async="" jstl-success="function(){console.log('async 2');}"></div>
-	<div jstl-include="jstl-remote.data.tpl.html" jstl-async="" jstl-success="function(){console.log('async 3');}"></div>
-	<div jstl-include="jstl-remote.data.tpl.html" jstl-async="" jstl-success="function(){console.log('async 4');}"></div>
+	<div data-jstl-include="data-jstl-remote.data.tpl.html" data-jstl-async="" data-jstl-success="function(){console.log('async 1');}"></div>
+	<div data-jstl-include="data-jstl-remote.data.tpl.html" data-jstl-async="" data-jstl-success="function(){console.log('async 2');}"></div>
+	<div data-jstl-include="data-jstl-remote.data.tpl.html" data-jstl-async="" data-jstl-success="function(){console.log('async 3');}"></div>
+	<div data-jstl-include="data-jstl-remote.data.tpl.html" data-jstl-async="" data-jstl-success="function(){console.log('async 4');}"></div>
 
 	<div id="log">
 		<div>Logs</div>

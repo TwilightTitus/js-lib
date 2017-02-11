@@ -8,13 +8,13 @@
 <link type="text/css" href="style.css" rel="stylesheet" />
 </head>
 <body logging-properties='{"remote":{"url":"logging.properties.json"}}'>
-	<div id="test" jstl-load="load" jstl-success="success"
-		jstl-fail="function(){alert('fail')}">
+	<div id="test" data-jstl-load="load" data-jstl-success="success"
+		data-jstl-fail="function(){alert('fail')}">
 		<div>
 			foreach on remote data
-			<div jstl-data="data-xml.xml" jstl-data-mode="remote" jstl-data-datatype="xml"
-				jstl-foreach="${data.key}"
-				jstl-foreach-var="listItem" jstl-foreach-status="listStatus">
+			<div data-jstl-data="data-xml.xml" data-jstl-data-mode="remote" data-jstl-data-datatype="xml"
+				data-jstl-foreach="${data.key}"
+				data-jstl-foreach-var="listItem" data-jstl-foreach-status="listStatus">
 				<span>${listStatus.index} </span> <span>name: ${listItem["@attributes"]["name"]}</span> <span>value: ${listItem.text}</span> <br />
 			</div>
 		</div>
@@ -56,7 +56,7 @@
 	        var data = {
 	        test : "text",
 	        "boolean" : false,
-	        "jstlTemplate" : "jstl-template.html",
+	        "jstlTemplate" : "data-jstl-template.html",
 	        "jstlList" : []
 	        };
 	        

@@ -1,7 +1,7 @@
-<h3 jstl-if="${content.headline != undefined && content.headline != ''}">
+<h3 data-jstl-if="${content.headline != undefined && content.headline != ''}">
 	<small>${content.headline}</small>
 </h3>
-<pre jstl-choose><code class="${content.codeType}" jstl-when="${typeof content.content === 'string'}" >${content.content}</code><code class="${content.codeType}" jstl-otherwise=""	jstl-foreach="${content.content}" jstl-foreach-var="text">${text + "\n"}</code></pre>
-<div jstl-if="${content.subcontent != undefined && content.subcontent != ''}">
+<pre data-jstl-choose><code class="${content.codeType}" data-jstl-when="${typeof content.content === 'string'}" >${content.content}</code><code class="${content.codeType}" data-jstl-otherwise=""	data-jstl-foreach="${content.content}" data-jstl-foreach-var="text">${text + "\n"}</code></pre>
+<div data-jstl-if="${content.subcontent != undefined && content.subcontent != ''}">
 	<small>${content.subcontent}</small>
 </div>

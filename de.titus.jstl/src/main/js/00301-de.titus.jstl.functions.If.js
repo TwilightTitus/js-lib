@@ -1,7 +1,7 @@
 (function() {
 	de.titus.core.Namespace.create("de.titus.jstl.functions.If", function() {
 		var If = function() {};
-		If.prototype = new de.titus.jstl.IFunction("if");
+		If.prototype = new de.titus.jstl.IFunction("jstlIf");
 		If.prototype.constructor = If;
 		
 		/***********************************************************************
@@ -14,9 +14,9 @@
 				If.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
 			
 			var processor = aProcessor || new de.titus.jstl.Processor();
-			var expressionResolver = processor.expressionResolver || new de.titus.core.ExpressionResolver();
+			var expressionResolver = processor.resolver || new de.titus.core.ExpressionResolver();
 			
-			var expression = aElement.attr(processor.config.attributePrefix + this.attributeName);
+			var expression = aElement.data(this.attributeName);
 			if (expression != undefined) {
 				var expressionResult = expressionResolver.resolveExpression(expression, aDataContext, false);
 				if (typeof expressionResult === "function")

@@ -17,7 +17,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.AttributeContent", funct
 			AttributeContent.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
 		
 		var processor = aProcessor || new de.titus.jstl.Processor();
-		var expressionResolver = processor.expressionResolver || new de.titus.core.ExpressionResolver();
+		var expressionResolver = processor.resolver || new de.titus.core.ExpressionResolver();
 		if (aElement.length == 1) {
 			var attributes = aElement[0].attributes || [];
 			for (var i = 0; i< attributes.length; i++) {

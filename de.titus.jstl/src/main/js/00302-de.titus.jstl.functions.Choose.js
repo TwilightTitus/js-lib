@@ -1,6 +1,6 @@
 de.titus.core.Namespace.create("de.titus.jstl.functions.Choose", function() {
 	var Choose = function() {};
-	Choose.prototype = new de.titus.jstl.IFunction("choose");
+	Choose.prototype = new de.titus.jstl.IFunction("jstlChoose");
 	Choose.prototype.constructor = Choose;
 	
 	/***************************************************************************
@@ -16,9 +16,9 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Choose", function() {
 			Choose.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
 		
 		var processor = aProcessor || new de.titus.jstl.Processor();
-		var expressionResolver = processor.expressionResolver || new de.titus.core.ExpressionResolver();
+		var expressionResolver = processor.resolver || new de.titus.core.ExpressionResolver();
 		
-		var expression = aElement.attr(processor.config.attributePrefix + this.attributeName);
+		var expression = aElement.data(this.attributeName);
 		if (expression != undefined) {
 			
 			this.processChilds(aElement, aDataContext, processor, expressionResolver);

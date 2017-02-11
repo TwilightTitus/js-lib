@@ -16,8 +16,8 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.TextContent", function()
 			TextContent.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
 		
 		var processor = aProcessor || new de.titus.jstl.Processor();
-		var expressionResolver = processor.expressionResolver || new de.titus.core.ExpressionResolver();
-		var ignore = aElement.attr(processor.config.attributePrefix + "text-ignore");
+		var expressionResolver = processor.resolver || new de.titus.core.ExpressionResolver();
+		var ignore = aElement.data("jstlTextIgnore");
 		
 		if (ignore != true || ignore != "true") {
 			
@@ -79,7 +79,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.TextContent", function()
 		
 		var trimLength = aBaseElement.attr(aProcessor.config.attributePrefix + "text-trim-length");
 		if (trimLength != undefined && trimLength != "") {
-			trimLength = aProcessor.expressionResolver.resolveExpression(trimLength, aDataContext, "-1");
+			trimLength = aprocessor.resolver.resolveExpression(trimLength, aDataContext, "-1");
 			trimLength = parseInt(trimLength);
 			if (trimLength && trimLength > 0)
 				text = de.titus.core.StringUtils.trimTextLength(text, trimLength);
@@ -87,7 +87,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.TextContent", function()
 		
 		var preventformat = aBaseElement.attr(aProcessor.config.attributePrefix + "text-prevent-format");
 		if (preventformat != undefined && preventformat != "false") {
-			preventformat = preventformat == "" || aProcessor.expressionResolver.resolveExpression(preventformat, aDataContext, true) || true;
+			preventformat = preventformat == "" || aprocessor.resolver.resolveExpression(preventformat, aDataContext, true) || true;
 			if (preventformat == "true" || preventformat == true) {
 				text = de.titus.core.StringUtils.formatToHtml(text);
 				addAsHtml = true;

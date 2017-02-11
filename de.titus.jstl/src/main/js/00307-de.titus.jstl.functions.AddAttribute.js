@@ -1,6 +1,6 @@
 de.titus.core.Namespace.create("de.titus.jstl.functions.AddAttribute", function() {
 	var AddAttribute = function() {};
-	AddAttribute.prototype = new de.titus.jstl.IFunction("add-attribute");
+	AddAttribute.prototype = new de.titus.jstl.IFunction("jstlAddAttribute");
 	AddAttribute.prototype.constructor = AddAttribute;
 	
 	/***************************************************************************
@@ -17,9 +17,9 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.AddAttribute", function(
 			AddAttribute.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
 		
 		var processor = aProcessor || new de.titus.jstl.Processor();
-		var expressionResolver = processor.expressionResolver || new de.titus.core.ExpressionResolver();
+		var expressionResolver = processor.resolver || new de.titus.core.ExpressionResolver();
 		
-		var expression = aElement.attr(processor.config.attributePrefix + this.attributeName);
+		var expression = aElement.data(this.attributeName);
 		if (expression != undefined) {
 			
 			var expressionResult = expressionResolver.resolveExpression(expression, aDataContext, false);
