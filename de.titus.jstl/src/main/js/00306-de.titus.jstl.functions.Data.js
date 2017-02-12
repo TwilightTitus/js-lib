@@ -76,7 +76,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Data", function() {
 	Data.prototype.__data = function(aNewData, aVarname, aDataContext, aProcessor) {
 		if (Data.LOGGER.isDebugEnabled())
 			Data.LOGGER.logDebug("execute __data(" + aNewData + ", " + aVarname + ", " + aDataContext + ", " + aProcessor + ")");
-		if (aVarname)
+		if (!aVarname)
 			$.extend(true, aDataContext, aNewData);
 		else
 			aDataContext[aVarname] = aNewData;

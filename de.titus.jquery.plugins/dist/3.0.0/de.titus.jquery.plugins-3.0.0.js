@@ -1872,7 +1872,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Data", function() {
 	Data.prototype.__data = function(aNewData, aVarname, aDataContext, aProcessor) {
 		if (Data.LOGGER.isDebugEnabled())
 			Data.LOGGER.logDebug("execute __data(" + aNewData + ", " + aVarname + ", " + aDataContext + ", " + aProcessor + ")");
-		if (aVarname)
+		if (!aVarname)
 			$.extend(true, aDataContext, aNewData);
 		else
 			aDataContext[aVarname] = aNewData;
@@ -2111,7 +2111,7 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Eventbind", function() {
 		
 		Processor.prototype.compute = function(aElement, aContext) {
 			if (Processor.LOGGER.isDebugEnabled())
-				Processor.LOGGER.logDebug("execute compute(" + aElement + ", " + aDataContext + ")");
+				Processor.LOGGER.logDebug("execute compute(" + aElement + ", " + aContext + ")");
 						
 			if (!aElement)
 				this.element.trigger(de.titus.jstl.Constants.EVENTS.onStart, [this.context, this]);
@@ -2200,14 +2200,13 @@ de.titus.core.Namespace.create("de.titus.jstl.functions.Eventbind", function() {
 			return result;
 		};
 		
-		Processor.prototype.__computeChildren = /* boolean */function(aElement, aContext) {
+		Processor.prototype.__computeChildren = function(aElement, aContext) {
 			if (Processor.LOGGER.isDebugEnabled())
 				Processor.LOGGER.logDebug("execute __computeChildren(" + aElement + ", " + aContext + ")");
 			
-			var processor = this;
-			aElement.children().each(function(){
-				processor.compute($(this), aContext);
-			});
+			var children = aElement.children() || [];
+			for(var i = 0; i < children.length; i++)
+				this.compute($(children[i]), aContext);
 		};	
 		
 		Processor.prototype.__executing = function(aFunction, aElement) {
