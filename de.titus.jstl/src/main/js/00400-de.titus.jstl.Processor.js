@@ -22,18 +22,9 @@
 						
 			if (!aElement)
 				this.element.trigger(de.titus.jstl.Constants.EVENTS.onStart, [this.context, this]);
-			if (this.__isProcessable(aElement)){
-				this.__appendEvents(aElement);
-				this.__computeElement(aElement, aContext);
-			}
+			
+			this.__computeElement(aElement, aContext);
 		};
-		
-		Processor.prototype.__appendEvents = function(aElement) {
-			var element = aElement || this.element;			
-			element.one(de.titus.jstl.Constants.EVENTS.onLoad, Processor.STATICEVENTHANDLER.bind(null, element.data("jstlLoad")));
-			element.one(de.titus.jstl.Constants.EVENTS.onSuccess, Processor.STATICEVENTHANDLER.bind(null, element.data("jstlSuccess")));
-			element.one(de.titus.jstl.Constants.EVENTS.onFail, Processor.STATICEVENTHANDLER.bind(null, element.data("jstlFail")));		
-		};		
 		
 		Processor.prototype.__computeElement = function(aElement, aDataContext) {
 			var element = aElement || this.element;
@@ -41,16 +32,11 @@
 			dataContext.$element = element;
 			
 			element.trigger(de.titus.jstl.Constants.EVENTS.onLoad, [dataContext, this]);
-			var result = this.__executeFunction(element, dataContext);
-			if (result.processChilds) {
-				
-				var ignoreChilds = element.data("jstlIgnoreChilds");
-				if (ignoreChilds && ignoreChilds != "")
-					ignoreChilds = de.titus.core.SpecialFunctions.doEvalWithContext(ignoreChilds,dataContext, true);
-				
-				if (ignoreChilds != true && ignoreChilds != "true")
-					this.__computeChildren(element, dataContext);
-			}
+			var executeChain = new de.titus.jstl.ExecuteChain(element, dataContext, this, !aElement);
+			executeChain.nextTask();
+			
+			if (executeChain.isPreventChilds())
+					this.__computeChildren(element, executeChain.context);
 			
 			if (element.tagName() == "jstl" && element.contents().length > 0)
 				element.replaceWith(element.contents());
@@ -59,53 +45,7 @@
 			
 			if (!aElement)
 				$(document).ready(Processor.prototype.onReady.bind(this));			
-		};
-		
-		Processor.prototype.__isProcessable = function(aElement, aContext) {
-			var element = aElement || this.element;
-			var tagname = element.tagName();
-			if (tagname != undefined && tagname == "br")
-				return false;			
-			
-			if (!aElement) {								
-				var ignore = element.data("jstlIgnore");
-				if (ignore && ignore != "") {
-					ignore = de.titus.core.SpecialFunctions.doEvalWithContext(ignore, dataContext, false);
-					if (ignore == "" || ignore == true || ignore == "true")
-						return false;
-				}				
-				
-				var async = element.data("jstlAsync");
-				if (async && async != "") {
-					async = de.titus.core.SpecialFunctions.doEvalWithContext(async, dataContext, false);					
-					if (async == "" || async == true || async == "true") {
-						this.onReady(Processor.prototype.__compute.bind(this, element, aContext || this.context), 1);
-						return false;
-					}
-				}
-			}
-			
-			return true;
-		};
-		
-		Processor.prototype.__executeFunction = function(aElement, aDataContext) {
-			if (Processor.LOGGER.isDebugEnabled())
-				Processor.LOGGER.logDebug("execute internalExecuteFunction(" + aElement + ", " + aDataContext + ")");
-			
-			var functions = de.titus.jstl.FunctionRegistry.getInstance().functions;
-			var result = new de.titus.jstl.FunctionResult();
-			for (var i = 0; i < functions.length; i++) {
-				var functionObject = functions[i];
-				if (this.__executing(functionObject, aElement)) {
-					var newResult = this.executeFunction(functionObject, aElement, aDataContext, result) || new de.titus.jstl.FunctionResult();
-					result.runNextFunction = newResult.runNextFunction && result.runNextFunction;
-					result.processChilds = newResult.processChilds && result.processChilds;
-					if (!result.runNextFunction)
-						return result;
-				}
-			}
-			return result;
-		};
+		};		
 		
 		Processor.prototype.__computeChildren = function(aElement, aContext) {
 			if (Processor.LOGGER.isDebugEnabled())
@@ -114,27 +54,8 @@
 			var children = aElement.children() || [];
 			for(var i = 0; i < children.length; i++)
 				this.compute($(children[i]), aContext);
-		};	
+		};		
 		
-		Processor.prototype.__executing = function(aFunction, aElement) {
-			if (Processor.LOGGER.isDebugEnabled())
-				Processor.LOGGER.logDebug("execute __executeFunction(" + aFunction + ", " + aElement + ")");
-			
-			return aElement.data(aFunction.attributeName) != undefined;
-		};
-		
-		Processor.prototype.executeFunction = function(aFunction, aElement, aDataContext, aCurrentFunctionResult) {
-			if (Processor.LOGGER.isDebugEnabled())
-				Processor.LOGGER.logDebug("execute executeFunction(" + aFunction + ", " + aElement + ", " + aDataContext + ", " + aCurrentFunctionResult + ")");
-			
-			var result = aFunction.run(aElement, aDataContext, this);
-			if (result != undefined) {
-				aCurrentFunctionResult.runNextFunction = aCurrentFunctionResult.runNextFunction && result.runNextFunction;
-				aCurrentFunctionResult.processChilds = aCurrentFunctionResult.processChilds && result.processChilds;
-			}
-			
-			return aCurrentFunctionResult;
-		};
 		
 		Processor.prototype.onReady = function(aFunction) {
 			if (aFunction) {
