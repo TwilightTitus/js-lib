@@ -6,7 +6,7 @@
 		    
 		    TASK : function(aElement, aDataContext, aProcessor, aTaskChain) {
 			    if (Data.LOGGER.isDebugEnabled())
-				    Data.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
+				    Data.LOGGER.logDebug("TASK");
 			    
 			    var expression = aElement.data("jstlData");
 			    if (expression) {
@@ -17,7 +17,7 @@
 					    if (!varname)
 						    aTaskChain.updateContext(data, true);
 					    else
-						    aTaskChain.context[varname] = data;					    
+						    aTaskChain.context[varname] = data;
 				    }
 			    }
 			    
@@ -58,7 +58,7 @@
 					        result = de.titus.core.Converter.xmlToJson(newData);
 			        };
 			        
-			        $.ajax(ajaxSettings);
+			        var xhr = $.ajax(ajaxSettings);
 			        
 			        return result;
 		        },

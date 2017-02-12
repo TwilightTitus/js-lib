@@ -1474,12 +1474,6 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 		de.titus.jstl.ExecuteChain = ExecuteChain;
 	});
 })($);
-de.titus.core.Namespace.create("de.titus.jstl.FunctionResult", function() {	
-	de.titus.jstl.FunctionResult = function(runNextFunction, processChilds){
-		this.runNextFunction = runNextFunction || runNextFunction == undefined;
-		this.processChilds = processChilds || processChilds == undefined;
-	};	
-});
 (function($) {
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.jstl.functions.If", function() {
@@ -1487,7 +1481,7 @@ de.titus.core.Namespace.create("de.titus.jstl.FunctionResult", function() {
 		    LOGGER : de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.If"),
 		    TASK : function(aElement, aDataContext, aProcessor, aExecuteChain) {
 			    if (If.LOGGER.isDebugEnabled())
-				    If.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
+				    If.LOGGER.logDebug("TASK");
 			    
 			    var expression = aElement.data("jstlIf");
 			    if (expression != undefined) {
@@ -1521,7 +1515,7 @@ de.titus.core.Namespace.create("de.titus.jstl.FunctionResult", function() {
 		
 		TASK : function(aElement, aDataContext, aProcessor, aExecuteChain) {
 			if (Preprocessor.LOGGER.isDebugEnabled())
-				Preprocessor.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
+				Preprocessor.LOGGER.logDebug("TASK");
 			
 			var element = aElement || this.element;
 			var tagname = element.tagName();
@@ -1765,9 +1759,9 @@ de.titus.core.Namespace.create("de.titus.jstl.FunctionResult", function() {
 				    
 				    var contenttype = aElement.data("jstlTextType") || "text";
 				    aElement.contents().filter(function() {
-					    return Text.nodeType === 3 && Text.Text != undefined && Text.Text.trim() != "";
+					    return this.nodeType === 3 && this.textContent != undefined && this.textContent.trim() != "";
 				    }).each(function() {
-					    var text = Text.Text;
+					    var text = this.textContent;
 					    if (text) {
 						    text = aProcessor.resolver.resolveText(text, aDataContext);
 						    var contentFunction = Text.CONTENTTYPE[contenttype];
@@ -1800,9 +1794,9 @@ de.titus.core.Namespace.create("de.titus.jstl.FunctionResult", function() {
 		        },
 		        "json" : function(aNode, aText, aBaseElement, aProcessor, aDataContext) {
 			        if (typeof aText === "string")
-				        aNode.Text = aText;
+				        aNode.textContent = aText;
 			        else
-				        aNode.Text = JSON.stringify(aText);
+				        aNode.textContent = JSON.stringify(aText);
 		        },
 		        "text" : function(aNode, aText, aBaseElement, aProcessor, aDataContext) {
 			        var text = aText;
@@ -1828,7 +1822,7 @@ de.titus.core.Namespace.create("de.titus.jstl.FunctionResult", function() {
 			        if (addAsHtml)
 				        $(aNode).replaceWith($.parseHTML(text));
 			        else
-				        aNode.Text = text;
+				        aNode.textContent = text;
 		        }
 		    }
 		};
@@ -1881,7 +1875,7 @@ de.titus.core.Namespace.create("de.titus.jstl.FunctionResult", function() {
 		    
 		    TASK : function(aElement, aDataContext, aProcessor, aTaskChain) {
 			    if (Data.LOGGER.isDebugEnabled())
-				    Data.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
+				    Data.LOGGER.logDebug("TASK");
 			    
 			    var expression = aElement.data("jstlData");
 			    if (expression) {
@@ -1892,7 +1886,7 @@ de.titus.core.Namespace.create("de.titus.jstl.FunctionResult", function() {
 					    if (!varname)
 						    aTaskChain.updateContext(data, true);
 					    else
-						    aTaskChain.context[varname] = data;					    
+						    aTaskChain.context[varname] = data;
 				    }
 			    }
 			    
@@ -1933,7 +1927,7 @@ de.titus.core.Namespace.create("de.titus.jstl.FunctionResult", function() {
 					        result = de.titus.core.Converter.xmlToJson(newData);
 			        };
 			        
-			        $.ajax(ajaxSettings);
+			        var xhr = $.ajax(ajaxSettings);
 			        
 			        return result;
 		        },
@@ -2337,7 +2331,7 @@ de.titus.core.Namespace.create("de.titus.jstl.javascript.polyfills", function() 
 		};
 		
 		$(document).ready(function() {
-			$("[data-jstl-autorun]").jstlAsync();
+			$("[data-jstl-autorun]").jstl();
 		});
 		
 	});

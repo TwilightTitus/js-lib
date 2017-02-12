@@ -15,9 +15,9 @@
 				    
 				    var contenttype = aElement.data("jstlTextType") || "text";
 				    aElement.contents().filter(function() {
-					    return Text.nodeType === 3 && Text.Text != undefined && Text.Text.trim() != "";
+					    return this.nodeType === 3 && this.textContent != undefined && this.textContent.trim() != "";
 				    }).each(function() {
-					    var text = Text.Text;
+					    var text = this.textContent;
 					    if (text) {
 						    text = aProcessor.resolver.resolveText(text, aDataContext);
 						    var contentFunction = Text.CONTENTTYPE[contenttype];
@@ -50,9 +50,9 @@
 		        },
 		        "json" : function(aNode, aText, aBaseElement, aProcessor, aDataContext) {
 			        if (typeof aText === "string")
-				        aNode.Text = aText;
+				        aNode.textContent = aText;
 			        else
-				        aNode.Text = JSON.stringify(aText);
+				        aNode.textContent = JSON.stringify(aText);
 		        },
 		        "text" : function(aNode, aText, aBaseElement, aProcessor, aDataContext) {
 			        var text = aText;
@@ -78,7 +78,7 @@
 			        if (addAsHtml)
 				        $(aNode).replaceWith($.parseHTML(text));
 			        else
-				        aNode.Text = text;
+				        aNode.textContent = text;
 		        }
 		    }
 		};

@@ -5,7 +5,7 @@
 		    LOGGER : de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.If"),
 		    TASK : function(aElement, aDataContext, aProcessor, aExecuteChain) {
 			    if (If.LOGGER.isDebugEnabled())
-				    If.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
+				    If.LOGGER.logDebug("TASK");
 			    
 			    var expression = aElement.data("jstlIf");
 			    if (expression != undefined) {

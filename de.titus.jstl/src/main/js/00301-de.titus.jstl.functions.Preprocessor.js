@@ -13,7 +13,7 @@
 		
 		TASK : function(aElement, aDataContext, aProcessor, aExecuteChain) {
 			if (Preprocessor.LOGGER.isDebugEnabled())
-				Preprocessor.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
+				Preprocessor.LOGGER.logDebug("TASK");
 			
 			var element = aElement || this.element;
 			var tagname = element.tagName();

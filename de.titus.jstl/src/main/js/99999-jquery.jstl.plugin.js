@@ -32,7 +32,7 @@
 		};
 		
 		$(document).ready(function() {
-			$("[data-jstl-autorun]").jstlAsync();
+			$("[data-jstl-autorun]").jstl();
 		});
 		
 	});
