@@ -15,7 +15,8 @@ de.titus.core.Namespace.create("de.titus.logging.MemoryAppender", function() {
 				"message": aMessage,
 				"exception": anException
 		};
-		
+		if(!window.MEMORY_APPENDER_LOG)
+			window.MEMORY_APPENDER_LOG = [];
 		window.MEMORY_APPENDER_LOG.push(log);
 	};
 });

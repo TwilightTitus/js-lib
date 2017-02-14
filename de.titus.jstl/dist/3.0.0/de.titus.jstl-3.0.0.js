@@ -19,15 +19,7 @@ de.titus.core.Namespace.create("de.titus.jstl.Constants", function() {
 		onFail : "jstl-on-fail",
 		onReady : "jstl-on-ready"
 		}
-	};
-	
-	de.titus.jstl.IFunction = function(){
-		
-	};
-	
-	de.titus.jstl.IFunction.prototype.run = function(){
-		
-	};
+	};	
 });
 de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 	
@@ -108,6 +100,24 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 })($);
 (function($) {
 	"use strict";
+	de.titus.core.Namespace.create("de.titus.jstl.functions.Children", function() {
+		var Children = de.titus.jstl.functions.Children = {
+		    LOGGER : de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.Children"),
+		    TASK : function(aElement, aContext, aProcessor, aTaskChain) {
+			    if (Children.LOGGER.isDebugEnabled())
+			    	Children.LOGGER.logDebug("TASK");
+			    
+			    
+			    if (!aTaskChain.isPreventChilds())
+			    	aElement.children().jstl(aContext);
+			    
+			    aTaskChain.nextTask();
+		    }
+		};
+	});
+})($);
+(function($) {
+	"use strict";
 	de.titus.core.Namespace.create("de.titus.jstl.functions.If", function() {
 		var If = de.titus.jstl.functions.If = {
 		    LOGGER : de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.If"),
@@ -135,61 +145,64 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 (function($) {
 	de.titus.core.Namespace.create("de.titus.jstl.functions.Preprocessor", function() {
 		de.titus.jstl.functions.Preprocessor = Preprocessor = {
-		LOGGER : de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.Preprocessor"),
-		
-		STATICEVENTHANDLER : function(aExpression, aEvent, aDataContext, aProcessor) {
-			if (aExpression && aExpression != "") {
-				var eventAction = aProcessor.resolver.resolveExpression(aExpression, aDataContext);
-				if (typeof eventAction === "function")
-					eventAction(aDataContext.$element, aDataContext, aProcessor);
-			}
-		},
-		
-		TASK : function(aElement, aDataContext, aProcessor, aExecuteChain) {
-			if (Preprocessor.LOGGER.isDebugEnabled())
-				Preprocessor.LOGGER.logDebug("TASK");
-			
-			var element = aElement || this.element;
-			var tagname = element.tagName();
-			if (tagname != undefined && tagname == "br")
-				return aExecuteChain.preventChilds();
-			
-			if (!aExecuteChain.root) {
-				var ignore = element.data("jstlIgnore");
-				if (ignore && ignore != "") {
-					ignore = aProcessor.resolver.resolveExpression(ignore, dataContext, false);
-					if (ignore == "" || ignore == true || ignore == "true")
-						return aExecuteChain.preventChilds();
-				}
-				
-				var async = element.data("jstlAsync");
-				if (async && async != "") {
-					async = aProcessor.resolver.resolveExpression(async, dataContext, false);
-					if (async == "" || async == true || async == "true") {
-						aProcessor.onReady(Processor.prototype.__compute.bind(this, element, aContext || this.context), 1);
-						return aExecuteChain.preventChilds();
-					}
-				}
-			}
-			
-			var ignoreChilds = aElement.data("jstlIgnoreChilds");
-			if (ignoreChilds && ignoreChilds != "")
-				ignoreChilds = aProcessor.resolver.resolveExpression(ignoreChilds, executeChain.context, true);
-			
-			if (ignoreChilds != true && ignoreChilds != "true")
-				aExecuteChain.preventChilds();
-			
-			Preprocessor.__appendEvents(aElement);
-			
-			aExecuteChain.nextTask();
-			
-		},
-		
-		__appendEvents : function(aElement) {
-			aElement.one(de.titus.jstl.Constants.EVENTS.onLoad, Preprocessor.STATICEVENTHANDLER.bind(null, aElement.data("jstlLoad")));
-			aElement.one(de.titus.jstl.Constants.EVENTS.onSuccess, Preprocessor.STATICEVENTHANDLER.bind(null, aElement.data("jstlSuccess")));
-			aElement.one(de.titus.jstl.Constants.EVENTS.onFail, Preprocessor.STATICEVENTHANDLER.bind(null, aElement.data("jstlFail")));
-		}
+		    LOGGER : de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.Preprocessor"),
+		    
+		    STATICEVENTHANDLER : function(aExpression, aEvent, aDataContext, aProcessor) {
+			    if (aExpression && aExpression != "") {
+				    var eventAction = aProcessor.resolver.resolveExpression(aExpression, aDataContext);
+				    if (typeof eventAction === "function")
+					    eventAction(aDataContext.$element, aDataContext, aProcessor);
+			    }
+		    },
+		    
+		    TASK : function(aElement, aDataContext, aProcessor, aExecuteChain) {
+			    if (Preprocessor.LOGGER.isDebugEnabled())
+				    Preprocessor.LOGGER.logDebug("TASK");
+			    
+			    var element = aElement || this.element;
+			    var tagname = element.tagName();
+			    if (tagname != undefined && tagname == "br")
+				    return aExecuteChain.preventChilds();
+			    
+			    if (!aExecuteChain.root) {
+				    var ignore = element.data("jstlIgnore");
+				    if (ignore && ignore != "") {
+					    ignore = aProcessor.resolver.resolveExpression(ignore, dataContext, false);
+					    if (ignore == "" || ignore == true || ignore == "true")
+						    return aExecuteChain.preventChilds();
+				    }
+				    
+				    var async = element.data("jstlAsync");
+				    if (async && async != "") {
+					    async = aProcessor.resolver.resolveExpression(async, dataContext, false);
+					    if (async == "" || async == true || async == "true") {
+						    aProcessor.onReady(Processor.prototype.__compute.bind(this, element, aContext || this.context), 1);
+						    return aExecuteChain.preventChilds();
+					    }
+				    }
+			    }
+			    
+			    var ignoreChilds = aElement.data("jstlIgnoreChilds");
+			    if (ignoreChilds && ignoreChilds != "")
+				    ignoreChilds = aProcessor.resolver.resolveExpression(ignoreChilds, executeChain.context, true);
+			    
+			    if (ignoreChilds == "" || ignoreChilds == true || ignoreChilds == "true")
+				    aExecuteChain.preventChilds();
+			    
+			    Preprocessor.__appendEvents(aElement);
+			    
+			    aExecuteChain.nextTask();
+			    
+		    },
+		    
+		    __appendEvents : function(aElement) {
+			    if (aElement.data("jstlLoad"))
+				    aElement.one(de.titus.jstl.Constants.EVENTS.onLoad, Preprocessor.STATICEVENTHANDLER.bind(null, aElement.data("jstlLoad")));
+			    if (aElement.data("jstlSuccess"))
+				    aElement.one(de.titus.jstl.Constants.EVENTS.onSuccess, Preprocessor.STATICEVENTHANDLER.bind(null, aElement.data("jstlSuccess")));
+			    if (aElement.data("jstlFail"))
+				    aElement.one(de.titus.jstl.Constants.EVENTS.onFail, Preprocessor.STATICEVENTHANDLER.bind(null, aElement.data("jstlFail")));
+		    }
 		
 		};
 		
@@ -206,23 +219,25 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 				    Choose.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
 			    
 			    var expression = aElement.data("jstlChoose");
-			    if (expression != undefined)
-				    this.processChilds(aElement, aDataContext, aProcessor, aProcessor.resolver);
+			    if (expression != undefined){
+			    	Choose.__compute(aElement, aDataContext, aProcessor, aProcessor.resolver);
+			    	aTaskChain.preventChilds();
+			    }
 			    
 			    aTaskChain.nextTask();
 		    },
 		    
-		    processChilds : function(aChooseElement, aDataContext, aProcessor, aExpressionResolver) {
+		    __compute : function(aChooseElement, aDataContext, aProcessor, aExpressionResolver) {
 			    if (Choose.LOGGER.isDebugEnabled())
 				    Choose.LOGGER.logDebug("execute processChilds(" + aChooseElement + ", " + aDataContext + ", " + aProcessor + ", " + aExpressionResolver + ")");
 			    
-			    var childs = aChooseElement.children();
 			    var resolved = false;
-			    childs.each(function() {
+			    aChooseElement.children().each(function() {
 				    var child = $(this);
-				    if (!resolved && Choose.processChild(aChooseElement, child, aDataContext, aProcessor, aExpressionResolver)) {
+				    if (!resolved && Choose.__computeChild(aChooseElement, child, aDataContext, aProcessor, aExpressionResolver)) {
 					    if (Choose.LOGGER.isTraceEnabled())
 						    Choose.LOGGER.logTrace("compute child: " + child);
+					    aProcessor.compute(child, aDataContext);
 					    resolved = true;
 				    } else {
 					    if (Choose.LOGGER.isTraceEnabled())
@@ -232,20 +247,19 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 			    });
 		    },
 		    
-		    processChild : function(aChooseElement, aElement, aDataContext, aProcessor, aExpressionResolver) {
+		    __computeChild : function(aChooseElement, aElement, aDataContext, aProcessor, aExpressionResolver) {
 			    if (Choose.LOGGER.isDebugEnabled())
 				    Choose.LOGGER.logDebug("execute processChild(" + aChooseElement + ", " + aElement + ", " + aDataContext + ", " + aProcessor + ", " + aExpressionResolver + ")");
 			    
-			    if (this.processWhenElement(aChooseElement, aElement, aDataContext, aProcessor, aExpressionResolver)) {
+			    if (Choose.__computeWhen(aChooseElement, aElement, aDataContext, aProcessor, aExpressionResolver))
 				    return true;
-			    } else if (this.processOtherwiseElement(aChooseElement, aElement, aDataContext, aProcessor, aExpressionResolver)) {
+			    else if (Choose.__computeOtherwise(aChooseElement, aElement, aDataContext, aProcessor, aExpressionResolver))
 				    return true;
-			    } else {
+			    else
 				    return false;
-			    }
 		    },
 		    
-		    processWhenElement : function(aChooseElement, aElement, aDataContext, aProcessor, aExpressionResolver) {
+		    __computeWhen : function(aChooseElement, aElement, aDataContext, aProcessor, aExpressionResolver) {
 			    if (Choose.LOGGER.isDebugEnabled())
 				    Choose.LOGGER.logDebug("execute processWhenElement(" + aChooseElement + ", " + aElement + ", " + aDataContext + ", " + aProcessor + ", " + aExpressionResolver + ")");
 			    
@@ -255,12 +269,11 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 			    return false;
 		    },
 		    
-		    processOtherwiseElement : function(aChooseElement, aElement, aDataContext, aProcessor, aExpressionResolver) {
+		    __computeOtherwise : function(aChooseElement, aElement, aDataContext, aProcessor, aExpressionResolver) {
 			    if (Choose.LOGGER.isDebugEnabled())
 				    Choose.LOGGER.logDebug("execute processOtherwiseElement(" + aChooseElement + ", " + aElement + ", " + aDataContext + ", " + aProcessor + ", " + aExpressionResolver + ")");
 			    
-			    var expression = aElement.data("jstlOtherwise");
-			    if (expression != undefined)
+			    if (aElement.data("jstlOtherwise") != undefined)
 				    return true;
 			    return false;
 		    }
@@ -282,8 +295,9 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 			    if (expression != undefined) {
 				    Foreach.__compute(expression, aElement, aDataContext, aProcessor, aProcessor.resolver);
 				    aTaskChain.preventChilds();
-			    } else
-				    aTaskChain.nextTask();
+			    }
+			    
+				aTaskChain.nextTask();
 		    },
 		    
 		    __compute : function(aExpression, aElement, aDataContext, aProcessor, anExpressionResolver) {
@@ -298,7 +312,7 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 			    
 			    var varName = aElement.data("jstlForeachVar") || "itemVar";
 			    var statusName = aElement.data("jstlForeachStatus") || "statusVar";
-			    var list = anExpressionResolver.resolveExpression(aExpression, aDataContext, aDataContext);
+			    var list = anExpressionResolver.resolveExpression(aExpression, aDataContext, undefined);
 			    
 			    var breakCondition = aElement.data("jstlForeachBreakCondition");
 			    if (Array.isArray(list))
@@ -310,21 +324,20 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 		    __list : function(aListData, aTemplate, aVarname, aStatusName, aBreakCondition, aElement, aDataContext, aProcessor) {
 			    var startIndex = aProcessor.resolver.resolveExpression(aElement.data("jstlForeachStartIndex"), aDataContext, 0) || 0;
 			    for (var i = startIndex; i < aListData.length; i++) {
-				    var newContent = aTemplate.clone();
-				    var newContext = $.extend({}, aDataContext);
-				    newContext[aVarname] = aListData[i];
-				    newContext[aStatusName] = {
+				    var template = aTemplate.clone();
+				    var context = $.extend({}, aDataContext);
+				    context[aVarname] = aListData[i];
+				    context[aStatusName] = {
 				        "index" : i,
 				        "number" : (i + 1),
 				        "count" : aListData.length,
 				        "data" : aListData,
 				        "context" : aDataContext
 				    };
-				    if (aBreakCondition != undefined && Foreach.__break(newContext, aBreakCondition, aElement, aProcessor)) {
+				    if (aBreakCondition != undefined && Foreach.__break(context, aBreakCondition, aElement, aProcessor))
 					    return;
-				    }
 				    
-				    Foreach.__computeContent(newContent, newContext, aElement, aProcessor);
+				    Foreach.__computeContent(template, context, aElement, aProcessor);
 			    }
 		    },
 		    
@@ -537,7 +550,7 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 		    
 		    MODES : {
 		        "direct" : function(anExpression, aElement, aVarname, aDataContext, aProcessor) {
-			        return aProcessor.resolver.resolveExpression(anExpression, aDataContext);
+			        return aProcessor.resolver.resolveExpression(anExpression, aDataContext, anExpression);
 		        },
 		        
 		        "remote" : function(anExpression, aElement, aVarname, aDataContext, aProcessor) {
@@ -577,49 +590,70 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.jstl.functions.Include", function() {
 		
-		 var Include =  de.titus.jstl.functions.Include = {
+		var Include = de.titus.jstl.functions.Include = {
 		    LOGGER : de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.Include"),
-		    
+		    CACHE : {},
 		    TASK : function(aElement, aDataContext, aProcessor, aTaskChain) {
 			    if (Include.LOGGER.isDebugEnabled())
 				    Include.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
 			    
-			    var expression = aElement.data("jstlIncude");
-			    if (expression) 
+			    var expression = aElement.data("jstlInclude");
+			    if (expression) {
 				    Include.__compute(expression, aElement, aDataContext, aProcessor);
+				    aTaskChain.preventChilds();
+			    }
 			    
 			    return aTaskChain.nextTask();
 		    },
 		    
+		    __cacheCallback : function(aElement, aIncludeMode, aProcessor, aContext, aTemplate) {
+			    Include.__include(aElement, aTemplate, aIncludeMode, aProcessor, aContext);
+		    },
+		    
+		    __executeCacheCallback : function(aUrl, aTemplate) {
+			    Include.CACHE[aUrl].template = $("<div/>").append(aTemplate);
+			    Include.CACHE[aUrl].onload = false;
+			    setTimeout(function() {
+				    var cache = Include.CACHE[aUrl];
+				    for (var i = 0; i < cache.callback.length; i++)
+					    cache.callback[i](cache.template);
+			    }, 1);
+		    },
+		    
 		    __compute : function(anIncludeExpression, aElement, aDataContext, aProcessor) {
-			    var url = aProcessor.resolve.resolveText(anIncludeExpression, aDataContext);
+			    var url = aProcessor.resolver.resolveText(anIncludeExpression, aDataContext);
 			    var disableCaching = url.indexOf("?") >= 0 || aElement.data("jstlIncludeCacheDisabled") != undefined;
-			    var content = "";
+			    var cache = undefined;
 			    if (!disableCaching)
-				    content = Include.cache[url];
+				    cache = Include.CACHE[url];
 			    
 			    var includeMode = Include.__mode(aElement, aDataContext, aProcessor);
-			    if (content)
-				    Include.__include(aElement, content, includeMode, aProcessor, aDataContext);
-			    else {
+			    if (cache) {
+				    if (cache.onload)
+					    cache.callback.push(Include.__cacheCallback.bind(null, aElement, includeMode, aProcessor, aDataContext));
+				    else
+					    setTimeout(function() {
+						    Include.__include(aElement, cache.template, includeMode, aProcessor, aDataContext);
+					    }, 1);
+			    } else {
+				    cache = Include.CACHE[url] = {
+				        onload : true,
+				        callback : [
+					        Include.__cacheCallback.bind(null, aElement, includeMode, aProcessor, aDataContext)
+				        ]
+				    };
 				    var options = Include.__options(aElement, aDataContext, aProcessor);
 				    var ajaxSettings = {
 				        'url' : de.titus.core.Page.getInstance().buildUrl(url),
-				        'async' : false,
+				        'async' : true,
 				        'cache' : aElement.data("jstlIncludeAjaxCacheDisabled") == undefined,
 				        "dataType" : "html"
 				    };
 				    ajaxSettings = $.extend(true, ajaxSettings, options);
-				    ajaxSettings.success = function(template) {
-					    var $template = $("<div/>").append(template);
-					    Include.cache[url] = $template;
-					    Include.__include(aElement, $template, includeMode, aProcessor, aDataContext);
-				    };
 				    
-				    ajaxSettings.error = function(error) {
-					    throw JSON.stringify(error);
-				    };
 				    $.ajax(ajaxSettings)
+				    	.done(Include.__executeCacheCallback.bind(null, ajaxSettings.url))
+				    	.fail(function(error) {throw JSON.stringify(error);});
 			    }
 		    },
 		    
@@ -650,7 +684,8 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 			    if (Include.LOGGER.isDebugEnabled())
 				    Include.LOGGER.logDebug("execute __include(" + aElement + ", " + aTemplate + ", " + aIncludeMode + ")");
 			    var content = aTemplate.clone();
-			    aProcessor.compute(content, aDataContext);
+			    
+			    content.jstl(aDataContext);
 			    
 			    if (aIncludeMode == "replace") {
 				    aElement.empty();
@@ -751,7 +786,7 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 })($);
 (function($, SpecialFunctions) {
 	"use strict";
-	de.titus.core.Namespace.create("de.titus.jstl.Processor", function() {		
+	de.titus.core.Namespace.create("de.titus.jstl.Processor", function() {
 		var Processor = function(aElement, aContext) {
 			this.element = aElement;
 			this.context = aContext || {};
@@ -759,22 +794,24 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 		};
 		
 		Processor.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.Processor");
-		Processor.STATICEVENTHANDLER = function(aExpression, aEvent, aDataContext, aProcessor){			
-			if(aExpression && aExpression != ""){
+		Processor.STATICEVENTHANDLER = function(aExpression, aEvent, aDataContext, aProcessor) {
+			if (aExpression && aExpression != "") {
 				var eventAction = aProcessor.resolver.resolveExpression(aExpression, aDataContext);
-				if(typeof eventAction === "function")
+				if (typeof eventAction === "function")
 					eventAction(aDataContext.$element, aDataContext, aProcessor);
 			}
 		};
 		
-		Processor.prototype.compute = function(aElement, aContext) {
+		Processor.prototype.compute = function(aElement, aContext, aCallback) {
 			if (Processor.LOGGER.isDebugEnabled())
 				Processor.LOGGER.logDebug("execute compute(" + aElement + ", " + aContext + ")");
-						
-			if (!aElement)
-				this.element.trigger(de.titus.jstl.Constants.EVENTS.onStart, [this.context, this]);
 			
-			this.__computeElement(aElement, aContext);
+			if (!aElement)
+				this.element.trigger(de.titus.jstl.Constants.EVENTS.onStart, [
+				        this.context, this
+				]);
+			
+			this.__computeElement(aElement, aContext, aCallback);
 		};
 		
 		Processor.prototype.__computeElement = function(aElement, aDataContext) {
@@ -782,49 +819,37 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 			var dataContext = aDataContext || this.context;
 			dataContext.$element = element;
 			
-			element.trigger(de.titus.jstl.Constants.EVENTS.onLoad, [dataContext, this]);
+			element.trigger(de.titus.jstl.Constants.EVENTS.onLoad, [
+			        dataContext, this
+			]);
 			var executeChain = new de.titus.jstl.ExecuteChain(element, dataContext, this, !aElement);
 			executeChain.nextTask();
-			
-			if (executeChain.isPreventChilds())
-					this.__computeChildren(element, executeChain.context);
 			
 			if (element.tagName() == "jstl" && element.contents().length > 0)
 				element.replaceWith(element.contents());
 			
-			element.trigger(de.titus.jstl.Constants.EVENTS.onSuccess, [dataContext, this]);		
+			if (typeof aCallback === "function")
+				aCallback(aElement, aDataContext, this);
+			
+			element.trigger(de.titus.jstl.Constants.EVENTS.onSuccess, [dataContext, this]);
 			
 			if (!aElement)
-				$(document).ready(Processor.prototype.onReady.bind(this));			
-		};		
-		
-		Processor.prototype.__computeChildren = function(aElement, aContext) {
-			if (Processor.LOGGER.isDebugEnabled())
-				Processor.LOGGER.logDebug("execute __computeChildren(" + aElement + ", " + aContext + ")");
-			
-			var children = aElement.children() || [];
-			for(var i = 0; i < children.length; i++)
-				this.compute($(children[i]), aContext);
-		};		
-		
+				this.onReady();
+		};
 		
 		Processor.prototype.onReady = function(aFunction) {
+			if (Processor.LOGGER.isDebugEnabled())
+				Processor.LOGGER.logDebug("onReady()");
 			if (aFunction) {
 				this.element.one(de.titus.jstl.Constants.EVENTS.onReady, function(anEvent) {
 					aFunction(anEvent.delegateTarget, anEvent.data);
 				});
 				return this;
-			} else {
-				for (var i = 0; i < this.onReadyEvent.length; i++) {
-					try {
-						this.onReadyEvent[i](this.config.element, this);
-					} catch (e) {
-						Processor.LOGGER.logError("Error by process an on ready event! -> " + (e.message || e));
-					}
-				}
+			} else
+				$(document).ready((function(aProcessor){
+					aProcessor.element.trigger(de.titus.jstl.Constants.EVENTS.onReady, [aProcessor]);
+				}).bind(null, this));
 				
-				this.config.element.trigger(de.titus.jstl.Constants.EVENTS.onReady, this);
-			}
 		};
 		
 		de.titus.jstl.Processor = Processor;
@@ -846,6 +871,8 @@ de.titus.core.Namespace.create("de.titus.jstl.Setup", function() {
 	de.titus.jstl.TaskRegistry.append("eventbind", de.titus.jstl.functions.Eventbind.TASK);
 	de.titus.jstl.TaskRegistry.append("text", de.titus.jstl.functions.Text.TASK);
 	de.titus.jstl.TaskRegistry.append("attribute", de.titus.jstl.functions.Attribute.TASK);
+	de.titus.jstl.TaskRegistry.append("children", de.titus.jstl.functions.Children.TASK);
+	
 });
 de.titus.core.Namespace.create("de.titus.jstl.javascript.polyfills", function() {
 //https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Array/from#Polyfill	
@@ -932,38 +959,42 @@ de.titus.core.Namespace.create("de.titus.jstl.javascript.polyfills", function() 
 });(function($) {
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.jquery.jstl.plugin", function() {		
-		$.fn.jstl = function(aContext) {
+		$.fn.jstl = function(aContext, aCallback) {
 			if (this.length == 0)
 				return;
 			else if (this.length > 1) {
 				return this.each(function() {
-					return $(this).jstl(aContext);
+					return $(this).jstl(aContext, aCallback);
 				});
 			} else {
-				var processor = new de.titus.jstl.Processor(this, aContext);
-				processor.compute();
+				var context = aContext;
+				var callback = aCallback;
+				if(typeof context === "function"){
+					callback = context;
+					context = undefined;
+				}
+				
+				var processor = new de.titus.jstl.Processor(this, context);
+				processor.compute(callback);
 				return processor;
 			}
 		};
 		
-		$.fn.jstlAsync = function(aContext) {
+		$.fn.jstlAsync = function(aContext, aCallback) {
 			if (this.length == 0)
 				return;
 			else if (this.length > 1) {
 				return this.each(function() {
-					return $(this).jstlAsync(aContext);
+					return $(this).jstlAsync(aContext, aCallback);
 				});
 			} else {
-				setTimeout((function(aElement, aContext){
-						var processor = new de.titus.jstl.Processor(aElement, aContext);
-						processor.compute();
-					}).bind(null, this, aContext), 10);
+				setTimeout((function(){this.jstl(aContext, aCallback)}).bind(this), 1);
 				return this;
 			}
 		};
 		
 		$(document).ready(function() {
-			$("[data-jstl-autorun]").jstl();
+			$("[data-jstl-autorun]").jstlAsync();
 		});
 		
 	});

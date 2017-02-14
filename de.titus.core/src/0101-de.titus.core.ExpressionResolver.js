@@ -57,13 +57,9 @@ de.titus.core.Namespace.create("de.titus.core.ExpressionResolver", function() {
 	 */
 	de.titus.core.ExpressionResolver.prototype.internalResolveExpression = function(aExpression, aDataContext, aDefaultValue) {
 		try {
-			var result = de.titus.core.SpecialFunctions.doEvalWithContext(aExpression, aDataContext, aDefaultValue);
-			if (result == undefined)
-				return aDefaultValue;
-			
-			return result;
+			return de.titus.core.SpecialFunctions.doEvalWithContext(aExpression, aDataContext, aDefaultValue);			
 		} catch (e) {
-			return undefined;
+			return aDefaultValue;
 		}
 	};
 	

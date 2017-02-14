@@ -14,4 +14,6 @@ de.titus.core.Namespace.create("de.titus.jstl.Setup", function() {
 	de.titus.jstl.TaskRegistry.append("eventbind", de.titus.jstl.functions.Eventbind.TASK);
 	de.titus.jstl.TaskRegistry.append("text", de.titus.jstl.functions.Text.TASK);
 	de.titus.jstl.TaskRegistry.append("attribute", de.titus.jstl.functions.Attribute.TASK);
+	de.titus.jstl.TaskRegistry.append("children", de.titus.jstl.functions.Children.TASK);
+	
 });

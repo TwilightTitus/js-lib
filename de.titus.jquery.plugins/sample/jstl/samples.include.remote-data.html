@@ -29,17 +29,10 @@
 
 </head>
 <body data-jstl-autorun="">
-	<jstl data-jstl-data="jstl.template.tpl.html" data-jstl-data-var="jstlTemplate" />
+	<jstl data-jstl-data="jstl-remote.data.tpl.html" data-jstl-data-var="jstlTemplate"/>
 	<div>
-		<div>
-			foreach on remote data
-			<div data-jstl-data="jstl-remote.data.json" data-jstl-data-mode="remote" data-jstl-foreach="${list}" data-jstl-foreach-var="listItem" data-jstl-foreach-status="listStatus">
-				<div data-jstl-if="${listItem.id != 3}">
-					<span>${listStatus.index} </span> <span>id: ${listItem.id}</span> <span>name: ${listItem.name}</span> <span>template: ${jstlTemplate}</span> <br />
-				</div>
-			</div>
-		</div>
-
+		foreach on remote data with a include
+		<div data-jstl-data="jstl-remote.data.json" data-jstl-data-mode="remote" data-jstl-include="jstl-remote.data.tpl.html"></div>
 	</div>
 
 	<div id="log">

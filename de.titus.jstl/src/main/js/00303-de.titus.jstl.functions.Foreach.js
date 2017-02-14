@@ -13,8 +13,9 @@
 			    if (expression != undefined) {
 				    Foreach.__compute(expression, aElement, aDataContext, aProcessor, aProcessor.resolver);
 				    aTaskChain.preventChilds();
-			    } else
-				    aTaskChain.nextTask();
+			    }
+			    
+				aTaskChain.nextTask();
 		    },
 		    
 		    __compute : function(aExpression, aElement, aDataContext, aProcessor, anExpressionResolver) {
@@ -29,7 +30,7 @@
 			    
 			    var varName = aElement.data("jstlForeachVar") || "itemVar";
 			    var statusName = aElement.data("jstlForeachStatus") || "statusVar";
-			    var list = anExpressionResolver.resolveExpression(aExpression, aDataContext, aDataContext);
+			    var list = anExpressionResolver.resolveExpression(aExpression, aDataContext, undefined);
 			    
 			    var breakCondition = aElement.data("jstlForeachBreakCondition");
 			    if (Array.isArray(list))
@@ -41,21 +42,20 @@
 		    __list : function(aListData, aTemplate, aVarname, aStatusName, aBreakCondition, aElement, aDataContext, aProcessor) {
 			    var startIndex = aProcessor.resolver.resolveExpression(aElement.data("jstlForeachStartIndex"), aDataContext, 0) || 0;
 			    for (var i = startIndex; i < aListData.length; i++) {
-				    var newContent = aTemplate.clone();
-				    var newContext = $.extend({}, aDataContext);
-				    newContext[aVarname] = aListData[i];
-				    newContext[aStatusName] = {
+				    var template = aTemplate.clone();
+				    var context = $.extend({}, aDataContext);
+				    context[aVarname] = aListData[i];
+				    context[aStatusName] = {
 				        "index" : i,
 				        "number" : (i + 1),
 				        "count" : aListData.length,
 				        "data" : aListData,
 				        "context" : aDataContext
 				    };
-				    if (aBreakCondition != undefined && Foreach.__break(newContext, aBreakCondition, aElement, aProcessor)) {
+				    if (aBreakCondition != undefined && Foreach.__break(context, aBreakCondition, aElement, aProcessor))
 					    return;
-				    }
 				    
-				    Foreach.__computeContent(newContent, newContext, aElement, aProcessor);
+				    Foreach.__computeContent(template, context, aElement, aProcessor);
 			    }
 		    },
 		    

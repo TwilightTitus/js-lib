@@ -9,23 +9,25 @@
 				    Choose.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
 			    
 			    var expression = aElement.data("jstlChoose");
-			    if (expression != undefined)
-				    this.processChilds(aElement, aDataContext, aProcessor, aProcessor.resolver);
+			    if (expression != undefined){
+			    	Choose.__compute(aElement, aDataContext, aProcessor, aProcessor.resolver);
+			    	aTaskChain.preventChilds();
+			    }
 			    
 			    aTaskChain.nextTask();
 		    },
 		    
-		    processChilds : function(aChooseElement, aDataContext, aProcessor, aExpressionResolver) {
+		    __compute : function(aChooseElement, aDataContext, aProcessor, aExpressionResolver) {
 			    if (Choose.LOGGER.isDebugEnabled())
 				    Choose.LOGGER.logDebug("execute processChilds(" + aChooseElement + ", " + aDataContext + ", " + aProcessor + ", " + aExpressionResolver + ")");
 			    
-			    var childs = aChooseElement.children();
 			    var resolved = false;
-			    childs.each(function() {
+			    aChooseElement.children().each(function() {
 				    var child = $(this);
-				    if (!resolved && Choose.processChild(aChooseElement, child, aDataContext, aProcessor, aExpressionResolver)) {
+				    if (!resolved && Choose.__computeChild(aChooseElement, child, aDataContext, aProcessor, aExpressionResolver)) {
 					    if (Choose.LOGGER.isTraceEnabled())
 						    Choose.LOGGER.logTrace("compute child: " + child);
+					    aProcessor.compute(child, aDataContext);
 					    resolved = true;
 				    } else {
 					    if (Choose.LOGGER.isTraceEnabled())
@@ -35,20 +37,19 @@
 			    });
 		    },
 		    
-		    processChild : function(aChooseElement, aElement, aDataContext, aProcessor, aExpressionResolver) {
+		    __computeChild : function(aChooseElement, aElement, aDataContext, aProcessor, aExpressionResolver) {
 			    if (Choose.LOGGER.isDebugEnabled())
 				    Choose.LOGGER.logDebug("execute processChild(" + aChooseElement + ", " + aElement + ", " + aDataContext + ", " + aProcessor + ", " + aExpressionResolver + ")");
 			    
-			    if (this.processWhenElement(aChooseElement, aElement, aDataContext, aProcessor, aExpressionResolver)) {
+			    if (Choose.__computeWhen(aChooseElement, aElement, aDataContext, aProcessor, aExpressionResolver))
 				    return true;
-			    } else if (this.processOtherwiseElement(aChooseElement, aElement, aDataContext, aProcessor, aExpressionResolver)) {
+			    else if (Choose.__computeOtherwise(aChooseElement, aElement, aDataContext, aProcessor, aExpressionResolver))
 				    return true;
-			    } else {
+			    else
 				    return false;
-			    }
 		    },
 		    
-		    processWhenElement : function(aChooseElement, aElement, aDataContext, aProcessor, aExpressionResolver) {
+		    __computeWhen : function(aChooseElement, aElement, aDataContext, aProcessor, aExpressionResolver) {
 			    if (Choose.LOGGER.isDebugEnabled())
 				    Choose.LOGGER.logDebug("execute processWhenElement(" + aChooseElement + ", " + aElement + ", " + aDataContext + ", " + aProcessor + ", " + aExpressionResolver + ")");
 			    
@@ -58,12 +59,11 @@
 			    return false;
 		    },
 		    
-		    processOtherwiseElement : function(aChooseElement, aElement, aDataContext, aProcessor, aExpressionResolver) {
+		    __computeOtherwise : function(aChooseElement, aElement, aDataContext, aProcessor, aExpressionResolver) {
 			    if (Choose.LOGGER.isDebugEnabled())
 				    Choose.LOGGER.logDebug("execute processOtherwiseElement(" + aChooseElement + ", " + aElement + ", " + aDataContext + ", " + aProcessor + ", " + aExpressionResolver + ")");
 			    
-			    var expression = aElement.data("jstlOtherwise");
-			    if (expression != undefined)
+			    if (aElement.data("jstlOtherwise") != undefined)
 				    return true;
 			    return false;
 		    }

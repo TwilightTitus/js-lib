@@ -2,74 +2,78 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title>JSTL Samples</title>
-<script src="../../libs/jquery-1.11.1.js" type="text/javascript"></script>
-<script src="../../dist/2.0.0/de.titus.jquery.plugins.2.0.0.min.js"
-	type="text/javascript"></script>
 <link type="text/css" href="style.css" rel="stylesheet" />
-</head>
-<body logging-properties='{"remote":{"url":"logging.properties.json"}}'>
-	<div id="test" data-jstl-load="load" data-jstl-success="success"
-		data-jstl-fail="function(){alert('fail')}">
-		
 
-		<div>
-			Choose test
-			<div data-jstl-choose="">
-				<div data-jstl-when="false">when 1</div>
-				<div data-jstl-when='false'>when 2</div>
-				<div data-jstl-otherwise="">otherwise</div>
-			</div>
+<script src="../../libs/jquery-1.11.1.js" type="text/javascript"></script>
+<script src="../../dist/3.0.0/de.titus.jquery.plugins-3.0.0.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+	de.titus.logging.LoggerFactory.getInstance().setConfig([
+            {
+                "filter" : "",
+                "logLevel" : "ERROR",
+                "appenders" : [
+	                "de.titus.logging.ConsolenAppender"
+                ]
+            }, {
+                "filter" : "de.titus",
+                "logLevel" : "DEBUG",
+                "appenders" : [
+	                "de.titus.logging.ConsolenAppender"
+                ]
+            }
+    ]);
+</script>
+</head>
+<body data-jstl-autorun="">
+	<jstl data-jstl-data-var="chooseTest" data-jstl-data="true"/>
+	<div>
+		Choose test -> result is when 1
+		<div data-jstl-choose="">
+			<div data-jstl-when="true">when 1</div>
+			<div data-jstl-when='false'>when 2</div>
+			<div data-jstl-otherwise="">otherwise</div>
+		</div>
+	</div>
+
+	<div>
+		Choose test -> result is when 2
+		<div data-jstl-choose="">
+			<div data-jstl-when="false">when 1</div>
+			<div data-jstl-when='true'>when 2</div>
+			<div data-jstl-otherwise="">otherwise</div>
+		</div>
+	</div>
+	<div>
+		Choose test -> result is otherwise
+		<div data-jstl-choose="">
+			<div data-jstl-when="false">when 1</div>
+			<div data-jstl-when='false'>when 2</div>
+			<div data-jstl-otherwise="">otherwise</div>
 		</div>
 	</div>
 	
-	<div id="log"><div>Logs</div></div>
+	<div>
+		Choose test -> result is when 1
+		<div data-jstl-choose="">
+			<div data-jstl-when="${chooseTest}">when 1</div>
+			<div data-jstl-when='false'>when 2</div>
+			<div data-jstl-otherwise="">otherwise</div>
+		</div>
+	</div>
 	
-	<script type="text/javascript">
-		/*<!--*/
+	<div>
+		Choose test -> result is when 2
+		<div data-jstl-choose="">
+			<div data-jstl-when="${chooseTest == undefined}">when 1</div>
+			<div data-jstl-when='${chooseTest != undefined}'>when 2</div>
+			<div data-jstl-otherwise="">otherwise</div>
+		</div>
+	</div>
 
-        function load(aElement) {
-	        $(aElement).hide();
-	        alert("load");
-        };
-        
-        function success(aElement) {
-	        alert("success");
-			$(aElement).show();
-        };
 
-		function toArray(value){
-			return new Array();
-		};
-        
-        function testFunction() {
-	        return "result from a Function!";
-        };
-        
-        function dataFunction() {
-	        return {
-		        "functionResult" : "result from a Function!" };
-        };
-        
-        $(document).ready(function() {
-	        var data = {
-	        test : "text",
-	        "boolean" : false,
-	        "jstlTemplate" : "data-jstl-template.html",
-	        "jstlList" : [] };
-	        
-	        for (var i = 0; i < 10; i++) {
-		        data.jstlList.push({
-		        "id" : i,
-		        "name" : "item " + i,
-		        "show" : (i % 4 != 0) });
-	        }
-	        
-	        $("#test").jstl({
-		        "data" : data });
-	        
-        });
-        /*-->*/
-	</script>
-
+	<div id="log">
+		<div>Logs</div>
+	</div>
 </body>
 </html>

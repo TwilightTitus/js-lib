@@ -36,7 +36,7 @@
 		    
 		    MODES : {
 		        "direct" : function(anExpression, aElement, aVarname, aDataContext, aProcessor) {
-			        return aProcessor.resolver.resolveExpression(anExpression, aDataContext);
+			        return aProcessor.resolver.resolveExpression(anExpression, aDataContext, anExpression);
 		        },
 		        
 		        "remote" : function(anExpression, aElement, aVarname, aDataContext, aProcessor) {
