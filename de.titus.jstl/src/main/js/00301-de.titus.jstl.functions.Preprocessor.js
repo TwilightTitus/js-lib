@@ -11,21 +11,21 @@
 			    }
 		    },
 		    
-		    TASK : function(aElement, aDataContext, aProcessor, aExecuteChain) {
+		    TASK : function(aElement, aDataContext, aProcessor, aTaskChain) {
 			    if (Preprocessor.LOGGER.isDebugEnabled())
 				    Preprocessor.LOGGER.logDebug("TASK");
 			    
 			    var element = aElement || this.element;
 			    var tagname = element.tagName();
 			    if (tagname != undefined && tagname == "br")
-				    return aExecuteChain.preventChilds();
+				    return aTaskChain.preventChilds();
 			    
-			    if (!aExecuteChain.root) {
+			    if (!aTaskChain.root) {
 				    var ignore = element.data("jstlIgnore");
 				    if (ignore && ignore != "") {
 					    ignore = aProcessor.resolver.resolveExpression(ignore, dataContext, false);
 					    if (ignore == "" || ignore == true || ignore == "true")
-						    return aExecuteChain.preventChilds();
+						    return aTaskChain.preventChilds();
 				    }
 				    
 				    var async = element.data("jstlAsync");
@@ -33,7 +33,7 @@
 					    async = aProcessor.resolver.resolveExpression(async, dataContext, false);
 					    if (async == "" || async == true || async == "true") {
 						    aProcessor.onReady(Processor.prototype.__compute.bind(this, element, aContext || this.context), 1);
-						    return aExecuteChain.preventChilds();
+						    return aTaskChain.preventChilds();
 					    }
 				    }
 			    }
@@ -43,11 +43,11 @@
 				    ignoreChilds = aProcessor.resolver.resolveExpression(ignoreChilds, executeChain.context, true);
 			    
 			    if (ignoreChilds == "" || ignoreChilds == true || ignoreChilds == "true")
-				    aExecuteChain.preventChilds();
+			    	aTaskChain.preventChilds();
 			    
 			    Preprocessor.__appendEvents(aElement);
 			    
-			    aExecuteChain.nextTask();
+			    aTaskChain.nextTask();
 			    
 		    },
 		    

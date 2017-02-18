@@ -36,8 +36,8 @@
 			element.trigger(de.titus.jstl.Constants.EVENTS.onLoad, [
 			        dataContext, this
 			]);
-			var executeChain = new de.titus.jstl.ExecuteChain(element, dataContext, this, !aElement);
-			executeChain.nextTask();
+			var taskChain = new de.titus.jstl.TaskChain(element, dataContext, this, !aElement);
+			taskChain.nextTask();
 			
 			if (element.tagName() == "jstl" && element.contents().length > 0)
 				element.replaceWith(element.contents());
