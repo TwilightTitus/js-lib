@@ -11,14 +11,13 @@
 			    
 			    var expression = aElement.data("jstlForeach");
 			    if (expression != undefined) {
-				    Foreach.__compute(expression, aElement, aDataContext, aProcessor, aProcessor.resolver);
+				    Foreach.__compute(expression, aElement, aDataContext, aProcessor, aProcessor.resolver, aTaskChain);
 				    aTaskChain.preventChilds();
-			    }
-			    
-				aTaskChain.nextTask();
+			    } else
+				    aTaskChain.nextTask();
 		    },
 		    
-		    __compute : function(aExpression, aElement, aDataContext, aProcessor, anExpressionResolver) {
+		    __compute : function(aExpression, aElement, aDataContext, aProcessor, anExpressionResolver, aTaskChain) {
 			    if (Foreach.LOGGER.isDebugEnabled())
 				    Foreach.LOGGER.logDebug("execute __compute(" + aElement + ", " + aDataContext + ", " + aProcessor + ", " + anExpressionResolver + ")");
 			    
@@ -34,13 +33,24 @@
 			    
 			    var breakCondition = aElement.data("jstlForeachBreakCondition");
 			    if (Array.isArray(list))
-				    Foreach.__list(list, tempalte, varName, statusName, breakCondition, aElement, aDataContext, aProcessor);
+				    Foreach.__list(list, tempalte, varName, statusName, breakCondition, aElement, aDataContext, aProcessor, aTaskChain);
 			    else if (typeof list === "object")
-				    Foreach.__map(list, tempalte, varName, statusName, breakCondition, aElement, aDataContext, aProcessor);
+				    Foreach.__map(list, tempalte, varName, statusName, breakCondition, aElement, aDataContext, aProcessor, aTaskChain);
 		    },
 		    
-		    __list : function(aListData, aTemplate, aVarname, aStatusName, aBreakCondition, aElement, aDataContext, aProcessor) {
+		    __list : function(aListData, aTemplate, aVarname, aStatusName, aBreakCondition, aElement, aDataContext, aProcessor, aTaskChain) {
 			    var startIndex = aProcessor.resolver.resolveExpression(aElement.data("jstlForeachStartIndex"), aDataContext, 0) || 0;
+			    
+			    var executeChain = {
+			        count : 1,
+			        taskChain : aTaskChain,
+			        finish : function() {
+				        this.count--;
+				        if (this.count == 0)
+					        this.taskChain.nextTask();
+			        }
+			    };
+			    
 			    for (var i = startIndex; i < aListData.length; i++) {
 				    var template = aTemplate.clone();
 				    var context = $.extend({}, aDataContext);
@@ -53,19 +63,32 @@
 				        "context" : aDataContext
 				    };
 				    if (aBreakCondition != undefined && Foreach.__break(context, aBreakCondition, aElement, aProcessor))
-					    return;
-				    
-				    Foreach.__computeContent(template, context, aElement, aProcessor);
+					    return executeChain.finish();
+				    else {
+					    executeChain.count++;
+					    Foreach.__computeContent(template, context, aElement, aProcessor, executeChain);
+				    }
 			    }
+			    executeChain.finish();
 		    },
 		    
-		    __map : function(aMap, aTemplate, aVarname, aStatusName, aBreakCondition, aElement, aDataContext, aProcessor) {
+		    __map : function(aMap, aTemplate, aVarname, aStatusName, aBreakCondition, aElement, aDataContext, aProcessor, aTaskChain) {
+			    
+			    var executeChain = {
+			        count : 1,
+			        taskChain : aTaskChain,
+			        finish : function() {
+				        this.count--;
+				        if (this.count == 0)
+					        this.taskChain.nextTask();
+			        }
+			    };
 			    var i = 0;
 			    for ( var name in aMap) {
 				    var newContent = aTemplate.clone();
-				    var newContext = $.extend({}, aDataContext);
-				    newContext[aVarname] = aMap[name];
-				    newContext[aStatusName] = {
+				    var context = $.extend({}, aDataContext);
+				    context[aVarname] = aMap[name];
+				    context[aStatusName] = {
 				        "index" : i,
 				        "number" : (i + 1),
 				        "key" : name,
@@ -73,12 +96,15 @@
 				        "context" : aDataContext
 				    };
 				    
-				    if (aBreakCondition != undefined && Foreach.__break(newContext, aBreakCondition, aElement, aProcessor))
-					    return;
-				    
-				    Foreach.__computeContent(newContent, newContext, aElement, aProcessor);
-				    i++;
+				    if (aBreakCondition != undefined && Foreach.__break(context, aBreakCondition, aElement, aProcessor))
+					    return executeChain.finish();
+				    else {
+					    executeChain.count++;
+					    Foreach.__computeContent(template, context, aElement, aProcessor, executeChain);
+					    i++;
+				    }
 			    }
+			    executeChain.finish();
 		    },
 		    
 		    __break : function(aContext, aBreakCondition, aElement, aProcessor) {
@@ -89,15 +115,17 @@
 			    return expression == true || expression == "true";
 		    },
 		    
-		    __computeContent : function(aNewContent, aNewContext, aElement, aProcessor) {
-			    aProcessor.compute(aNewContent, aNewContext);
-			    aElement.append(aNewContent.contents());
+		    __computeContent : function(aNewContent, aNewContext, aElement, aProcessor, aExecuteChain) {
+			    aProcessor.compute(aNewContent, aNewContext, (function(aElement, aContent, aExecuteChain) {
+				    aContent.contents().appendTo(aElement);
+				    aExecuteChain.finish();
+			    }).bind({}, aElement, aNewContent, aExecuteChain));
 		    },
 		    
 		    __template : function(aElement) {
 			    var template = aElement.data("de.titus.jstl.functions.Foreach.Template");
 			    if (template == undefined) {
-				    template = $("<div>").append(aElement.contents());
+				    template = $("<jstl>").append(aElement.contents());
 				    aElement.data("de.titus.jstl.functions.Foreach.Template", template);
 			    }
 			    return template;

@@ -8,52 +8,60 @@
 		};
 		
 		Processor.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.Processor");
-		Processor.STATICEVENTHANDLER = function(aExpression, aEvent, aDataContext, aProcessor) {
+		Processor.STATICEVENTHANDLER = function(aExpression, aEvent, aContext, aProcessor) {
 			if (aExpression && aExpression != "") {
-				var eventAction = aProcessor.resolver.resolveExpression(aExpression, aDataContext);
+				var eventAction = aProcessor.resolver.resolveExpression(aExpression, aContext);
 				if (typeof eventAction === "function")
-					eventAction(aDataContext.$element, aDataContext, aProcessor);
+					eventAction(aContext.$element, aContext, aProcessor);
 			}
 		};
 		
 		Processor.prototype.compute = function(aElement, aContext, aCallback) {
 			if (Processor.LOGGER.isDebugEnabled())
-				Processor.LOGGER.logDebug("execute compute(" + aElement + ", " + aContext + ")");
-			
-			if (!aElement)
-				this.element.trigger(de.titus.jstl.Constants.EVENTS.onStart, [
-				        this.context, this
-				]);
-			
+				Processor.LOGGER.logDebug("execute compute(" + aElement + ", " + aContext + ")");			
+			  if (!aElement)
+				    this.element.trigger(de.titus.jstl.Constants.EVENTS.onStart, [
+				           aContext, this
+				    ]);
 			this.__computeElement(aElement, aContext, aCallback);
 		};
 		
-		Processor.prototype.__computeElement = function(aElement, aDataContext) {
+		Processor.prototype.__computeElement = function(aElement, aContext, aCallback) {
+			if (Processor.LOGGER.isDebugEnabled())
+				Processor.LOGGER.logDebug("__computeElement() -> root: " + !aElement);
 			var element = aElement || this.element;
-			var dataContext = aDataContext || this.context;
-			dataContext.$element = element;
+			var context = aContext || this.context;
+			context.$element = element;
+			var root =  !aElement;
 			
-			element.trigger(de.titus.jstl.Constants.EVENTS.onLoad, [
-			        dataContext, this
-			]);
-			var taskChain = new de.titus.jstl.TaskChain(element, dataContext, this, !aElement);
+			
+			var taskChain = new de.titus.jstl.TaskChain(element, context, this, root, Processor.prototype.__computeFinished.bind(this, element, context, root, aCallback));
 			taskChain.nextTask();
 			
-			if (element.tagName() == "jstl" && element.contents().length > 0)
-				element.replaceWith(element.contents());
+			
+		};
+		
+		Processor.prototype.__computeFinished = function(aElement, aContext, isRoot, aCallback) {
+			if (Processor.LOGGER.isDebugEnabled())
+				Processor.LOGGER.logDebug("__computeFinished() -> is root: " + isRoot);
+			
+			if (aElement.tagName() == "jstl" && aElement.contents().length > 0)
+				aElement.replaceWith(aElement.contents());
 			
 			if (typeof aCallback === "function")
-				aCallback(aElement, aDataContext, this);
+				aCallback(aElement, aContext, this, isRoot);
 			
-			element.trigger(de.titus.jstl.Constants.EVENTS.onSuccess, [dataContext, this]);
+			aElement.trigger(de.titus.jstl.Constants.EVENTS.onSuccess, [aContext, this]);
 			
-			if (!aElement)
+			if (isRoot)
 				this.onReady();
 		};
+		
 		
 		Processor.prototype.onReady = function(aFunction) {
 			if (Processor.LOGGER.isDebugEnabled())
 				Processor.LOGGER.logDebug("onReady()");
+			
 			if (aFunction) {
 				this.element.one(de.titus.jstl.Constants.EVENTS.onReady, function(anEvent) {
 					aFunction(anEvent.delegateTarget, anEvent.data);

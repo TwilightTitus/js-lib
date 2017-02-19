@@ -21,7 +21,8 @@
 
 de.titus.logging.LoggerFactory.getInstance().setConfig(	[
 		{"filter": "", "logLevel": "ERROR", "appenders":["de.titus.logging.ConsolenAppender"]},
-		{"filter": "de.titus", "logLevel": "ERROR", "appenders":["de.titus.logging.ConsolenAppender"]}
+		{"filter": "de.titus", "logLevel": "DEBUG", "appenders":["de.titus.logging.ConsolenAppender"]},
+		{"filter": "de.titus.jstl.Processor", "logLevel": "DEBUG", "appenders":["de.titus.logging.ConsolenAppender"]}
 	]);
 
 </script>
@@ -70,14 +71,14 @@ de.titus.logging.LoggerFactory.getInstance().setConfig(	[
 		</nav>
 
 		<div class="page-content" module="${module == undefined}">
-			<div data-jstl-if="${module != undefined}" data-jstl-data="${module.data}" data-jstl-data-mode="remote" data-jstl-data-var="moduleData" data-jstl-include="templates/module.tpl.html" data-jstl-async=""></div>
+			<div data-jstl-if="${module != undefined}" data-jstl-data="${module.data}" data-jstl-data-mode="remote" data-jstl-data-var="moduleData" data-jstl-include="templates/module.tpl.html" ></div>
 			<footer>
 				<small>This documantation is rendered by the JSTL</small>
 			</footer>
 		</div>
 	</div>
 	<script type="text/javascript">
-		$("body").on("jstl-on-success",function() {
+		$("body").on("jstl-on-ready",function() {
 			console.log("highlighting");
 	        $('pre code').each(function() {
 	        	

@@ -5,13 +5,27 @@
 		    LOGGER : de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.Children"),
 		    TASK : function(aElement, aContext, aProcessor, aTaskChain) {
 			    if (Children.LOGGER.isDebugEnabled())
-			    	Children.LOGGER.logDebug("TASK");
+				    Children.LOGGER.logDebug("TASK");
 			    
-			    
-			    if (!aTaskChain.isPreventChilds())
-			    	aElement.children().jstl(aContext);
-			    
-			    aTaskChain.nextTask();
+			    if (!aTaskChain.isPreventChilds()) {
+				    var children = aElement.children();
+				    if (children.length == 0)
+					    aTaskChain.nextTask();
+				    else {
+					    var executeChain = {
+					        count : children.length,
+					        taskChain : aTaskChain,
+					        finsish : function() {
+						        this.count--;
+						        if (this.count == 0)
+							        this.taskChain.nextTask();
+					        }
+					    };
+					    for (var i = 0; i < children.length; i++)
+						    aProcessor.compute($(children[i]), aContext, executeChain.finsish.bind(executeChain));
+				    }
+			    } else
+				    aTaskChain.nextTask()
 		    }
 		};
 	});

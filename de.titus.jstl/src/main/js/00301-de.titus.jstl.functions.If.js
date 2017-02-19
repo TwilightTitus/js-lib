@@ -16,6 +16,7 @@
 				    if (!(expression == true || expression == "true")) {
 					    aElement.remove();
 					    aExecuteChain.preventChilds();
+					    aExecuteChain.finish();
 				    } else
 					    aExecuteChain.nextTask();
 			    } else

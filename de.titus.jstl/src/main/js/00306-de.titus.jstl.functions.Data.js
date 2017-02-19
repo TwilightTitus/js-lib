@@ -12,16 +12,10 @@
 			    if (expression) {
 				    var varname = aElement.data("jstlDataVar");
 				    var mode = aElement.data("jstlDataMode") || "direct";
-				    var data = Data.MODES[mode].call(this, expression, aElement, varname, aDataContext, aProcessor);
-				    if (data) {
-					    if (!varname)
-						    aTaskChain.updateContext(data, true);
-					    else
-						    aTaskChain.context[varname] = data;
-				    }
-			    }
-			    
-			    aTaskChain.nextTask();
+				    Data.MODES[mode](expression, aElement, varname, aDataContext, aProcessor, aTaskChain);
+				    
+			    } else
+				    aTaskChain.nextTask();
 		    },
 		    
 		    __options : function(aElement, aDataContext, aProcessor) {
@@ -33,39 +27,49 @@
 			    }
 			    return {};
 		    },
+		    __updateContext : function(aVarname, aData, aTaskChain) {
+			    if (aData) {
+				    if (!aVarname)
+					    aTaskChain.updateContext(aData, true);
+				    else
+					    aTaskChain.context[aVarname] = aData;
+			    }
+		    },
 		    
 		    MODES : {
-		        "direct" : function(anExpression, aElement, aVarname, aDataContext, aProcessor) {
-			        return aProcessor.resolver.resolveExpression(anExpression, aDataContext, anExpression);
+		        "direct" : function(anExpression, aElement, aVarname, aDataContext, aProcessor, aTaskChain) {
+			        var data = aProcessor.resolver.resolveExpression(anExpression, aDataContext, anExpression);
+			        Data.__updateContext(aVarname, data, aTaskChain);
+			        aTaskChain.nextTask();
 		        },
 		        
-		        "remote" : function(anExpression, aElement, aVarname, aDataContext, aProcessor) {
+		        "remote" : function(anExpression, aElement, aVarname, aDataContext, aProcessor, aTaskChain) {
 			        var url = aProcessor.resolver.resolveText(anExpression, aDataContext);
 			        var option = Data.__options(aElement, aDataContext, aProcessor);
 			        var dataType = aElement.data("jstlDataDatatype") || "json";
 			        
 			        var ajaxSettings = {
 			            'url' : de.titus.core.Page.getInstance().buildUrl(url),
-			            'async' : false,
+			            'async' : true,
 			            'cache' : false,
 			            'dataType' : dataType
 			        };
 			        ajaxSettings = $.extend(ajaxSettings, option);
-			        var result = undefined;
-			        ajaxSettings.success = function(newData) {
-				        result = newData;
+			        
+			        $.ajax(ajaxSettings).done((function(aVarname,aTaskChain, newData) {
+				        var data = newData;
 				        if (dataType.toLowerCase() == "xml")
-					        result = de.titus.core.Converter.xmlToJson(newData);
-			        };
-			        
-			        var xhr = $.ajax(ajaxSettings);
-			        
-			        return result;
+					        data = de.titus.core.Converter.xmlToJson(newData);
+				        Data.__updateContext(aVarname, data, aTaskChain);
+				        aTaskChain.nextTask();
+			        }).bind({}, aVarname, aTaskChain));
 		        },
 		        
-		        "url-parameter" : function(anExpression, aElement, aVarname, aDataContext, aProcessor) {
+		        "url-parameter" : function(anExpression, aElement, aVarname, aDataContext, aProcessor, aTaskChain) {
 			        var parameterName = aProcessor.resolver.resolveText(anExpression, aDataContext);
-			        return de.titus.core.Page.getInstance().getUrl().getParameter(parameterName);
+			        var data = de.titus.core.Page.getInstance().getUrl().getParameter(parameterName);
+			        Data.__updateContext(aVarname, data, aTaskChain);
+			        aTaskChain.nextTask();
 		        }
 		    }
 		
