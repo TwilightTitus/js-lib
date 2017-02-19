@@ -11,8 +11,8 @@
 			    
 			    var expression = aElement.data("jstlInclude");
 			    if (expression) {
-				    //aTaskChain.preventChilds();
-				    Include.__compute(expression, aElement, aContext, aProcessor, aTaskChain);				    
+				    // aTaskChain.preventChilds();
+				    Include.__compute(expression, aElement, aContext, aProcessor, aTaskChain);
 			    } else
 				    aTaskChain.nextTask();
 		    },
@@ -43,7 +43,7 @@
 				    if (cache.onload)
 					    cache.callback.push(Include.__cacheCallback.bind({}, aElement, includeMode, aProcessor, aContext, aTaskChain));
 				    else
-					    setTimeout(Include.__include.bind({}, aElement, cache.template, includeMode, aProcessor, aContext, aTaskChain, aTaskChain), 1);
+					    Include.__include(aElement, cache.template, includeMode, aProcessor, aContext, aTaskChain);
 			    } else {
 				    cache = Include.CACHE[url] = {
 				        onload : true,
@@ -94,7 +94,9 @@
 				    Include.LOGGER.logDebug("execute __include()");
 			    var content = aTemplate.clone();
 			    Include.__includeFinished(aElement, aIncludeMode, aTaskChain, content)
-			    //aProcessor.compute(content, aContext, Include.__includeFinished.bind({}, aElement, aIncludeMode, aTaskChain));
+			    // aProcessor.compute(content, aContext,
+				// Include.__includeFinished.bind({}, aElement, aIncludeMode,
+				// aTaskChain));
 		    },
 		    
 		    __includeFinished : function(aElement, aIncludeMode, aTaskChain, aContent) {

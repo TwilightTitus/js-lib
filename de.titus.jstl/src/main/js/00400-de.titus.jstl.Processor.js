@@ -54,7 +54,7 @@
 			aElement.trigger(de.titus.jstl.Constants.EVENTS.onSuccess, [aContext, this]);
 			
 			if (isRoot)
-				this.onReady();
+				setTimeout(Processor.prototype.onReady.bind(this), 1);
 		};
 		
 		
@@ -68,9 +68,9 @@
 				});
 				return this;
 			} else
-				$(document).ready((function(aProcessor){
-					aProcessor.element.trigger(de.titus.jstl.Constants.EVENTS.onReady, [aProcessor]);
-				}).bind(null, this));
+				$(document).ready((function(aElement, aProcessor){
+					aElement.trigger(de.titus.jstl.Constants.EVENTS.onReady, [aProcessor]);
+				}).bind(null, this.element,  this));
 				
 		};
 		

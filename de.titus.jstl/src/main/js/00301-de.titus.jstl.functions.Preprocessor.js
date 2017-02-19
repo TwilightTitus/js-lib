@@ -15,31 +15,30 @@
 			    if (Preprocessor.LOGGER.isDebugEnabled())
 				    Preprocessor.LOGGER.logDebug("TASK");
 			    
-			    var element = aElement || this.element;
-			    var tagname = element.tagName();
+			    var tagname = aElement.tagName();
 			    if (tagname != undefined && tagname == "br")
 				    aTaskChain.preventChilds().finish();
 			    
 			    if (!aTaskChain.root) {
-				    var ignore = element.data("jstlIgnore");
+				    var ignore = aElement.data("jstlIgnore");
 				    if (ignore && ignore != "") {
-					    ignore = aProcessor.resolver.resolveExpression(ignore, dataContext, false);
+					    ignore = aProcessor.resolver.resolveExpression(ignore, aContext, false);
 					    if (ignore == "" || ignore == true || ignore == "true")
 						    aTaskChain.preventChilds().finish();
 				    }
 				    
-				    var async = element.data("jstlAsync");
+				    var async = aElement.data("jstlAsync");
 				    if (async && async != "") {
 					    async = aProcessor.resolver.resolveExpression(async, dataContext, false);
 					    if (async == "" || async == true || async == "true")
-						    aProcessor.onReady(Processor.prototype.__compute.bind(this, element, aContext || this.context), 1);
+						    aProcessor.onReady(Processor.prototype.__compute.bind(aProcessor, aElement, aContext));
 					    aTaskChain.preventChilds().finish();
 				    }
 			    }
 			    
 			    var ignoreChilds = aElement.data("jstlIgnoreChilds");
 			    if (ignoreChilds && ignoreChilds != "")
-				    ignoreChilds = aProcessor.resolver.resolveExpression(ignoreChilds, executeChain.context, true);
+				    ignoreChilds = aProcessor.resolver.resolveExpression(ignoreChilds, aContext, true);
 			    
 			    if (ignoreChilds == "" || ignoreChilds == true || ignoreChilds == "true")
 				    aTaskChain.preventChilds();

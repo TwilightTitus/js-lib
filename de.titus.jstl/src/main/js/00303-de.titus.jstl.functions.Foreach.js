@@ -11,8 +11,8 @@
 			    
 			    var expression = aElement.data("jstlForeach");
 			    if (expression != undefined) {
-				    Foreach.__compute(expression, aElement, aDataContext, aProcessor, aProcessor.resolver, aTaskChain);
 				    aTaskChain.preventChilds();
+				    Foreach.__compute(expression, aElement, aDataContext, aProcessor, aProcessor.resolver, aTaskChain);				    
 			    } else
 				    aTaskChain.nextTask();
 		    },
@@ -85,7 +85,7 @@
 			    };
 			    var i = 0;
 			    for ( var name in aMap) {
-				    var newContent = aTemplate.clone();
+				    var content = aTemplate.clone();
 				    var context = $.extend({}, aDataContext);
 				    context[aVarname] = aMap[name];
 				    context[aStatusName] = {
@@ -100,7 +100,7 @@
 					    return executeChain.finish();
 				    else {
 					    executeChain.count++;
-					    Foreach.__computeContent(template, context, aElement, aProcessor, executeChain);
+					    Foreach.__computeContent(content, context, aElement, aProcessor, executeChain);
 					    i++;
 				    }
 			    }
@@ -115,17 +115,17 @@
 			    return expression == true || expression == "true";
 		    },
 		    
-		    __computeContent : function(aNewContent, aNewContext, aElement, aProcessor, aExecuteChain) {
-			    aProcessor.compute(aNewContent, aNewContext, (function(aElement, aContent, aExecuteChain) {
-				    aContent.contents().appendTo(aElement);
+		    __computeContent : function(aContent, aContext, aElement, aProcessor, aExecuteChain) {
+		    	aContent.appendTo(aElement);
+			    aProcessor.compute(aContent, aContext, (function(aElement, aContent, aExecuteChain) {				    
 				    aExecuteChain.finish();
-			    }).bind({}, aElement, aNewContent, aExecuteChain));
+			    }).bind({}, aElement, aContent, aExecuteChain));
 		    },
 		    
 		    __template : function(aElement) {
 			    var template = aElement.data("de.titus.jstl.functions.Foreach.Template");
 			    if (template == undefined) {
-				    template = $("<jstl>").append(aElement.contents());
+				    template = $("<jstl/>").append(aElement.contents());
 				    aElement.data("de.titus.jstl.functions.Foreach.Template", template);
 			    }
 			    return template;

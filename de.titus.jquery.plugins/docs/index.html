@@ -21,8 +21,8 @@
 
 de.titus.logging.LoggerFactory.getInstance().setConfig(	[
 		{"filter": "", "logLevel": "ERROR", "appenders":["de.titus.logging.ConsolenAppender"]},
-		{"filter": "de.titus", "logLevel": "DEBUG", "appenders":["de.titus.logging.ConsolenAppender"]},
-		{"filter": "de.titus.jstl.Processor", "logLevel": "DEBUG", "appenders":["de.titus.logging.ConsolenAppender"]}
+		{"filter": "de.titus", "logLevel": "ERROR", "appenders":["de.titus.logging.ConsolenAppender"]},
+		{"filter": "de.titus.jstl.Processor", "logLevel": "ERROR", "appenders":["de.titus.logging.ConsolenAppender"]}
 	]);
 
 </script>
@@ -80,11 +80,7 @@ de.titus.logging.LoggerFactory.getInstance().setConfig(	[
 	<script type="text/javascript">
 		$("body").on("jstl-on-ready",function() {
 			console.log("highlighting");
-	        $('pre code').each(function() {
-	        	
-				console.log("highlighting");
-		        hljs.highlightBlock($(this));
-	        });
+			hljs.initHighlightingOnLoad();
         });
 	</script>
 </body>
