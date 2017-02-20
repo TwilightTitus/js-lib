@@ -17,23 +17,36 @@
 <script type="text/javascript" src="libs/bootstrap.3.3.6.min.js"></script>
 <script type="text/javascript" src="libs/highlight/highlight.pack.js"></script>
 <script type="text/javascript">
-
-
-de.titus.logging.LoggerFactory.getInstance().setConfig(	[
-		{"filter": "", "logLevel": "ERROR", "appenders":["de.titus.logging.ConsolenAppender"]},
-		{"filter": "de.titus", "logLevel": "ERROR", "appenders":["de.titus.logging.ConsolenAppender"]},
-		{"filter": "de.titus.jstl.Processor", "logLevel": "ERROR", "appenders":["de.titus.logging.ConsolenAppender"]}
-	]);
-
+	de.titus.logging.LoggerFactory.getInstance().setConfig([
+            {
+                "filter" : "",
+                "logLevel" : "ERROR",
+                "appenders" : [
+	                "de.titus.logging.ConsolenAppender"
+                ]
+            }, {
+                "filter" : "de.titus",
+                "logLevel" : "ERROR",
+                "appenders" : [
+	                "de.titus.logging.ConsolenAppender"
+                ]
+            }, {
+                "filter" : "de.titus.jstl.Processor",
+                "logLevel" : "ERROR",
+                "appenders" : [
+	                "de.titus.logging.ConsolenAppender"
+                ]
+            }
+    ]);
 </script>
 
 </head>
-<body data-jstl-data="modules.data.json" data-jstl-data-mode="remote" data-jstl-autorun>
-	<jstl data-jstl-data="module" data-jstl-data-mode="url-parameter" data-jstl-data-var="moduleId"></jstl>
-	<jstl data-jstl-data="page" data-jstl-data-mode="url-parameter" data-jstl-data-var="pageNumber"></jstl>
-	<jstl data-jstl-data="${parseInt(pageNumber) || 0}" data-jstl-data-var="pageNumber"></jstl>
-	<jstl data-jstl-if="${moduleId != undefined}" data-jstl-data="${modules[moduleId]}" data-jstl-data-var="module"> </jstl>
-	<jstl data-jstl-if="${moduleId == undefined}" data-jstl-data="${modules['home']}" data-jstl-data-var="module"> </jstl>
+<body jstl-data="modules.data.json" jstl-data-mode="remote" jstl-autorun>
+	<jstl jstl-data="module" jstl-data-mode="url-parameter" jstl-data-var="moduleId"></jstl>
+	<jstl jstl-data="page" jstl-data-mode="url-parameter" jstl-data-var="pageNumber"></jstl>
+	<jstl jstl-data="${parseInt(pageNumber) || 0}" jstl-data-var="pageNumber"></jstl>
+	<jstl jstl-if="${moduleId != undefined}" jstl-data="${modules[moduleId]}" jstl-data-var="module"> </jstl>
+	<jstl jstl-if="${moduleId == undefined}" jstl-data="${modules['home']}" jstl-data-var="module"> </jstl>
 
 
 
@@ -60,10 +73,10 @@ de.titus.logging.LoggerFactory.getInstance().setConfig(	[
 					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
 						<span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span>
 					</button>
-					<a class="navbar-brand" data-jstl-if="${module != undefined}">${module.title}</a> <a class="navbar-brand" data-jstl-if="${module.teaser != undefined}">[${module.teaser}]</a>
+					<a class="navbar-brand" jstl-if="${module != undefined}">${module.title}</a> <a class="navbar-brand" jstl-if="${module.teaser != undefined}">[${module.teaser}]</a>
 				</div>
 				<div class="collapse navbar-collapse" id="myNavbar">
-					<ul class="nav navbar-nav navbar-right" data-jstl-foreach="${modules}" data-jstl-foreach-var="module" data-jstl-foreach-status="moduleStatus">
+					<ul class="nav navbar-nav navbar-right" jstl-foreach="${modules}" jstl-foreach-var="module" jstl-foreach-status="moduleStatus">
 						<li><a href="index.html?module=${moduleStatus.key}&page=0">${module.title}</a></li>
 					</ul>
 				</div>
@@ -71,16 +84,20 @@ de.titus.logging.LoggerFactory.getInstance().setConfig(	[
 		</nav>
 
 		<div class="page-content" module="${module == undefined}">
-			<div data-jstl-if="${module != undefined}" data-jstl-data="${module.data}" data-jstl-data-mode="remote" data-jstl-data-var="moduleData" data-jstl-include="templates/module.tpl.html" ></div>
+			<div jstl-if="${module != undefined}" jstl-data="${module.data}" jstl-data-mode="remote" jstl-data-var="moduleData" jstl-include="templates/module.tpl.html"></div>
 			<footer>
 				<small>This documantation is rendered by the JSTL</small>
 			</footer>
 		</div>
 	</div>
 	<script type="text/javascript">
-		$("body").on("jstl-on-ready",function() {
-			console.log("highlighting");
-			hljs.initHighlightingOnLoad();
+		$("body").on("jstl-on-ready", function() {
+	        console.log("highlighting");
+	        //hljs.initHighlightingOnLoad();
+	        $('pre code').each(function(i, block) {
+		        hljs.highlightBlock(block);
+	        });
+	        
         });
 	</script>
 </body>

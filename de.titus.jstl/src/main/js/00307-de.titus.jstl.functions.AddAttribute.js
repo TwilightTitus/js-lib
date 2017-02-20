@@ -8,7 +8,7 @@
 			    if (AddAttribute.LOGGER.isDebugEnabled())
 				    AddAttribute.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
 			    
-			    var expression = aElement.data("jstlAddAtribute");
+			    var expression = aElement.attr("jstl-add-attribute");
 			    if (expression) {
 				    expression = aProcessor.resolver.resolveExpression(expression, aDataContext, false);
 				    if (expression && typeof expression === "function")

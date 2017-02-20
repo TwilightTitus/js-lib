@@ -8,7 +8,7 @@
 			    if (Choose.LOGGER.isDebugEnabled())
 				    Choose.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
 			    
-			    var expression = aElement.data("jstlChoose");
+			    var expression = aElement.attr("jstl-choose");
 			    if (expression != undefined){
 			    	Choose.__compute(aElement, aDataContext, aProcessor, aProcessor.resolver);
 			    	aTaskChain.preventChilds();
@@ -53,7 +53,7 @@
 			    if (Choose.LOGGER.isDebugEnabled())
 				    Choose.LOGGER.logDebug("execute processWhenElement(" + aChooseElement + ", " + aElement + ", " + aDataContext + ", " + aProcessor + ", " + aExpressionResolver + ")");
 			    
-			    var expression = aElement.data("jstlWhen");
+			    var expression = aElement.attr("jstl-when");
 			    if (expression != undefined)
 				    return aExpressionResolver.resolveExpression(expression, aDataContext, false);
 			    return false;
@@ -63,7 +63,7 @@
 			    if (Choose.LOGGER.isDebugEnabled())
 				    Choose.LOGGER.logDebug("execute processOtherwiseElement(" + aChooseElement + ", " + aElement + ", " + aDataContext + ", " + aProcessor + ", " + aExpressionResolver + ")");
 			    
-			    if (aElement.data("jstlOtherwise") != undefined)
+			    if (aElement.attr("jstl-otherwise") != undefined)
 				    return true;
 			    return false;
 		    }

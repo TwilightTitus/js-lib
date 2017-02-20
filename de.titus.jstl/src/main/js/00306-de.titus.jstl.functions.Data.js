@@ -8,10 +8,10 @@
 			    if (Data.LOGGER.isDebugEnabled())
 				    Data.LOGGER.logDebug("TASK");
 			    
-			    var expression = aElement.data("jstlData");
+			    var expression = aElement.attr("jstl-data");
 			    if (expression) {
-				    var varname = aElement.data("jstlDataVar");
-				    var mode = aElement.data("jstlDataMode") || "direct";
+				    var varname = aElement.attr("jstl-data-var");
+				    var mode = aElement.attr("jstl-data-mode") || "direct";
 				    Data.MODES[mode](expression, aElement, varname, aDataContext, aProcessor, aTaskChain);
 				    
 			    } else
@@ -19,7 +19,7 @@
 		    },
 		    
 		    __options : function(aElement, aDataContext, aProcessor) {
-			    var options = aElement.data("jstlDataOptions");
+			    var options = aElement.attr("jstl-data-options");
 			    if (options) {
 				    options = aProcessor.resolver.resolveText(options, aDataContext);
 				    options = aProcessor.resolver.resolveExpression(options, aDataContext);
@@ -46,7 +46,7 @@
 		        "remote" : function(anExpression, aElement, aVarname, aDataContext, aProcessor, aTaskChain) {
 			        var url = aProcessor.resolver.resolveText(anExpression, aDataContext);
 			        var option = Data.__options(aElement, aDataContext, aProcessor);
-			        var dataType = aElement.data("jstlDataDatatype") || "json";
+			        var dataType = aElement.attr("jstl-data-datatype") || "json";
 			        
 			        var ajaxSettings = {
 			            'url' : de.titus.core.Page.getInstance().buildUrl(url),

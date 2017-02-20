@@ -36,7 +36,7 @@
 		};
 		
 		$(document).ready(function() {
-			$("[data-jstl-autorun]").jstlAsync();
+			$("[jstl-autorun]").jstlAsync();
 		});
 		
 	});

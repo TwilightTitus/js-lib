@@ -1,10 +1,10 @@
-<h3 data-jstl-if="${content.headline != undefined && content.headline != ''}">
+<h3 jstl-if="${content.headline != undefined && content.headline != ''}">
 	<small>${content.headline}</small>
 </h3>
-<pre data-jstl-choose>
-	<code class="${content.codetype}" data-jstl-when="${typeof content.content === 'string'}">${content.content}</code>
-	<code class="${content.codetype}" data-jstl-otherwise="" data-jstl-foreach="${content.content}" data-jstl-foreach-var="text">${text + "\n"}</code>
+<pre jstl-choose>
+	<code class="${content.codetype}" jstl-when="${typeof content.content === 'string'}">${content.content}</code>
+	<code class="${content.codetype}" jstl-otherwise="" jstl-foreach="${content.content}" jstl-foreach-var="text">${text + "\n"}</code>
 </pre>
-<div data-jstl-if="${content.subcontent != undefined && content.subcontent != ''}">
+<div jstl-if="${content.subcontent != undefined && content.subcontent != ''}">
 	<small>${content.subcontent}</small>
 </div>

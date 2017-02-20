@@ -7,7 +7,7 @@
 			    if (If.LOGGER.isDebugEnabled())
 				    If.LOGGER.logDebug("TASK");
 			    
-			    var expression = aElement.data("jstlIf");
+			    var expression = aElement.attr("jstl-if");
 			    if (expression != undefined) {
 				    var expression = aProcessor.resolver.resolveExpression(expression, aDataContext, false);
 				    if (typeof expression === "function")

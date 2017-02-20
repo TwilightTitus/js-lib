@@ -9,9 +9,8 @@
 			    if (Include.LOGGER.isDebugEnabled())
 				    Include.LOGGER.logDebug("execute run(" + aElement + ", " + aContext + ", " + aProcessor + ")");
 			    
-			    var expression = aElement.data("jstlInclude");
+			    var expression = aElement.attr("jstl-include");
 			    if (expression) {
-				    // aTaskChain.preventChilds();
 				    Include.__compute(expression, aElement, aContext, aProcessor, aTaskChain);
 			    } else
 				    aTaskChain.nextTask();
@@ -22,7 +21,7 @@
 		    },
 		    
 		    __executeCacheCallback : function(aUrl, aTemplate) {
-			    Include.CACHE[aUrl].template = $("<div/>").append(aTemplate);
+			    Include.CACHE[aUrl].template = $("<jstl/>").append(aTemplate);
 			    Include.CACHE[aUrl].onload = false;
 			    setTimeout(function() {
 				    var cache = Include.CACHE[aUrl];
@@ -33,7 +32,7 @@
 		    
 		    __compute : function(anIncludeExpression, aElement, aContext, aProcessor, aTaskChain) {
 			    var url = aProcessor.resolver.resolveText(anIncludeExpression, aContext);
-			    var disableCaching = url.indexOf("?") >= 0 || aElement.data("jstlIncludeCacheDisabled") != undefined;
+			    var disableCaching = url.indexOf("?") >= 0 || aElement.attr("jstl-include-cache-disabled") != undefined;
 			    var cache = undefined;
 			    if (!disableCaching)
 				    cache = Include.CACHE[url];
@@ -55,7 +54,7 @@
 				    var ajaxSettings = {
 				        'url' : de.titus.core.Page.getInstance().buildUrl(url),
 				        'async' : true,
-				        'cache' : aElement.data("jstlIncludeAjaxCacheDisabled") == undefined,
+				        'cache' : aElement.attr("jstl-include-ajax-cache-disabled") == undefined,
 				        "dataType" : "html"
 				    };
 				    ajaxSettings = $.extend(true, ajaxSettings, options);
@@ -67,7 +66,7 @@
 		    },
 		    
 		    __options : function(aElement, aContext, aProcessor) {
-			    var options = aElement.data("jstlIncludeOptions");
+			    var options = aElement.attr("jstl-include-options");
 			    if (options) {
 				    options = aProcessor.resolver.resolveText(options, aContext);
 				    options = aProcessor.resolver.resolveExpression(options, aContext);
@@ -78,7 +77,7 @@
 		    },
 		    
 		    __mode : function(aElement, aContext, aProcessor) {
-			    var mode = aElement.data("jstlIcludeMode");
+			    var mode = aElement.attr("jstl-include-mode");
 			    if (mode == undefined)
 				    return "replace";
 			    
@@ -93,26 +92,17 @@
 			    if (Include.LOGGER.isDebugEnabled())
 				    Include.LOGGER.logDebug("execute __include()");
 			    var content = aTemplate.clone();
-			    Include.__includeFinished(aElement, aIncludeMode, aTaskChain, content)
-			    // aProcessor.compute(content, aContext,
-				// Include.__includeFinished.bind({}, aElement, aIncludeMode,
-				// aTaskChain));
-		    },
-		    
-		    __includeFinished : function(aElement, aIncludeMode, aTaskChain, aContent) {
-			    if (Include.LOGGER.isDebugEnabled())
-				    Include.LOGGER.logDebug("__includeFinished()");
+			    
 			    if (aIncludeMode == "replace") {
 				    aElement.empty();
-				    aContent.appendTo(aElement);
+				    content.appendTo(aElement);
 			    } else if (aIncludeMode == "append")
-				    aContent.appendTo(aElement);
+			    	content.appendTo(aElement);
 			    else if (aIncludeMode == "prepend")
-				    aContent.prependTo(aElement);
+			    	content.prependTo(aElement);
 			    
 			    aTaskChain.nextTask();
-		    }
-		
+		    }		
 		};
 	});
 })($);

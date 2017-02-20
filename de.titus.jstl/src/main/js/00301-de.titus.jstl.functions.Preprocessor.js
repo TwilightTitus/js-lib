@@ -20,14 +20,14 @@
 				    aTaskChain.preventChilds().finish();
 			    
 			    if (!aTaskChain.root) {
-				    var ignore = aElement.data("jstlIgnore");
+				    var ignore = aElement.attr("jstl-ignore");
 				    if (ignore && ignore != "") {
 					    ignore = aProcessor.resolver.resolveExpression(ignore, aContext, false);
 					    if (ignore == "" || ignore == true || ignore == "true")
 						    aTaskChain.preventChilds().finish();
 				    }
 				    
-				    var async = aElement.data("jstlAsync");
+				    var async = aElement.attr("jstl-async");
 				    if (async && async != "") {
 					    async = aProcessor.resolver.resolveExpression(async, dataContext, false);
 					    if (async == "" || async == true || async == "true")
@@ -35,13 +35,6 @@
 					    aTaskChain.preventChilds().finish();
 				    }
 			    }
-			    
-			    var ignoreChilds = aElement.data("jstlIgnoreChilds");
-			    if (ignoreChilds && ignoreChilds != "")
-				    ignoreChilds = aProcessor.resolver.resolveExpression(ignoreChilds, aContext, true);
-			    
-			    if (ignoreChilds == "" || ignoreChilds == true || ignoreChilds == "true")
-				    aTaskChain.preventChilds();
 			    
 			    Preprocessor.__appendEvents(aElement);
 			    
@@ -52,12 +45,12 @@
 		    },
 		    
 		    __appendEvents : function(aElement) {
-			    if (aElement.data("jstlLoad"))
-				    aElement.one(de.titus.jstl.Constants.EVENTS.onLoad, Preprocessor.STATICEVENTHANDLER.bind(null, aElement.data("jstlLoad")));
-			    if (aElement.data("jstlSuccess"))
-				    aElement.one(de.titus.jstl.Constants.EVENTS.onSuccess, Preprocessor.STATICEVENTHANDLER.bind(null, aElement.data("jstlSuccess")));
-			    if (aElement.data("jstlFail"))
-				    aElement.one(de.titus.jstl.Constants.EVENTS.onFail, Preprocessor.STATICEVENTHANDLER.bind(null, aElement.data("jstlFail")));
+			    if (aElement.attr("jstl-load"))
+				    aElement.one(de.titus.jstl.Constants.EVENTS.onLoad, Preprocessor.STATICEVENTHANDLER.bind(null, aElement.attr("jstl-load")));
+			    if (aElement.attr("jstl-success"))
+				    aElement.one(de.titus.jstl.Constants.EVENTS.onSuccess, Preprocessor.STATICEVENTHANDLER.bind(null, aElement.attr("jstl-success")));
+			    if (aElement.attr("jstl-fail"))
+				    aElement.one(de.titus.jstl.Constants.EVENTS.onFail, Preprocessor.STATICEVENTHANDLER.bind(null, aElement.attr("jstl-fail")));
 		    }
 		
 		};

@@ -9,7 +9,7 @@
 			    if (Foreach.LOGGER.isDebugEnabled())
 				    Foreach.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
 			    
-			    var expression = aElement.data("jstlForeach");
+			    var expression = aElement.attr("jstl-foreach");
 			    if (expression != undefined) {
 				    aTaskChain.preventChilds();
 				    Foreach.__compute(expression, aElement, aDataContext, aProcessor, aProcessor.resolver, aTaskChain);				    
@@ -27,8 +27,8 @@
 			    
 			    aElement.empty();
 			    
-			    var varName = aElement.data("jstlForeachVar") || "itemVar";
-			    var statusName = aElement.data("jstlForeachStatus") || "statusVar";
+			    var varName = aElement.attr("jstl-foreach-var") || "itemVar";
+			    var statusName = aElement.attr("jstl-foreach-status") || "statusVar";
 			    var list = anExpressionResolver.resolveExpression(aExpression, aDataContext, undefined);
 			    
 			    var breakCondition = aElement.data("jstlForeachBreakCondition");
@@ -39,7 +39,7 @@
 		    },
 		    
 		    __list : function(aListData, aTemplate, aVarname, aStatusName, aBreakCondition, aElement, aDataContext, aProcessor, aTaskChain) {
-			    var startIndex = aProcessor.resolver.resolveExpression(aElement.data("jstlForeachStartIndex"), aDataContext, 0) || 0;
+			    var startIndex = aProcessor.resolver.resolveExpression(aElement.attr("jstl-foreach-start-index"), aDataContext, 0) || 0;
 			    
 			    var executeChain = {
 			        count : 1,

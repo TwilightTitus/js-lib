@@ -7,7 +7,7 @@
 			    if (Databind.LOGGER.isDebugEnabled())
 				    Databind.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
 			    
-			    var varname = aElement.data("jstlDatabindName");
+			    var varname = aElement.attr("jstl-databind-name");
 			    if (varname && varname.trim() != "") {
 				    var value = this.__value(aElement, aDataContext, aProcessor);
 				    if (value != undefined)
@@ -18,7 +18,7 @@
 		    },
 		    
 		    __value : function(aElement, aDataContext, aProcessor) {
-			    return aProcessor.resolver.resolveExpression(aElement.data("jstlDatabind"), aDataContext, undefined);
+			    return aProcessor.resolver.resolveExpression(aElement.attr("jstl-databind"), aDataContext, undefined);
 		    }		
 		};
 	});

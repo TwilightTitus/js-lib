@@ -8,12 +8,12 @@
 			    if (Text.LOGGER.isDebugEnabled())
 				    Text.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
 			    
-			    var ignore = aElement.data("jstlTextIgnore");
+			    var ignore = aElement.attr("jstl-text-ignore");
 			    if (!ignore) {
 				    if (!aElement.is("pre"))
 					    Text.normalize(aElement[0]);
 				    
-				    var contenttype = aElement.data("jstlTextType") || "text";
+				    var contenttype = aElement.attr("jstl-text-type") || "text";
 				    aElement.contents().filter(function() {
 					    return this.nodeType === 3 && this.textContent != undefined && this.textContent.trim() != "";
 				    }).each(function() {
@@ -34,10 +34,12 @@
 			    if (!aNode)
 				    return;
 			    if (aNode.nodeType == 3) {
+			    	var text = aNode.textContent;
 				    while (aNode.nextSibling && aNode.nextSibling.nodeType == 3) {
-					    aNode.nodeValue += aNode.nextSibling.nodeValue;
+				    	text += aNode.nextSibling.textContent;
 					    aNode.parentNode.removeChild(aNode.nextSibling);
 				    }
+				    aNode.textContent = text;				    
 			    } else {
 				    Text.normalize(aNode.firstChild);
 			    }
@@ -58,7 +60,7 @@
 			        var text = aText;
 			        var addAsHtml = false;
 			        
-			        var trimLength = aBaseElement.data("jstlTextTrimLength");
+			        var trimLength = aBaseElement.attr("jstl-text-trim-length");
 			        if (trimLength != undefined && trimLength != "") {
 				        trimLength = aProcessor.resolver.resolveExpression(trimLength, aDataContext, "-1");
 				        trimLength = parseInt(trimLength);
@@ -66,7 +68,7 @@
 					        text = de.titus.core.StringUtils.trimTextLength(text, trimLength);
 			        }
 			        
-			        var preventformat = aBaseElement.data("jstlTextPreventFormat");
+			        var preventformat = aBaseElement.attr("jstl-text-prevent-format");
 			        if (preventformat) {
 				        preventformat = aProcessor.resolver.resolveExpression(preventformat, aDataContext, true) || true;
 				        if (preventformat) {

@@ -10,7 +10,7 @@
 			    var attributes = aElement[0].attributes || [];
 			    for (var i = 0; i < attributes.length; i++) {
 				    var name = attributes[i].name;
-				    if (name.indexOf("data-jstl-") != 0) {
+				    if (name.indexOf("jstl-") != 0) {
 					    var value = attributes[i].value;
 					    if (value != undefined && value != "") {
 						    try {

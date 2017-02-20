@@ -8,6 +8,14 @@
 				    Children.LOGGER.logDebug("TASK");
 			    
 			    if (!aTaskChain.isPreventChilds()) {
+			    	var ignoreChilds = aElement.attr("jstl-ignore-childs");
+				    if (ignoreChilds && ignoreChilds != "")
+					    ignoreChilds = aProcessor.resolver.resolveExpression(ignoreChilds, aContext, true);
+				    
+				    if (ignoreChilds == "false" || ignoreChilds == true)
+					    return aTaskChain.preventChilds().nextTask();
+			    	
+			    	
 				    var children = aElement.children();
 				    if (children.length == 0)
 					    aTaskChain.nextTask();
@@ -25,7 +33,7 @@
 						    aProcessor.compute($(children[i]), aContext, executeChain.finsish.bind(executeChain));
 				    }
 			    } else
-				    aTaskChain.nextTask()
+				    aTaskChain.nextTask();
 		    }
 		};
 	});
