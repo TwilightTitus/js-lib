@@ -35,7 +35,7 @@
 				    return;
 			    if (aNode.nodeType == 3) {
 				    while (aNode.nextSibling && aNode.nextSibling.nodeType == 3) {
-					    aNode.nodeValue += " " + aNode.nextSibling.nodeValue;
+					    aNode.nodeValue += aNode.nextSibling.nodeValue;
 					    aNode.parentNode.removeChild(aNode.nextSibling);
 				    }
 			    } else {
