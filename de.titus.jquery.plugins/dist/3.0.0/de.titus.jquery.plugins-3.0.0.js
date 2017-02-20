@@ -1829,9 +1829,7 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 			    
 			    var ignore = aElement.attr("jstl-text-ignore");
 			    if (!ignore) {
-				    if (!aElement.is("pre"))
-					    Text.normalize(aElement[0]);
-				    
+				    Text.normalize(aElement[0]);				    
 				    var contenttype = aElement.attr("jstl-text-type") || "text";
 				    aElement.contents().filter(function() {
 					    return this.nodeType === 3 && this.textContent != undefined && this.textContent.trim() != "";
@@ -1853,12 +1851,12 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 			    if (!aNode)
 				    return;
 			    if (aNode.nodeType == 3) {
-			    	var text = aNode.textContent;
+				    var text = aNode.textContent;
 				    while (aNode.nextSibling && aNode.nextSibling.nodeType == 3) {
-				    	text += aNode.nextSibling.textContent;
+					    text += aNode.nextSibling.textContent;
 					    aNode.parentNode.removeChild(aNode.nextSibling);
 				    }
-				    aNode.textContent = text;				    
+				    aNode.textContent = text;
 			    } else {
 				    Text.normalize(aNode.firstChild);
 			    }
