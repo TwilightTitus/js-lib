@@ -8,10 +8,10 @@
 <link type="text/css" href="style.css" rel="stylesheet" />
 </head>
 <body logging-properties='{"remote":{"url":"logging.properties.json"}}'>
-	<div id="test" data-jstl-load="load" data-jstl-success="success"
-		data-jstl-fail="function(){alert('fail')}">
+	<div id="test" jstl-load="load" jstl-success="success"
+		jstl-fail="function(){alert('fail')}">
 		
-		<div id="testBind" data-jstl-databind-name="testBind" data-jstl-databind="${addAttributeTest}">value bind</div>		
+		<div id="testBind" jstl-databind-name="testBind" jstl-databind="${addAttributeTest}">value bind</div>		
 		
 		<div>${JSON.stringify(jQuery('#testBind').data('testBind'));}</div>
 	</div>
@@ -52,7 +52,7 @@
 	        "addAttributeTest":{"text":"<b>insert</b>text as <i>html</i><p>$\{subtext\}</p>", "subtext":"and with child processing"},
 	        test : "text",
 	        "boolean" : false,
-	        "jstlTemplate" : "data-jstl-template.html",
+	        "jstlTemplate" : "jstl-template.html",
 	        "jstlList" : []
 	        };
 	        
@@ -63,11 +63,11 @@
 		        "show" : (i % 4 != 0)
 		        });
 	        }
-	        $("#test").on("data-jstl-on-load", function(event) {
+	        $("#test").on("jstl-on-load", function(event) {
 		        window.jstlStartTime = new Date();
 	        });
 	        
-	        $("#test").on("data-jstl-on-ready", function(event) {
+	        $("#test").on("jstl-on-ready", function(event) {
 	        	window.jstlEndTime = new Date();
 	        	$("body").append(window.jstlEndTime.getTime() - window.jstlStartTime.getTime() + "ms");
 	        });

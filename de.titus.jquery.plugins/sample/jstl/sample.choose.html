@@ -25,49 +25,49 @@
     ]);
 </script>
 </head>
-<body data-jstl-autorun="">
-	<jstl data-jstl-data-var="chooseTest" data-jstl-data="true"/>
+<body jstl-autorun="">
+	<jstl jstl-data-var="chooseTest" jstl-data="true"/>
 	<div>
 		Choose test -> result is when 1
-		<div data-jstl-choose="">
-			<div data-jstl-when="true">when 1</div>
-			<div data-jstl-when='false'>when 2</div>
-			<div data-jstl-otherwise="">otherwise</div>
+		<div jstl-choose="">
+			<div jstl-when="true">when 1</div>
+			<div jstl-when='false'>when 2</div>
+			<div jstl-otherwise="">otherwise</div>
 		</div>
 	</div>
 
 	<div>
 		Choose test -> result is when 2
-		<div data-jstl-choose="">
-			<div data-jstl-when="false">when 1</div>
-			<div data-jstl-when='true'>when 2</div>
-			<div data-jstl-otherwise="">otherwise</div>
+		<div jstl-choose="">
+			<div jstl-when="false">when 1</div>
+			<div jstl-when='true'>when 2</div>
+			<div jstl-otherwise="">otherwise</div>
 		</div>
 	</div>
 	<div>
 		Choose test -> result is otherwise
-		<div data-jstl-choose="">
-			<div data-jstl-when="false">when 1</div>
-			<div data-jstl-when='false'>when 2</div>
-			<div data-jstl-otherwise="">otherwise</div>
+		<div jstl-choose="">
+			<div jstl-when="false">when 1</div>
+			<div jstl-when='false'>when 2</div>
+			<div jstl-otherwise="">otherwise</div>
 		</div>
 	</div>
 	
 	<div>
 		Choose test -> result is when 1
-		<div data-jstl-choose="">
-			<div data-jstl-when="${chooseTest}">when 1</div>
-			<div data-jstl-when='false'>when 2</div>
-			<div data-jstl-otherwise="">otherwise</div>
+		<div jstl-choose="">
+			<div jstl-when="${chooseTest}">when 1</div>
+			<div jstl-when='false'>when 2</div>
+			<div jstl-otherwise="">otherwise</div>
 		</div>
 	</div>
 	
 	<div>
 		Choose test -> result is when 2
-		<div data-jstl-choose="">
-			<div data-jstl-when="${chooseTest == undefined}">when 1</div>
-			<div data-jstl-when='${chooseTest != undefined}'>when 2</div>
-			<div data-jstl-otherwise="">otherwise</div>
+		<div jstl-choose="">
+			<div jstl-when="${chooseTest == undefined}">when 1</div>
+			<div jstl-when='${chooseTest != undefined}'>when 2</div>
+			<div jstl-otherwise="">otherwise</div>
 		</div>
 	</div>
 

@@ -8,13 +8,13 @@
 <link type="text/css" href="style.css" rel="stylesheet" />
 </head>
 <body logging-properties='{"remote":{"url":"logging.properties.json"}}'>
-	<div id="test" data-jstl-load="load" data-jstl-success="success"
-		data-jstl-fail="function(){alert('fail')}">
+	<div id="test" jstl-load="load" jstl-success="success"
+		jstl-fail="function(){alert('fail')}">
 		<div>
 			foreach on remote data
-			<div data-jstl-data="jstl-remote.data.json" data-jstl-data-mode="remote"
-				data-jstl-data-var="newData" data-jstl-foreach="${newData.list}"
-				data-jstl-foreach-var="listItem" data-jstl-foreach-status="listStatus">
+			<div jstl-data="jstl-remote.data.json" jstl-data-mode="remote"
+				jstl-data-var="newData" jstl-foreach="${newData.list}"
+				jstl-foreach-var="listItem" jstl-foreach-status="listStatus">
 				<span>${listStatus.index} </span> <span>id: ${listItem.id}</span> <span>name:
 					${listItem.name}</span> <span>name: ${jstlTemplate}</span> <br />
 			</div>
@@ -22,23 +22,23 @@
 
 
 		<div>
-			add single attribute<br/> <img data-jstl-data='jstl-remote.data.json'
-				data-jstl-data-mode="remote"
-				data-jstl-add-attribute="{'name':'src', 'value':testImage}" />
+			add single attribute<br/> <img jstl-data='jstl-remote.data.json'
+				jstl-data-mode="remote"
+				jstl-add-attribute="{'name':'src', 'value':testImage}" />
 		</div>
 		<div>
 			add multiple Attribute<br/>
-			<div data-jstl-data='jstl-remote.data.json' data-jstl-data-mode="remote"
-				data-jstl-add-attribute="${addAttributes}"></div>
+			<div jstl-data='jstl-remote.data.json' jstl-data-mode="remote"
+				jstl-add-attribute="${addAttributes}"></div>
 		</div>
 
 		<div>
 			foreach on data context / it's like run over all properties of an
 			Object
-			<div data-jstl-data='jstl-remote.data.json' data-jstl-data-mode="remote"
-				data-jstl-foreach="${list}" data-jstl-foreach-var="listItem"
-				data-jstl-foreach-status="listStatus">
-				<div data-jstl-if="${listItem.id != 3}">
+			<div jstl-data='jstl-remote.data.json' jstl-data-mode="remote"
+				jstl-foreach="${list}" jstl-foreach-var="listItem"
+				jstl-foreach-status="listStatus">
+				<div jstl-if="${listItem.id != 3}">
 					<span>${listStatus.index} </span> <span>id: ${listItem.id}</span> <span>name: ${listItem.name}</span> <span>name: ${jstlTemplate}</span>
 				</div>
 			</div>
@@ -47,9 +47,9 @@
 		<div>
 			foreach on data context / it's like run over all properties of an
 			Object
-			<div data-jstl-data='jstl-remote.data.json' data-jstl-data-mode="remote"
-				data-jstl-foreach="${list}" data-jstl-foreach-var="listItem"
-				data-jstl-foreach-status="listStatus">
+			<div jstl-data='jstl-remote.data.json' jstl-data-mode="remote"
+				jstl-foreach="${list}" jstl-foreach-var="listItem"
+				jstl-foreach-status="listStatus">
 				<div>
 					<span>${listStatus.index} </span> <span>id: ${listItem.id}</span> <span>name:
 						${listItem.name}</span> <span>name: ${jstlTemplate}</span>
@@ -64,91 +64,91 @@
 			<div>${"test " + test + "!"}</div>
 			<div>${testFunction}</div>
 		</div>
-		<div data-jstl-if="${boolean}">boolean test</div>
+		<div jstl-if="${boolean}">boolean test</div>
 		<div></div>
 		<div>
 			include tests
-			<div data-jstl-include="jstl-template.html"
-				data-jstl-include-options='{"test": "test"}' data-jstl-include-mode="append"
+			<div jstl-include="jstl-template.html"
+				jstl-include-options='{"test": "test"}' jstl-include-mode="append"
 				class="${test}">
 				<div>append</div>
 			</div>
-			<div data-jstl-include="jstl-template.html"
-				data-jstl-include-options='{"test": "test"}' data-jstl-include-mode="prepend">
+			<div jstl-include="jstl-template.html"
+				jstl-include-options='{"test": "test"}' jstl-include-mode="prepend">
 				<div>prepend</div>
 			</div>
-			<div data-jstl-include="jstl-template.html"
-				data-jstl-include-options='{"test": "test"}' data-jstl-include-mode="replace">
+			<div jstl-include="jstl-template.html"
+				jstl-include-options='{"test": "test"}' jstl-include-mode="replace">
 				<div>replace</div>
 			</div>
-			<div data-jstl-include="${jstlTemplate}"
-				data-jstl-include-options='{"test": "test"}' data-jstl-include-mode="append">
+			<div jstl-include="${jstlTemplate}"
+				jstl-include-options='{"test": "test"}' jstl-include-mode="append">
 				<div>Parameterisierter Include</div>
 			</div>
-			<div data-jstl-include="#" data-jstl-include-options='{"url": jstlTemplate}'
-				data-jstl-include-mode="append">
+			<div jstl-include="#" jstl-include-options='{"url": jstlTemplate}'
+				jstl-include-mode="append">
 				<div>Parameterisierter Include mit den Options</div>
 			</div>
 		</div>
 		<div>
 			data tests
-			<div data-jstl-data='{"data": "direct Data"}'>${data}</div>
-			<div data-jstl-data='dataFunction()'>${functionResult}</div>
-			<div data-jstl-data="jstl-remote.data.json" data-jstl-data-mode="remote"
-				data-jstl-data-options='{"test": "test"}'>${remoteData}</div>
-			<div data-jstl-data="jstl-remote.data.json" data-jstl-data-mode="remote"
-				data-jstl-data-var="remoteData">${remoteData.remoteData} with new
+			<div jstl-data='{"data": "direct Data"}'>${data}</div>
+			<div jstl-data='dataFunction()'>${functionResult}</div>
+			<div jstl-data="jstl-remote.data.json" jstl-data-mode="remote"
+				jstl-data-options='{"test": "test"}'>${remoteData}</div>
+			<div jstl-data="jstl-remote.data.json" jstl-data-mode="remote"
+				jstl-data-var="remoteData">${remoteData.remoteData} with new
 				Varname</div>
 		</div>
 
 		<div>
 			Choose test
-			<div data-jstl-choose="">
-				<div data-jstl-when="false">when 1</div>
-				<div data-jstl-when='false'>when 2</div>
-				<div data-jstl-otherwise="">otherwise</div>
+			<div jstl-choose="">
+				<div jstl-when="false">when 1</div>
+				<div jstl-when='false'>when 2</div>
+				<div jstl-otherwise="">otherwise</div>
 			</div>
 		</div>
 		<div>
 			foreach test 0
-			<div data-jstl-data='{"pageNumbers":[1,2,3,4,5], "test":5}'
-				data-jstl-foreach="${pageNumbers}" data-jstl-foreach-var="pageNumber">
-				<span data-jstl-if="${pageNumber == test}">${pageNumber}</span> <span
-					data-jstl-if="${pageNumber != test}">${pageNumber}</span> <br />
+			<div jstl-data='{"pageNumbers":[1,2,3,4,5], "test":5}'
+				jstl-foreach="${pageNumbers}" jstl-foreach-var="pageNumber">
+				<span jstl-if="${pageNumber == test}">${pageNumber}</span> <span
+					jstl-if="${pageNumber != test}">${pageNumber}</span> <br />
 			</div>
 		</div>
 
 		<div>
 			foreach test 1
-			<div data-jstl-data='{"data": "direct Data"}' data-jstl-foreach="${list}"
-				data-jstl-foreach-var="listItem" data-jstl-foreach-status="listStatus">
+			<div jstl-data='{"data": "direct Data"}' jstl-foreach="${list}"
+				jstl-foreach-var="listItem" jstl-foreach-status="listStatus">
 				<span>${listStatus.index} </span> <span>id: ${listItem.id}</span> <span>name:
 					${listItem.name}</span> <span>name: ${jstlTemplate}</span> <br />
 			</div>
 		</div>
 		<div>
 			foreach on remote data
-			<div data-jstl-data="jstl-remote.data.json" data-jstl-data-mode="remote"
-				data-jstl-data-var="newData" data-jstl-foreach="${newData.list}"
-				data-jstl-foreach-var="listItem" data-jstl-foreach-status="listStatus">
+			<div jstl-data="jstl-remote.data.json" jstl-data-mode="remote"
+				jstl-data-var="newData" jstl-foreach="${newData.list}"
+				jstl-foreach-var="listItem" jstl-foreach-status="listStatus">
 				<span>${listStatus.index} </span> <span>id: ${listItem.id}</span> <span>name:
 					${listItem.name}</span> <span>name: ${jstlTemplate}</span> <br />
 			</div>
 		</div>
 		<div>
 			foreach on remote data with start index and break condition
-			<div data-jstl-data="jstl-remote.data.json" data-jstl-data-mode="remote"
-				data-jstl-foreach="${list}" data-jstl-foreach-var="listItem"
-				data-jstl-foreach-status="listStatus" data-jstl-foreach-start-index="2"
-				data-jstl-foreach-break-condition="${listStatus.index == 5}">
+			<div jstl-data="jstl-remote.data.json" jstl-data-mode="remote"
+				jstl-foreach="${list}" jstl-foreach-var="listItem"
+				jstl-foreach-status="listStatus" jstl-foreach-start-index="2"
+				jstl-foreach-break-condition="${listStatus.index == 5}">
 				<span>${listStatus.index} </span> <span>id: ${listItem.id}</span> <span>name:
 					${listItem.name}</span> <span>name: ${jstlTemplate}</span> <br />
 			</div>
 		</div>
 		<div>
 			foreach test 2
-			<div data-jstl-foreach="${jstlList}">
-				<div data-jstl-if="${itemVar.show}">
+			<div jstl-foreach="${jstlList}">
+				<div jstl-if="${itemVar.show}">
 					<span>${statusVar.index} </span> <span>id: ${itemVar.id}</span> <span>name:
 						${itemVar.name}</span> <span>name: ${jstlTemplate}</span>
 				</div>
@@ -158,28 +158,28 @@
 		<div>
 			foreach on data context / it's like run over all properties of an
 			Object
-			<div data-jstl-data='jstl-remote.data.array.json' data-jstl-data-mode="remote"
-				data-jstl-foreach="" data-jstl-foreach-var="listItem"
-				data-jstl-foreach-status="listStatus">
-				<div data-jstl-if="${listItem.id != 1}">
+			<div jstl-data='jstl-remote.data.array.json' jstl-data-mode="remote"
+				jstl-foreach="" jstl-foreach-var="listItem"
+				jstl-foreach-status="listStatus">
+				<div jstl-if="${listItem.id != 1}">
 					<span>${listStatus.index} </span> <span>id: ${listItem.id}</span> <span>name:
 						${listItem.name}</span> <span>name: ${jstlTemplate}</span>
 				</div>
 			</div>
 		</div>
 
-		<div class="data-jstl-text-content-type">
-			data-jstl-text-content-type="html"
+		<div class="jstl-text-content-type">
+			jstl-text-content-type="html"
 			<ul
-				data-jstl-data="${addAttributeTest}">
+				jstl-data="${addAttributeTest}">
 				<li>
 					<h4>inculde as html and child processing</h4>
-					<div data-jstl-text-content-type="html">${text}</div>
+					<div jstl-text-content-type="html">${text}</div>
 				</li>
 				<li>
 					<h4>inculde as html and no child processing</h4>
-					<div data-jstl-text-content-type="html"
-						data-jstl-ignore-childs="">${text}</div>
+					<div jstl-text-content-type="html"
+						jstl-ignore-childs="">${text}</div>
 				</li>
 				<li>
 					<h4>normal inculde as plain text</h4>

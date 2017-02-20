@@ -8,17 +8,17 @@
 <link type="text/css" href="style.css" rel="stylesheet" />
 </head>
 <body logging-properties='{"remote":{"url":"logging.properties.json"}}'>
-	<div id="test" data-jstl-load="load" data-jstl-success="success"
-		data-jstl-fail="function(){alert('fail')}">
+	<div id="test" jstl-load="load" jstl-success="success"
+		jstl-fail="function(){alert('fail')}">
 		
 
 		<div>
 			foreach on data context / it's like run over all properties of an
 			Object
-			<div data-jstl-data='data-jstl-remote.data.array.json' data-jstl-data-mode="remote"
-				data-jstl-foreach="" data-jstl-foreach-var="listItem"
-				data-jstl-foreach-status="listStatus">
-				<div data-jstl-if="${listItem.id != 1}">
+			<div jstl-data='jstl-remote.data.array.json' jstl-data-mode="remote"
+				jstl-foreach="" jstl-foreach-var="listItem"
+				jstl-foreach-status="listStatus">
+				<div jstl-if="${listItem.id != 1}">
 					<span>${listStatus.index} </span> <span>id: ${listItem.id}</span> <span>name:
 						${listItem.name}</span> <span>name: ${jstlTemplate}</span>
 				</div>
@@ -61,7 +61,7 @@
 	        var data = {
 	        test : "text",
 	        "boolean" : false,
-	        "jstlTemplate" : "data-jstl-template.html",
+	        "jstlTemplate" : "jstl-template.html",
 	        "jstlList" : []
 	        };
 	        
@@ -72,7 +72,7 @@
 		        "show" : (i % 4 != 0)
 		        });
 	        }
-	        $("#test").on("data-jstl-on-ready", function(event) {
+	        $("#test").on("jstl-on-ready", function(event) {
 		        console.log("ready event");
 		        console.log(event);
 		        this.show();
