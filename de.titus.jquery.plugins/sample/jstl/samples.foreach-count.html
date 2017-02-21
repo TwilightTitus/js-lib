@@ -1,0 +1,55 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>JSTL Samples - jstl-foreach-count</title>
+
+<script src="../../libs/jquery-1.11.1.js" type="text/javascript"></script>
+<script src="../../dist/3.0.0/de.titus.jquery.plugins-3.0.0.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+	de.titus.logging.LoggerFactory.getInstance().setConfig([
+            {
+                "filter" : "",
+                "logLevel" : "ERROR",
+                "appenders" : [
+	                "de.titus.logging.ConsolenAppender"
+                ]
+            }, {
+                "filter" : "de.titus",
+                "logLevel" : "DEBUG",
+                "appenders" : [
+	                "de.titus.logging.ConsolenAppender"
+                ]
+            }
+    ]);
+</script>
+</head>
+<body jstl-autorun="">
+
+
+	<div>
+		foreach count - simple
+		<div jstl-foreach="" jstl-foreach-count="10" jstl-foreach-status="itemStatus">
+			<div>${itemStatus.index}</div>
+		</div>
+	</div>
+	
+	<div>
+		foreach count - with step
+		<div jstl-foreach="" jstl-foreach-count="10" jstl-foreach-step="0.5" jstl-foreach-status="itemStatus">
+			<div>${itemStatus.index}</div>
+		</div>
+	</div>
+	
+	<div>
+		foreach count - with start index and step
+		<div jstl-foreach="" jstl-foreach-start-index="5" jstl-foreach-count="10" jstl-foreach-step="0.5" jstl-foreach-status="itemStatus">
+			<div>${itemStatus.index}</div>
+		</div>
+	</div>
+
+	<div id="log">
+		<div>Logs</div>
+	</div>
+</body>
+</html>
