@@ -33,7 +33,7 @@
 		FORM_STEP_BACK : "form-step-back",
 		FORM_STEP_NEXT : "form-step-next",
 		FORM_STEP_SUMMARY : "form-step-summary",
-		FORM_STEP_SUMMARY : "form-step-submit",
+		FORM_STEP_SUBMIT : "form-step-submit",
 		
 		FIELD_ACTIVE : "form-field-active",
 		FIELD_INACTIVE : "form-field-inactive",

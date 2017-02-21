@@ -8,7 +8,7 @@
 			    if (Eventbind.LOGGER.isDebugEnabled())
 				    Eventbind.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
 			    
-			    if (aElement.attr("jstl-eventbind"))
+			    if (aElement.attr("jstl-eventbind") != undefined)
 				    aElement.de_titus_core_EventBind(aDataContext);
 			    
 			    aTaskChain.nextTask();

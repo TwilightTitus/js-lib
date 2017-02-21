@@ -31,7 +31,7 @@
 			    var statusName = aElement.attr("jstl-foreach-status") || "statusVar";
 			    var list = anExpressionResolver.resolveExpression(aExpression, aDataContext, undefined);
 			    
-			    var breakCondition = aElement.data("jstlForeachBreakCondition");
+			    var breakCondition = aElement.attr("jstl-foreach-break-condition");
 			    if (Array.isArray(list))
 				    Foreach.__list(list, tempalte, varName, statusName, breakCondition, aElement, aDataContext, aProcessor, aTaskChain);
 			    else if (typeof list === "object")

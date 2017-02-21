@@ -28,7 +28,7 @@
 			if (TaskChain.LOGGER.isDebugEnabled())
 				TaskChain.LOGGER.logDebug("updateContext()");
 			if (doMerge)
-				this.context = $.extend({}, this.context, aContext);
+				this.context = $.extend(true, {}, this.context, aContext);
 			else
 				this.context = aContext;
 			
@@ -51,7 +51,7 @@
 				
 				if (TaskChain.LOGGER.isDebugEnabled())
 					TaskChain.LOGGER.logDebug("nextTask() -> next task: \"" + name + "\"!");
-				task(this.element, this.context, this.processor, this);
+				task(this.element, this.__buildContext(), this.processor, this);
 			} else {
 				if (TaskChain.LOGGER.isDebugEnabled())
 					TaskChain.LOGGER.logDebug("nextTask() -> task chain is finished!");				
@@ -59,6 +59,10 @@
 			}
 			
 			return this;
+		};
+		
+		TaskChain.prototype.__buildContext = function() {
+		    return $.extend({},this.context,{"$root": this.processor.element, "$element" : this.element});
 		};
 		
 		TaskChain.prototype.finish = function() {
