@@ -1471,8 +1471,7 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 			this.root = isRoot;
 			this.callback = aCallback;
 			this.__preventChilds = false;
-			this.__taskchain = de.titus.jstl.TaskRegistry.taskchain;
-			this.__index = 0;
+			this.__taskchain = de.titus.jstl.TaskRegistry.taskchain;			
 		};
 		TaskChain.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.TaskChain");
 		
@@ -1510,11 +1509,19 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 			if (this.__taskchain) {
 				var name = this.__taskchain.name;
 				var task = this.__taskchain.task;
+				var phase = this.__taskchain.phase;
+				var selector = this.__taskchain.selector; 
 				this.__taskchain = this.__taskchain.next;
 				
 				if (TaskChain.LOGGER.isDebugEnabled())
-					TaskChain.LOGGER.logDebug("nextTask() -> next task: \"" + name + "\"!");
-				task(this.element, this.__buildContext(), this.processor, this);
+					TaskChain.LOGGER.logDebug("nextTask() -> next task: \"" + name + "\", phase: \"" + phase + "\", selector \"" + selector + "\"!");
+				if(selector == undefined || this.element.is(selector))
+					task(this.element, this.__buildContext(), this.processor, this);
+				else{
+					if (TaskChain.LOGGER.isDebugEnabled())
+						TaskChain.LOGGER.logDebug("nextTask() -> skip task: \"" + name + "\", phase: \"" + phase + "\", selector \"" + selector + "\"!");
+					this.nextTask();
+				}
 			} else {
 				if (TaskChain.LOGGER.isDebugEnabled())
 					TaskChain.LOGGER.logDebug("nextTask() -> task chain is finished!");				
@@ -1530,7 +1537,7 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 		
 		TaskChain.prototype.finish = function() {
 			if (TaskChain.LOGGER.isDebugEnabled())
-				TaskChain.LOGGER.logDebug("finish()");
+				TaskChain.LOGGER.logDebug("finish()");			
 			
 			if(this.callback)
 				this.callback(this.element, this.context, this.processor, this);
@@ -2325,6 +2332,7 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 	de.titus.core.Namespace.create("de.titus.jstl.Processor", function() {
 		var Processor = function(aElement, aContext, aCallback) {
 			this.element = aElement;
+			this.parent = this.element.parent();
 			this.context = aContext || {};
 			this.callback = aCallback;
 			this.resolver = new de.titus.core.ExpressionResolver(this.element.data("jstlExpressionRegex"));
@@ -2345,7 +2353,8 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 			if (!aElement) {
 				this.element.trigger(de.titus.jstl.Constants.EVENTS.onStart, [
 				        aContext, this
-				]);				
+				]);	
+				this.element.detach();
 				this.__computeElement(this.element, this.context, this.callback, true);
 			} else
 				this.__computeElement(aElement, aContext, aCallback);			
@@ -2387,6 +2396,8 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 				});
 				return this;
 			} else
+				this.parent.append(this.element);
+				
 				$(document).ready((function(aElement, aProcessor) {
 					aElement.trigger(de.titus.jstl.Constants.EVENTS.onReady, [
 						aProcessor

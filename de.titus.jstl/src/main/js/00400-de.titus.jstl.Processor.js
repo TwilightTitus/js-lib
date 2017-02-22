@@ -3,6 +3,7 @@
 	de.titus.core.Namespace.create("de.titus.jstl.Processor", function() {
 		var Processor = function(aElement, aContext, aCallback) {
 			this.element = aElement;
+			this.parent = this.element.parent();
 			this.context = aContext || {};
 			this.callback = aCallback;
 			this.resolver = new de.titus.core.ExpressionResolver(this.element.data("jstlExpressionRegex"));
@@ -23,7 +24,8 @@
 			if (!aElement) {
 				this.element.trigger(de.titus.jstl.Constants.EVENTS.onStart, [
 				        aContext, this
-				]);				
+				]);	
+				this.element.detach();
 				this.__computeElement(this.element, this.context, this.callback, true);
 			} else
 				this.__computeElement(aElement, aContext, aCallback);			
@@ -65,6 +67,8 @@
 				});
 				return this;
 			} else
+				this.parent.append(this.element);
+				
 				$(document).ready((function(aElement, aProcessor) {
 					aElement.trigger(de.titus.jstl.Constants.EVENTS.onReady, [
 						aProcessor

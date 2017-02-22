@@ -8,8 +8,7 @@
 			this.root = isRoot;
 			this.callback = aCallback;
 			this.__preventChilds = false;
-			this.__taskchain = de.titus.jstl.TaskRegistry.taskchain;
-			this.__index = 0;
+			this.__taskchain = de.titus.jstl.TaskRegistry.taskchain;			
 		};
 		TaskChain.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.TaskChain");
 		
@@ -47,11 +46,19 @@
 			if (this.__taskchain) {
 				var name = this.__taskchain.name;
 				var task = this.__taskchain.task;
+				var phase = this.__taskchain.phase;
+				var selector = this.__taskchain.selector; 
 				this.__taskchain = this.__taskchain.next;
 				
 				if (TaskChain.LOGGER.isDebugEnabled())
-					TaskChain.LOGGER.logDebug("nextTask() -> next task: \"" + name + "\"!");
-				task(this.element, this.__buildContext(), this.processor, this);
+					TaskChain.LOGGER.logDebug("nextTask() -> next task: \"" + name + "\", phase: \"" + phase + "\", selector \"" + selector + "\"!");
+				if(selector == undefined || this.element.is(selector))
+					task(this.element, this.__buildContext(), this.processor, this);
+				else{
+					if (TaskChain.LOGGER.isDebugEnabled())
+						TaskChain.LOGGER.logDebug("nextTask() -> skip task: \"" + name + "\", phase: \"" + phase + "\", selector \"" + selector + "\"!");
+					this.nextTask();
+				}
 			} else {
 				if (TaskChain.LOGGER.isDebugEnabled())
 					TaskChain.LOGGER.logDebug("nextTask() -> task chain is finished!");				
@@ -67,7 +74,7 @@
 		
 		TaskChain.prototype.finish = function() {
 			if (TaskChain.LOGGER.isDebugEnabled())
-				TaskChain.LOGGER.logDebug("finish()");
+				TaskChain.LOGGER.logDebug("finish()");			
 			
 			if(this.callback)
 				this.callback(this.element, this.context, this.processor, this);
