@@ -104,5 +104,7 @@
 			    aTaskChain.nextTask();
 		    }		
 		};
+		
+		de.titus.jstl.TaskRegistry.append("include", de.titus.jstl.Constants.PHASE.MANIPULATION, "[jstl-include]", de.titus.jstl.functions.Include.TASK);
 	});
 })($);

@@ -36,5 +36,7 @@
 				    aTaskChain.nextTask();
 		    }
 		};
+		
+		de.titus.jstl.TaskRegistry.append("children", de.titus.jstl.Constants.PHASE.CHILDREN, undefined, de.titus.jstl.functions.Children.TASK);
 	});
 })($);

@@ -15,5 +15,7 @@
 		    }
 		
 		};
+		
+		de.titus.jstl.TaskRegistry.append("eventbind", de.titus.jstl.Constants.PHASE.BINDING, "[jstl-eventbind]", de.titus.jstl.functions.Eventbind.TASK);
 	});
 })($);

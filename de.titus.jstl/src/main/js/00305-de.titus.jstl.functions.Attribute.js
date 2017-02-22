@@ -31,5 +31,7 @@
 			    aTaskChain.nextTask();
 		    }
 		}
+		
+		de.titus.jstl.TaskRegistry.append("attribute", de.titus.jstl.Constants.PHASE.CONTENT, undefined, de.titus.jstl.functions.Attribute.TASK);
 	});
 })($);

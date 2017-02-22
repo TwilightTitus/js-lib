@@ -37,5 +37,7 @@
 		    }
 		
 		};
+		
+		de.titus.jstl.TaskRegistry.append("add-attribute", de.titus.jstl.Constants.PHASE.CONTENT, "[jstl-add-attribute]", de.titus.jstl.functions.AddAttribute.TASK);
 	});
 })($);

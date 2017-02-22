@@ -74,5 +74,7 @@
 		    }
 		
 		};
+		
+		de.titus.jstl.TaskRegistry.append("data", de.titus.jstl.Constants.PHASE.CONTEXT, "[jstl-data]", de.titus.jstl.functions.Data.TASK);
 	});
 })($);

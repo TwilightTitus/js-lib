@@ -158,5 +158,7 @@
 			    return template;
 		    }
 		};
+		
+		de.titus.jstl.TaskRegistry.append("foreach", de.titus.jstl.Constants.PHASE.MANIPULATION, "[jstl-foreach]", de.titus.jstl.functions.Foreach.TASK);
 	});
 })($);

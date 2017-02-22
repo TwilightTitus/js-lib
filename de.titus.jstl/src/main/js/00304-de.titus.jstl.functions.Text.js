@@ -86,5 +86,7 @@
 		Text.CONTENTTYPE["text/html"] = Text.CONTENTTYPE["html"];
 		Text.CONTENTTYPE["application/json"] = Text.CONTENTTYPE["json"];
 		Text.CONTENTTYPE["text/plain"] = Text.CONTENTTYPE["text"];
+		
+		de.titus.jstl.TaskRegistry.append("text", de.titus.jstl.Constants.PHASE.CONTENT, undefined, de.titus.jstl.functions.Text.TASK);
 	});
 })($);

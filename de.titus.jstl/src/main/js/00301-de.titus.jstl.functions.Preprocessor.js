@@ -55,5 +55,6 @@
 		
 		};
 		
+		de.titus.jstl.TaskRegistry.append("preprocessor", de.titus.jstl.Constants.PHASE.INIT, undefined, de.titus.jstl.functions.Preprocessor.TASK);
 	});
 })($);

@@ -1411,6 +1411,16 @@ de.titus.core.Namespace.create("de.titus.jstl.Constants", function() {
 		onSuccess : "jstl-on-success",
 		onFail : "jstl-on-fail",
 		onReady : "jstl-on-ready"
+		},
+		PHASE : {
+			INIT:0,
+			CONDITION:1,
+			CONTEXT:2,
+			MANIPULATION:3,
+			CONTENT:3,
+			BINDING:4,
+			CHILDREN:5,
+			READY:6
 		}
 	};	
 });
@@ -1420,21 +1430,33 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 		taskchain : undefined
 	};
 	
-	TaskRegistry.append = function(aName, aFunction, aChain) {
+	TaskRegistry.append = function(aName, aPhase, aSelector, aFunction, aChain) {
 		if (!aChain && !TaskRegistry.taskchain)
-			TaskRegistry.taskchain = {
-			    name : aName,
-			    task : aFunction
-			};
+			TaskRegistry.taskchain = TaskRegistry.__buildEntry(aName, aPhase, aSelector, aFunction);
 		else if (!aChain && TaskRegistry.taskchain)
-			TaskRegistry.append(aName, aFunction, TaskRegistry.taskchain);
-		else if (aChain.next)
-			TaskRegistry.append(aName, aFunction, aChain.next);
-		else
-			aChain.next = {
-			    name : aName,
-			    task : aFunction
-			};
+			TaskRegistry.append(aName, aPhase, aSelector, aFunction, TaskRegistry.taskchain);
+		else if (aChain.phase <= aPhase && aChain.next && aChain.next.phase <= aPhase)
+			TaskRegistry.append(aName, aPhase, aSelector, aFunction, aChain.next);
+		else if (aChain.phase <= aPhase && aChain.next && aChain.next.phase > aPhase) {
+			var tempChain = aChain.next;
+			aChain.next = TaskRegistry.__buildEntry(aName, aPhase, aSelector, aFunction);
+			aChain.next.next = tempChain;
+		} else if (aChain.phase <= aPhase && !aChain.next)
+			aChain.next = TaskRegistry.__buildEntry(aName, aPhase, aSelector, aFunction);
+		else if (aChain.phase > aPhase) {
+			var tempChain = aChain;
+			TaskRegistry.taskchain = TaskRegistry.__buildEntry(aName, aPhase, aSelector, aFunction);
+			TaskRegistry.taskchain.next = aChain;
+		}
+	}
+
+	TaskRegistry.__buildEntry = function(aName, aPhase, aSelector, aFunction) {
+		return {
+		    name : aName,
+		    phase : aPhase,
+		    selector : aSelector,
+		    task : aFunction
+		};
 	}
 
 	de.titus.jstl.TaskRegistry = TaskRegistry;
@@ -1557,6 +1579,8 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 				    aTaskChain.nextTask();
 		    }
 		};
+		
+		de.titus.jstl.TaskRegistry.append("children", de.titus.jstl.Constants.PHASE.CHILDREN, undefined, de.titus.jstl.functions.Children.TASK);
 	});
 })($);
 (function($) {
@@ -1584,6 +1608,8 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 				    aExecuteChain.nextTask();
 		    }
 		};
+		
+		de.titus.jstl.TaskRegistry.append("if", de.titus.jstl.Constants.PHASE.CONDITION, "[jstl-if]", de.titus.jstl.functions.If.TASK);
 	});
 })($);
 (function($) {
@@ -1643,6 +1669,7 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 		
 		};
 		
+		de.titus.jstl.TaskRegistry.append("preprocessor", de.titus.jstl.Constants.PHASE.INIT, undefined, de.titus.jstl.functions.Preprocessor.TASK);
 	});
 })($);
 (function($) {
@@ -1715,6 +1742,8 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 			    return false;
 		    }
 		};
+		
+		de.titus.jstl.TaskRegistry.append("choose", de.titus.jstl.Constants.PHASE.MANIPULATION, "[jstl-choose]", de.titus.jstl.functions.Choose.TASK);
 	});
 })($);
 (function($) {
@@ -1757,7 +1786,7 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 			    else if (typeof list === "object")
 				    Foreach.__map(list, tempalte, varName, statusName, aElement, aContext, aProcessor, aTaskChain);
 		    },
-		    __count : function(aTemplate, aVarname, aElement, aContext, aProcessor, aTaskChain) {
+		    __count : function(aTemplate, aStatusName, aElement, aContext, aProcessor, aTaskChain) {
 			    var startIndex = aProcessor.resolver.resolveExpression(aElement.attr("jstl-foreach-start-index"), aContext, 0) || 0;
 			    var count = aProcessor.resolver.resolveExpression(aElement.attr("jstl-foreach-count"));
 			    var step = aProcessor.resolver.resolveExpression(aElement.attr("jstl-foreach-step") || 1);
@@ -1774,7 +1803,7 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 			    for (var i = startIndex; i < count; i += step) {
 				    var template = aTemplate.clone();
 				    var context = $.extend({}, aContext);
-				    context[aVarname] = {
+				    context[aStatusName] = {
 				        "index" : i,
 				        "count" : count,
 				        "context" : aContext
@@ -1877,6 +1906,8 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 			    return template;
 		    }
 		};
+		
+		de.titus.jstl.TaskRegistry.append("foreach", de.titus.jstl.Constants.PHASE.MANIPULATION, "[jstl-foreach]", de.titus.jstl.functions.Foreach.TASK);
 	});
 })($);
 (function($) {
@@ -1967,6 +1998,8 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 		Text.CONTENTTYPE["text/html"] = Text.CONTENTTYPE["html"];
 		Text.CONTENTTYPE["application/json"] = Text.CONTENTTYPE["json"];
 		Text.CONTENTTYPE["text/plain"] = Text.CONTENTTYPE["text"];
+		
+		de.titus.jstl.TaskRegistry.append("text", de.titus.jstl.Constants.PHASE.CONTENT, undefined, de.titus.jstl.functions.Text.TASK);
 	});
 })($);
 (function($) {
@@ -2002,6 +2035,8 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 			    aTaskChain.nextTask();
 		    }
 		}
+		
+		de.titus.jstl.TaskRegistry.append("attribute", de.titus.jstl.Constants.PHASE.CONTENT, undefined, de.titus.jstl.functions.Attribute.TASK);
 	});
 })($);
 (function($) {
@@ -2080,6 +2115,8 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 		    }
 		
 		};
+		
+		de.titus.jstl.TaskRegistry.append("data", de.titus.jstl.Constants.PHASE.CONTEXT, "[jstl-data]", de.titus.jstl.functions.Data.TASK);
 	});
 })($);
 (function($) {
@@ -2188,6 +2225,8 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 			    aTaskChain.nextTask();
 		    }		
 		};
+		
+		de.titus.jstl.TaskRegistry.append("include", de.titus.jstl.Constants.PHASE.MANIPULATION, "[jstl-include]", de.titus.jstl.functions.Include.TASK);
 	});
 })($);
 (function($) {
@@ -2229,6 +2268,8 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 		    }
 		
 		};
+		
+		de.titus.jstl.TaskRegistry.append("add-attribute", de.titus.jstl.Constants.PHASE.CONTENT, "[jstl-add-attribute]", de.titus.jstl.functions.AddAttribute.TASK);
 	});
 })($);
 (function($) {
@@ -2254,6 +2295,8 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 			    return aProcessor.resolver.resolveExpression(aElement.attr("jstl-databind"), aDataContext, undefined);
 		    }		
 		};
+		
+		de.titus.jstl.TaskRegistry.append("databind", de.titus.jstl.Constants.PHASE.BINDING, "[jstl-databind]", de.titus.jstl.functions.Databind.TASK);
 	});
 })($);
 (function($) {
@@ -2273,6 +2316,8 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 		    }
 		
 		};
+		
+		de.titus.jstl.TaskRegistry.append("eventbind", de.titus.jstl.Constants.PHASE.BINDING, "[jstl-eventbind]", de.titus.jstl.functions.Eventbind.TASK);
 	});
 })($);
 (function($, SpecialFunctions) {
@@ -2354,25 +2399,30 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 		de.titus.jstl.Processor = Processor;
 	});
 })(jQuery, de.titus.core.SpecialFunctions);
-de.titus.core.Namespace.create("de.titus.jstl.Setup", function() {
-	de.titus.jstl.Setup = function() {
-	};
-	
-	
-	de.titus.jstl.TaskRegistry.append("preprocessor", de.titus.jstl.functions.Preprocessor.TASK);
-	de.titus.jstl.TaskRegistry.append("if", de.titus.jstl.functions.If.TASK);
-	de.titus.jstl.TaskRegistry.append("data", de.titus.jstl.functions.Data.TASK);
-	de.titus.jstl.TaskRegistry.append("include", de.titus.jstl.functions.Include.TASK);
-	de.titus.jstl.TaskRegistry.append("choose", de.titus.jstl.functions.Choose.TASK);
-	de.titus.jstl.TaskRegistry.append("foreach", de.titus.jstl.functions.Foreach.TASK);
-	de.titus.jstl.TaskRegistry.append("add-attribute", de.titus.jstl.functions.AddAttribute.TASK);
-	de.titus.jstl.TaskRegistry.append("databind", de.titus.jstl.functions.Databind.TASK);
-	de.titus.jstl.TaskRegistry.append("eventbind", de.titus.jstl.functions.Eventbind.TASK);
-	de.titus.jstl.TaskRegistry.append("text", de.titus.jstl.functions.Text.TASK);
-	de.titus.jstl.TaskRegistry.append("attribute", de.titus.jstl.functions.Attribute.TASK);
-	de.titus.jstl.TaskRegistry.append("children", de.titus.jstl.functions.Children.TASK);
-	
-});
+(function(PHASE) {
+	de.titus.core.Namespace.create("de.titus.jstl.Setup", function() {
+		de.titus.jstl.Setup = function() {
+		};
+		
+//		de.titus.jstl.TaskRegistry.append("preprocessor", PHASE.INIT, undefined, de.titus.jstl.functions.Preprocessor.TASK);
+//		de.titus.jstl.TaskRegistry.append("if", PHASE.CONDITION, "[jstl-if]", de.titus.jstl.functions.If.TASK);
+//		de.titus.jstl.TaskRegistry.append("data", PHASE.CONTEXT, "[jstl-data]", de.titus.jstl.functions.Data.TASK);
+//		
+//		de.titus.jstl.TaskRegistry.append("include", PHASE.MANIPULATION, "[jstl-include]", de.titus.jstl.functions.Include.TASK);
+//		de.titus.jstl.TaskRegistry.append("choose", PHASE.MANIPULATION, "[jstl-choose]", de.titus.jstl.functions.Choose.TASK);
+//		de.titus.jstl.TaskRegistry.append("foreach", PHASE.MANIPULATION, "[jstl-foreach]", de.titus.jstl.functions.Foreach.TASK);
+//		
+//		de.titus.jstl.TaskRegistry.append("databind", PHASE.BINDING, "[jstl-databind]", de.titus.jstl.functions.Databind.TASK);
+//		de.titus.jstl.TaskRegistry.append("eventbind", PHASE.BINDING, "[jstl-eventbind]", de.titus.jstl.functions.Eventbind.TASK);
+//		
+//		de.titus.jstl.TaskRegistry.append("add-attribute", PHASE.CONTENT, "[jstl-add-attribute]", de.titus.jstl.functions.AddAttribute.TASK);
+//		de.titus.jstl.TaskRegistry.append("text", PHASE.CONTENT, undefined, de.titus.jstl.functions.Text.TASK);
+//		de.titus.jstl.TaskRegistry.append("attribute", PHASE.CONTENT, undefined, de.titus.jstl.functions.Attribute.TASK);
+//		
+//		de.titus.jstl.TaskRegistry.append("children", PHASE.CHILDREN, undefined, de.titus.jstl.functions.Children.TASK);
+		
+	});
+})(de.titus.jstl.Constants.PHASE)
 de.titus.core.Namespace.create("de.titus.jstl.javascript.polyfills", function() {
 //https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Array/from#Polyfill	
 

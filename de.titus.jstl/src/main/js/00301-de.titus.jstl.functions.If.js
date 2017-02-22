@@ -23,5 +23,7 @@
 				    aExecuteChain.nextTask();
 		    }
 		};
+		
+		de.titus.jstl.TaskRegistry.append("if", de.titus.jstl.Constants.PHASE.CONDITION, "[jstl-if]", de.titus.jstl.functions.If.TASK);
 	});
 })($);
