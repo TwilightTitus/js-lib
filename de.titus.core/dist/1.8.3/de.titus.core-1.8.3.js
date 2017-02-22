@@ -158,6 +158,48 @@ if (de.titus.core.Namespace == undefined) {
 		};
 	};
 })($);
+(function() {
+    "use strict";
+    de.titus.core.Namespace.create("de.titus.core.ArrayUtils", function() {
+	var ArrayUtils = de.titus.core.ArrayUtils = {
+	    
+	}
+    });
+})($);
+(function() {
+    "use strict";
+    de.titus.core.Namespace.create("de.titus.core.PagingUtils", function() {
+	var  PagingUtils = de.titus.core.PagingUtils = {
+	pagerData : function(aPage, aPages, aSize) {
+	    var half = Math.round(aPages / 2);
+	    var result = {
+	    firstPage : 1,
+	    startPage : 1,
+	    endPage : aSize,
+	    lastPage: aPages,
+	    current : aPage,
+	    pageCount : aPages
+	    };
+	    if (aSize > aPages)
+		result.endPage = aPages;
+	    else if (aPage + half > aPages) {
+		result.endPage = aPages;
+		result.startPage = (end - aSize) + 1;
+	    } else if (aPage - half > 1) {
+		result.endPage = (aPage + half);
+		result.startPage = (end - aSize) + 1;
+	    }
+	    result.count = result.endPage - result.startPage;
+	    return result;
+	},
+
+	pageArray : function(aPage, aSize, aArray) {
+	    return aArray.slice((aPage - 1) * aSize, aSize);
+	}
+
+	}
+    });
+})($);
 de.titus.core.Namespace.create("de.titus.core.regex.Matcher", function() {
 	de.titus.core.regex.Matcher = function(/* RegExp */aRegExp, /* String */aText) {
 		this.internalRegex = aRegExp;
@@ -856,50 +898,39 @@ de.titus.core.Namespace.create("de.titus.core.UUID", function() {
 		    }
 		    obj["@attributes"] = attributes;
 		}
-	    } else if (aNode.nodeType == 3 || aNode.nodeType == 4) { // text
-		return aNode.textContent;
-	    }
+	    } else if (aNode.nodeType == 3 || aNode.nodeType == 4) // text
+		return aNode.textContent.trim();
 
 	    // do children
 	    if (aNode.hasChildNodes()) {
-		if (aNode.childNodes.length == 1) {
-		    var item = aNode.childNodes.item(0);
-		    if (item.nodeType != 3 && item.nodeType != 4) {
-			obj[item.nodeName] = de.titus.core.Converter.xmlToJson(item);
-		    } else if ((item.nodeType == 3 || item.nodeType == 4) && obj["@attributes"] == undefined)
-			obj = item.textContent;
-		    else if ((item.nodeType == 3 || item.nodeType == 4) && obj["@attributes"] != undefined)
-			obj.text = item.textContent;
-		} else {
-		    var textContent;
-		    var hasChildren = false;
-		    for (var i = 0; i < aNode.childNodes.length; i++) {
-			var item = aNode.childNodes.item(i);
-			if (item.nodeType == 1) {
-			    hasChildren = true;
-			    var nodeName = item.nodeName;
-			    if (typeof (obj[nodeName]) == "undefined") {
-				obj[nodeName] = de.titus.core.Converter.xmlToJson(item);
-			    } else {
-				if (typeof (obj[nodeName].push) == "undefined") {
-				    var old = obj[nodeName];
-				    obj[nodeName] = [];
-				    obj[nodeName].push(old);
-				}
-				obj[nodeName].push(de.titus.core.Converter.xmlToJson(item));
+		var textContent = undefined;
+		var hasChildren = false;
+		for (var i = 0; i < aNode.childNodes.length; i++) {
+		    var item = aNode.childNodes.item(i);
+		    if (item.nodeType == 1) {
+			hasChildren = true;
+			var nodeName = item.nodeName;
+			if (typeof (obj[nodeName]) == "undefined") {
+			    obj[nodeName] = de.titus.core.Converter.xmlToJson(item);
+			} else {
+			    if (typeof (obj[nodeName].push) == "undefined") {
+				var old = obj[nodeName];
+				obj[nodeName] = [];
+				obj[nodeName].push(old);
 			    }
-			} else if (item.nodeType == 3 || item.nodeType == 4)
-			    if (item.textContent != "")
-				textContent = (textContent ? textContent + item.textContent : item.textContent);
-		    }
-
-		    if (textContent) {
-			if (obj["@attributes"] == undefined && !hasChildren)
-			    obj = textContent;
-			else
-			    obj.text = textContent;
-		    }
+			    obj[nodeName].push(de.titus.core.Converter.xmlToJson(item));
+			}
+		    } else if (item.nodeType == 3 || item.nodeType == 4)
+			if (item.textContent != "")
+			    textContent = (textContent ? textContent + item.textContent : item.textContent);
 		}
+
+		if (textContent) {
+		    if (obj["@attributes"] == undefined && !hasChildren)
+			obj = textContent.trim();
+		    else
+			obj.text = textContent.trim();
+		}	    
 	    }
 	    return obj;
 	};
