@@ -1474,8 +1474,8 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 (function($, GlobalSettings) {
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.jstl.ExecuteChain", function() {
-		var ExecuteChain = de.titus.jstl.ExecuteChain = function(aTaskChain) {
-			this.count = 1;
+		var ExecuteChain = de.titus.jstl.ExecuteChain = function(aTaskChain, aCount) {
+			this.count = aCount || 0;
 			this.taskChain = aTaskChain;			
 		};
 		ExecuteChain.prototype.finish = function() {
@@ -1594,17 +1594,9 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 				    if (children.length == 0)
 					    aTaskChain.nextTask();
 				    else {
-					    var executeChain = {
-					        count : children.length,
-					        taskChain : aTaskChain,
-					        finsish : function() {
-						        this.count--;
-						        if (this.count == 0)
-							        this.taskChain.nextTask();
-					        }
-					    };
+				    	var executeChain = new de.titus.jstl.ExecuteChain(aTaskChain, children.length);
 					    for (var i = 0; i < children.length; i++)
-						    aProcessor.compute($(children[i]), aContext, executeChain.finsish.bind(executeChain));
+						    aProcessor.compute($(children[i]), aContext, executeChain.finish.bind(executeChain));
 				    }
 			    } else
 				    aTaskChain.nextTask();
@@ -1821,15 +1813,7 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 			    var startIndex = aProcessor.resolver.resolveExpression(aElement.attr("jstl-foreach-start-index"), aContext, 0) || 0;
 			    var count = aProcessor.resolver.resolveExpression(aElement.attr("jstl-foreach-count"));
 			    var step = aProcessor.resolver.resolveExpression(aElement.attr("jstl-foreach-step") || 1);
-			    var executeChain = {
-			        count : count,
-			        taskChain : aTaskChain,
-			        finish : function() {
-				        this.count--;
-				        if (this.count == 0)
-					        this.taskChain.nextTask();
-			        }
-			    };
+			    var executeChain = new de.titus.jstl.ExecuteChain(aTaskChain);
 			    
 			    for (var i = startIndex; i < count; i += step) {
 				    var template = aTemplate.clone();
@@ -1847,15 +1831,7 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 		    __list : function(aListData, aTemplate, aVarname, aStatusName, aElement, aContext, aProcessor, aTaskChain) {
 			    var startIndex = aProcessor.resolver.resolveExpression(aElement.attr("jstl-foreach-start-index"), aContext, 0) || 0;
 			    var breakCondition = aElement.attr("jstl-foreach-break-condition");
-			    var executeChain = {
-			        count : 1,
-			        taskChain : aTaskChain,
-			        finish : function() {
-				        this.count--;
-				        if (this.count == 0)
-					        this.taskChain.nextTask();
-			        }
-			    };
+			    var executeChain = new de.titus.jstl.ExecuteChain(aTaskChain, 1);
 			    
 			    for (var i = startIndex; i < aListData.length; i++) {
 				    var template = aTemplate.clone();
@@ -1880,15 +1856,7 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 		    
 		    __map : function(aMap, aTemplate, aVarname, aStatusName, aElement, aContext, aProcessor, aTaskChain) {
 			    var breakCondition = aElement.attr("jstl-foreach-break-condition");
-			    var executeChain = {
-			        count : 1,
-			        taskChain : aTaskChain,
-			        finish : function() {
-				        this.count--;
-				        if (this.count == 0)
-					        this.taskChain.nextTask();
-			        }
-			    };
+			    var executeChain = new de.titus.jstl.ExecuteChain(aTaskChain, 1);
 			    var i = 0;
 			    for ( var name in aMap) {
 				    var content = aTemplate.clone();

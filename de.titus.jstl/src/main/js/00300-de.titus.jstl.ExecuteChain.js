@@ -1,8 +1,8 @@
 (function($, GlobalSettings) {
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.jstl.ExecuteChain", function() {
-		var ExecuteChain = de.titus.jstl.ExecuteChain = function(aTaskChain) {
-			this.count = 1;
+		var ExecuteChain = de.titus.jstl.ExecuteChain = function(aTaskChain, aCount) {
+			this.count = aCount || 0;
 			this.taskChain = aTaskChain;			
 		};
 		ExecuteChain.prototype.finish = function() {

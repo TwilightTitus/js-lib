@@ -20,17 +20,9 @@
 				    if (children.length == 0)
 					    aTaskChain.nextTask();
 				    else {
-					    var executeChain = {
-					        count : children.length,
-					        taskChain : aTaskChain,
-					        finsish : function() {
-						        this.count--;
-						        if (this.count == 0)
-							        this.taskChain.nextTask();
-					        }
-					    };
+				    	var executeChain = new de.titus.jstl.ExecuteChain(aTaskChain, children.length);
 					    for (var i = 0; i < children.length; i++)
-						    aProcessor.compute($(children[i]), aContext, executeChain.finsish.bind(executeChain));
+						    aProcessor.compute($(children[i]), aContext, executeChain.finish.bind(executeChain));
 				    }
 			    } else
 				    aTaskChain.nextTask();

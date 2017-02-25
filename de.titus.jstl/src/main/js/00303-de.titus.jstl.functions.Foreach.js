@@ -42,15 +42,7 @@
 			    var startIndex = aProcessor.resolver.resolveExpression(aElement.attr("jstl-foreach-start-index"), aContext, 0) || 0;
 			    var count = aProcessor.resolver.resolveExpression(aElement.attr("jstl-foreach-count"));
 			    var step = aProcessor.resolver.resolveExpression(aElement.attr("jstl-foreach-step") || 1);
-			    var executeChain = {
-			        count : count,
-			        taskChain : aTaskChain,
-			        finish : function() {
-				        this.count--;
-				        if (this.count == 0)
-					        this.taskChain.nextTask();
-			        }
-			    };
+			    var executeChain = new de.titus.jstl.ExecuteChain(aTaskChain);
 			    
 			    for (var i = startIndex; i < count; i += step) {
 				    var template = aTemplate.clone();
@@ -68,15 +60,7 @@
 		    __list : function(aListData, aTemplate, aVarname, aStatusName, aElement, aContext, aProcessor, aTaskChain) {
 			    var startIndex = aProcessor.resolver.resolveExpression(aElement.attr("jstl-foreach-start-index"), aContext, 0) || 0;
 			    var breakCondition = aElement.attr("jstl-foreach-break-condition");
-			    var executeChain = {
-			        count : 1,
-			        taskChain : aTaskChain,
-			        finish : function() {
-				        this.count--;
-				        if (this.count == 0)
-					        this.taskChain.nextTask();
-			        }
-			    };
+			    var executeChain = new de.titus.jstl.ExecuteChain(aTaskChain, 1);
 			    
 			    for (var i = startIndex; i < aListData.length; i++) {
 				    var template = aTemplate.clone();
@@ -101,15 +85,7 @@
 		    
 		    __map : function(aMap, aTemplate, aVarname, aStatusName, aElement, aContext, aProcessor, aTaskChain) {
 			    var breakCondition = aElement.attr("jstl-foreach-break-condition");
-			    var executeChain = {
-			        count : 1,
-			        taskChain : aTaskChain,
-			        finish : function() {
-				        this.count--;
-				        if (this.count == 0)
-					        this.taskChain.nextTask();
-			        }
-			    };
+			    var executeChain = new de.titus.jstl.ExecuteChain(aTaskChain, 1);
 			    var i = 0;
 			    for ( var name in aMap) {
 				    var content = aTemplate.clone();
