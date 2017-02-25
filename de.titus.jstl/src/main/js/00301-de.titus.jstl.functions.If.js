@@ -1,4 +1,4 @@
-(function($) {
+(function($, GlobalSettings) {
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.jstl.functions.If", function() {
 		var If = de.titus.jstl.functions.If = {
@@ -15,8 +15,7 @@
 				    
 				    if (!(expression == true || expression == "true")) {
 					    aElement.remove();
-					    aExecuteChain.preventChilds();
-					    aExecuteChain.finish();
+					    aExecuteChain.preventChilds().finish();
 				    } else
 					    aExecuteChain.nextTask();
 			    } else
@@ -26,4 +25,4 @@
 		
 		de.titus.jstl.TaskRegistry.append("if", de.titus.jstl.Constants.PHASE.CONDITION, "[jstl-if]", de.titus.jstl.functions.If.TASK);
 	});
-})($);
+})($, de.titus.jstl.GlobalSettings);

@@ -1,4 +1,4 @@
-(function($) {
+(function($, GlobalSettings) {
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.jstl.functions.Children", function() {
 		var Children = de.titus.jstl.functions.Children = {
@@ -39,4 +39,4 @@
 		
 		de.titus.jstl.TaskRegistry.append("children", de.titus.jstl.Constants.PHASE.CHILDREN, undefined, de.titus.jstl.functions.Children.TASK);
 	});
-})($);
+})($, de.titus.jstl.GlobalSettings);

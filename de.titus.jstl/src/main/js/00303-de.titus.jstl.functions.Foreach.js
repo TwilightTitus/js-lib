@@ -1,4 +1,4 @@
-(function($) {
+(function($, GlobalSettings) {
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.jstl.functions.Foreach", function() {
 		var Foreach = de.titus.jstl.functions.Foreach = {
@@ -161,4 +161,4 @@
 		
 		de.titus.jstl.TaskRegistry.append("foreach", de.titus.jstl.Constants.PHASE.MANIPULATION, "[jstl-foreach]", de.titus.jstl.functions.Foreach.TASK);
 	});
-})($);
+})($, de.titus.jstl.GlobalSettings);

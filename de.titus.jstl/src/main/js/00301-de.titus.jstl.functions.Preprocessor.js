@@ -1,4 +1,4 @@
-(function($) {
+(function($, GlobalSettings) {
 	de.titus.core.Namespace.create("de.titus.jstl.functions.Preprocessor", function() {
 		de.titus.jstl.functions.Preprocessor = Preprocessor = {
 		    LOGGER : de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.Preprocessor"),
@@ -15,32 +15,33 @@
 			    if (Preprocessor.LOGGER.isDebugEnabled())
 				    Preprocessor.LOGGER.logDebug("TASK");
 			    
-			    var tagname = aElement.tagName();
-			    if (tagname != undefined && tagname == "br")
-				    aTaskChain.preventChilds().finish();
+			    
+			    if (aElement[0].nodeType != 1 ||aElement[0].nodeName == "br")
+				    return aTaskChain.preventChilds().finish();
 			    
 			    if (!aTaskChain.root) {
 				    var ignore = aElement.attr("jstl-ignore");
 				    if (ignore && ignore != "") {
 					    ignore = aProcessor.resolver.resolveExpression(ignore, aContext, false);
 					    if (ignore == "" || ignore == true || ignore == "true")
-						    aTaskChain.preventChilds().finish();
+						   return  aTaskChain.preventChilds().finish();
 				    }
 				    
 				    var async = aElement.attr("jstl-async");
 				    if (async && async != "") {
 					    async = aProcessor.resolver.resolveExpression(async, dataContext, false);
-					    if (async == "" || async == true || async == "true")
-						    aProcessor.onReady(Processor.prototype.__compute.bind(aProcessor, aElement, aContext));
-					    aTaskChain.preventChilds().finish();
+					    if (async == "" || async == true || async == "true"){					    	
+						    aProcessor.onReady((function(aContext){this.jstlAsync({data: aContext});}).bind(aElement, $.extend({}, aContext)));
+						    return aTaskChain.preventChilds().finish();
+					    }
 				    }
 			    }
 			    
 			    Preprocessor.__appendEvents(aElement);
 			    
 			    aElement.trigger(de.titus.jstl.Constants.EVENTS.onLoad, [ aContext, aProcessor]);
+			    setTimeout(function(){aTaskChain.nextTask();}, GlobalSettings.DEFAULT_TIMEOUT_VALUE);
 			    
-			    aTaskChain.nextTask();
 			    
 		    },
 		    
@@ -57,4 +58,4 @@
 		
 		de.titus.jstl.TaskRegistry.append("preprocessor", de.titus.jstl.Constants.PHASE.INIT, undefined, de.titus.jstl.functions.Preprocessor.TASK);
 	});
-})($);
+})($, de.titus.jstl.GlobalSettings);

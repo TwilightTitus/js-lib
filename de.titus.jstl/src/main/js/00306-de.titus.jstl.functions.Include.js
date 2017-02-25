@@ -1,4 +1,4 @@
-(function($) {
+(function($, GlobalSettings) {
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.jstl.functions.Include", function() {
 		
@@ -27,7 +27,7 @@
 				    var cache = Include.CACHE[aUrl];
 				    for (var i = 0; i < cache.callback.length; i++)
 					    cache.callback[i](cache.template);
-			    }, 1);
+			    }, GlobalSettings.DEFAULT_TIMEOUT_VALUE);
 		    },
 		    
 		    __compute : function(anIncludeExpression, aElement, aContext, aProcessor, aTaskChain) {
@@ -52,17 +52,29 @@
 				    };
 				    var options = Include.__options(aElement, aContext, aProcessor);
 				    var ajaxSettings = {
-				        'url' : de.titus.core.Page.getInstance().buildUrl(url),
+				        'url' : Include.__buildUrl(url),
 				        'async' : true,
 				        'cache' : aElement.attr("jstl-include-ajax-cache-disabled") == undefined,
 				        "dataType" : "html"
 				    };
 				    ajaxSettings = $.extend(true, ajaxSettings, options);
 				    
-				    $.ajax(ajaxSettings).done(Include.__executeCacheCallback.bind(null, ajaxSettings.url)).fail(function(error) {
+				    $.ajax(ajaxSettings).done(Include.__executeCacheCallback.bind({}, ajaxSettings.url)).fail(function(error) {
 					    throw JSON.stringify(error);
 				    });
 			    }
+		    },
+		    URLPATTERN : new RegExp("^((https?://)|/).*", "i"),
+		    
+		    __buildUrl : function(aUrl) {
+			    var url = aUrl;
+			    if (!Include.URLPATTERN.test(aUrl))
+				    url = GlobalSettings.DEFAULT_INCLUDE_BASEPATH + aUrl;
+			    url = de.titus.core.Page.getInstance().buildUrl(url);
+			    if (Include.LOGGER.isDebugEnabled())
+				    Include.LOGGER.logDebug("execute __buildUrl(\"" + aUrl + "\") -> result: " + url);
+			    
+			    return url;
 		    },
 		    
 		    __options : function(aElement, aContext, aProcessor) {
@@ -97,14 +109,14 @@
 				    aElement.empty();
 				    content.appendTo(aElement);
 			    } else if (aIncludeMode == "append")
-			    	content.appendTo(aElement);
+				    content.appendTo(aElement);
 			    else if (aIncludeMode == "prepend")
-			    	content.prependTo(aElement);
+				    content.prependTo(aElement);
 			    
 			    aTaskChain.nextTask();
-		    }		
+		    }
 		};
 		
 		de.titus.jstl.TaskRegistry.append("include", de.titus.jstl.Constants.PHASE.MANIPULATION, "[jstl-include]", de.titus.jstl.functions.Include.TASK);
 	});
-})($);
+})($, de.titus.jstl.GlobalSettings);

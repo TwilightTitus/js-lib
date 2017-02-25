@@ -1,4 +1,4 @@
-(function($) {
+(function($, GlobalSettings) {
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.jstl.TaskChain", function() {
 		var TaskChain = function(aElement, aContext, aProcessor, isRoot, aCallback) {
@@ -84,4 +84,4 @@
 		
 		de.titus.jstl.TaskChain = TaskChain;
 	});
-})($);
+})($,de.titus.jstl.GlobalSettings);

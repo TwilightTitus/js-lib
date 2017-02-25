@@ -1,4 +1,4 @@
-(function($, SpecialFunctions) {
+(function($, SpecialFunctions, GlobalSettings) {
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.jstl.Processor", function() {
 		var Processor = function(aElement, aContext, aCallback) {
@@ -10,13 +10,6 @@
 		};
 		
 		Processor.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.Processor");
-		Processor.STATICEVENTHANDLER = function(aExpression, aEvent, aContext, aProcessor) {
-			if (aExpression && aExpression != "") {
-				var eventAction = aProcessor.resolver.resolveExpression(aExpression, aContext);
-				if (typeof eventAction === "function")
-					eventAction(aContext.$element, aContext, aProcessor);
-			}
-		};
 		
 		Processor.prototype.compute = function(aElement, aContext, aCallback) {
 			if (Processor.LOGGER.isDebugEnabled())
@@ -24,11 +17,11 @@
 			if (!aElement) {
 				this.element.trigger(de.titus.jstl.Constants.EVENTS.onStart, [
 				        aContext, this
-				]);	
+				]);
 				this.element.detach();
 				this.__computeElement(this.element, this.context, this.callback, true);
 			} else
-				this.__computeElement(aElement, aContext, aCallback);			
+				this.__computeElement(aElement, aContext, aCallback);
 		};
 		
 		Processor.prototype.__computeElement = function(aElement, aContext, aCallback, isRoot) {
@@ -54,7 +47,7 @@
 			]);
 			
 			if (isRoot)
-				setTimeout(Processor.prototype.onReady.bind(this), 1);
+				setTimeout(Processor.prototype.onReady.bind(this), GlobalSettings.DEFAULT_TIMEOUT_VALUE);
 		};
 		
 		Processor.prototype.onReady = function(aFunction) {
@@ -68,16 +61,15 @@
 				return this;
 			} else
 				this.parent.append(this.element);
-				
-				$(document).ready((function(aElement, aProcessor) {
-					aElement.trigger(de.titus.jstl.Constants.EVENTS.onReady, [
-						aProcessor
-					]);
-					
-				}).bind(null, this.element, this));
+			
+			setTimeout((function(aProcessor) {
+				this.trigger(de.titus.jstl.Constants.EVENTS.onReady, [
+					aProcessor
+				]);
+			}).bind(this.element, this), GlobalSettings.DEFAULT_TIMEOUT_VALUE * 10);
 			
 		};
 		
 		de.titus.jstl.Processor = Processor;
 	});
-})(jQuery, de.titus.core.SpecialFunctions);
+})(jQuery, de.titus.core.SpecialFunctions, de.titus.jstl.GlobalSettings);
