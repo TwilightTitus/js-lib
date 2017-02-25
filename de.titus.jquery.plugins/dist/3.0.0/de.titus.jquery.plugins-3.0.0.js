@@ -2038,7 +2038,7 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 		de.titus.jstl.TaskRegistry.append("attribute", de.titus.jstl.Constants.PHASE.CONTENT, undefined, de.titus.jstl.functions.Attribute.TASK);
 	});
 })($);
-(function($) {
+(function($, GlobalSettings) {
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.jstl.functions.Data", function() {
 		var Data = de.titus.jstl.functions.Data = {
@@ -2086,23 +2086,17 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 		        "remote" : function(anExpression, aElement, aVarname, aDataContext, aProcessor, aTaskChain) {
 			        var url = aProcessor.resolver.resolveText(anExpression, aDataContext);
 			        var option = Data.__options(aElement, aDataContext, aProcessor);
-			        var dataType = aElement.attr("jstl-data-datatype") || "json";
+			        var datatype = (aElement.attr("jstl-data-datatype") || "json").toLowerCase();
 			        
 			        var ajaxSettings = {
 			            'url' : de.titus.core.Page.getInstance().buildUrl(url),
 			            'async' : true,
 			            'cache' : false,
-			            'dataType' : dataType
+			            'dataType' : datatype
 			        };
 			        ajaxSettings = $.extend(ajaxSettings, option);
 			        
-			        $.ajax(ajaxSettings).done((function(aVarname,aTaskChain, newData) {
-				        var data = newData;
-				        if (dataType.toLowerCase() == "xml")
-					        data = de.titus.core.Converter.xmlToJson(newData);
-				        Data.__updateContext(aVarname, data, aTaskChain);
-				        aTaskChain.nextTask();
-			        }).bind({}, aVarname, aTaskChain));
+			        $.ajax(ajaxSettings).done(Data.__remoteResponse.bind({}, aVarname, datatype, aTaskChain));
 		        },
 		        
 		        "url-parameter" : function(anExpression, aElement, aVarname, aDataContext, aProcessor, aTaskChain) {
@@ -2111,13 +2105,25 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 			        Data.__updateContext(aVarname, data, aTaskChain);
 			        aTaskChain.nextTask();
 		        }
+		    },
+		    CONTENTYPE : {
+		        "xml" : de.titus.core.Converter.xmlToJson,
+		        "json" : function(aData) {
+			        return aData
+		        }
+		    },
+		    
+		    __remoteResponse : function(aVarname, aDatatype, aTaskChain, aData) {
+			    var data = Data.CONTENTYPE[aDatatype](aData);
+			    Data.__updateContext(aVarname, data, aTaskChain);
+			    aTaskChain.nextTask();
 		    }
 		
 		};
 		
 		de.titus.jstl.TaskRegistry.append("data", de.titus.jstl.Constants.PHASE.CONTEXT, "[jstl-data]", de.titus.jstl.functions.Data.TASK);
 	});
-})($);
+})($, de.titus.jstl.GlobalSettings);
 (function($, GlobalSettings) {
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.jstl.functions.Include", function() {
