@@ -18,7 +18,6 @@
 				this.element.trigger(de.titus.jstl.Constants.EVENTS.onStart, [
 				        aContext, this
 				]);
-				// if(!this.element.is("body"))
 				this.element.detach();
 				this.__computeElement(this.element, this.context, true, this.callback);
 			} else
@@ -40,7 +39,8 @@
 			if (typeof aCallback === "function")
 				aCallback(aElement, aContext, this, isRoot);
 			
-			if (aElement.tagName() == "jstl" && aElement.contents().length > 0)
+			var tagName = aElement.tagName();
+			if ((tagName == "x-jstl" || tagName == "jstl") && aElement.contents().length > 0)
 				aElement.replaceWith(aElement.contents());
 			
 			if (isRoot) {
@@ -59,7 +59,6 @@
 				});
 				return this;
 			} else {
-				// if(!this.element.is("body"))
 				this.parent.append(this.element);
 				
 				setTimeout((function(aProcessor) {

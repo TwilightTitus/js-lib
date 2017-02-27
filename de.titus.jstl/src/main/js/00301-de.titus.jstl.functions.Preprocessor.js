@@ -15,8 +15,7 @@
 			    if (Preprocessor.LOGGER.isDebugEnabled())
 				    Preprocessor.LOGGER.logDebug("TASK");
 			    
-			    
-			    if (aElement[0].nodeType != 1 ||aElement[0].nodeName == "br")
+			    if (aElement[0].nodeType != 1 || aElement.tagName()  == "br")
 				    return aTaskChain.preventChilds().finish();
 			    
 			    if (!aTaskChain.root) {

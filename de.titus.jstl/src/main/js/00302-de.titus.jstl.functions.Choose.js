@@ -69,6 +69,6 @@
 		    }
 		};
 		
-		de.titus.jstl.TaskRegistry.append("choose", de.titus.jstl.Constants.PHASE.MANIPULATION, "[jstl-choose]", de.titus.jstl.functions.Choose.TASK);
+		de.titus.jstl.TaskRegistry.append("choose", de.titus.jstl.Constants.PHASE.CONDITION, "[jstl-choose]", de.titus.jstl.functions.Choose.TASK);
 	});
 })($);

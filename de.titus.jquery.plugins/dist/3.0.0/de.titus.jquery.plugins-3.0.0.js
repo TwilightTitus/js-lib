@@ -1604,49 +1604,49 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 	});
 })($, de.titus.jstl.GlobalSettings);
 (function($, GlobalSettings) {
-    "use strict";
-    de.titus.core.Namespace.create("de.titus.jstl.functions.Children", function() {
-	var Children = de.titus.jstl.functions.Children = {
-	LOGGER : de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.Children"),
-	TASK : function(aElement, aContext, aProcessor, aTaskChain) {
-	    if (Children.LOGGER.isDebugEnabled())
-		Children.LOGGER.logDebug("TASK");
-
-	    if (!aTaskChain.isPreventChilds()) {
-		var ignoreChilds = aElement.attr("jstl-ignore-childs");
-		if (ignoreChilds && ignoreChilds != "")
-		    ignoreChilds = aProcessor.resolver.resolveExpression(ignoreChilds, aContext, true);
-
-		if (ignoreChilds == "false" || ignoreChilds == true)
-		    return aTaskChain.preventChilds().nextTask();
-
-		var children = aElement.children();
-		if (children.length == 0)
-		    aTaskChain.nextTask();
-		else {
-		    aProcessor.compute($(children[0]), aTaskChain.context, Children.ElementChain.bind({},children,1, aTaskChain));
-		}
-	    } else
-		aTaskChain.nextTask();
-	},
-
-	UpdateContext : function(aParentTaskChain, aTaskChain) {
-	    aParentTaskChain.updateContext(aTaskChain.context, true);
-	},
-
-	ElementChain : function(theChildren, aIndex, aParentTaskChain, aElement, aContext, aProcessor) {
-	    aParentTaskChain.updateContext(aContext, true);	    
-	    if(aIndex < theChildren.length){		
-		var next = $(theChildren[aIndex]);		
-		aProcessor.compute(next, aParentTaskChain.context, Children.ElementChain.bind({},theChildren, aIndex + 1, aParentTaskChain));
-	    } else
-		aParentTaskChain.nextTask();
-	}
-
-	};
-
-	de.titus.jstl.TaskRegistry.append("children", de.titus.jstl.Constants.PHASE.CHILDREN, undefined, de.titus.jstl.functions.Children.TASK);
-    });
+	"use strict";
+	de.titus.core.Namespace.create("de.titus.jstl.functions.Children", function() {
+		var Children = de.titus.jstl.functions.Children = {
+		    LOGGER : de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.Children"),
+		    TASK : function(aElement, aContext, aProcessor, aTaskChain) {
+			    if (Children.LOGGER.isDebugEnabled())
+				    Children.LOGGER.logDebug("TASK");
+			    
+			    if (!aTaskChain.isPreventChilds()) {
+				    var ignoreChilds = aElement.attr("jstl-ignore-childs");
+				    if (ignoreChilds && ignoreChilds != "")
+					    ignoreChilds = aProcessor.resolver.resolveExpression(ignoreChilds, aContext, true);
+				    
+				    if (ignoreChilds == "false" || ignoreChilds == true)
+					    return aTaskChain.preventChilds().nextTask();
+				    
+				    var children = aElement.children();
+				    if (children.length == 0)
+					    aTaskChain.nextTask();
+				    else {
+					    aProcessor.compute($(children[0]), aTaskChain.context, Children.ElementChain.bind({}, children, 1, aTaskChain));
+				    }
+			    } else
+				    aTaskChain.nextTask();
+		    },
+		    
+		    UpdateContext : function(aParentTaskChain, aTaskChain) {
+			    aParentTaskChain.updateContext(aTaskChain.context, true);
+		    },
+		    
+		    ElementChain : function(theChildren, aIndex, aParentTaskChain, aElement, aContext, aProcessor) {
+			    aParentTaskChain.updateContext(aContext, true);
+			    if (aIndex < theChildren.length) {
+				    var next = $(theChildren[aIndex]);
+				    aProcessor.compute(next, aParentTaskChain.context, Children.ElementChain.bind({}, theChildren, aIndex + 1, aParentTaskChain));
+			    } else
+				    aParentTaskChain.nextTask();
+		    }
+		
+		};
+		
+		de.titus.jstl.TaskRegistry.append("children", de.titus.jstl.Constants.PHASE.CHILDREN, undefined, de.titus.jstl.functions.Children.TASK);
+	});
 })($, de.titus.jstl.GlobalSettings);
 (function($, GlobalSettings) {
 	"use strict";
@@ -1693,8 +1693,7 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 			    if (Preprocessor.LOGGER.isDebugEnabled())
 				    Preprocessor.LOGGER.logDebug("TASK");
 			    
-			    
-			    if (aElement[0].nodeType != 1 ||aElement[0].nodeName == "br")
+			    if (aElement[0].nodeType != 1 || aElement.tagName()  == "br")
 				    return aTaskChain.preventChilds().finish();
 			    
 			    if (!aTaskChain.root) {
@@ -1804,7 +1803,7 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 		    }
 		};
 		
-		de.titus.jstl.TaskRegistry.append("choose", de.titus.jstl.Constants.PHASE.MANIPULATION, "[jstl-choose]", de.titus.jstl.functions.Choose.TASK);
+		de.titus.jstl.TaskRegistry.append("choose", de.titus.jstl.Constants.PHASE.CONDITION, "[jstl-choose]", de.titus.jstl.functions.Choose.TASK);
 	});
 })($);
 (function($, GlobalSettings) {
@@ -1950,96 +1949,96 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 	});
 })($, de.titus.jstl.GlobalSettings);
 (function($) {
-    "use strict";
-    de.titus.core.Namespace.create("de.titus.jstl.functions.Text", function() {
-	var Text = de.titus.jstl.functions.Text = {
-	LOGGER : de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.Text"),
-
-	TASK : function(aElement, aContext, aProcessor, aTaskChain) {
-	    if (Text.LOGGER.isDebugEnabled())
-		Text.LOGGER.logDebug("execute run(" + aElement + ", " + aContext + ", " + aProcessor + ")");
-
-	    var ignore = aElement.attr("jstl-text-ignore");
-	    if (!ignore) {
-		Text.normalize(aElement[0]);
-		var contenttype = aElement.attr("jstl-text-type") || "text";
-		aElement.contents().filter(function() {
-		    return this.nodeType === 3 && this.textContent != undefined && this.textContent.trim() != "";
-		}).each(function() {
-		    var text = this.textContent;
-		    if (text) {
-			text = aProcessor.resolver.resolveText(text, aContext);
-			var contentFunction = Text.CONTENTTYPE[contenttype];
-			if (contentFunction)
-			    contentFunction(this, text, aElement, aProcessor, aContext);
+	"use strict";
+	de.titus.core.Namespace.create("de.titus.jstl.functions.Text", function() {
+		var Text = de.titus.jstl.functions.Text = {
+		    LOGGER : de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.Text"),
+		    
+		    TASK : function(aElement, aContext, aProcessor, aTaskChain) {
+			    if (Text.LOGGER.isDebugEnabled())
+				    Text.LOGGER.logDebug("execute run(" + aElement + ", " + aContext + ", " + aProcessor + ")");
+			    
+			    var ignore = aElement.attr("jstl-text-ignore");
+			    if (!ignore) {
+				    Text.normalize(aElement[0]);
+				    var contenttype = aElement.attr("jstl-text-type") || "text";
+				    aElement.contents().filter(function() {
+					    return (this.nodeType === 3 || this.nodeType === 4) && this.textContent != undefined && this.textContent.trim() != "";
+				    }).each(function() {
+					    var text = this.textContent;
+					    if (text) {
+						    text = aProcessor.resolver.resolveText(text, aContext);
+						    var contentFunction = Text.CONTENTTYPE[contenttype];
+						    if (contentFunction)
+							    contentFunction(this, text, aElement, aProcessor, aContext);
+					    }
+				    });
+			    }
+			    
+			    aTaskChain.nextTask();
+		    },
+		    
+		    normalize : function(aNode) {
+			    if (!aNode)
+				    return;
+			    if (aNode.nodeType == 3) {
+				    var text = aNode.textContent;
+				    while (aNode.nextSibling && aNode.nextSibling.nodeType == 3) {
+					    text += aNode.nextSibling.textContent;
+					    aNode.parentNode.removeChild(aNode.nextSibling);
+				    }
+				    aNode.textContent = text;
+			    } else {
+				    Text.normalize(aNode.firstChild);
+			    }
+			    Text.normalize(aNode.nextSibling);
+		    },
+		    
+		    CONTENTTYPE : {
+		        "html" : function(aNode, aText, aBaseElement, aProcessor, aContext) {
+			        $(aNode).replaceWith($.parseHTML(aText));
+		        },
+		        "json" : function(aNode, aText, aBaseElement, aProcessor, aContext) {
+			        if (typeof aText === "string")
+				        aNode.textContent = aText;
+			        else
+				        aNode.textContent = JSON.stringify(aText);
+		        },
+		        "text" : function(aNode, aText, aBaseElement, aProcessor, aContext) {
+			        var text = aText;
+			        var addAsHtml = false;
+			        
+			        var trimLength = aBaseElement.attr("jstl-text-trim-length");
+			        if (trimLength != undefined && trimLength != "") {
+				        trimLength = aProcessor.resolver.resolveExpression(trimLength, aContext, "-1");
+				        trimLength = parseInt(trimLength);
+				        if (trimLength && trimLength > 0)
+					        text = de.titus.core.StringUtils.trimTextLength(text, trimLength);
+			        }
+			        
+			        var preventformat = aBaseElement.attr("jstl-text-prevent-format");
+			        if (preventformat) {
+				        preventformat = aProcessor.resolver.resolveExpression(preventformat, aContext, true) || true;
+				        if (preventformat) {
+					        text = de.titus.core.StringUtils.formatToHtml(text);
+					        addAsHtml = true;
+				        }
+			        }
+			        
+			        if (addAsHtml)
+				        $(aNode).replaceWith($.parseHTML(text));
+			        else
+				        aNode.textContent = text;
+		        }
 		    }
-		});
-	    }
-
-	    aTaskChain.nextTask();
-	},
-
-	normalize : function(aNode) {
-	    if (!aNode)
-		return;
-	    if (aNode.nodeType == 3) {
-		var text = aNode.textContent;
-		while (aNode.nextSibling && aNode.nextSibling.nodeType == 3) {
-		    text += aNode.nextSibling.textContent;
-		    aNode.parentNode.removeChild(aNode.nextSibling);
-		}
-		aNode.textContent = text;
-	    } else {
-		Text.normalize(aNode.firstChild);
-	    }
-	    Text.normalize(aNode.nextSibling);
-	},
-
-	CONTENTTYPE : {
-	"html" : function(aNode, aText, aBaseElement, aProcessor, aContext) {
-	    $(aNode).replaceWith($.parseHTML(aText));
-	},
-	"json" : function(aNode, aText, aBaseElement, aProcessor, aContext) {
-	    if (typeof aText === "string")
-		aNode.textContent = aText;
-	    else
-		aNode.textContent = JSON.stringify(aText);
-	},
-	"text" : function(aNode, aText, aBaseElement, aProcessor, aContext) {
-	    var text = aText;
-	    var addAsHtml = false;
-
-	    var trimLength = aBaseElement.attr("jstl-text-trim-length");
-	    if (trimLength != undefined && trimLength != "") {
-		trimLength = aProcessor.resolver.resolveExpression(trimLength, aContext, "-1");
-		trimLength = parseInt(trimLength);
-		if (trimLength && trimLength > 0)
-		    text = de.titus.core.StringUtils.trimTextLength(text, trimLength);
-	    }
-
-	    var preventformat = aBaseElement.attr("jstl-text-prevent-format");
-	    if (preventformat) {
-		preventformat = aProcessor.resolver.resolveExpression(preventformat, aContext, true) || true;
-		if (preventformat) {
-		    text = de.titus.core.StringUtils.formatToHtml(text);
-		    addAsHtml = true;
-		}
-	    }
-
-	    if (addAsHtml)
-		$(aNode).replaceWith($.parseHTML(text));
-	    else
-		aNode.textContent = text;
-	}
-	}
-	};
-
-	Text.CONTENTTYPE["text/html"] = Text.CONTENTTYPE["html"];
-	Text.CONTENTTYPE["application/json"] = Text.CONTENTTYPE["json"];
-	Text.CONTENTTYPE["text/plain"] = Text.CONTENTTYPE["text"];
-
-	de.titus.jstl.TaskRegistry.append("text", de.titus.jstl.Constants.PHASE.CONTENT, undefined, de.titus.jstl.functions.Text.TASK);
-    });
+		};
+		
+		Text.CONTENTTYPE["text/html"] = Text.CONTENTTYPE["html"];
+		Text.CONTENTTYPE["application/json"] = Text.CONTENTTYPE["json"];
+		Text.CONTENTTYPE["text/plain"] = Text.CONTENTTYPE["text"];
+		
+		de.titus.jstl.TaskRegistry.append("text", de.titus.jstl.Constants.PHASE.CONTENT, undefined, de.titus.jstl.functions.Text.TASK);
+	});
 })($);
 (function($) {
 	"use strict";
@@ -2079,90 +2078,90 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 	});
 })($);
 (function($, GlobalSettings) {
-    "use strict";
-    de.titus.core.Namespace.create("de.titus.jstl.functions.Data", function() {
-	var Data = de.titus.jstl.functions.Data = {
-	LOGGER : de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.Data"),
-
-	TASK : function(aElement, aDataContext, aProcessor, aTaskChain) {
-	    if (Data.LOGGER.isDebugEnabled())
-		Data.LOGGER.logDebug("TASK");
-
-	    var expression = aElement.attr("jstl-data");
-	    if (expression) {
-		var varname = aElement.attr("jstl-data-var");
-		var mode = aElement.attr("jstl-data-mode") || "direct";
-		Data.MODES[mode](expression, aElement, varname, aDataContext, aProcessor, aTaskChain);
-
-	    } else
-		aTaskChain.nextTask();
-	},
-
-	__options : function(aElement, aDataContext, aProcessor) {
-	    var options = aElement.attr("jstl-data-options");
-	    if (options) {
-		options = aProcessor.resolver.resolveText(options, aDataContext);
-		options = aProcessor.resolver.resolveExpression(options, aDataContext);
-		return options || {};
-	    }
-	    return {};
-	},
-	__updateContext : function(aVarname, aData, aTaskChain) {
-	    if (aData) {
-		if (!aVarname)
-		    aTaskChain.updateContext(aData, true);
-		else 
-		    aTaskChain.context[aVarname] = aData;
-	    }
-	},
-
-	MODES : {
-	"direct" : function(anExpression, aElement, aVarname, aDataContext, aProcessor, aTaskChain) {
-	    var data = aProcessor.resolver.resolveExpression(anExpression, aDataContext, anExpression);
-	    Data.__updateContext(aVarname, data, aTaskChain);
-	    aTaskChain.nextTask();
-	},
-
-	"remote" : function(anExpression, aElement, aVarname, aDataContext, aProcessor, aTaskChain) {
-	    var url = aProcessor.resolver.resolveText(anExpression, aDataContext);
-	    var option = Data.__options(aElement, aDataContext, aProcessor);
-	    var datatype = (aElement.attr("jstl-data-datatype") || "json").toLowerCase();
-
-	    var ajaxSettings = {
-	    'url' : de.titus.core.Page.getInstance().buildUrl(url),
-	    'async' : true,
-	    'cache' : false,
-	    'dataType' : datatype
-	    };
-	    ajaxSettings = $.extend(ajaxSettings, option);
-
-	    $.ajax(ajaxSettings).done(Data.__remoteResponse.bind({}, aVarname, datatype, aTaskChain));
-	},
-
-	"url-parameter" : function(anExpression, aElement, aVarname, aDataContext, aProcessor, aTaskChain) {
-	    var parameterName = aProcessor.resolver.resolveText(anExpression, aDataContext);
-	    var data = de.titus.core.Page.getInstance().getUrl().getParameter(parameterName);
-	    Data.__updateContext(aVarname, data, aTaskChain);
-	    aTaskChain.nextTask();
-	}
-	},
-	CONTENTYPE : {
-	"xml" : de.titus.core.Converter.xmlToJson,
-	"json" : function(aData) {
-	    return aData
-	}
-	},
-
-	__remoteResponse : function(aVarname, aDatatype, aTaskChain, aData) {
-	    var data = Data.CONTENTYPE[aDatatype](aData);
-	    Data.__updateContext(aVarname, data, aTaskChain);
-	    aTaskChain.nextTask();
-	}
-
-	};
-
-	de.titus.jstl.TaskRegistry.append("data", de.titus.jstl.Constants.PHASE.CONTEXT, "[jstl-data]", de.titus.jstl.functions.Data.TASK);
-    });
+	"use strict";
+	de.titus.core.Namespace.create("de.titus.jstl.functions.Data", function() {
+		var Data = de.titus.jstl.functions.Data = {
+		    LOGGER : de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.Data"),
+		    
+		    TASK : function(aElement, aDataContext, aProcessor, aTaskChain) {
+			    if (Data.LOGGER.isDebugEnabled())
+				    Data.LOGGER.logDebug("TASK");
+			    
+			    var expression = aElement.attr("jstl-data");
+			    if (expression) {
+				    var varname = aElement.attr("jstl-data-var");
+				    var mode = aElement.attr("jstl-data-mode") || "direct";
+				    Data.MODES[mode](expression, aElement, varname, aDataContext, aProcessor, aTaskChain);
+				    
+			    } else
+				    aTaskChain.nextTask();
+		    },
+		    
+		    __options : function(aElement, aDataContext, aProcessor) {
+			    var options = aElement.attr("jstl-data-options");
+			    if (options) {
+				    options = aProcessor.resolver.resolveText(options, aDataContext);
+				    options = aProcessor.resolver.resolveExpression(options, aDataContext);
+				    return options || {};
+			    }
+			    return {};
+		    },
+		    __updateContext : function(aVarname, aData, aTaskChain) {
+			    if (aData) {
+				    if (!aVarname)
+					    aTaskChain.updateContext(aData, true);
+				    else
+					    aTaskChain.context[aVarname] = aData;
+			    }
+		    },
+		    
+		    MODES : {
+		        "direct" : function(anExpression, aElement, aVarname, aDataContext, aProcessor, aTaskChain) {
+			        var data = aProcessor.resolver.resolveExpression(anExpression, aDataContext, anExpression);
+			        Data.__updateContext(aVarname, data, aTaskChain);
+			        aTaskChain.nextTask();
+		        },
+		        
+		        "remote" : function(anExpression, aElement, aVarname, aDataContext, aProcessor, aTaskChain) {
+			        var url = aProcessor.resolver.resolveText(anExpression, aDataContext);
+			        var option = Data.__options(aElement, aDataContext, aProcessor);
+			        var datatype = (aElement.attr("jstl-data-datatype") || "json").toLowerCase();
+			        
+			        var ajaxSettings = {
+			            'url' : de.titus.core.Page.getInstance().buildUrl(url),
+			            'async' : true,
+			            'cache' : false,
+			            'dataType' : datatype
+			        };
+			        ajaxSettings = $.extend(ajaxSettings, option);
+			        
+			        $.ajax(ajaxSettings).done(Data.__remoteResponse.bind({}, aVarname, datatype, aTaskChain));
+		        },
+		        
+		        "url-parameter" : function(anExpression, aElement, aVarname, aDataContext, aProcessor, aTaskChain) {
+			        var parameterName = aProcessor.resolver.resolveText(anExpression, aDataContext);
+			        var data = de.titus.core.Page.getInstance().getUrl().getParameter(parameterName);
+			        Data.__updateContext(aVarname, data, aTaskChain);
+			        aTaskChain.nextTask();
+		        }
+		    },
+		    CONTENTYPE : {
+		        "xml" : de.titus.core.Converter.xmlToJson,
+		        "json" : function(aData) {
+			        return aData
+		        }
+		    },
+		    
+		    __remoteResponse : function(aVarname, aDatatype, aTaskChain, aData) {
+			    var data = Data.CONTENTYPE[aDatatype](aData);
+			    Data.__updateContext(aVarname, data, aTaskChain);
+			    aTaskChain.nextTask();
+		    }
+		
+		};
+		
+		de.titus.jstl.TaskRegistry.append("data", de.titus.jstl.Constants.PHASE.CONTEXT, "[jstl-data]", de.titus.jstl.functions.Data.TASK);
+	});
 })($, de.titus.jstl.GlobalSettings);
 (function($, GlobalSettings) {
 	"use strict";
@@ -2395,7 +2394,6 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 				this.element.trigger(de.titus.jstl.Constants.EVENTS.onStart, [
 				        aContext, this
 				]);
-				// if(!this.element.is("body"))
 				this.element.detach();
 				this.__computeElement(this.element, this.context, true, this.callback);
 			} else
@@ -2417,7 +2415,8 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 			if (typeof aCallback === "function")
 				aCallback(aElement, aContext, this, isRoot);
 			
-			if (aElement.tagName() == "jstl" && aElement.contents().length > 0)
+			var tagName = aElement.tagName();
+			if ((tagName == "x-jstl" || tagName == "jstl") && aElement.contents().length > 0)
 				aElement.replaceWith(aElement.contents());
 			
 			if (isRoot) {
@@ -2436,7 +2435,6 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 				});
 				return this;
 			} else {
-				// if(!this.element.is("body"))
 				this.parent.append(this.element);
 				
 				setTimeout((function(aProcessor) {
