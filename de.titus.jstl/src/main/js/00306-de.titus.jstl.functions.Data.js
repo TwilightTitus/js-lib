@@ -31,11 +31,8 @@
 	    if (aData) {
 		if (!aVarname)
 		    aTaskChain.updateContext(aData, true);
-		else {
-		    var data = {};
-		    data[aVarname] = aData;
-		    aTaskChain.updateContext(data, true);
-		}
+		else 
+		    aTaskChain.context[aVarname] = aData;
 	    }
 	},
 
