@@ -64,55 +64,63 @@ if (de.titus.core.Namespace == undefined) {
 		return true;
 	};
 };de.titus.core.Namespace.create("de.titus.core.SpecialFunctions", function() {
-	
-	de.titus.core.SpecialFunctions = {};
-	
-	de.titus.core.SpecialFunctions.doEval = function(aStatement, aContext, aCallback) {
-		if (aCallback) {
-			de.titus.core.SpecialFunctions.doEvalWithContext(aStatement, (aContext || {}), undefined, aCallback);
-		} else {
-			if (aStatement != undefined && typeof aStatement !== "string")
-				return aStatement;
-			else if (aStatement != undefined) {
-				var result = undefined;
-				var runContext = aContext || {};
-				with (runContext) {
-					eval("result = " + aStatement + ";");
-				}
-				return result;
-			}
-			
+
+    de.titus.core.SpecialFunctions = {};
+    de.titus.core.SpecialFunctions.doEval = function(aStatement, aContext, aCallback) {
+	if (aCallback) {
+	    de.titus.core.SpecialFunctions.doEvalWithContext(aStatement, (aContext || {}), undefined, aCallback);
+	} else {
+	    if (aStatement != undefined && typeof aStatement !== "string")
+		return aStatement;
+	    else if (aStatement != undefined) {
+		var result = undefined;
+		var runContext = aContext || {};
+		with (runContext) {
+		    try {
+			eval("result = " + aStatement + ";");
+		    } catch (e) {
+			if (!console)
+			    return;
+			else if (console.error)
+			    console.error("de.titus.core.SpecialFunctions.doEval ***Error*** " , e);
+			else if (console.log)
+			    console.log("de.titus.core.SpecialFunctions.doEval ***Error*** " , e);
 			return undefined;
+		    }
 		}
-	};
-	
-	
-	/**
-	 * 
-	 * @param aStatement
-	 * @param aContext
-	 * @param aDefault
-	 * @param aCallback
-	 * @returns
-	 */
-	de.titus.core.SpecialFunctions.doEvalWithContext = function(aStatement, aContext, aDefault, aCallback) {
-		if (aCallback && typeof aCallback === "function") {
-			window.setTimeout(function() {
-				var result = de.titus.core.SpecialFunctions.doEvalWithContext(aStatement, aContext, aDefault, undefined);
-				aCallback(result, aContext);
-			}, 1);
-			
-		} else
-			try {
-				var result = de.titus.core.SpecialFunctions.doEval(aStatement, aContext);
-				if(result == undefined)
-					return aDefault;
-				return result;
-			} catch (e) {
-				return aDefault;
-			}
-	};
-	
+		return result;
+	    }
+
+	    return undefined;
+	}
+    };
+
+    /**
+     * 
+     * @param aStatement
+     * @param aContext
+     * @param aDefault
+     * @param aCallback
+     * @returns
+     */
+    de.titus.core.SpecialFunctions.doEvalWithContext = function(aStatement, aContext, aDefault, aCallback) {
+	if (aCallback && typeof aCallback === "function") {
+	    window.setTimeout(function() {
+		var result = de.titus.core.SpecialFunctions.doEvalWithContext(aStatement, aContext, aDefault, undefined);
+		aCallback(result, aContext);
+	    }, 1);
+
+	} else
+	    try {
+		var result = de.titus.core.SpecialFunctions.doEval(aStatement, aContext);
+		if (result == undefined)
+		    return aDefault;
+		return result;
+	    } catch (e) {
+		return aDefault;
+	    }
+    };
+
 });
 (function($) {
 	$.fn.tagName = $.fn.tagName || function() {
@@ -1472,18 +1480,24 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 	de.titus.jstl.TaskRegistry = TaskRegistry;
 });
 (function($, GlobalSettings) {
-	"use strict";
-	de.titus.core.Namespace.create("de.titus.jstl.ExecuteChain", function() {
-		var ExecuteChain = de.titus.jstl.ExecuteChain = function(aTaskChain, aCount) {
-			this.count = aCount || 0;
-			this.taskChain = aTaskChain;			
-		};
-		ExecuteChain.prototype.finish = function() {
-			this.count--;
-			if (this.count == 0)
-				this.taskChain.nextTask();
-		};
-	});
+    "use strict";
+    de.titus.core.Namespace.create("de.titus.jstl.ExecuteChain", function() {
+	var ExecuteChain = de.titus.jstl.ExecuteChain = function(aTaskChain, aCount) {
+	    this.count = aCount || 0;
+	    this.taskChain = aTaskChain;
+	};
+	ExecuteChain.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.ExecuteChain");
+
+	ExecuteChain.prototype.finish = function() {
+	    if (ExecuteChain.LOGGER.isDebugEnabled())
+		ExecuteChain.LOGGER.logDebug("count: " + this.count);
+	    
+	    this.count--;
+
+	    if (this.count == 0)
+		this.taskChain.nextTask();
+	};
+    });
 })($, de.titus.jstl.GlobalSettings);
 (function($, GlobalSettings) {
 	"use strict";
@@ -1495,7 +1509,8 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 			this.root = isRoot;
 			this.callback = aCallback;
 			this.__preventChilds = false;
-			this.__taskchain = de.titus.jstl.TaskRegistry.taskchain;			
+			this.__taskchain = de.titus.jstl.TaskRegistry.taskchain;
+			this.__currentTask = undefined;
 		};
 		TaskChain.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.TaskChain");
 		
@@ -1534,7 +1549,8 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 				var name = this.__taskchain.name;
 				var task = this.__taskchain.task;
 				var phase = this.__taskchain.phase;
-				var selector = this.__taskchain.selector; 
+				var selector = this.__taskchain.selector;
+				this.__currentTask = this.__taskchain;
 				this.__taskchain = this.__taskchain.next;
 				
 				if (TaskChain.LOGGER.isDebugEnabled())
@@ -1573,38 +1589,37 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 	});
 })($,de.titus.jstl.GlobalSettings);
 (function($, GlobalSettings) {
-	"use strict";
-	de.titus.core.Namespace.create("de.titus.jstl.functions.Children", function() {
-		var Children = de.titus.jstl.functions.Children = {
-		    LOGGER : de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.Children"),
-		    TASK : function(aElement, aContext, aProcessor, aTaskChain) {
-			    if (Children.LOGGER.isDebugEnabled())
-				    Children.LOGGER.logDebug("TASK");
-			    
-			    if (!aTaskChain.isPreventChilds()) {
-			    	var ignoreChilds = aElement.attr("jstl-ignore-childs");
-				    if (ignoreChilds && ignoreChilds != "")
-					    ignoreChilds = aProcessor.resolver.resolveExpression(ignoreChilds, aContext, true);
-				    
-				    if (ignoreChilds == "false" || ignoreChilds == true)
-					    return aTaskChain.preventChilds().nextTask();
-			    	
-			    	
-				    var children = aElement.children();
-				    if (children.length == 0)
-					    aTaskChain.nextTask();
-				    else {
-				    	var executeChain = new de.titus.jstl.ExecuteChain(aTaskChain, children.length);
-					    for (var i = 0; i < children.length; i++)
-						    aProcessor.compute($(children[i]), aContext, executeChain.finish.bind(executeChain));
-				    }
-			    } else
-				    aTaskChain.nextTask();
-		    }
-		};
-		
-		de.titus.jstl.TaskRegistry.append("children", de.titus.jstl.Constants.PHASE.CHILDREN, undefined, de.titus.jstl.functions.Children.TASK);
-	});
+    "use strict";
+    de.titus.core.Namespace.create("de.titus.jstl.functions.Children", function() {
+	var Children = de.titus.jstl.functions.Children = {
+	LOGGER : de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.Children"),
+	TASK : function(aElement, aContext, aProcessor, aTaskChain) {
+	    if (Children.LOGGER.isDebugEnabled())
+		Children.LOGGER.logDebug("TASK");
+
+	    if (!aTaskChain.isPreventChilds()) {
+		var ignoreChilds = aElement.attr("jstl-ignore-childs");
+		if (ignoreChilds && ignoreChilds != "")
+		    ignoreChilds = aProcessor.resolver.resolveExpression(ignoreChilds, aContext, true);
+
+		if (ignoreChilds == "false" || ignoreChilds == true)
+		    return aTaskChain.preventChilds().nextTask();
+
+		var children = aElement.children();
+		if (children.length == 0)
+		    aTaskChain.nextTask();
+		else {
+		    var executeChain = new de.titus.jstl.ExecuteChain(aTaskChain, children.length);
+		    for (var i = 0; i < children.length; i++)
+			aProcessor.compute($(children[i]), aContext, executeChain.finish.bind(executeChain));
+		}
+	    } else
+		aTaskChain.nextTask();
+	}
+	};
+
+	de.titus.jstl.TaskRegistry.append("children", de.titus.jstl.Constants.PHASE.CHILDREN, undefined, de.titus.jstl.functions.Children.TASK);
+    });
 })($, de.titus.jstl.GlobalSettings);
 (function($, GlobalSettings) {
 	"use strict";
@@ -1808,6 +1823,8 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 				    Foreach.__list(list, tempalte, varName, statusName, aElement, aContext, aProcessor, aTaskChain);
 			    else if (typeof list === "object")
 				    Foreach.__map(list, tempalte, varName, statusName, aElement, aContext, aProcessor, aTaskChain);
+			    else
+				aTaskChain.nextTask();
 		    },
 		    __count : function(aTemplate, aStatusName, aElement, aContext, aProcessor, aTaskChain) {
 			    var startIndex = aProcessor.resolver.resolveExpression(aElement.attr("jstl-foreach-start-index"), aContext, 0) || 0;
@@ -2355,14 +2372,14 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 		Processor.LOGGER.logDebug("execute compute(" + aElement + ", " + aContext + ")");
 	    if (!aElement) {
 		this.element.trigger(de.titus.jstl.Constants.EVENTS.onStart, [ aContext, this ]);
-		if (!this.element.is("body"))
+		//if(!this.element.is("body"))
 		    this.element.detach();
-		this.__computeElement(this.element, this.context, this.callback, true);
+		this.__computeElement(this.element, this.context, true, this.callback);
 	    } else
-		this.__computeElement(aElement, aContext, aCallback);
+		this.__computeElement(aElement, aContext, false, aCallback);
 	};
 
-	Processor.prototype.__computeElement = function(aElement, aContext, aCallback, isRoot) {
+	Processor.prototype.__computeElement = function(aElement, aContext, isRoot, aCallback) {
 	    if (Processor.LOGGER.isDebugEnabled())
 		Processor.LOGGER.logDebug("__computeElement() -> root: " + isRoot);
 
@@ -2396,8 +2413,7 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 		});
 		return this;
 	    } else {
-
-		if(!this.element.is("body"))
+		//if(!this.element.is("body"))
 		    this.parent.append(this.element);
 
 		setTimeout((function(aProcessor) {

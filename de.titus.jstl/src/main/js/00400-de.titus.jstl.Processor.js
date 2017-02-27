@@ -16,14 +16,14 @@
 		Processor.LOGGER.logDebug("execute compute(" + aElement + ", " + aContext + ")");
 	    if (!aElement) {
 		this.element.trigger(de.titus.jstl.Constants.EVENTS.onStart, [ aContext, this ]);
-		if (!this.element.is("body"))
+		//if(!this.element.is("body"))
 		    this.element.detach();
-		this.__computeElement(this.element, this.context, this.callback, true);
+		this.__computeElement(this.element, this.context, true, this.callback);
 	    } else
-		this.__computeElement(aElement, aContext, aCallback);
+		this.__computeElement(aElement, aContext, false, aCallback);
 	};
 
-	Processor.prototype.__computeElement = function(aElement, aContext, aCallback, isRoot) {
+	Processor.prototype.__computeElement = function(aElement, aContext, isRoot, aCallback) {
 	    if (Processor.LOGGER.isDebugEnabled())
 		Processor.LOGGER.logDebug("__computeElement() -> root: " + isRoot);
 
@@ -57,8 +57,7 @@
 		});
 		return this;
 	    } else {
-
-		if(!this.element.is("body"))
+		//if(!this.element.is("body"))
 		    this.parent.append(this.element);
 
 		setTimeout((function(aProcessor) {

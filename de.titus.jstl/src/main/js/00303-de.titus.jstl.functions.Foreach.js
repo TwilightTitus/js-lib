@@ -37,6 +37,8 @@
 				    Foreach.__list(list, tempalte, varName, statusName, aElement, aContext, aProcessor, aTaskChain);
 			    else if (typeof list === "object")
 				    Foreach.__map(list, tempalte, varName, statusName, aElement, aContext, aProcessor, aTaskChain);
+			    else
+				aTaskChain.nextTask();
 		    },
 		    __count : function(aTemplate, aStatusName, aElement, aContext, aProcessor, aTaskChain) {
 			    var startIndex = aProcessor.resolver.resolveExpression(aElement.attr("jstl-foreach-start-index"), aContext, 0) || 0;

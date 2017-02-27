@@ -8,7 +8,8 @@
 			this.root = isRoot;
 			this.callback = aCallback;
 			this.__preventChilds = false;
-			this.__taskchain = de.titus.jstl.TaskRegistry.taskchain;			
+			this.__taskchain = de.titus.jstl.TaskRegistry.taskchain;
+			this.__currentTask = undefined;
 		};
 		TaskChain.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.TaskChain");
 		
@@ -47,7 +48,8 @@
 				var name = this.__taskchain.name;
 				var task = this.__taskchain.task;
 				var phase = this.__taskchain.phase;
-				var selector = this.__taskchain.selector; 
+				var selector = this.__taskchain.selector;
+				this.__currentTask = this.__taskchain;
 				this.__taskchain = this.__taskchain.next;
 				
 				if (TaskChain.LOGGER.isDebugEnabled())
