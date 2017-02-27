@@ -27,10 +27,10 @@ de.titus.core.Namespace.create("de.titus.jstl.Constants", function() {
 			CONDITION:1,
 			CONTEXT:2,
 			MANIPULATION:3,
-			CONTENT:3,
-			BINDING:4,
+			CONTENT:4,
 			CHILDREN:5,
-			READY:6
+			BINDING:6,
+			READY:7
 		}
 	};	
 });
@@ -81,9 +81,10 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 (function($, GlobalSettings) {
     "use strict";
     de.titus.core.Namespace.create("de.titus.jstl.ExecuteChain", function() {
-	var ExecuteChain = de.titus.jstl.ExecuteChain = function(aTaskChain, aCount) {
+	var ExecuteChain = de.titus.jstl.ExecuteChain = function(aTaskChain, aCount, aCallback) {
 	    this.count = aCount || 0;
 	    this.taskChain = aTaskChain;
+	    this.callback = aCallback;
 	};
 	ExecuteChain.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.ExecuteChain");
 
@@ -92,101 +93,114 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 		ExecuteChain.LOGGER.logDebug("count: " + this.count);
 	    
 	    this.count--;
-
-	    if (this.count == 0)
+	    if (this.count == 0){
+		if (typeof this.callback === "function")
+		    this.callback(this);
 		this.taskChain.nextTask();
+	    }
 	};
     });
 })($, de.titus.jstl.GlobalSettings);
 (function($, GlobalSettings) {
-	"use strict";
-	de.titus.core.Namespace.create("de.titus.jstl.TaskChain", function() {
-		var TaskChain = function(aElement, aContext, aProcessor, isRoot, aCallback) {
-			this.element = aElement;
-			this.context = aContext;
-			this.processor = aProcessor;
-			this.root = isRoot;
-			this.callback = aCallback;
-			this.__preventChilds = false;
-			this.__taskchain = de.titus.jstl.TaskRegistry.taskchain;
-			this.__currentTask = undefined;
-		};
-		TaskChain.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.TaskChain");
-		
-		TaskChain.prototype.preventChilds = function() {
-			if (TaskChain.LOGGER.isDebugEnabled())
-				TaskChain.LOGGER.logDebug("preventChilds()");
-			this.__preventChilds = true;
-			return this;
-		};
-		
-		TaskChain.prototype.isPreventChilds = function() {
-			return this.__preventChilds;
-		};
-		
-		TaskChain.prototype.updateContext = function(aContext, doMerge) {
-			if (TaskChain.LOGGER.isDebugEnabled())
-				TaskChain.LOGGER.logDebug("updateContext()");
-			if (doMerge)
-				this.context = $.extend(true, {}, this.context, aContext);
-			else
-				this.context = aContext;
-			
-			return this;
-		};
-		
-		
-		
-		TaskChain.prototype.nextTask = function(aContext, doMerge) {
-			if (TaskChain.LOGGER.isDebugEnabled())
-				TaskChain.LOGGER.logDebug("nextTask( \"" + aContext + "\")");
-			
-			if (aContext)
-				this.updateContext(aContext, doMerge);
-			
-			if (this.__taskchain) {
-				var name = this.__taskchain.name;
-				var task = this.__taskchain.task;
-				var phase = this.__taskchain.phase;
-				var selector = this.__taskchain.selector;
-				this.__currentTask = this.__taskchain;
-				this.__taskchain = this.__taskchain.next;
-				
-				if (TaskChain.LOGGER.isDebugEnabled())
-					TaskChain.LOGGER.logDebug("nextTask() -> next task: \"" + name + "\", phase: \"" + phase + "\", selector \"" + selector + "\"!");
-				if(selector == undefined || this.element.is(selector))
-					task(this.element, this.__buildContext(), this.processor, this);
-				else{
-					if (TaskChain.LOGGER.isDebugEnabled())
-						TaskChain.LOGGER.logDebug("nextTask() -> skip task: \"" + name + "\", phase: \"" + phase + "\", selector \"" + selector + "\"!");
-					this.nextTask();
-				}
-			} else {
-				if (TaskChain.LOGGER.isDebugEnabled())
-					TaskChain.LOGGER.logDebug("nextTask() -> task chain is finished!");				
-				this.finish();
-			}
-			
-			return this;
-		};
-		
-		TaskChain.prototype.__buildContext = function() {
-		    return $.extend({},this.context,{"$root": this.processor.element, "$element" : this.element});
-		};
-		
-		TaskChain.prototype.finish = function() {
-			if (TaskChain.LOGGER.isDebugEnabled())
-				TaskChain.LOGGER.logDebug("finish()");			
-			
-			if(this.callback)
-				this.callback(this.element, this.context, this.processor, this);
-			
-			return this;
-		};
-		
-		de.titus.jstl.TaskChain = TaskChain;
-	});
-})($,de.titus.jstl.GlobalSettings);
+    "use strict";
+    de.titus.core.Namespace.create("de.titus.jstl.TaskChain", function() {
+	var TaskChain = function(aElement, aContext, aProcessor, isRoot, aCallback) {
+	    this.element = aElement;
+	    this.context = aContext;
+	    this.processor = aProcessor;
+	    this.root = isRoot;
+	    this.callback = aCallback;
+	    this.__preventChilds = false;
+	    this.__taskchain = de.titus.jstl.TaskRegistry.taskchain;
+	    this.__currentTask = undefined;
+	};
+	TaskChain.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.TaskChain");
+
+	TaskChain.prototype.skipToPhase = function(aPhase) {
+	    if (TaskChain.LOGGER.isDebugEnabled())
+		TaskChain.LOGGER.logDebug("skipToPhase()");
+
+	    while (this.__taskchain && this.__taskchain.phase < aPhase)
+		this.__taskchain = this.__taskchain.next;
+	    
+	    return this;
+	};
+
+	TaskChain.prototype.preventChilds = function() {
+	    if (TaskChain.LOGGER.isDebugEnabled())
+		TaskChain.LOGGER.logDebug("preventChilds()");
+	    this.__preventChilds = true;
+	    return this;
+	};
+
+	TaskChain.prototype.isPreventChilds = function() {
+	    return this.__preventChilds;
+	};
+
+	TaskChain.prototype.updateContext = function(aContext, doMerge) {
+	    if (TaskChain.LOGGER.isDebugEnabled())
+		TaskChain.LOGGER.logDebug("updateContext()");
+	    if (doMerge)
+		this.context = $.extend(true, this.context, aContext);
+	    else
+		this.context = aContext;
+
+	    return this;
+	};
+
+	TaskChain.prototype.nextTask = function(aContext, doMerge) {
+	    if (TaskChain.LOGGER.isDebugEnabled())
+		TaskChain.LOGGER.logDebug("nextTask( \"" + aContext + "\")");	    
+
+	    if (aContext)
+		this.updateContext(aContext, doMerge);
+
+	    if (this.__taskchain) {
+		var name = this.__taskchain.name;
+		var task = this.__taskchain.task;
+		var phase = this.__taskchain.phase;
+		var selector = this.__taskchain.selector;
+		this.__currentTask = this.__taskchain;
+		this.__taskchain = this.__taskchain.next;
+
+		if (TaskChain.LOGGER.isDebugEnabled())
+		    TaskChain.LOGGER.logDebug("nextTask() -> next task: \"" + name + "\", phase: \"" + phase + "\", selector \"" + selector + "\"!");
+		if (selector == undefined || this.element.is(selector))
+		    task(this.element, this.__buildContext(), this.processor, this);
+		else {
+		    if (TaskChain.LOGGER.isDebugEnabled())
+			TaskChain.LOGGER.logDebug("nextTask() -> skip task: \"" + name + "\", phase: \"" + phase + "\", selector \"" + selector + "\"!");
+		    this.nextTask();
+		}
+	    } else {
+		if (TaskChain.LOGGER.isDebugEnabled())
+		    TaskChain.LOGGER.logDebug("nextTask() -> task chain is finished!");
+		this.finish();
+	    }
+
+	    return this;
+	};
+
+	TaskChain.prototype.__buildContext = function() {
+	    return $.extend({}, this.context, {
+	    "$root" : this.processor.element,
+	    "$element" : this.element
+	    });
+	};
+
+	TaskChain.prototype.finish = function() {
+	    if (TaskChain.LOGGER.isDebugEnabled())
+		TaskChain.LOGGER.logDebug("finish()");
+
+	    if (this.callback)
+		this.callback(this.element, this.context, this.processor, this);	    
+
+	    return this;
+	};
+
+	de.titus.jstl.TaskChain = TaskChain;
+    });
+})($, de.titus.jstl.GlobalSettings);
 (function($, GlobalSettings) {
     "use strict";
     de.titus.core.Namespace.create("de.titus.jstl.functions.Children", function() {
@@ -208,13 +222,27 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 		if (children.length == 0)
 		    aTaskChain.nextTask();
 		else {
-		    var executeChain = new de.titus.jstl.ExecuteChain(aTaskChain, children.length);
-		    for (var i = 0; i < children.length; i++)
-			aProcessor.compute($(children[i]), aContext, executeChain.finish.bind(executeChain));
+		    aProcessor.compute($(children[0]), aTaskChain.context, Children.ElementChain.bind({},children,1, aTaskChain));
 		}
 	    } else
 		aTaskChain.nextTask();
+	},
+
+	UpdateContext : function(aParentTaskChain, aTaskChain) {
+	    aParentTaskChain.updateContext(aTaskChain.context, true);
+	},
+
+	ElementChain : function(theChildren, aIndex, aParentTaskChain, aElement, aContext, aProcessor) {
+	    aParentTaskChain.updateContext(aContext, true);
+	    var next = aElement.next();
+	    if(next){
+	    //if(aIndex < theChildren.length){		
+		var next = $(theChildren[aIndex]);		
+		aProcessor.compute(next, aParentTaskChain.context, Children.ElementChain.bind({},theChildren, aIndex + 1, aParentTaskChain));
+	    } else
+		aParentTaskChain.nextTask();
 	}
+
 	};
 
 	de.titus.jstl.TaskRegistry.append("children", de.titus.jstl.Constants.PHASE.CHILDREN, undefined, de.titus.jstl.functions.Children.TASK);
@@ -249,8 +277,26 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 	});
 })($, de.titus.jstl.GlobalSettings);
 (function($, GlobalSettings) {
+	de.titus.core.Namespace.create("de.titus.jstl.functions.PostProcessor", function() {
+		var PostProcessor = de.titus.jstl.functions.PostProcessor = {
+		    LOGGER : de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.PostProcessor"),		    
+		    
+		    TASK : function(aElement, aContext, aProcessor, aTaskChain) {
+			    if (PostProcessor.LOGGER.isDebugEnabled())
+				    PostProcessor.LOGGER.logDebug("TASK");			    
+			    
+			    
+			    aElement.trigger(de.titus.jstl.Constants.EVENTS.onSuccess, [ aContext, aProcessor ]);
+			    aTaskChain.next();			    
+		    }		
+		};
+		
+		de.titus.jstl.TaskRegistry.append("PostProcessor", de.titus.jstl.Constants.PHASE.FINISH, undefined, de.titus.jstl.functions.PostProcessor.TASK);
+	});
+})($, de.titus.jstl.GlobalSettings);
+(function($, GlobalSettings) {
 	de.titus.core.Namespace.create("de.titus.jstl.functions.Preprocessor", function() {
-		de.titus.jstl.functions.Preprocessor = Preprocessor = {
+		var Preprocessor = de.titus.jstl.functions.Preprocessor =  {
 		    LOGGER : de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.Preprocessor"),
 		    
 		    STATICEVENTHANDLER : function(aExpression, aEvent, aContext, aProcessor) {
@@ -290,18 +336,14 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 			    Preprocessor.__appendEvents(aElement);
 			    
 			    aElement.trigger(de.titus.jstl.Constants.EVENTS.onLoad, [ aContext, aProcessor]);
-			    setTimeout(function(){aTaskChain.nextTask();}, GlobalSettings.DEFAULT_TIMEOUT_VALUE);
-			    
-			    
+			    aTaskChain.nextTask();			    
 		    },
 		    
 		    __appendEvents : function(aElement) {
 			    if (aElement.attr("jstl-load"))
 				    aElement.one(de.titus.jstl.Constants.EVENTS.onLoad, Preprocessor.STATICEVENTHANDLER.bind(null, aElement.attr("jstl-load")));
 			    if (aElement.attr("jstl-success"))
-				    aElement.one(de.titus.jstl.Constants.EVENTS.onSuccess, Preprocessor.STATICEVENTHANDLER.bind(null, aElement.attr("jstl-success")));
-			    if (aElement.attr("jstl-fail"))
-				    aElement.one(de.titus.jstl.Constants.EVENTS.onFail, Preprocessor.STATICEVENTHANDLER.bind(null, aElement.attr("jstl-fail")));
+				    aElement.one(de.titus.jstl.Constants.EVENTS.onSuccess, Preprocessor.STATICEVENTHANDLER.bind(null, aElement.attr("jstl-success")));			  
 		    }
 		
 		};
@@ -526,96 +568,96 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 	});
 })($, de.titus.jstl.GlobalSettings);
 (function($) {
-	"use strict";
-	de.titus.core.Namespace.create("de.titus.jstl.functions.Text", function() {
-		var Text = de.titus.jstl.functions.Text = {
-		    LOGGER : de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.Text"),
-		    
-		    TASK : function(aElement, aDataContext, aProcessor, aTaskChain) {
-			    if (Text.LOGGER.isDebugEnabled())
-				    Text.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
-			    
-			    var ignore = aElement.attr("jstl-text-ignore");
-			    if (!ignore) {
-				    Text.normalize(aElement[0]);				    
-				    var contenttype = aElement.attr("jstl-text-type") || "text";
-				    aElement.contents().filter(function() {
-					    return this.nodeType === 3 && this.textContent != undefined && this.textContent.trim() != "";
-				    }).each(function() {
-					    var text = this.textContent;
-					    if (text) {
-						    text = aProcessor.resolver.resolveText(text, aDataContext);
-						    var contentFunction = Text.CONTENTTYPE[contenttype];
-						    if (contentFunction)
-							    contentFunction(this, text, aElement, aProcessor, aDataContext);
-					    }
-				    });
-			    }
-			    
-			    aTaskChain.nextTask();
-		    },
-		    
-		    normalize : function(aNode) {
-			    if (!aNode)
-				    return;
-			    if (aNode.nodeType == 3) {
-				    var text = aNode.textContent;
-				    while (aNode.nextSibling && aNode.nextSibling.nodeType == 3) {
-					    text += aNode.nextSibling.textContent;
-					    aNode.parentNode.removeChild(aNode.nextSibling);
-				    }
-				    aNode.textContent = text;
-			    } else {
-				    Text.normalize(aNode.firstChild);
-			    }
-			    Text.normalize(aNode.nextSibling);
-		    },
-		    
-		    CONTENTTYPE : {
-		        "html" : function(aNode, aText, aBaseElement, aProcessor, aDataContext) {
-			        $(aNode).replaceWith($.parseHTML(aText));
-		        },
-		        "json" : function(aNode, aText, aBaseElement, aProcessor, aDataContext) {
-			        if (typeof aText === "string")
-				        aNode.textContent = aText;
-			        else
-				        aNode.textContent = JSON.stringify(aText);
-		        },
-		        "text" : function(aNode, aText, aBaseElement, aProcessor, aDataContext) {
-			        var text = aText;
-			        var addAsHtml = false;
-			        
-			        var trimLength = aBaseElement.attr("jstl-text-trim-length");
-			        if (trimLength != undefined && trimLength != "") {
-				        trimLength = aProcessor.resolver.resolveExpression(trimLength, aDataContext, "-1");
-				        trimLength = parseInt(trimLength);
-				        if (trimLength && trimLength > 0)
-					        text = de.titus.core.StringUtils.trimTextLength(text, trimLength);
-			        }
-			        
-			        var preventformat = aBaseElement.attr("jstl-text-prevent-format");
-			        if (preventformat) {
-				        preventformat = aProcessor.resolver.resolveExpression(preventformat, aDataContext, true) || true;
-				        if (preventformat) {
-					        text = de.titus.core.StringUtils.formatToHtml(text);
-					        addAsHtml = true;
-				        }
-			        }
-			        
-			        if (addAsHtml)
-				        $(aNode).replaceWith($.parseHTML(text));
-			        else
-				        aNode.textContent = text;
-		        }
+    "use strict";
+    de.titus.core.Namespace.create("de.titus.jstl.functions.Text", function() {
+	var Text = de.titus.jstl.functions.Text = {
+	LOGGER : de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.Text"),
+
+	TASK : function(aElement, aContext, aProcessor, aTaskChain) {
+	    if (Text.LOGGER.isDebugEnabled())
+		Text.LOGGER.logDebug("execute run(" + aElement + ", " + aContext + ", " + aProcessor + ")");
+
+	    var ignore = aElement.attr("jstl-text-ignore");
+	    if (!ignore) {
+		Text.normalize(aElement[0]);
+		var contenttype = aElement.attr("jstl-text-type") || "text";
+		aElement.contents().filter(function() {
+		    return this.nodeType === 3 && this.textContent != undefined && this.textContent.trim() != "";
+		}).each(function() {
+		    var text = this.textContent;
+		    if (text) {
+			text = aProcessor.resolver.resolveText(text, aContext);
+			var contentFunction = Text.CONTENTTYPE[contenttype];
+			if (contentFunction)
+			    contentFunction(this, text, aElement, aProcessor, aContext);
 		    }
-		};
-		
-		Text.CONTENTTYPE["text/html"] = Text.CONTENTTYPE["html"];
-		Text.CONTENTTYPE["application/json"] = Text.CONTENTTYPE["json"];
-		Text.CONTENTTYPE["text/plain"] = Text.CONTENTTYPE["text"];
-		
-		de.titus.jstl.TaskRegistry.append("text", de.titus.jstl.Constants.PHASE.CONTENT, undefined, de.titus.jstl.functions.Text.TASK);
-	});
+		});
+	    }
+
+	    aTaskChain.nextTask();
+	},
+
+	normalize : function(aNode) {
+	    if (!aNode)
+		return;
+	    if (aNode.nodeType == 3) {
+		var text = aNode.textContent;
+		while (aNode.nextSibling && aNode.nextSibling.nodeType == 3) {
+		    text += aNode.nextSibling.textContent;
+		    aNode.parentNode.removeChild(aNode.nextSibling);
+		}
+		aNode.textContent = text;
+	    } else {
+		Text.normalize(aNode.firstChild);
+	    }
+	    Text.normalize(aNode.nextSibling);
+	},
+
+	CONTENTTYPE : {
+	"html" : function(aNode, aText, aBaseElement, aProcessor, aContext) {
+	    $(aNode).replaceWith($.parseHTML(aText));
+	},
+	"json" : function(aNode, aText, aBaseElement, aProcessor, aContext) {
+	    if (typeof aText === "string")
+		aNode.textContent = aText;
+	    else
+		aNode.textContent = JSON.stringify(aText);
+	},
+	"text" : function(aNode, aText, aBaseElement, aProcessor, aContext) {
+	    var text = aText;
+	    var addAsHtml = false;
+
+	    var trimLength = aBaseElement.attr("jstl-text-trim-length");
+	    if (trimLength != undefined && trimLength != "") {
+		trimLength = aProcessor.resolver.resolveExpression(trimLength, aContext, "-1");
+		trimLength = parseInt(trimLength);
+		if (trimLength && trimLength > 0)
+		    text = de.titus.core.StringUtils.trimTextLength(text, trimLength);
+	    }
+
+	    var preventformat = aBaseElement.attr("jstl-text-prevent-format");
+	    if (preventformat) {
+		preventformat = aProcessor.resolver.resolveExpression(preventformat, aContext, true) || true;
+		if (preventformat) {
+		    text = de.titus.core.StringUtils.formatToHtml(text);
+		    addAsHtml = true;
+		}
+	    }
+
+	    if (addAsHtml)
+		$(aNode).replaceWith($.parseHTML(text));
+	    else
+		aNode.textContent = text;
+	}
+	}
+	};
+
+	Text.CONTENTTYPE["text/html"] = Text.CONTENTTYPE["html"];
+	Text.CONTENTTYPE["application/json"] = Text.CONTENTTYPE["json"];
+	Text.CONTENTTYPE["text/plain"] = Text.CONTENTTYPE["text"];
+
+	de.titus.jstl.TaskRegistry.append("text", de.titus.jstl.Constants.PHASE.CONTENT, undefined, de.titus.jstl.functions.Text.TASK);
+    });
 })($);
 (function($) {
 	"use strict";
@@ -655,212 +697,213 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 	});
 })($);
 (function($, GlobalSettings) {
-	"use strict";
-	de.titus.core.Namespace.create("de.titus.jstl.functions.Data", function() {
-		var Data = de.titus.jstl.functions.Data = {
-		    LOGGER : de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.Data"),
-		    
-		    TASK : function(aElement, aDataContext, aProcessor, aTaskChain) {
-			    if (Data.LOGGER.isDebugEnabled())
-				    Data.LOGGER.logDebug("TASK");
-			    
-			    var expression = aElement.attr("jstl-data");
-			    if (expression) {
-				    var varname = aElement.attr("jstl-data-var");
-				    var mode = aElement.attr("jstl-data-mode") || "direct";
-				    Data.MODES[mode](expression, aElement, varname, aDataContext, aProcessor, aTaskChain);
-				    
-			    } else
-				    aTaskChain.nextTask();
-		    },
-		    
-		    __options : function(aElement, aDataContext, aProcessor) {
-			    var options = aElement.attr("jstl-data-options");
-			    if (options) {
-				    options = aProcessor.resolver.resolveText(options, aDataContext);
-				    options = aProcessor.resolver.resolveExpression(options, aDataContext);
-				    return options || {};
-			    }
-			    return {};
-		    },
-		    __updateContext : function(aVarname, aData, aTaskChain) {
-			    if (aData) {
-				    if (!aVarname)
-					    aTaskChain.updateContext(aData, true);
-				    else
-					    aTaskChain.context[aVarname] = aData;
-			    }
-		    },
-		    
-		    MODES : {
-		        "direct" : function(anExpression, aElement, aVarname, aDataContext, aProcessor, aTaskChain) {
-			        var data = aProcessor.resolver.resolveExpression(anExpression, aDataContext, anExpression);
-			        Data.__updateContext(aVarname, data, aTaskChain);
-			        aTaskChain.nextTask();
-		        },
-		        
-		        "remote" : function(anExpression, aElement, aVarname, aDataContext, aProcessor, aTaskChain) {
-			        var url = aProcessor.resolver.resolveText(anExpression, aDataContext);
-			        var option = Data.__options(aElement, aDataContext, aProcessor);
-			        var datatype = (aElement.attr("jstl-data-datatype") || "json").toLowerCase();
-			        
-			        var ajaxSettings = {
-			            'url' : de.titus.core.Page.getInstance().buildUrl(url),
-			            'async' : true,
-			            'cache' : false,
-			            'dataType' : datatype
-			        };
-			        ajaxSettings = $.extend(ajaxSettings, option);
-			        
-			        $.ajax(ajaxSettings).done(Data.__remoteResponse.bind({}, aVarname, datatype, aTaskChain));
-		        },
-		        
-		        "url-parameter" : function(anExpression, aElement, aVarname, aDataContext, aProcessor, aTaskChain) {
-			        var parameterName = aProcessor.resolver.resolveText(anExpression, aDataContext);
-			        var data = de.titus.core.Page.getInstance().getUrl().getParameter(parameterName);
-			        Data.__updateContext(aVarname, data, aTaskChain);
-			        aTaskChain.nextTask();
-		        }
-		    },
-		    CONTENTYPE : {
-		        "xml" : de.titus.core.Converter.xmlToJson,
-		        "json" : function(aData) {
-			        return aData
-		        }
-		    },
-		    
-		    __remoteResponse : function(aVarname, aDatatype, aTaskChain, aData) {
-			    var data = Data.CONTENTYPE[aDatatype](aData);
-			    Data.__updateContext(aVarname, data, aTaskChain);
-			    aTaskChain.nextTask();
-		    }
-		
-		};
-		
-		de.titus.jstl.TaskRegistry.append("data", de.titus.jstl.Constants.PHASE.CONTEXT, "[jstl-data]", de.titus.jstl.functions.Data.TASK);
-	});
+    "use strict";
+    de.titus.core.Namespace.create("de.titus.jstl.functions.Data", function() {
+	var Data = de.titus.jstl.functions.Data = {
+	LOGGER : de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.Data"),
+
+	TASK : function(aElement, aDataContext, aProcessor, aTaskChain) {
+	    if (Data.LOGGER.isDebugEnabled())
+		Data.LOGGER.logDebug("TASK");
+
+	    var expression = aElement.attr("jstl-data");
+	    if (expression) {
+		var varname = aElement.attr("jstl-data-var");
+		var mode = aElement.attr("jstl-data-mode") || "direct";
+		Data.MODES[mode](expression, aElement, varname, aDataContext, aProcessor, aTaskChain);
+
+	    } else
+		aTaskChain.nextTask();
+	},
+
+	__options : function(aElement, aDataContext, aProcessor) {
+	    var options = aElement.attr("jstl-data-options");
+	    if (options) {
+		options = aProcessor.resolver.resolveText(options, aDataContext);
+		options = aProcessor.resolver.resolveExpression(options, aDataContext);
+		return options || {};
+	    }
+	    return {};
+	},
+	__updateContext : function(aVarname, aData, aTaskChain) {
+	    if (aData) {
+		if (!aVarname)
+		    aTaskChain.updateContext(aData, true);
+		else {
+		    var data = {};
+		    data[aVarname] = aData;
+		    aTaskChain.updateContext(data, true);
+		}
+	    }
+	},
+
+	MODES : {
+	"direct" : function(anExpression, aElement, aVarname, aDataContext, aProcessor, aTaskChain) {
+	    var data = aProcessor.resolver.resolveExpression(anExpression, aDataContext, anExpression);
+	    Data.__updateContext(aVarname, data, aTaskChain);
+	    aTaskChain.nextTask();
+	},
+
+	"remote" : function(anExpression, aElement, aVarname, aDataContext, aProcessor, aTaskChain) {
+	    var url = aProcessor.resolver.resolveText(anExpression, aDataContext);
+	    var option = Data.__options(aElement, aDataContext, aProcessor);
+	    var datatype = (aElement.attr("jstl-data-datatype") || "json").toLowerCase();
+
+	    var ajaxSettings = {
+	    'url' : de.titus.core.Page.getInstance().buildUrl(url),
+	    'async' : true,
+	    'cache' : false,
+	    'dataType' : datatype
+	    };
+	    ajaxSettings = $.extend(ajaxSettings, option);
+
+	    $.ajax(ajaxSettings).done(Data.__remoteResponse.bind({}, aVarname, datatype, aTaskChain));
+	},
+
+	"url-parameter" : function(anExpression, aElement, aVarname, aDataContext, aProcessor, aTaskChain) {
+	    var parameterName = aProcessor.resolver.resolveText(anExpression, aDataContext);
+	    var data = de.titus.core.Page.getInstance().getUrl().getParameter(parameterName);
+	    Data.__updateContext(aVarname, data, aTaskChain);
+	    aTaskChain.nextTask();
+	}
+	},
+	CONTENTYPE : {
+	"xml" : de.titus.core.Converter.xmlToJson,
+	"json" : function(aData) {
+	    return aData
+	}
+	},
+
+	__remoteResponse : function(aVarname, aDatatype, aTaskChain, aData) {
+	    var data = Data.CONTENTYPE[aDatatype](aData);
+	    Data.__updateContext(aVarname, data, aTaskChain);
+	    aTaskChain.nextTask();
+	}
+
+	};
+
+	de.titus.jstl.TaskRegistry.append("data", de.titus.jstl.Constants.PHASE.CONTEXT, "[jstl-data]", de.titus.jstl.functions.Data.TASK);
+    });
 })($, de.titus.jstl.GlobalSettings);
 (function($, GlobalSettings) {
-	"use strict";
-	de.titus.core.Namespace.create("de.titus.jstl.functions.Include", function() {
-		
-		var Include = de.titus.jstl.functions.Include = {
-		    LOGGER : de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.Include"),
-		    CACHE : {},
-		    TASK : function(aElement, aContext, aProcessor, aTaskChain) {
-			    if (Include.LOGGER.isDebugEnabled())
-				    Include.LOGGER.logDebug("execute run(" + aElement + ", " + aContext + ", " + aProcessor + ")");
-			    
-			    var expression = aElement.attr("jstl-include");
-			    if (expression) {
-				    Include.__compute(expression, aElement, aContext, aProcessor, aTaskChain);
-			    } else
-				    aTaskChain.nextTask();
-		    },
-		    
-		    __cacheCallback : function(aElement, aIncludeMode, aProcessor, aContext, aTaskChain, aTemplate) {
-			    Include.__include(aElement, aTemplate, aIncludeMode, aProcessor, aContext, aTaskChain);
-		    },
-		    
-		    __executeCacheCallback : function(aUrl, aTemplate) {
-			    Include.CACHE[aUrl].template = $("<jstl/>").append(aTemplate);
-			    Include.CACHE[aUrl].onload = false;
-			    setTimeout(function() {
-				    var cache = Include.CACHE[aUrl];
-				    for (var i = 0; i < cache.callback.length; i++)
-					    cache.callback[i](cache.template);
-			    }, GlobalSettings.DEFAULT_TIMEOUT_VALUE);
-		    },
-		    
-		    __compute : function(anIncludeExpression, aElement, aContext, aProcessor, aTaskChain) {
-			    var url = aProcessor.resolver.resolveText(anIncludeExpression, aContext);
-			    var disableCaching = url.indexOf("?") >= 0 || aElement.attr("jstl-include-cache-disabled") != undefined;
-			    var cache = undefined;
-			    if (!disableCaching)
-				    cache = Include.CACHE[url];
-			    
-			    var includeMode = Include.__mode(aElement, aContext, aProcessor);
-			    if (cache) {
-				    if (cache.onload)
-					    cache.callback.push(Include.__cacheCallback.bind({}, aElement, includeMode, aProcessor, aContext, aTaskChain));
-				    else
-					    Include.__include(aElement, cache.template, includeMode, aProcessor, aContext, aTaskChain);
-			    } else {
-				    cache = Include.CACHE[url] = {
-				        onload : true,
-				        callback : [
-					        Include.__cacheCallback.bind({}, aElement, includeMode, aProcessor, aContext, aTaskChain)
-				        ]
-				    };
-				    var options = Include.__options(aElement, aContext, aProcessor);
-				    var ajaxSettings = {
-				        'url' : Include.__buildUrl(url),
-				        'async' : true,
-				        'cache' : aElement.attr("jstl-include-ajax-cache-disabled") == undefined,
-				        "dataType" : "html"
-				    };
-				    ajaxSettings = $.extend(true, ajaxSettings, options);
-				    
-				    $.ajax(ajaxSettings).done(Include.__executeCacheCallback.bind({}, ajaxSettings.url)).fail(function(error) {
-					    throw JSON.stringify(error);
-				    });
-			    }
-		    },
-		    URLPATTERN : new RegExp("^((https?://)|/).*", "i"),
-		    
-		    __buildUrl : function(aUrl) {
-			    var url = aUrl;
-			    if (!Include.URLPATTERN.test(aUrl))
-				    url = GlobalSettings.DEFAULT_INCLUDE_BASEPATH + aUrl;
-			    url = de.titus.core.Page.getInstance().buildUrl(url);
-			    if (Include.LOGGER.isDebugEnabled())
-				    Include.LOGGER.logDebug("execute __buildUrl(\"" + aUrl + "\") -> result: " + url);
-			    
-			    return url;
-		    },
-		    
-		    __options : function(aElement, aContext, aProcessor) {
-			    var options = aElement.attr("jstl-include-options");
-			    if (options) {
-				    options = aProcessor.resolver.resolveText(options, aContext);
-				    options = aProcessor.resolver.resolveExpression(options, aContext);
-				    return options || {};
-			    }
-			    
-			    return {};
-		    },
-		    
-		    __mode : function(aElement, aContext, aProcessor) {
-			    var mode = aElement.attr("jstl-include-mode");
-			    if (mode == undefined)
-				    return "replace";
-			    
-			    mode = mode.toLowerCase();
-			    if (mode == "append" || mode == "replace" || mode == "prepend")
-				    return mode;
-			    
-			    return "replace";
-		    },
-		    
-		    __include : function(aElement, aTemplate, aIncludeMode, aProcessor, aContext, aTaskChain) {
-			    if (Include.LOGGER.isDebugEnabled())
-				    Include.LOGGER.logDebug("execute __include()");
-			    var content = aTemplate.clone();
-			    
-			    if (aIncludeMode == "replace") {
-				    aElement.empty();
-				    content.appendTo(aElement);
-			    } else if (aIncludeMode == "append")
-				    content.appendTo(aElement);
-			    else if (aIncludeMode == "prepend")
-				    content.prependTo(aElement);
-			    
-			    aTaskChain.nextTask();
-		    }
+    "use strict";
+    de.titus.core.Namespace.create("de.titus.jstl.functions.Include", function() {
+
+	var Include = de.titus.jstl.functions.Include = {
+	LOGGER : de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.Include"),
+	CACHE : {},
+	TASK : function(aElement, aContext, aProcessor, aTaskChain) {
+	    if (Include.LOGGER.isDebugEnabled())
+		Include.LOGGER.logDebug("execute run(" + aElement + ", " + aContext + ", " + aProcessor + ")");
+
+	    var expression = aElement.attr("jstl-include");
+	    if (expression) {
+		Include.__compute(expression, aElement, aContext, aProcessor, aTaskChain);
+	    } else
+		aTaskChain.nextTask();
+	},
+
+	__cacheCallback : function(aElement, aIncludeMode, aProcessor, aContext, aTaskChain, aTemplate) {
+	    Include.__include(aElement, aTemplate, aIncludeMode, aProcessor, aContext, aTaskChain);
+	},
+
+	__executeCacheCallback : function(aUrl, aTemplate) {
+	    Include.CACHE[aUrl].template = $("<jstl/>").append(aTemplate);
+	    Include.CACHE[aUrl].onload = false;
+	    setTimeout(function() {
+		var cache = Include.CACHE[aUrl];
+		for (var i = 0; i < cache.callback.length; i++)
+		    cache.callback[i](cache.template);
+	    }, GlobalSettings.DEFAULT_TIMEOUT_VALUE);
+	},
+
+	__compute : function(anIncludeExpression, aElement, aContext, aProcessor, aTaskChain) {
+	    var url = aProcessor.resolver.resolveText(anIncludeExpression, aContext);
+	    var disableCaching = url.indexOf("?") >= 0 || aElement.attr("jstl-include-cache-disabled") != undefined;
+	    var cache = undefined;
+	    if (!disableCaching)
+		cache = Include.CACHE[url];
+
+	    var includeMode = Include.__mode(aElement, aContext, aProcessor);
+	    if (cache) {
+		if (cache.onload)
+		    cache.callback.push(Include.__cacheCallback.bind({}, aElement, includeMode, aProcessor, aContext, aTaskChain));
+		else
+		    Include.__include(aElement, cache.template, includeMode, aProcessor, aContext, aTaskChain);
+	    } else {
+		cache = Include.CACHE[url] = {
+		onload : true,
+		callback : [ Include.__cacheCallback.bind({}, aElement, includeMode, aProcessor, aContext, aTaskChain) ]
 		};
-		
-		de.titus.jstl.TaskRegistry.append("include", de.titus.jstl.Constants.PHASE.MANIPULATION, "[jstl-include]", de.titus.jstl.functions.Include.TASK);
-	});
+		var options = Include.__options(aElement, aContext, aProcessor);
+		var ajaxSettings = {
+		'url' : Include.__buildUrl(url),
+		'async' : true,
+		'cache' : aElement.attr("jstl-include-ajax-cache-disabled") == undefined,
+		"dataType" : "html"
+		};
+		ajaxSettings = $.extend(true, ajaxSettings, options);
+
+		$.ajax(ajaxSettings).done(Include.__executeCacheCallback.bind({}, ajaxSettings.url)).fail(function(error) {
+		    throw JSON.stringify(error);
+		});
+	    }
+	},
+	URLPATTERN : new RegExp("^((https?://)|/).*", "i"),
+
+	__buildUrl : function(aUrl) {
+	    var url = aUrl;
+	    if (!Include.URLPATTERN.test(aUrl))
+		url = GlobalSettings.DEFAULT_INCLUDE_BASEPATH + aUrl;
+	    url = de.titus.core.Page.getInstance().buildUrl(url);
+	    if (Include.LOGGER.isDebugEnabled())
+		Include.LOGGER.logDebug("execute __buildUrl(\"" + aUrl + "\") -> result: " + url);
+
+	    return url;
+	},
+
+	__options : function(aElement, aContext, aProcessor) {
+	    var options = aElement.attr("jstl-include-options");
+	    if (options) {
+		options = aProcessor.resolver.resolveText(options, aContext);
+		options = aProcessor.resolver.resolveExpression(options, aContext);
+		return options || {};
+	    }
+
+	    return {};
+	},
+
+	__mode : function(aElement, aContext, aProcessor) {
+	    var mode = aElement.attr("jstl-include-mode");
+	    if (mode == undefined)
+		return "replace";
+
+	    mode = mode.toLowerCase();
+	    if (mode == "append" || mode == "replace" || mode == "prepend")
+		return mode;
+
+	    return "replace";
+	},
+
+	__include : function(aElement, aTemplate, aIncludeMode, aProcessor, aContext, aTaskChain) {
+	    if (Include.LOGGER.isDebugEnabled())
+		Include.LOGGER.logDebug("execute __include()");
+	    var content = aTemplate.clone();
+
+	    if (aIncludeMode == "replace") {
+		aElement.empty();
+		content.appendTo(aElement);
+	    } else if (aIncludeMode == "append")
+		content.appendTo(aElement);
+	    else if (aIncludeMode == "prepend")
+		content.prependTo(aElement);
+
+	    aTaskChain.nextTask();
+	}
+	};
+
+	de.titus.jstl.TaskRegistry.append("include", de.titus.jstl.Constants.PHASE.MANIPULATION, "[jstl-include]", de.titus.jstl.functions.Include.TASK);
+    });
 })($, de.titus.jstl.GlobalSettings);
 (function($) {
 	"use strict";
@@ -982,24 +1025,25 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 	    if (Processor.LOGGER.isDebugEnabled())
 		Processor.LOGGER.logDebug("__computeElement() -> root: " + isRoot);
 
-	    var taskChain = new de.titus.jstl.TaskChain(aElement, aContext, this, isRoot, Processor.prototype.__computeFinished.bind(this, aElement, aContext, isRoot, aCallback));
+	    var taskChain = new de.titus.jstl.TaskChain(aElement, aContext, this, isRoot, Processor.prototype.__computeFinished.bind(this, isRoot, aCallback));
 	    taskChain.nextTask();
 	};
 
-	Processor.prototype.__computeFinished = function(aElement, aContext, isRoot, aCallback) {
+	Processor.prototype.__computeFinished = function(isRoot, aCallback, aElement, aContext) {
 	    if (Processor.LOGGER.isDebugEnabled())
-		Processor.LOGGER.logDebug("__computeFinished() -> is root: " + isRoot);
-
-	    if (aElement.tagName() == "jstl" && aElement.contents().length > 0)
-		aElement.replaceWith(aElement.contents());
+		Processor.LOGGER.logDebug("__computeFinished() -> is root: " + isRoot);	    
 
 	    if (typeof aCallback === "function")
 		aCallback(aElement, aContext, this, isRoot);
 
-	    aElement.trigger(de.titus.jstl.Constants.EVENTS.onSuccess, [ aContext, this ]);
 
-	    if (isRoot)
+	    if (aElement.tagName() == "jstl" && aElement.contents().length > 0)
+		aElement.replaceWith(aElement.contents());
+	    
+	    if (isRoot){
+		this.context = aContext;
 		setTimeout(Processor.prototype.onReady.bind(this), GlobalSettings.DEFAULT_TIMEOUT_VALUE);
+	    }
 	};
 
 	Processor.prototype.onReady = function(aFunction) {

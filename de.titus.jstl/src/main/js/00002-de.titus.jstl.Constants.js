@@ -12,10 +12,10 @@ de.titus.core.Namespace.create("de.titus.jstl.Constants", function() {
 			CONDITION:1,
 			CONTEXT:2,
 			MANIPULATION:3,
-			CONTENT:3,
-			BINDING:4,
+			CONTENT:4,
 			CHILDREN:5,
-			READY:6
+			BINDING:6,
+			READY:7
 		}
 	};	
 });

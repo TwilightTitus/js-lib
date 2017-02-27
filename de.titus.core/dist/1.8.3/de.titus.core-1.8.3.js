@@ -69,9 +69,9 @@ if (de.titus.core.Namespace == undefined) {
 			if (!console)
 			    return;
 			else if (console.error)
-			    console.error("de.titus.core.SpecialFunctions.doEval ***Error*** " , e);
+			    console.error("de.titus.core.SpecialFunctions.doEval ***Error*** expression: " + aStatement + ": ", e);
 			else if (console.log)
-			    console.log("de.titus.core.SpecialFunctions.doEval ***Error*** " , e);
+			    console.log("de.titus.core.SpecialFunctions.doEval ***Error*** expression: " + aStatement + ": ", e);
 			return undefined;
 		    }
 		}

@@ -1,6 +1,6 @@
 (function($, GlobalSettings) {
 	de.titus.core.Namespace.create("de.titus.jstl.functions.Preprocessor", function() {
-		de.titus.jstl.functions.Preprocessor = Preprocessor = {
+		var Preprocessor = de.titus.jstl.functions.Preprocessor =  {
 		    LOGGER : de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.Preprocessor"),
 		    
 		    STATICEVENTHANDLER : function(aExpression, aEvent, aContext, aProcessor) {
@@ -40,18 +40,14 @@
 			    Preprocessor.__appendEvents(aElement);
 			    
 			    aElement.trigger(de.titus.jstl.Constants.EVENTS.onLoad, [ aContext, aProcessor]);
-			    setTimeout(function(){aTaskChain.nextTask();}, GlobalSettings.DEFAULT_TIMEOUT_VALUE);
-			    
-			    
+			    aTaskChain.nextTask();			    
 		    },
 		    
 		    __appendEvents : function(aElement) {
 			    if (aElement.attr("jstl-load"))
 				    aElement.one(de.titus.jstl.Constants.EVENTS.onLoad, Preprocessor.STATICEVENTHANDLER.bind(null, aElement.attr("jstl-load")));
 			    if (aElement.attr("jstl-success"))
-				    aElement.one(de.titus.jstl.Constants.EVENTS.onSuccess, Preprocessor.STATICEVENTHANDLER.bind(null, aElement.attr("jstl-success")));
-			    if (aElement.attr("jstl-fail"))
-				    aElement.one(de.titus.jstl.Constants.EVENTS.onFail, Preprocessor.STATICEVENTHANDLER.bind(null, aElement.attr("jstl-fail")));
+				    aElement.one(de.titus.jstl.Constants.EVENTS.onSuccess, Preprocessor.STATICEVENTHANDLER.bind(null, aElement.attr("jstl-success")));			  
 		    }
 		
 		};

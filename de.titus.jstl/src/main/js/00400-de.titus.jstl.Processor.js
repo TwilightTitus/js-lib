@@ -27,24 +27,25 @@
 	    if (Processor.LOGGER.isDebugEnabled())
 		Processor.LOGGER.logDebug("__computeElement() -> root: " + isRoot);
 
-	    var taskChain = new de.titus.jstl.TaskChain(aElement, aContext, this, isRoot, Processor.prototype.__computeFinished.bind(this, aElement, aContext, isRoot, aCallback));
+	    var taskChain = new de.titus.jstl.TaskChain(aElement, aContext, this, isRoot, Processor.prototype.__computeFinished.bind(this, isRoot, aCallback));
 	    taskChain.nextTask();
 	};
 
-	Processor.prototype.__computeFinished = function(aElement, aContext, isRoot, aCallback) {
+	Processor.prototype.__computeFinished = function(isRoot, aCallback, aElement, aContext) {
 	    if (Processor.LOGGER.isDebugEnabled())
-		Processor.LOGGER.logDebug("__computeFinished() -> is root: " + isRoot);
-
-	    if (aElement.tagName() == "jstl" && aElement.contents().length > 0)
-		aElement.replaceWith(aElement.contents());
+		Processor.LOGGER.logDebug("__computeFinished() -> is root: " + isRoot);	    
 
 	    if (typeof aCallback === "function")
 		aCallback(aElement, aContext, this, isRoot);
 
-	    aElement.trigger(de.titus.jstl.Constants.EVENTS.onSuccess, [ aContext, this ]);
 
-	    if (isRoot)
+	    if (aElement.tagName() == "jstl" && aElement.contents().length > 0)
+		aElement.replaceWith(aElement.contents());
+	    
+	    if (isRoot){
+		this.context = aContext;
 		setTimeout(Processor.prototype.onReady.bind(this), GlobalSettings.DEFAULT_TIMEOUT_VALUE);
+	    }
 	};
 
 	Processor.prototype.onReady = function(aFunction) {

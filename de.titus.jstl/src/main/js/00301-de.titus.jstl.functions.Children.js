@@ -19,13 +19,25 @@
 		if (children.length == 0)
 		    aTaskChain.nextTask();
 		else {
-		    var executeChain = new de.titus.jstl.ExecuteChain(aTaskChain, children.length);
-		    for (var i = 0; i < children.length; i++)
-			aProcessor.compute($(children[i]), aContext, executeChain.finish.bind(executeChain));
+		    aProcessor.compute($(children[0]), aTaskChain.context, Children.ElementChain.bind({},children,1, aTaskChain));
 		}
 	    } else
 		aTaskChain.nextTask();
+	},
+
+	UpdateContext : function(aParentTaskChain, aTaskChain) {
+	    aParentTaskChain.updateContext(aTaskChain.context, true);
+	},
+
+	ElementChain : function(theChildren, aIndex, aParentTaskChain, aElement, aContext, aProcessor) {
+	    aParentTaskChain.updateContext(aContext, true);	    
+	    if(aIndex < theChildren.length){		
+		var next = $(theChildren[aIndex]);		
+		aProcessor.compute(next, aParentTaskChain.context, Children.ElementChain.bind({},theChildren, aIndex + 1, aParentTaskChain));
+	    } else
+		aParentTaskChain.nextTask();
 	}
+
 	};
 
 	de.titus.jstl.TaskRegistry.append("children", de.titus.jstl.Constants.PHASE.CHILDREN, undefined, de.titus.jstl.functions.Children.TASK);
