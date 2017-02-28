@@ -18,7 +18,6 @@
 				this.element.trigger(de.titus.jstl.Constants.EVENTS.onStart, [
 				        aContext, this
 				]);
-				this.element.detach();
 				this.__computeElement(this.element, this.context, true, this.callback);
 			} else
 				this.__computeElement(aElement, aContext, false, aCallback);
@@ -59,7 +58,6 @@
 				});
 				return this;
 			} else {
-				this.parent.append(this.element);
 				
 				setTimeout((function(aProcessor) {
 					this.trigger(de.titus.jstl.Constants.EVENTS.onReady, [

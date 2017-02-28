@@ -10,12 +10,19 @@
 				});
 			} else {
 				var processor = this.data("de.titus.jstl.Processor");
-				if (!processor || aData) {
-					var data = aData || {};
+				if (!processor) {
+				    	var data = aData || {};
 					processor = new de.titus.jstl.Processor(this, data.data, data.callback || data.success);
 					this.data("de.titus.jstl.Processor", processor);
-					processor.compute();
 				}
+				else if(aData){
+				    var data = aData || {};
+				    if(data.data)
+					processor.context = data.data;
+				    if(typeof data.callback === 'function')
+					processor.callback = data.callback
+				}
+				processor.compute();
 				return processor;
 			}
 		};

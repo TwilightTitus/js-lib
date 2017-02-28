@@ -16,8 +16,8 @@
 				    aTaskChain.nextTask();
 		    },
 		    
-		    __cacheCallback : function(aElement, aIncludeMode, aProcessor, aContext, aTaskChain, aTemplate) {
-			    Include.__include(aElement, aTemplate, aIncludeMode, aProcessor, aContext, aTaskChain);
+		    __cacheCallback : function(aElement, aProcessor, aContext, aTaskChain, aTemplate) {
+			    Include.__include(aElement, aTemplate, aProcessor, aContext, aTaskChain);
 		    },
 		    
 		    __executeCacheCallback : function(aUrl, aTemplate) {
@@ -35,17 +35,17 @@
 			    if (!disableCaching)
 				    cache = Include.CACHE[url];
 			    
-			    var includeMode = Include.__mode(aElement, aContext, aProcessor);
+			   
 			    if (cache) {
 				    if (cache.onload)
-					    cache.callback.push(Include.__cacheCallback.bind({}, aElement, includeMode, aProcessor, aContext, aTaskChain));
+					    cache.callback.push(Include.__cacheCallback.bind({}, aElement, aProcessor, aContext, aTaskChain));
 				    else
-					    Include.__include(aElement, cache.template, includeMode, aProcessor, aContext, aTaskChain);
+					    Include.__include(aElement, cache.template, aProcessor, aContext, aTaskChain);
 			    } else {
 				    cache = Include.CACHE[url] = {
 				        onload : true,
 				        callback : [
-					        Include.__cacheCallback.bind({}, aElement, includeMode, aProcessor, aContext, aTaskChain)
+					        Include.__cacheCallback.bind({}, aElement, aProcessor, aContext, aTaskChain)
 				        ]
 				    };
 				    var options = Include.__options(aElement, aContext, aProcessor);
@@ -98,17 +98,19 @@
 			    return "replace";
 		    },
 		    
-		    __include : function(aElement, aTemplate, aIncludeMode, aProcessor, aContext, aTaskChain) {
+		    __include : function(aElement, aTemplate, aProcessor, aContext, aTaskChain) {
 			    if (Include.LOGGER.isDebugEnabled())
 				    Include.LOGGER.logDebug("execute __include()");
 			    var content = aTemplate.clone();
+			    var includeMode = Include.__mode(aElement, aContext, aProcessor);
+			    console.log(includeMode);
 			    
-			    if (aIncludeMode == "replace") {
+			    if (includeMode == "replace") {
 				    aElement.empty();
 				    content.appendTo(aElement);
-			    } else if (aIncludeMode == "append")
+			    } else if (includeMode == "append")
 				    content.appendTo(aElement);
-			    else if (aIncludeMode == "prepend")
+			    else if (includeMode == "prepend")
 				    content.prependTo(aElement);
 			    
 			    aTaskChain.nextTask();
