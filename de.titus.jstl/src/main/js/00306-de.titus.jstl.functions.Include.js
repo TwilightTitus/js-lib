@@ -103,7 +103,6 @@
 				    Include.LOGGER.logDebug("execute __include()");
 			    var content = aTemplate.clone();
 			    var includeMode = Include.__mode(aElement, aContext, aProcessor);
-			    console.log(includeMode);
 			    
 			    if (includeMode == "replace") {
 				    aElement.empty();
