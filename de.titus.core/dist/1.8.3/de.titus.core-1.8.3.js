@@ -15,7 +15,7 @@ if (de.titus.core.Namespace == undefined) {
 	 */
 	de.titus.core.Namespace.create = function(aNamespace, aFunction) {
 		var namespaces = aNamespace.split(".");
-		var currentNamespace = window;
+		var currentNamespace = window || global;
 		var namespaceCreated = false;
 		for (var i = 0; i < namespaces.length; i++) {
 			if (currentNamespace[namespaces[i]] == undefined) {
@@ -109,6 +109,45 @@ if (de.titus.core.Namespace == undefined) {
     };
 
 });
+(function($) {
+	de.titus.core.Namespace.create("de.titus.core.jquery.Components",
+			function() {
+				var Components = de.titus.core.jquery.Components = {};
+				Components.asComponent = function(aName, aConstructor) {
+					$.fn[Components.__buildFunctionName(aName)] = function(
+							aData) {
+						return Components.__createInstance(this, aName,
+								aConstructor, aData);
+					};
+				};
+
+				Components.__buildFunctionName = function(aName) {
+					return aName.replace(/\./g, "_");
+				};
+
+				Components.__createInstance = function(aElement, aName,
+						aConstructor, aData) {
+					if (aElement.length == 0)
+						return;
+					else if (aElement.length > 1) {
+						var result = [];
+						aElement.each(function() {
+							result.push($(this).de_titus_Typeahead(aData));
+						});
+						return result;
+					} else {
+						var component = aElement.data(aName);
+						if (!component) {
+							component = new aConstructor(aElement, aData);
+							aElement.data(aName, component);
+						}
+
+						return component;
+					}
+				}
+
+			});
+})($);
 (function($) {
 	$.fn.tagName = $.fn.tagName || function() {
 		if (this.length == undefined || this.length == 0)
