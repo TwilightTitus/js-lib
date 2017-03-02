@@ -15,7 +15,7 @@ if (de.titus.core.Namespace == undefined) {
 	 */
 	de.titus.core.Namespace.create = function(aNamespace, aFunction) {
 		var namespaces = aNamespace.split(".");
-		var currentNamespace = window;
+		var currentNamespace = window || global;
 		var namespaceCreated = false;
 		for (var i = 0; i < namespaces.length; i++) {
 			if (currentNamespace[namespaces[i]] == undefined) {
