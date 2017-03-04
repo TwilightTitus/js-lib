@@ -1,0 +1,19 @@
+.typeahead-suggestion-box{
+	position: absolute;
+	z-index: 1000;
+	
+	display: none;
+	
+	
+}
+.typeahead-suggestion-inner-box{
+	padding: 10px;
+	
+	border-width: 1px;
+	border-style: solid;
+	border-color: #F60;
+}
+
+.typeahead-suggestion-box.active{
+	display: block;
+}

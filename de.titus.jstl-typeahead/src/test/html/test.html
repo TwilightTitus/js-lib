@@ -3,13 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <title>Typeahead</title>
+<link rel="stylesheet" type="text/css" href="css/typeahead.css"/>
 </head>
 <body>
 
 <div>
-	<input type="text" class="jstl-typeahead"/>
+	<input type="text" class="jstl-typeahead" typeahead-input-action="testSearch" typeahead-template="templates/typeahead.tpl.html" typeahead-display="name" typeahead-display-marker=""/>
 </div>
+<script type="text/javascript">
 
+	var TESTVALUES = [];
+	for(var i = 0; i < 10; i++)
+		TESTVALUES.push({name:"test" + i, value:"value" + i});
+
+	function testSearch(aValue, aCallback){
+		aCallback(TESTVALUES)
+	};
+
+
+</script>
 <script type="text/javascript" src="js/libs/jquery-2.2.4.min.js"></script>
 <script type="text/javascript" src="js/libs/de.titus.jquery.plugins.3.0.0.min.js"></script>
 <script type="text/javascript" src="../../../dist/1.0.0/de.titus.jstl-typeahead-1.0.0.js"></script>

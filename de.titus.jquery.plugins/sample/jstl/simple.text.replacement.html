@@ -30,6 +30,7 @@
 		<div>${test}</div>
 		<div>${"test " + test + "!"}</div>
 		<div>${testFunction}</div>
+		<div jstl-text-type="html">${HTMLTEXT}</div>
 	</div>
 	<div id="log">
 		<div>Logs</div>
@@ -37,7 +38,8 @@
 
 	<script type="text/javascript">
 		/*<!--*/
-
+	
+		var HTMLTEXT="<b>test</b>";
         
         function testFunction() {
 	        return "result from a Function!";
