@@ -1,6 +1,7 @@
 .typeahead-suggestion-box{
 	position: absolute;
 	z-index: 1000;
+	background-clip: border-box;
 	
 	display: none;
 	

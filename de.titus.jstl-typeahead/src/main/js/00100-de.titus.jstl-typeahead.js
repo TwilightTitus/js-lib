@@ -15,6 +15,10 @@
 					throw "Typeahead input action ist not a function!";
 			}
 			
+			if (this.data.selectionAction == undefined || typeof this.data.selectAction !== "function") {
+				this.data.selectionAction = ExpressionResolver.resolveExpression(this.element.attr("typeahead-selection-action"));
+			}
+			
 			if (this.data.display == undefined)
 				this.data.display = this.element.attr("typeahead-display");
 			
@@ -38,11 +42,14 @@
 			innerBox.addClass("typeahead-suggestion-inner-box");
 			innerBox.attr("jstl-include", this.data.template);
 			
-			
 			this.suggestionBox.append(innerBox);
-			$("body").append(this.suggestionBox);
+			this.element.parent().append(this.suggestionBox);
 			
-			this.element.on("keyup change", Typeahead.prototype.inputHandle.bind(this));			
+			this.element.on("keyup change focus", Typeahead.prototype.inputHandle.bind(this));
+		};
+		Typeahead.prototype.focusoutHandle = function(aEvent) {
+			console.log(aEvent);
+			this.hideSuggestionBox();
 		};
 		
 		Typeahead.prototype.inputHandle = function() {
@@ -63,49 +70,75 @@
 		Typeahead.prototype.inputActionCallback = function(aValue, aValues) {
 			var value = (this.element.val() || "").trim();
 			if (value == aValue) {
-				var items = this.transformValues(aValue, aValues);
+				this.suggestionData = this.transformValues(aValue, aValues);
 				this.suggestionBox.jstl({
 				    data : {
 				        value : aValue,
-				        items : items
+				        items : this.suggestionData.list
 				    },
-				    callback : Typeahead.prototype.showSuggestionBox.bind(this)
+				    callback : Typeahead.prototype.initSuggestionBox.bind(this)
 				});
-			}
-			else
+			} else
 				this.hideSuggestionBox();
 		};
 		
 		Typeahead.prototype.transformValues = function(aValue, aValues) {
-			var result = [];
+			var result = {
+			    map : {},
+			    list : []
+			};
 			for (var i = 0; i < aValues.length; i++) {
 				var itemData = aValues[i];
-				result.push({
-				    display : this.buildDisplay(aValue, itemData),
+				var value = ExpressionResolver.resolveExpression(this.data.display, itemData, this.data.display);
+				var display = this.buildDisplay(aValue, value);
+				var item = {
+				    id : "item-id-" + i,
+				    display : display,
+				    value : value,
 				    data : itemData
-				});
+				};
+				result.map[item.id] = item;
+				result.list.push(item);
 			}
 			
 			return result;
 		};
 		
-		Typeahead.prototype.buildDisplay = function(aValue, aItemData) {
-			var display = ExpressionResolver.resolveExpression(this.data.display, aItemData, this.data.display)
+		Typeahead.prototype.buildDisplay = function(aValue, aDisplay) {
 			if (this.data.displayMarker)
-				display = display.replace(new RegExp(aValue, "i"), function(aMatch) {
+				return aDisplay.replace(new RegExp(aValue, "i"), function(aMatch) {
 					return "<b>" + aMatch + "</b>";
 				});
 			
-			return display;
+			return aDisplay;
+		};
+		
+		Typeahead.prototype.initSuggestionBox = function() {
+			this.suggestionBox.find("[typeahead-selection-id]").on("click", Typeahead.prototype.selectionHandle.bind(this));
+			this.showSuggestionBox();
+		};
+		
+		Typeahead.prototype.selectionHandle = function(aEvent) {
+			var selected = $(aEvent.currentTarget);
+			var id = selected.attr("typeahead-selection-id");
+			if (id) {
+				var item = this.suggestionData.map[id];
+				this.element.val(item.value);
+				
+				if (typeof this.data.selectionAction === "function")
+					this.data.selectionAction(item.data);
+				
+				this.hideSuggestionBox();
+			}
 		};
 		
 		Typeahead.prototype.showSuggestionBox = function() {
+			var offsetParent = this.element.parent().offset();
 			var offset = this.element.offset();
-			this.suggestionBox.css("top", (offset.top + this.element.outerHeight()) + "px");
-			this.suggestionBox.css("left", offset.left + "px");
+			this.suggestionBox.css("top", ((offset.top - offsetParent.top) + this.element.outerHeight()) + "px");
+			this.suggestionBox.css("left", (offset.left - offsetParent.left) + "px");
 			
 			this.suggestionBox.width(this.element.outerWidth());
-			
 			
 			if (!this.suggestionBox.is("active"))
 				this.suggestionBox.addClass("active");
@@ -113,6 +146,7 @@
 		
 		Typeahead.prototype.hideSuggestionBox = function() {
 			this.suggestionBox.removeClass("active");
+			this.suggestionData = undefined;
 		};
 		
 		de.titus.core.jquery.Components.asComponent("de.titus.Typeahead", Typeahead);
