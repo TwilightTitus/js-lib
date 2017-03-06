@@ -8,7 +8,7 @@
 			this.timeoutId = undefined;
 			this.suggestionData = undefined;
 			this.currentSelection = undefined;
-			this.selected = [];
+			this.selected = undefined;
 			this.init();
 		};
 		
@@ -78,11 +78,13 @@
 			else if(aEvent.type == "change")
 				this.doInput(aEvent);
 			else if(aEvent.type == "focus")
-				this.doInput(aEvent);
+				if(!this.selected)
+					this.doInput(aEvent);
 			
 		};
 		
 		Typeahead.prototype.doInput = function(aEvent) {
+			this.selected = undefined;
 			var value = (this.element.val() || "").trim();
 			if (value.length >= this.data.inputSize)
 				this.timeoutId = setTimeout(Typeahead.prototype.callInputAction.bind(this, value), this.data.inputInterval);
