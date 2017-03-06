@@ -119,7 +119,7 @@
         	var familyname = FAMILYNAMES[getRandomInt(FAMILYNAMES.length)];
         	var name = givenname + " " + familyname;
         	if(!TESTVALUEMAP[name]){        		
-        		TESTVALUEMAP[name] = "";        	
+        		TESTVALUEMAP[name] = true;        	
 		        TESTVALUES.push({
 		            name : name,
 		            value : {givenname : givenname, familyname: familyname}
