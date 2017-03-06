@@ -39,7 +39,7 @@
 				<include name="${ant.project.name}-${project.version}.min.js" />
 			</fileset>
 		</yuicompress>
-		<copy file="${dir.dist}/${ant.project.name}-${project.version}.min.js" tofile="/src/test/html/js/libs/${ant.project.name}-${project.version}.min.js">
+		<copy file="${dir.dist}/${ant.project.name}-${project.version}.min.js" tofile="src/test/html/js/libs/${ant.project.name}-${project.version}.min.js">
 		</copy>
 		<echo message="${ant.project.name}-${project.version}.min.js built." />
 	</target>
