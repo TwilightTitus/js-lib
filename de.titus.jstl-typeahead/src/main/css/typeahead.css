@@ -1,24 +1,26 @@
-.typeahead-suggestion-box{
+.typeahead-suggestion-box {
 	position: absolute;
 	z-index: 1000;
-	background-color: white;
-	box-sizing: border-box;
-	box-shadow: 5px 5px 3px grey;
-			
+	box-sizing: border-box;				
 	display: none;	
-}
-.typeahead-suggestion-inner-box{
-	padding: 10px;
 	
+}
+.typeahead-suggestion-inner-box{	
+	background-color: white;
 	border-width: 1px;
 	border-style: solid;
-	border-color: #F60;
+	border-color: #C4C4C4;	
+	border-radius: 0px 0px 15px 15px;
+	box-shadow: 5px 5px 3px grey;
 }
 
 .typeahead-suggestion-box.active{
-	display: block;
+	display: table-cell;
 }
 
-[typeahead-selection-id].active {
-	background-color: blue;
+[typeahead-selection-id].active , [typeahead-selection-id]:HOVER{
+	background-color: #0097cf;
+    color: #fff;
+    cursor: pointer;
 }
+

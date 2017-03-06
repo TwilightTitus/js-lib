@@ -1,0 +1,7 @@
+.items {
+	list-style: none;
+	padding: 0px;
+}
+.items li {
+	padding: 3px 10px;
+}
