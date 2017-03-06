@@ -161,7 +161,9 @@
 			};
 			for (var i = 0; i < aValues.length; i++) {
 				var itemData = aValues[i];
-				var value = ExpressionResolver.resolveExpression(this.data.display, itemData, this.data.display);
+				var value = itemData;
+				if(this.data.display)
+					value = ExpressionResolver.resolveExpression(this.data.display, itemData, this.data.display);
 				var display = this.buildDisplay(aValue, value);
 				var item = {
 					index: i,

@@ -21,7 +21,20 @@
 				class="jstl-typeahead form-control"
 				typeahead-input-action="testSearch"
 				typeahead-template="templates/typeahead.tpl.html"
-				typeahead-display="name" typeahead-display-marker=""
+				typeahead-display="name + '(' + name + ')'" typeahead-display-marker=""
+				typeahead-selection-action="selectValue" /> <span
+				class="glyphicon glyphicon-ok form-control-feedback"></span>
+		</div>
+	</div>
+	<h3>Strings only</h3>
+	<div class="container">
+		<div class="input-group has-success has-feedback">
+			<span class="input-group-addon"><i
+				class="glyphicon glyphicon-user"></i></span> <input type="text"
+				class="jstl-typeahead form-control"
+				typeahead-input-action="testSearchStringsOnly"
+				typeahead-template="templates/typeahead.tpl.html"
+				typeahead-display-marker=""
 				typeahead-selection-action="selectValue" /> <span
 				class="glyphicon glyphicon-ok form-control-feedback"></span>
 		</div>
@@ -114,18 +127,21 @@
 		
 		var TESTVALUES = [];
 		var TESTVALUEMAP = {};
-        for (var i = 0; i < 100; i++){
+        while (TESTVALUES.length < 100){
         	var givenname = GIVENNAMES[getRandomInt(GIVENNAMES.length)];
         	var familyname = FAMILYNAMES[getRandomInt(FAMILYNAMES.length)];
-        	var name = givenname + " " + familyname;
-        	if(!TESTVALUEMAP[name]){        		
-        		TESTVALUEMAP[name] = true;        	
+        	var key = givenname + familyname;
+        	if(TESTVALUEMAP[key] == undefined){
+        		console.log("new name with key: \"" +  key + "\"!");
+        		TESTVALUEMAP[key] = "";        	
 		        TESTVALUES.push({
-		            name : name,
+		            name : givenname + " " + familyname,
 		            value : {givenname : givenname, familyname: familyname}
 		        });
         	}
-        }; 
+        	else
+        		console.log("name with key: \"" +  key + "\" already exists!");
+        } 
         
         TESTVALUEMAP = undefined;
         
@@ -135,10 +151,22 @@
         	for(var i = 0; i < TESTVALUES.length &&  results.length < 20; i++){
         		var item = TESTVALUES[i];
         		if(item.name.toLowerCase().search(value) >= 0)
-        			results.push(item);
-        		
+        			results.push(item);        		
         	}
         	
+	        aCallback(results)
+        };
+        
+        function testSearchStringsOnly(aValue, aCallback) {
+        	var value = aValue.toLowerCase();
+        	var results = [];
+        	for(var i = 0; i < TESTVALUES.length &&  results.length < 20; i++){
+        		var item = TESTVALUES[i];
+        		if(item.name.toLowerCase().search(value) >= 0)
+        			results.push(item.name);        		
+        	}
+        	
+        	console.log(results);
 	        aCallback(results)
         };
         

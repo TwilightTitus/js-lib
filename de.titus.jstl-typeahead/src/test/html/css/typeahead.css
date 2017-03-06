@@ -1,8 +1,9 @@
 .typeahead-suggestion-box{
 	position: absolute;
 	z-index: 1000;
-	background-color: inherit;
+	background-color: white;
 	box-sizing: border-box;
+	box-shadow: 5px 5px 3px grey;
 			
 	display: none;	
 }
