@@ -1,11 +1,10 @@
 .typeahead-suggestion-box{
 	position: absolute;
 	z-index: 1000;
-	background-clip: border-box;
-	
-	display: none;
-	
-	
+	background-color: inherit;
+	box-sizing: border-box;
+			
+	display: none;	
 }
 .typeahead-suggestion-inner-box{
 	padding: 10px;
@@ -17,4 +16,8 @@
 
 .typeahead-suggestion-box.active{
 	display: block;
+}
+
+[typeahead-selection-id].active {
+	background-color: blue;
 }

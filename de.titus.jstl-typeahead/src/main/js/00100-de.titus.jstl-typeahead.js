@@ -1,12 +1,23 @@
 (function($, ExpressionResolver) {
+	"use strict";
 	de.titus.core.Namespace.create("de.titus.jquery.Typeahead", function() {
 		var Typeahead = de.titus.jquery.Typeahead = function(aElement, aData) {
 			this.element = aElement;
 			this.suggestionBox = undefined;
 			this.data = aData || {};
 			this.timeoutId = undefined;
+			this.suggestionData = undefined;
+			this.currentSelection = undefined;
+			this.selected = [];
 			this.init();
 		};
+		
+		Typeahead.KEYCODES = {
+			    KEY_ARROW_UP : "40",
+			    KEY_ARROW_DOWN : "38",
+			    KEY_ENTER : "13"
+
+			};
 		
 		Typeahead.prototype.init = function() {
 			if (this.data.inputAction == undefined || typeof this.data.inputAction !== "function") {
@@ -34,6 +45,9 @@
 			if (this.data.template == undefined)
 				this.data.template = this.element.attr("typeahead-template");
 			
+			if (this.data.multichoice == undefined)
+				this.data.multichoice = this.element.attr("typeahead-multi-choice") != undefined;
+			
 			this.suggestionBox = $("<div></div>");
 			this.suggestionBox.addClass("typeahead-suggestion-box");
 			this.suggestionBox.attr("jstl-ignore", "");
@@ -47,18 +61,62 @@
 			
 			this.element.on("keyup change focus", Typeahead.prototype.inputHandle.bind(this));
 		};
-		Typeahead.prototype.focusoutHandle = function(aEvent) {
-			console.log(aEvent);
-			this.hideSuggestionBox();
-		};
 		
-		Typeahead.prototype.inputHandle = function() {
+		Typeahead.prototype.inputHandle = function(aEvent) {
 			if (this.timeoutId)
 				clearTimeout(this.timeoutId);
 			
+			
+			if(aEvent.type == "keyup"){
+				if(aEvent.keyCode == Typeahead.KEYCODES.KEY_ENTER)
+					this.confirmSelection(aEvent);
+				else if(aEvent.keyCode == Typeahead.KEYCODES.KEY_ARROW_UP || aEvent.keyCode == Typeahead.KEYCODES.KEY_ARROW_DOWN)
+					this.selectionByKey(aEvent);
+				else 
+					this.doInput(aEvent);
+			}
+			else if(aEvent.type == "change")
+				this.doInput(aEvent);
+			else if(aEvent.type == "focus")
+				this.doInput(aEvent);
+			
+		};
+		
+		Typeahead.prototype.doInput = function(aEvent) {
 			var value = (this.element.val() || "").trim();
 			if (value.length >= this.data.inputSize)
 				this.timeoutId = setTimeout(Typeahead.prototype.callInputAction.bind(this, value), this.data.inputInterval);
+			else
+				this.hideSuggestionBox();
+		};
+		
+		Typeahead.prototype.selectionByKey = function(aEvent) {
+			if(!this.suggestionData)
+				return;
+			
+			if(this.currentSelection){
+				this.suggestionBox.find("[typeahead-selection-id='" + this.currentSelection.id + "']").removeClass("active");
+				var index = this.currentSelection.index + (aEvent.keyCode == Typeahead.KEYCODES.KEY_ARROW_UP ?  1 : -1);
+				
+				if(index >= this.suggestionData.list.length)
+					index = 0;
+				else if(index < 0 )
+					index = this.suggestionData.list.length - 1;
+				
+				this.currentSelection = this.suggestionData.list[index];
+			}
+			else
+				this.currentSelection = this.suggestionData.list[0];
+			
+			this.suggestionBox.find("[typeahead-selection-id='" + this.currentSelection.id + "']").addClass("active");
+			
+		};
+		
+		Typeahead.prototype.confirmSelection = function(aEvent) {			
+			if(this.currentSelection)
+				this.doSelected(this.currentSelection);
+			else if(this.suggestionData.list.length == 1)
+				this.doSelected(this.suggestionData.list[0]);
 			else
 				this.hideSuggestionBox();
 		};
@@ -92,6 +150,7 @@
 				var value = ExpressionResolver.resolveExpression(this.data.display, itemData, this.data.display);
 				var display = this.buildDisplay(aValue, value);
 				var item = {
+					index: i,
 				    id : "item-id-" + i,
 				    display : display,
 				    value : value,
@@ -119,18 +178,24 @@
 		};
 		
 		Typeahead.prototype.selectionHandle = function(aEvent) {
-			var selected = $(aEvent.currentTarget);
-			var id = selected.attr("typeahead-selection-id");
+			var selectedElement = $(aEvent.currentTarget);
+			var id = selectedElement.attr("typeahead-selection-id");
 			if (id) {
 				var item = this.suggestionData.map[id];
-				this.element.val(item.value);
-				
-				if (typeof this.data.selectionAction === "function")
-					this.data.selectionAction(item.data);
-				
-				this.hideSuggestionBox();
+				this.doSelected(item);
 			}
 		};
+		
+		Typeahead.prototype.doSelected = function(aItem) {			
+			this.selected = aItem;			
+			this.element.val(aItem.value);			
+			if (typeof this.data.selectionAction === "function")
+				this.data.selectionAction(aItem.data);
+			
+			this.hideSuggestionBox();
+			
+			this.element.trigger("typeahead:select",[aItem,this]);
+		}
 		
 		Typeahead.prototype.showSuggestionBox = function() {
 			var offsetParent = this.element.parent().offset();
@@ -147,6 +212,7 @@
 		Typeahead.prototype.hideSuggestionBox = function() {
 			this.suggestionBox.removeClass("active");
 			this.suggestionData = undefined;
+			this.currentSelection = undefined;
 		};
 		
 		de.titus.core.jquery.Components.asComponent("de.titus.Typeahead", Typeahead);

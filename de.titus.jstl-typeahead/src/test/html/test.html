@@ -3,34 +3,154 @@
 <head>
 <meta charset="UTF-8">
 <title>Typeahead</title>
-<link rel="stylesheet" type="text/css" href="css/bootstrap.3.3.6.min.css" />
+<link rel="stylesheet" type="text/css"
+	href="css/bootstrap.3.3.6.min.css" />
 <link rel="stylesheet" type="text/css" href="css/typeahead.css" />
 </head>
 <body>
-<input type="text" class="jstl-typeahead form-control" typeahead-input-action="testSearch" typeahead-template="templates/typeahead.tpl.html" typeahead-display="name" typeahead-display-marker="" />
+	<input type="text" class="jstl-typeahead form-control"
+		typeahead-input-action="testSearch"
+		typeahead-template="templates/typeahead.tpl.html"
+		typeahead-display="name" typeahead-display-marker="" />
 
 
 	<div class="container">
 		<div class="input-group has-success has-feedback">
-			<span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
-			<input type="text" class="jstl-typeahead form-control" typeahead-input-action="testSearch" typeahead-template="templates/typeahead.tpl.html" typeahead-display="name" typeahead-display-marker="" />
-			<span class="glyphicon glyphicon-ok form-control-feedback"></span>
+			<span class="input-group-addon"><i
+				class="glyphicon glyphicon-user"></i></span> <input type="text"
+				class="jstl-typeahead form-control"
+				typeahead-input-action="testSearch"
+				typeahead-template="templates/typeahead.tpl.html"
+				typeahead-display="name" typeahead-display-marker=""
+				typeahead-selection-action="selectValue" /> <span
+				class="glyphicon glyphicon-ok form-control-feedback"></span>
 		</div>
 	</div>
 	<script type="text/javascript">
+		var GIVENNAMES = [
+			"Peter",
+			"Anna",
+			"Nadine",
+			"Frank",
+			"Christian",
+			"Chris",
+			"Stein",
+			"Jacob",
+			"Sophia",
+			"Mason",
+			"Isabella",
+			"William",
+			"Emma",
+			"Jayden",
+			"Olivia"
+		];
+	
+		var FAMILYNAMES = [
+			"Anderson",
+			"Archer",
+			"Armstrong",
+			"Baker",
+			"Barber",
+			"Bennett",
+			"Bishop",
+			"Black",
+			"Blair",
+			"Brewster",
+			"Brown",
+			"Carter",
+			"Chaplin",
+			"Coleman",
+			"Collister",
+			"Connor",
+			"Cunningham",
+			"Dearing",
+			"Edison",
+			"Edwards",
+			"Eliot",
+			"Franklin",
+			"Garcia",
+			"Hanson",
+			"Harper",
+			"Harsen",
+			"Havering",
+			"Hilton",
+			"Hobbs",
+			"Jackson",
+			"Jameson",
+			"Jenkins",
+			"Johnson",
+			"King",
+			"Malone",
+			"Martin",
+			"Mason",
+			"Mathewson",
+			"Michaels",
+			"Miller",
+			"Moore",
+			"Muller",
+			"Nolan",
+			"Norris",
+			"Parker",
+			"Rodriguez",
+			"Sawyer",
+			"Shoemaker",
+			"Smith",
+			"Stark",
+			"Stevenson",
+			"Stone",
+			"Thomas",
+			"Thompson",
+			"Warren",
+			"Ward",
+			"Wayne",
+			"West",
+			"White",
+			"Young"
+		];
+	
+		function getRandomInt(max) {
+			return Math.floor(Math.random() * max);
+		};
+		
 		var TESTVALUES = [];
-        for (var i = 0; i < 10; i++)
-	        TESTVALUES.push({
-	            name : "test" + i,
-	            value : "value" + i
-	        });
-
+		var TESTVALUEMAP = {};
+        for (var i = 0; i < 100; i++){
+        	var givenname = GIVENNAMES[getRandomInt(GIVENNAMES.length)];
+        	var familyname = FAMILYNAMES[getRandomInt(FAMILYNAMES.length)];
+        	var name = givenname + " " + familyname;
+        	if(!TESTVALUEMAP[name]){        		
+        		TESTVALUEMAP[name] = "";        	
+		        TESTVALUES.push({
+		            name : name,
+		            value : {givenname : givenname, familyname: familyname}
+		        });
+        	}
+        }; 
+        
+        TESTVALUEMAP = undefined;
+        
         function testSearch(aValue, aCallback) {
-	        aCallback(TESTVALUES)
+        	var value = aValue.toLowerCase();
+        	var results = [];
+        	for(var i = 0; i < TESTVALUES.length &&  results.length < 20; i++){
+        		var item = TESTVALUES[i];
+        		if(item.name.toLowerCase().search(value) >= 0)
+        			results.push(item);
+        		
+        	}
+        	
+	        aCallback(results)
+        };
+        
+        function selectValue(aItem){
+        	console.log("select value");
+        	console.log(aItem);
         };
 	</script>
 	<script type="text/javascript" src="js/libs/jquery-2.2.4.min.js"></script>
-	<script type="text/javascript" src="js/libs/de.titus.jquery.plugins.3.0.0.min.js"></script>
-	<script type="text/javascript" src="../../../dist/1.0.0/de.titus.jstl-typeahead-1.0.0.js"></script>
+	<script type="text/javascript"
+		src="js/libs/de.titus.jquery.plugins.3.0.0.min.js"></script>
+	<script type="text/javascript"
+		src="../../../dist/1.0.0/de.titus.jstl-typeahead-1.0.0.js"></script>
 </body>
 </html>
