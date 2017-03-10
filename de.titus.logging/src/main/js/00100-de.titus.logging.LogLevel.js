@@ -1,15 +1,15 @@
 de.titus.core.Namespace.create("de.titus.logging.LogLevel", function() {
 	
-	de.titus.logging.LogLevel = function(aOrder, aTitle){
+	var LogLevel = de.titus.logging.LogLevel = function(aOrder, aTitle){
 		this.order = aOrder;
 		this.title = aTitle;
 	};
 	
-	de.titus.logging.LogLevel.prototype.isIncluded = function(aLogLevel){
+	LogLevel.prototype.isIncluded = function(aLogLevel){
 		return this.order >= aLogLevel.order;
 	};
 	
-	de.titus.logging.LogLevel.getLogLevel = function(aLogLevelName){
+	LogLevel.getLogLevel = function(aLogLevelName){
 		if(aLogLevelName == undefined)
 			return de.titus.logging.LogLevel.NOLOG;
 		
@@ -17,10 +17,10 @@ de.titus.core.Namespace.create("de.titus.logging.LogLevel", function() {
 		return de.titus.logging.LogLevel[levelName];
 	};
 	
-	de.titus.logging.LogLevel.NOLOG = new de.titus.logging.LogLevel(0, "NOLOG");
-	de.titus.logging.LogLevel.ERROR = new de.titus.logging.LogLevel(1, "ERROR");
-	de.titus.logging.LogLevel.WARN 	= new de.titus.logging.LogLevel(2, "WARN");
-	de.titus.logging.LogLevel.INFO 	= new de.titus.logging.LogLevel(3, "INFO");
-	de.titus.logging.LogLevel.DEBUG = new de.titus.logging.LogLevel(4, "DEBUG");
-	de.titus.logging.LogLevel.TRACE = new de.titus.logging.LogLevel(5, "TRACE");	
+	LogLevel.NOLOG = new LogLevel(0, "NOLOG");
+	LogLevel.ERROR = new LogLevel(1, "ERROR");
+	LogLevel.WARN 	= new LogLevel(2, "WARN");
+	LogLevel.INFO 	= new LogLevel(3, "INFO");
+	LogLevel.DEBUG = new LogLevel(4, "DEBUG");
+	LogLevel.TRACE = new LogLevel(5, "TRACE");	
 });

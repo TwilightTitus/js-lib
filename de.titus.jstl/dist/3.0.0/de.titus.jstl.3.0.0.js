@@ -11,7 +11,9 @@
  */
 
 (function($){
-	de.titus.core.Namespace.create("de.titus.jstl", function() {});
+	de.titus.core.Namespace.create("de.titus.jstl", function() {
+		de.titus.jstl.Version = "3.0.0";
+	});
 })($);
 de.titus.core.Namespace.create("de.titus.jstl.Constants", function() {
 	de.titus.jstl.Constants = {

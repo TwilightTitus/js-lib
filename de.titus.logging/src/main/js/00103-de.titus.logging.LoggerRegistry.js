@@ -1,10 +1,10 @@
 de.titus.core.Namespace.create("de.titus.logging.LoggerRegistry", function() {
 	
-	de.titus.logging.LoggerRegistry = function(){
+	var LoggerRegistry = de.titus.logging.LoggerRegistry = function(){
 		this.loggers = {};
 	};		
 	
-	de.titus.logging.LoggerRegistry.prototype.addLogger = function(aLogger){
+	LoggerRegistry.prototype.addLogger = function(aLogger){
 		if(aLogger == undefined)
 			return;
 		
@@ -12,7 +12,7 @@ de.titus.core.Namespace.create("de.titus.logging.LoggerRegistry", function() {
 			this.loggers[aLogger.name] = aLogger;
 	};	
 	
-	de.titus.logging.LoggerRegistry.prototype.getLogger = function(aLoggerName){
+	LoggerRegistry.prototype.getLogger = function(aLoggerName){
 		if(aLoggerName == undefined)
 			return;
 		
@@ -20,11 +20,11 @@ de.titus.core.Namespace.create("de.titus.logging.LoggerRegistry", function() {
 	};	
 	
 	
-	de.titus.logging.LoggerRegistry.getInstance = function(){
-		if(de.titus.logging.LoggerRegistry.INSTANCE == undefined)
-			de.titus.logging.LoggerRegistry.INSTANCE = new de.titus.logging.LoggerRegistry();
+	LoggerRegistry.getInstance = function(){
+		if(LoggerRegistry.INSTANCE == undefined)
+			LoggerRegistry.INSTANCE = new LoggerRegistry();
 		
-		return de.titus.logging.LoggerRegistry.INSTANCE;
+		return LoggerRegistry.INSTANCE;
 	};	
 	
 });

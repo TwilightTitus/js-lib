@@ -1,12 +1,12 @@
 de.titus.core.Namespace.create("de.titus.logging.LoggerFactory", function() {
 	
-	de.titus.logging.LoggerFactory = function() {
+	var LoggerFactory = de.titus.logging.LoggerFactory = function() {
 		this.configs = undefined;
 		this.appenders = {};
 		this.loadLazyCounter = 0;
 	};
 	
-	de.titus.logging.LoggerFactory.prototype.newLogger = function(aLoggerName) {
+	LoggerFactory.prototype.newLogger = function(aLoggerName) {
 		var logger = de.titus.logging.LoggerRegistry.getInstance().getLogger(aLoggerName);
 		if (logger == undefined) {
 			var config = this.findConfig(aLoggerName);
@@ -20,21 +20,21 @@ de.titus.core.Namespace.create("de.titus.logging.LoggerFactory", function() {
 		return logger;
 	};
 	
-	de.titus.logging.LoggerFactory.prototype.getConfig = function() {
+	LoggerFactory.prototype.getConfig = function() {
 		if (this.configs == undefined)
 			this.updateConfigs();
 		
 		return this.configs;
 	};
 	
-	de.titus.logging.LoggerFactory.prototype.setConfig = function(aConfig) {
+	LoggerFactory.prototype.setConfig = function(aConfig) {
 		if (aConfig != undefined) {
 			this.configs = aConfig;
 			this.updateLogger();
 		}
 	};
 	
-	de.titus.logging.LoggerFactory.prototype.updateConfigs = function(aConfig) {
+	LoggerFactory.prototype.updateConfigs = function(aConfig) {
 		if (this.configs == undefined)
 			this.configs = {};
 		
@@ -48,7 +48,7 @@ de.titus.core.Namespace.create("de.titus.logging.LoggerFactory", function() {
 		}
 	};
 	
-	de.titus.logging.LoggerFactory.prototype.doLoadLazy = function() {
+	LoggerFactory.prototype.doLoadLazy = function() {
 		if (this.loadLazyCounter > 10)
 			return;
 		this.loadLazyCounter++;
@@ -57,7 +57,7 @@ de.titus.core.Namespace.create("de.titus.logging.LoggerFactory", function() {
 		}, 1);
 	};
 	
-	de.titus.logging.LoggerFactory.prototype.loadConfig = function(aConfig) {
+	LoggerFactory.prototype.loadConfig = function(aConfig) {
 		if (aConfig == undefined)
 			this.updateConfigs();
 		else {
@@ -69,7 +69,7 @@ de.titus.core.Namespace.create("de.titus.logging.LoggerFactory", function() {
 		}
 	};
 	
-	de.titus.logging.LoggerFactory.prototype.loadConfigRemote = function(aRemoteData) {
+	LoggerFactory.prototype.loadConfigRemote = function(aRemoteData) {
 		var this_ = this;
 		var ajaxSettings = {
 		"async" : false,
@@ -86,7 +86,7 @@ de.titus.core.Namespace.create("de.titus.logging.LoggerFactory", function() {
 		$.ajax(ajaxSettings)
 	};
 	
-	de.titus.logging.LoggerFactory.prototype.updateLogger = function() {
+	LoggerFactory.prototype.updateLogger = function() {
 		
 		var loggers = de.titus.logging.LoggerRegistry.getInstance().loggers;
 		
@@ -102,7 +102,7 @@ de.titus.core.Namespace.create("de.titus.logging.LoggerFactory", function() {
 		}
 	};
 	
-	de.titus.logging.LoggerFactory.prototype.findConfig = function(aLoggerName) {
+	LoggerFactory.prototype.findConfig = function(aLoggerName) {
 		var defaultConfig = {
 		"filter" : "",
 		"logLevel" : "NOLOG",
@@ -123,20 +123,20 @@ de.titus.core.Namespace.create("de.titus.logging.LoggerFactory", function() {
 		return actualConfig || defaultConfig;
 	};
 	
-	de.titus.logging.LoggerFactory.prototype.isConfigActiv = function(aLoggerName, aConfig, anActualConfig) {
-		if (anActualConfig != undefined && anActualConfig.filter.length >= aConfig.filter.filter)
+	LoggerFactory.prototype.isConfigActiv = function(aLoggerName, aConfig, anActualConfig) {
+		if (anActualConfig && anActualConfig.filter.length >= aConfig.filter.filter)
 			return false;
 		return aLoggerName.search(aConfig.filter) == 0;
 	};
 	
-	de.titus.logging.LoggerFactory.prototype.getAppenders = function(theAppenders) {
+	LoggerFactory.prototype.getAppenders = function(theAppenders) {
 		var result = new Array();
 		for (var i = 0; i < theAppenders.length; i++) {
 			var appenderString = theAppenders[i];
 			var appender = this.appenders[appenderString];
-			if (appender == undefined) {
+			if (!appender) {
 				appender = de.titus.core.SpecialFunctions.doEval("new " + appenderString + "();");
-				if (appender != undefined) {
+				if (appender) {
 					this.appenders[appenderString] = appender;
 				}
 			}
@@ -147,11 +147,11 @@ de.titus.core.Namespace.create("de.titus.logging.LoggerFactory", function() {
 		return result;
 	};
 	
-	de.titus.logging.LoggerFactory.getInstance = function() {
-		if (de.titus.logging.LoggerFactory.INSTANCE == undefined)
-			de.titus.logging.LoggerFactory.INSTANCE = new de.titus.logging.LoggerFactory();
+	LoggerFactory.getInstance = function() {
+		if (LoggerFactory.INSTANCE == undefined)
+			LoggerFactory.INSTANCE = new LoggerFactory();
 		
-		return de.titus.logging.LoggerFactory.INSTANCE;
+		return LoggerFactory.INSTANCE;
 	};
 	
 });

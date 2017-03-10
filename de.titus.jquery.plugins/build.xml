@@ -23,18 +23,18 @@
 	</taskdef>
 
 	<target name="build-jquery-plugin-file" depends="init" description="Concatenate JavaScript source files">
-		<echo message="Building ${ant.project.name}-${project.version}.js" />
+		<echo message="Building ${ant.project.name}.${project.version}.js" />
 		<mkdir dir="${dir.build}" />
-		<concat destfile="${dir.build}/${ant.project.name}-${project.version}.js">
+		<concat destfile="${dir.build}/${ant.project.name}.${project.version}.js">
 			<fileset dir="${dir.src}" includes="*.js" />
 		</concat>
-		<echo message="${ant.project.name}-${project.version}.js built." />
-		<echo message="minify ${ant.project.name}-${project.version}.js" />
-		<copy file="${dir.build}/${ant.project.name}-${project.version}.js" tofile="${dir.build}/${ant.project.name}.min-${project.version}.js">
+		<echo message="${ant.project.name}.${project.version}.js built." />
+		<echo message="minify ${ant.project.name}.${project.version}.js" />
+		<copy file="${dir.build}/${ant.project.name}.${project.version}.js" tofile="${dir.build}/${ant.project.name}.${project.version}.min.js">
 		</copy>
 		<yuicompress linebreak="16000" warn="false" munge="no" preserveallsemicolons="true" outputfolder="${dir.build}" charset="utf-8">
 			<fileset dir="${dir.build}">
-				<include name="${ant.project.name}.min-${project.version}.js" />
+				<include name="${ant.project.name}.${project.version}.min.js" />
 			</fileset>
 		</yuicompress>
 		<echo message="${ant.project.name}-${project.version}.js built." />
@@ -45,54 +45,36 @@
 			<fileset dir="${dir.src}" includes="license-header.js" />
 		</concat>
 		<concat destfile="${dir.build}/tmp/${ant.project.name}.${project.version}.min.js" fixlastline="true" append="true">
-			<fileset dir="${depents.core.dist.dir}" includes="*.min-${depents.core.version}.js" />
+			<fileset dir="${depents.core.dist.dir}" includes="*.${depents.core.version}.min.js" />
 		</concat>
 		<concat destfile="${dir.build}/tmp/${ant.project.name}.${project.version}.min.js" fixlastline="true" append="true">
-			<fileset dir="${depents.logging.dist.dir}" includes="*.min-${depents.logging.version}.js" />
+			<fileset dir="${depents.logging.dist.dir}" includes="*.${depents.logging.version}.min.js" />
 		</concat>
 		<concat destfile="${dir.build}/tmp/${ant.project.name}.${project.version}.min.js" fixlastline="true" append="true">
-			<fileset dir="${depents.jstl.dist.dir}" includes="*.min-${depents.jstl.version}.js" />
-		</concat>
-		<concat destfile="${dir.build}/tmp/${ant.project.name}.${project.version}.min.js" fixlastline="true" append="true">
-			<fileset dir="${depents.form.dist.dir}" includes="*.min-${depents.form.version}.js" />
-		</concat>
-		<!--concat destfile="${dir.build}/tmp/${ant.project.name}.min-${project.version}.js" fixlastline="true" append="true">
-			<fileset dir="${depents.template.engine.dist.dir}" includes="*.min-${depents.template.engine.version}.js" />
-		</concat-->
-		<!--concat destfile="${dir.build}/tmp/${ant.project.name}.min-${project.version}.js" fixlastline="true" append="true">
-			<fileset dir="${depents.grid.layout.dist.dir}" includes="*.min-${depents.grid.layout.version}.js" />
-		</concat-->
+			<fileset dir="${depents.jstl.dist.dir}" includes="*.${depents.jstl.version}.min.js" />
+		</concat>		
 		<concat destfile="${dir.build}/tmp/${ant.project.name}.${project.version}.min.js" fixlastline="true" append="true">
 			<fileset dir="${dir.build}" includes="*.min-${project.version}.js" />
+			<fileset dir="${dir.build}" includes="*.${project.version}.min.js" />
 		</concat>
 	</target>
 
 	<target name="concat-js-files" depends="init" description="Concatenate JavaScript source files">
-		<concat destfile="${dir.build}/tmp/${ant.project.name}-${project.version}.js" fixlastline="true">
+		<concat destfile="${dir.build}/tmp/${ant.project.name}.${project.version}.js" fixlastline="true">
 			<fileset dir="${dir.src}" includes="license-header.js" />
 		</concat>
-		<concat destfile="${dir.build}/tmp/${ant.project.name}-${project.version}.js" fixlastline="true" append="true">
-			<fileset dir="${depents.core.dist.dir}" excludes="*.min-${depents.core.version}.js" includes="*.js" />
+		<concat destfile="${dir.build}/tmp/${ant.project.name}.${project.version}.js" fixlastline="true" append="true">
+			<fileset dir="${depents.core.dist.dir}" excludes="*.${depents.core.version}.min.js" includes="*.js" />
 		</concat>
-		<concat destfile="${dir.build}/tmp/${ant.project.name}-${project.version}.js" fixlastline="true" append="true">
-			<fileset dir="${depents.logging.dist.dir}" excludes="*.min-${depents.logging.version}.js" includes="*.js" />
+		<concat destfile="${dir.build}/tmp/${ant.project.name}.${project.version}.js" fixlastline="true" append="true">
+			<fileset dir="${depents.logging.dist.dir}" excludes="*.${depents.logging.version}.min.js" includes="*.js" />
 		</concat>
-		<concat destfile="${dir.build}/tmp/${ant.project.name}-${project.version}.js" fixlastline="true" append="true">
-			<fileset dir="${depents.jstl.dist.dir}" excludes="*.min-${depents.jstl.version}.js" includes="*.js" />
-		</concat>
-		<concat destfile="${dir.build}/tmp/${ant.project.name}-${project.version}.js" fixlastline="true" append="true">
-			<fileset dir="${depents.form.dist.dir}" excludes="*.min-${depents.form.version}.js" includes="*.js" />
-		</concat>
-		<!--concat destfile="${dir.build}/tmp/${ant.project.name}-${project.version}.js" fixlastline="true" append="true">
-			<fileset dir="${depents.template.engine.dist.dir}" excludes="*.min-${depents.template.engine.version}.js" includes="*.js" />
-		</concat-->
-		<!--concat destfile="${dir.build}/tmp/${ant.project.name}-${project.version}.js" fixlastline="true" append="true">
-			<fileset dir="${depents.grid.layout.dist.dir}" excludes="*.min-${depents.grid.layout.version}.js" includes="*.js" />
-		</concat-->
-		<concat destfile="${dir.build}/tmp/${ant.project.name}-${project.version}.js" fixlastline="true" append="true">
+		<concat destfile="${dir.build}/tmp/${ant.project.name}.${project.version}.js" fixlastline="true" append="true">
+			<fileset dir="${depents.jstl.dist.dir}" excludes="*.${depents.jstl.version}.min.js" includes="*.js" />
+		</concat>		
+		<concat destfile="${dir.build}/tmp/${ant.project.name}.${project.version}.js" fixlastline="true" append="true">
 			<fileset dir="${dir.build}">
 				<include name="*.js" />
-				<exclude name="*.min-${project.version}.js" />
 				<exclude name="*.${project.version}.min.js" />
 				<exclude name="license-header.js" />
 			</fileset>

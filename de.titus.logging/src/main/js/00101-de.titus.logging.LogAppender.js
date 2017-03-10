@@ -1,10 +1,9 @@
 
 de.titus.core.Namespace.create("de.titus.logging.LogAppender", function() {
 	
-	de.titus.logging.LogAppender = function() {
-	};
+	var LogAppender = de.titus.logging.LogAppender = function() {	};
 	
-	de.titus.logging.LogAppender.prototype.formatedDateString = function(aDate){
+	LogAppender.prototype.formatedDateString = function(aDate){
 		if(aDate == undefined)
 			return "";
 		
@@ -35,7 +34,7 @@ de.titus.core.Namespace.create("de.titus.logging.LogAppender", function() {
 
 	
 	/*This need to be Implemented*/
-	de.titus.logging.LogAppender.prototype.logMessage = function(aMessage, anException, aLoggerName, aDate, aLogLevel){};
+	LogAppender.prototype.logMessage = function(aMessage, anException, aLoggerName, aDate, aLogLevel){};
 	
 	
 });

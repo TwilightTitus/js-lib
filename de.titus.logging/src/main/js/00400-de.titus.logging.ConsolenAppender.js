@@ -1,12 +1,11 @@
 de.titus.core.Namespace.create("de.titus.logging.ConsolenAppender", function() {
 	
-	de.titus.logging.ConsolenAppender = function() {
-	};
+	var ConsolenAppender = de.titus.logging.ConsolenAppender = function() {};
 	
-	de.titus.logging.ConsolenAppender.prototype = new de.titus.logging.LogAppender();
-	de.titus.logging.ConsolenAppender.prototype.constructor = de.titus.logging.ConsolenAppender;
+	ConsolenAppender.prototype = new de.titus.logging.LogAppender();
+	ConsolenAppender.prototype.constructor = ConsolenAppender;
 	
-	de.titus.logging.ConsolenAppender.prototype.logMessage = function(aMessage, anException, aLoggerName, aDate, aLogLevel) {
+	ConsolenAppender.prototype.logMessage = function(aMessage, anException, aLoggerName, aDate, aLogLevel) {
 		if (de.titus.logging.LogLevel.NOLOG == aLogLevel)
 			return;
 		var log = "";

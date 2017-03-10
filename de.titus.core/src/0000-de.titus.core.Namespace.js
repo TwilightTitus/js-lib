@@ -1,6 +1,6 @@
 var de = de || {};
 de.titus = de.titus || {};
-de.titus.core = de.titus.core || {};
+de.titus.core = de.titus.core || {Version: "{version}"};
 if (de.titus.core.Namespace == undefined) {
 	de.titus.core.Namespace = {};
 	/**
