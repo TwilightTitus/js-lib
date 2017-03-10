@@ -1,7 +1,7 @@
 (function($) {
 	de.titus.core.Namespace.create("de.titus.core.Page", function() {
 		
-		de.titus.core.Page = function() {
+		var Page = de.titus.core.Page = function() {
 			this.baseTagValue = undefined;
 			this.hasBaseTag = false;
 			var baseTag = $('base');
@@ -14,10 +14,10 @@
 		};
 		
 		// KONSTANTEN
-		de.titus.core.Page.CSSTEMPLATE = '<link rel="stylesheet" type="text/css"/>';
-		de.titus.core.Page.JSTEMPLATE = '<script type="text/javascript"></script>';
+		Page.CSSTEMPLATE = '<link rel="stylesheet" type="text/css"/>';
+		Page.JSTEMPLATE = '<script type="text/javascript"></script>';
 		
-		de.titus.core.Page.prototype.addJsFile = function(aUrl, aFunction, forceFunction) {
+		Page.prototype.addJsFile = function(aUrl, aFunction, forceFunction) {
 			if ($.isArray(aUrl)) {
 				return this.addJsFiles(aUrl, aFunction, forceFunction);
 			}
@@ -34,7 +34,7 @@
 			}
 		};
 		
-		de.titus.core.Page.prototype.addJsFiles = function(aUrls, aFunction, forceFunction) {
+		Page.prototype.addJsFiles = function(aUrls, aFunction, forceFunction) {
 			if ($.isArray(aUrls)) {
 				var url = aUrls.shift();
 				if (aUrls.length != 0) {
@@ -49,7 +49,7 @@
 			}
 		};
 		
-		de.titus.core.Page.prototype.addCssFile = function(aUrl) {
+		Page.prototype.addCssFile = function(aUrl) {
 			if ($.isArray(aUrl)) {
 				this.addCssFiles(aUrl);
 				return;
@@ -63,7 +63,7 @@
 			}
 		};
 		
-		de.titus.core.Page.prototype.addCssFiles = function(aUrls) {
+		Page.prototype.addCssFiles = function(aUrls) {
 			if ($.isArray(aUrls)) {
 				for (i = 0; i < aUrls.length; i++) {
 					this.addCssFile(aUrls[i]);
@@ -71,11 +71,11 @@
 			}
 		};
 		
-		de.titus.core.Page.prototype.getUrl = function() {
+		Page.prototype.getUrl = function() {
 			return de.titus.core.URL.getCurrentUrl();
 		};
 		
-		de.titus.core.Page.prototype.buildUrl = function(aUrl) {
+		Page.prototype.buildUrl = function(aUrl) {
 			var browser = this.detectBrowser();
 			if (browser.ie && browser.ie < 11) {
 				var tempUrl = aUrl.toLowerCase().trim();
@@ -86,7 +86,7 @@
 			return aUrl;
 		};
 		
-		de.titus.core.Page.prototype.detectBrowser = function() {
+		Page.prototype.detectBrowser = function() {
 			/* http://stackoverflow.com/a/21712356/2120330 */
 			var result = {
 			"ie" : false,
@@ -110,11 +110,11 @@
 			return result;
 		};
 		
-		de.titus.core.Page.prototype.setData = function(aKey, aValue) {
+		Page.prototype.setData = function(aKey, aValue) {
 			this.data[aKey] = aValue;
 		};
 		
-		de.titus.core.Page.prototype.getData = function(aKey) {
+		Page.prototype.getData = function(aKey) {
 			return this.data[aKey];
 		};
 		

@@ -1,7 +1,7 @@
 (function($) {
 	de.titus.core.Namespace.create("de.titus.core.EventBind", function() {
 		"use strict";
-		de.titus.core.EventBind = function(anElement, aContext) {
+		var EventBind = de.titus.core.EventBind = function(anElement, aContext) {
 			if (anElement.data(de.titus.core.EventBind.STATE.FINISHED) == undefined) {
 				
 				var eventType = anElement.attr("event-type");
@@ -34,16 +34,16 @@
 			}
 		};
 		
-		de.titus.core.EventBind.EXPRESSIONRESOLVER = new de.titus.core.ExpressionResolver();
-		de.titus.core.EventBind.STATE = {
+		EventBind.EXPRESSIONRESOLVER = new de.titus.core.ExpressionResolver();
+		EventBind.STATE = {
 			FINISHED : "$$EventBind.FINISHED$$"
 		};
-		de.titus.core.EventBind.FINISHEDSTATE = {
+		EventBind.FINISHEDSTATE = {
 		FAIL : "fail",
 		READY : "ready"
 		};
 		
-		de.titus.core.EventBind.$$__execute__$$ = function(anEvent) {
+		EventBind.$$__execute__$$ = function(anEvent) {
 			var element = $(this);
 			if (element.attr("event-prevent-default") != undefined)
 				anEvent.preventDefault();
@@ -62,16 +62,7 @@
 			
 			return !anEvent.isDefaultPrevented();
 		};
-		
-		$.fn.de_titus_core_EventBind = function(aContext) {
-			if (this.length == 1)
-				return de.titus.core.EventBind(this, aContext);
-			else if (this.length >= 1) {
-				return this.each(function() {
-					return $(this).de_titus_core_EventBind(aContext);
-				});
-			}
-		};
+		de.titus.core.jquery.Components.asComponent("de.titus.core.EventBind", de.titus.core.EventBind);
 		
 		$(document).ready(function() {
 			var hasAutorun = $("[event-autorun]");

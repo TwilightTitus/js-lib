@@ -13,7 +13,9 @@
 
 var de = de || {};
 de.titus = de.titus || {};
-de.titus.core = de.titus.core || {Version: "1.8.4"};
+de.titus.core = de.titus.core || {
+	Version : "1.8.4"
+};
 if (de.titus.core.Namespace == undefined) {
 	de.titus.core.Namespace = {};
 	/**
@@ -22,105 +24,80 @@ if (de.titus.core.Namespace == undefined) {
 	 * @param aNamespace
 	 *            the namespace(requiered)
 	 * @param aFunction
-	 *            a function that be executed, if the namespace created (optional)
+	 *            a function that be executed, if the namespace created
+	 *            (optional)
 	 * 
 	 * @returns boolean, true if the namespace created
 	 */
 	de.titus.core.Namespace.create = function(aNamespace, aFunction) {
 		var namespaces = aNamespace.split(".");
 		var currentNamespace = window || global;
-		var namespaceCreated = false;
 		for (var i = 0; i < namespaces.length; i++) {
-			if (currentNamespace[namespaces[i]] == undefined) {
+			if (currentNamespace[namespaces[i]] == undefined)
 				currentNamespace[namespaces[i]] = {};
-				namespaceCreated = true;
-			}
-			currentNamespace = currentNamespace[namespaces[i]];
+			currentNamespace = currentNamespace[namespaces[i]];			
 		}
-		if (namespaceCreated && aFunction != undefined) {
-			aFunction();
-		}
-		
-		return namespaceCreated;
-	};
-	
-	/**
-	 * exist the namespace?
-	 * 
-	 * @param aNamespace
-	 *            the namespace(requiered)
-	 * 
-	 * @returns boolean, true if the namespace existing
-	 */
-	de.titus.core.Namespace.exist = function(aNamespace) {
-		var namespaces = aNamespace.split(".");
-		var currentNamespace = window;
-		for (var i = 0; i < namespaces.length; i++) {
-			if (currentNamespace[namespaces[i]] == undefined) {
-				return false;
-			}
-			currentNamespace = currentNamespace[namespaces[i]];
-		}
-		return true;
+		aFunction();
 	};
 };de.titus.core.Namespace.create("de.titus.core.SpecialFunctions", function() {
-
-    de.titus.core.SpecialFunctions = {};
-    de.titus.core.SpecialFunctions.doEval = function(aStatement, aContext, aCallback) {
-	if (aCallback) {
-	    de.titus.core.SpecialFunctions.doEvalWithContext(aStatement, (aContext || {}), undefined, aCallback);
-	} else {
-	    if (aStatement != undefined && typeof aStatement !== "string")
-		return aStatement;
-	    else if (aStatement != undefined) {
-		var result = undefined;
-		var runContext = aContext || {};
-		with (runContext) {
-		    try {
-			eval("result = " + aStatement + ";");
-		    } catch (e) {
-			if (!console)
-			    return;
-			else if (console.error)
-			    console.error("de.titus.core.SpecialFunctions.doEval ***Error*** expression: " + aStatement + ": ", e);
-			else if (console.log)
-			    console.log("de.titus.core.SpecialFunctions.doEval ***Error*** expression: " + aStatement + ": ", e);
-			return undefined;
+	
+	var SpecialFunctions = de.titus.core.SpecialFunctions = {
+	    doEval : function(aStatement, aContext, aCallback) {
+		    if (aCallback)
+		    	SpecialFunctions.doEvalWithContext(aStatement, (aContext || {}), undefined, aCallback);
+		    else {
+			    if (typeof aStatement !== "string")
+				    return aStatement;
+			    else {
+				    var result = undefined;
+				    var runContext = aContext || {};
+				    with (runContext) {
+					    try {
+						    eval("result = " + aStatement + ";");
+					    } catch (e) {
+						    if (!console)
+							    return;
+						    else if (console.error)
+							    console.error("de.titus.core.SpecialFunctions.doEval ***Error*** expression: " + aStatement + ": ", e);
+						    else if (console.log)
+							    console.log("de.titus.core.SpecialFunctions.doEval ***Error*** expression: " + aStatement + ": ", e);
+						    return undefined;
+					    }
+				    }
+				    return result;
+			    }
+			    
+			    return undefined;
 		    }
-		}
-		return result;
+	    },
+	    
+	    /**
+		 * 
+		 * @param aStatement
+		 * @param aContext
+		 * @param aDefault
+		 * @param aCallback
+		 * @returns
+		 */
+	    doEvalWithContext : function(aStatement, aContext, aDefault, aCallback) {
+		    if (typeof aCallback === "function") {
+			    window.setTimeout(function() {
+				    var result = SpecialFunctions.doEvalWithContext(aStatement, aContext, aDefault, undefined);
+				    aCallback(result, aContext);
+			    }, 1);
+			    
+		    } else
+			    try {
+				    var result = SpecialFunctions.doEval(aStatement, aContext);
+				    if (result == undefined)
+					    return aDefault;
+				    return result;
+			    } catch (e) {
+				    return aDefault;
+			    }
 	    }
-
-	    return undefined;
-	}
-    };
-
-    /**
-     * 
-     * @param aStatement
-     * @param aContext
-     * @param aDefault
-     * @param aCallback
-     * @returns
-     */
-    de.titus.core.SpecialFunctions.doEvalWithContext = function(aStatement, aContext, aDefault, aCallback) {
-	if (aCallback && typeof aCallback === "function") {
-	    window.setTimeout(function() {
-		var result = de.titus.core.SpecialFunctions.doEvalWithContext(aStatement, aContext, aDefault, undefined);
-		aCallback(result, aContext);
-	    }, 1);
-
-	} else
-	    try {
-		var result = de.titus.core.SpecialFunctions.doEval(aStatement, aContext);
-		if (result == undefined)
-		    return aDefault;
-		return result;
-	    } catch (e) {
-		return aDefault;
-	    }
-    };
-
+	};
+	
 });
 (function($) {
 	de.titus.core.Namespace.create("de.titus.core.jquery.Components",
@@ -219,59 +196,51 @@ if (de.titus.core.Namespace == undefined) {
 	};
 })($);
 (function() {
-    "use strict";
-    de.titus.core.Namespace.create("de.titus.core.ArrayUtils", function() {
-	var ArrayUtils = de.titus.core.ArrayUtils = {
-	    
-	}
-    });
-})($);
-(function() {
-    "use strict";
-    de.titus.core.Namespace.create("de.titus.core.PagingUtils", function() {
-	var  PagingUtils = de.titus.core.PagingUtils = {
-	pagerData : function(aPage, aPages, aSize) {
-	    var half = Math.round(aPages / 2);
-	    var result = {
-	    firstPage : 1,
-	    startPage : 1,
-	    endPage : aSize,
-	    lastPage: aPages,
-	    current : aPage,
-	    pageCount : aPages
-	    };
-	    if (aSize > aPages)
-		result.endPage = aPages;
-	    else if (aPage + half > aPages) {
-		result.endPage = aPages;
-		result.startPage = (end - aSize) + 1;
-	    } else if (aPage - half > 1) {
-		result.endPage = (aPage + half);
-		result.startPage = (end - aSize) + 1;
-	    }
-	    result.count = result.endPage - result.startPage;
-	    return result;
-	},
-
-	pageArray : function(aPage, aSize, aArray) {
-	    return aArray.slice((aPage - 1) * aSize, aSize);
-	}
-
-	}
-    });
+	"use strict";
+	de.titus.core.Namespace.create("de.titus.core.PagingUtils", function() {
+		var PagingUtils = de.titus.core.PagingUtils = {
+		    pagerData : function(aPage, aPages, aSize) {
+			    var half = Math.round(aPages / 2);
+			    var result = {
+			        firstPage : 1,
+			        startPage : 1,
+			        endPage : aSize,
+			        lastPage : aPages,
+			        current : aPage,
+			        pageCount : aPages
+			    };
+			    if (aSize > aPages)
+				    result.endPage = aPages;
+			    else if (aPage + half > aPages) {
+				    result.endPage = aPages;
+				    result.startPage = (end - aSize) + 1;
+			    } else if (aPage - half > 1) {
+				    result.endPage = (aPage + half);
+				    result.startPage = (end - aSize) + 1;
+			    }
+			    result.count = result.endPage - result.startPage;
+			    return result;
+		    },
+		    
+		    pageArray : function(aPage, aSize, aArray) {
+			    return aArray.slice((aPage - 1) * aSize, aSize);
+		    }
+		
+		}
+	});
 })($);
 de.titus.core.Namespace.create("de.titus.core.regex.Matcher", function() {
-	de.titus.core.regex.Matcher = function(/* RegExp */aRegExp, /* String */aText) {
+	var Matcher = de.titus.core.regex.Matcher = function(/* RegExp */aRegExp, /* String */aText) {
 		this.internalRegex = aRegExp;
 		this.processingText = aText;
 		this.currentMatch = undefined;
 	}
 
-	de.titus.core.regex.Matcher.prototype.isMatching = /* boolean */function() {
+	Matcher.prototype.isMatching = /* boolean */function() {
 		return this.internalRegex.test(this.processingText);
 	};
 	
-	de.titus.core.regex.Matcher.prototype.next = /* boolean */function() {
+	Matcher.prototype.next = /* boolean */function() {
 		this.currentMatch = this.internalRegex.exec(this.processingText);
 		if (this.currentMatch != undefined) {
 			this.processingText = this.processingText.replace(this.currentMatch[0], "");
@@ -280,19 +249,19 @@ de.titus.core.Namespace.create("de.titus.core.regex.Matcher", function() {
 		return false;
 	};
 	
-	de.titus.core.regex.Matcher.prototype.getMatch = /* String */function() {
+	Matcher.prototype.getMatch = /* String */function() {
 		if (this.currentMatch != undefined)
 			return this.currentMatch[0];
 		return undefined;
 	};
 	
-	de.titus.core.regex.Matcher.prototype.getGroup = /* String */function(/* int */aGroupId) {
+	Matcher.prototype.getGroup = /* String */function(/* int */aGroupId) {
 		if (this.currentMatch != undefined)
 			return this.currentMatch[aGroupId];
 		return undefined;
 	};
 	
-	de.titus.core.regex.Matcher.prototype.replaceAll = /*String*/ function(/* String */aReplaceValue, /* String */aText) {
+	Matcher.prototype.replaceAll = /*String*/ function(/* String */aReplaceValue, /* String */aText) {
 		if (this.currentMatch != undefined)
 			return aText.replace(this.currentMatch[0], aReplaceValue);
 		return aText;
@@ -301,24 +270,24 @@ de.titus.core.Namespace.create("de.titus.core.regex.Matcher", function() {
 
 de.titus.core.Namespace.create("de.titus.core.regex.Regex", function() {
 	
-	de.titus.core.regex.Regex = function(/* String */aRegex, /* String */aOptions) {
+	var Regex = de.titus.core.regex.Regex = function(/* String */aRegex, /* String */aOptions) {
 		this.internalRegex = new RegExp(aRegex, aOptions);
 	};
 	
-	de.titus.core.regex.Regex.prototype.parse = /* de.titus.core.regex.Matcher */function(/* String */aText) {
+	Regex.prototype.parse = /* de.titus.core.regex.Matcher */function(/* String */aText) {
 		return new de.titus.core.regex.Matcher(this.internalRegex, aText);
 	};
 });
 de.titus.core.Namespace.create("de.titus.core.ExpressionResolver", function() {
 	
-	de.titus.core.ExpressionResolver = function(varRegex) {
+	var ExpressionResolver = de.titus.core.ExpressionResolver = function(varRegex) {
 		this.regex = new de.titus.core.regex.Regex(varRegex || de.titus.core.ExpressionResolver.TEXT_EXPRESSION_REGEX);
 	};
 	
 	/**
 	 * static variables
 	 */
-	de.titus.core.ExpressionResolver.TEXT_EXPRESSION_REGEX = "\\$\\{([^\\$\\{\\}]*)\\}";
+	ExpressionResolver.TEXT_EXPRESSION_REGEX = "\\$\\{([^\\$\\{\\}]*)\\}";
 	
 	/**
 	 * @param aText
@@ -327,7 +296,7 @@ de.titus.core.Namespace.create("de.titus.core.ExpressionResolver", function() {
 	 * 
 	 * @returns
 	 */
-	de.titus.core.ExpressionResolver.prototype.resolveText = function(aText, aDataContext, aDefaultValue) {
+	ExpressionResolver.prototype.resolveText = function(aText, aDataContext, aDefaultValue) {
 		var text = aText;
 		var matcher = this.regex.parse(text);
 		while (matcher.next()) {
@@ -350,7 +319,7 @@ de.titus.core.Namespace.create("de.titus.core.ExpressionResolver", function() {
 	 * 
 	 * @returns
 	 */
-	de.titus.core.ExpressionResolver.prototype.resolveExpression = function(aExpression, aDataContext, aDefaultValue) {
+	ExpressionResolver.prototype.resolveExpression = function(aExpression, aDataContext, aDefaultValue) {
 		var matcher = this.regex.parse(aExpression);
 		if (matcher.next()) {
 			return this.internalResolveExpression(matcher.getGroup(1), aDataContext, aDefaultValue);
@@ -366,7 +335,7 @@ de.titus.core.Namespace.create("de.titus.core.ExpressionResolver", function() {
 	 * 
 	 * @returns
 	 */
-	de.titus.core.ExpressionResolver.prototype.internalResolveExpression = function(aExpression, aDataContext, aDefaultValue) {
+	ExpressionResolver.prototype.internalResolveExpression = function(aExpression, aDataContext, aDefaultValue) {
 		try {
 			return de.titus.core.SpecialFunctions.doEvalWithContext(aExpression, aDataContext, aDefaultValue);			
 		} catch (e) {
@@ -377,7 +346,7 @@ de.titus.core.Namespace.create("de.titus.core.ExpressionResolver", function() {
 });
 (function($) {
 	de.titus.core.Namespace.create("de.titus.core.URL", function() {
-		de.titus.core.URL = function(aProtocol, aDomain, aPort, aPath, theParameter, aMarker) {
+		var URL = de.titus.core.URL = function(aProtocol, aDomain, aPort, aPath, theParameter, aMarker) {
 			
 			var protocol = aProtocol;
 			var domain = aDomain;
@@ -442,7 +411,7 @@ de.titus.core.Namespace.create("de.titus.core.ExpressionResolver", function() {
 			};
 		};
 		
-		de.titus.core.URL.prototype.getParameter = function(aKey) {
+		URL.prototype.getParameter = function(aKey) {
 			var value = this.getParameters()[aKey];
 			if (value == undefined)
 				return undefined;
@@ -452,11 +421,11 @@ de.titus.core.Namespace.create("de.titus.core.ExpressionResolver", function() {
 				return value[0];
 		};
 		
-		de.titus.core.URL.prototype.getParameters = function(aKey) {
+		URL.prototype.getParameters = function(aKey) {
 			return this.getParameters()[aKey];
 		};
 		
-		de.titus.core.URL.prototype.addParameter = function(aKey, aValue, append) {
+		URL.prototype.addParameter = function(aKey, aValue, append) {
 			if (this.getParameters()[aKey] == undefined) {
 				this.getParameters()[aKey] = [];
 			}
@@ -473,7 +442,7 @@ de.titus.core.Namespace.create("de.titus.core.ExpressionResolver", function() {
 			}
 		};
 		
-		de.titus.core.URL.prototype.getQueryString = function() {
+		URL.prototype.getQueryString = function() {
 			if (this.getParameters() != undefined) {
 				var parameters = this.getParameters();
 				var result = "?";
@@ -502,7 +471,7 @@ de.titus.core.Namespace.create("de.titus.core.ExpressionResolver", function() {
 			}
 		};
 		
-		de.titus.core.URL.prototype.asString = function() {
+		URL.prototype.asString = function() {
 			var result = this.getProtocol() + "://" + this.getDomain() + ":" + this.getPort();
 			
 			if (this.getPath() != undefined)
@@ -516,7 +485,7 @@ de.titus.core.Namespace.create("de.titus.core.ExpressionResolver", function() {
 			return result;
 		};
 		
-		de.titus.core.URL.prototype.toString = function() {
+		URL.prototype.toString = function() {
 			return this.asString();
 		};
 		
@@ -595,7 +564,7 @@ de.titus.core.Namespace.create("de.titus.core.ExpressionResolver", function() {
 (function($) {
 	de.titus.core.Namespace.create("de.titus.core.Page", function() {
 		
-		de.titus.core.Page = function() {
+		var Page = de.titus.core.Page = function() {
 			this.baseTagValue = undefined;
 			this.hasBaseTag = false;
 			var baseTag = $('base');
@@ -608,10 +577,10 @@ de.titus.core.Namespace.create("de.titus.core.ExpressionResolver", function() {
 		};
 		
 		// KONSTANTEN
-		de.titus.core.Page.CSSTEMPLATE = '<link rel="stylesheet" type="text/css"/>';
-		de.titus.core.Page.JSTEMPLATE = '<script type="text/javascript"></script>';
+		Page.CSSTEMPLATE = '<link rel="stylesheet" type="text/css"/>';
+		Page.JSTEMPLATE = '<script type="text/javascript"></script>';
 		
-		de.titus.core.Page.prototype.addJsFile = function(aUrl, aFunction, forceFunction) {
+		Page.prototype.addJsFile = function(aUrl, aFunction, forceFunction) {
 			if ($.isArray(aUrl)) {
 				return this.addJsFiles(aUrl, aFunction, forceFunction);
 			}
@@ -628,7 +597,7 @@ de.titus.core.Namespace.create("de.titus.core.ExpressionResolver", function() {
 			}
 		};
 		
-		de.titus.core.Page.prototype.addJsFiles = function(aUrls, aFunction, forceFunction) {
+		Page.prototype.addJsFiles = function(aUrls, aFunction, forceFunction) {
 			if ($.isArray(aUrls)) {
 				var url = aUrls.shift();
 				if (aUrls.length != 0) {
@@ -643,7 +612,7 @@ de.titus.core.Namespace.create("de.titus.core.ExpressionResolver", function() {
 			}
 		};
 		
-		de.titus.core.Page.prototype.addCssFile = function(aUrl) {
+		Page.prototype.addCssFile = function(aUrl) {
 			if ($.isArray(aUrl)) {
 				this.addCssFiles(aUrl);
 				return;
@@ -657,7 +626,7 @@ de.titus.core.Namespace.create("de.titus.core.ExpressionResolver", function() {
 			}
 		};
 		
-		de.titus.core.Page.prototype.addCssFiles = function(aUrls) {
+		Page.prototype.addCssFiles = function(aUrls) {
 			if ($.isArray(aUrls)) {
 				for (i = 0; i < aUrls.length; i++) {
 					this.addCssFile(aUrls[i]);
@@ -665,11 +634,11 @@ de.titus.core.Namespace.create("de.titus.core.ExpressionResolver", function() {
 			}
 		};
 		
-		de.titus.core.Page.prototype.getUrl = function() {
+		Page.prototype.getUrl = function() {
 			return de.titus.core.URL.getCurrentUrl();
 		};
 		
-		de.titus.core.Page.prototype.buildUrl = function(aUrl) {
+		Page.prototype.buildUrl = function(aUrl) {
 			var browser = this.detectBrowser();
 			if (browser.ie && browser.ie < 11) {
 				var tempUrl = aUrl.toLowerCase().trim();
@@ -680,7 +649,7 @@ de.titus.core.Namespace.create("de.titus.core.ExpressionResolver", function() {
 			return aUrl;
 		};
 		
-		de.titus.core.Page.prototype.detectBrowser = function() {
+		Page.prototype.detectBrowser = function() {
 			/* http://stackoverflow.com/a/21712356/2120330 */
 			var result = {
 			"ie" : false,
@@ -704,11 +673,11 @@ de.titus.core.Namespace.create("de.titus.core.ExpressionResolver", function() {
 			return result;
 		};
 		
-		de.titus.core.Page.prototype.setData = function(aKey, aValue) {
+		Page.prototype.setData = function(aKey, aValue) {
 			this.data[aKey] = aValue;
 		};
 		
-		de.titus.core.Page.prototype.getData = function(aKey) {
+		Page.prototype.getData = function(aKey) {
 			return this.data[aKey];
 		};
 		
@@ -738,23 +707,23 @@ de.titus.core.Namespace.create("de.titus.core.UUID", function() {
 	};
 });(function($) {
 	de.titus.core.Namespace.create("de.titus.core.StringUtils", function() {
-		de.titus.core.StringUtils = {};
-		de.titus.core.StringUtils.DEFAULTS = {};
-		de.titus.core.StringUtils.DEFAULTS.formatToHtml = {
+		var StringUtils = $.fn.de_titus_core_StringUtils = de.titus.core.StringUtils = {};
+		StringUtils.DEFAULTS = {};
+		StringUtils.DEFAULTS.formatToHtml = {
 		"tabsize" : 4,
 		"tabchar" : "&nbsp;",
 		"newlineTag" : "<br/>"
 		};
 		
-		de.titus.core.StringUtils.DEFAULTS.trimTextLength = {
+		StringUtils.DEFAULTS.trimTextLength = {
 			"postfix" : "..."
 		};
 		
-		de.titus.core.StringUtils.trimTextLength = function(aText, maxLength, theSettings) {
+		StringUtils.trimTextLength = function(aText, maxLength, theSettings) {
 			if (aText == undefined || typeof aText !== "string" || aText == "")
 				return aText;
 			
-			var settings = $.extend({}, theSettings, de.titus.core.StringUtils.DEFAULTS.trimTextLength);
+			var settings = $.extend({}, theSettings, StringUtils.DEFAULTS.trimTextLength);
 			
 			if (aText.length > maxLength) {
 				var end = maxLength - settings.postfix.length;
@@ -764,11 +733,11 @@ de.titus.core.Namespace.create("de.titus.core.UUID", function() {
 			return aText;
 		};
 		
-		de.titus.core.StringUtils.formatToHtml = function(aText, theSettings) {
+		StringUtils.formatToHtml = function(aText, theSettings) {
 			if (aText == undefined || typeof aText !== "string" || aText == "")
 				return aText;
 			
-			var settings = $.extend({}, theSettings, de.titus.core.StringUtils.DEFAULTS.formatToHtml);
+			var settings = $.extend({}, theSettings, StringUtils.DEFAULTS.formatToHtml);
 			var text = aText.replace(new RegExp("\n\r", "g"), "\n");
 			var text = aText.replace(new RegExp("\r", "g"), "\n");
 			var lines = text.split("\n");
@@ -776,12 +745,12 @@ de.titus.core.Namespace.create("de.titus.core.UUID", function() {
 			for (var i = 0; i < lines.length; i++) {
 				if (i != 0)
 					text = text + settings.newlineTag;
-				text = text + de.titus.core.StringUtils.preventTabs(lines[i], settings.tabsize, settings.tabchar);
+				text = text + StringUtils.preventTabs(lines[i], settings.tabsize, settings.tabchar);
 			}
 			return text;
 		};
 		
-		de.titus.core.StringUtils.getTabStopMap = function(tabSize, tabString) {
+		StringUtils.getTabStopMap = function(tabSize, tabString) {
 			var tabstopMap = [];
 			for (var i = 0; i <= tabSize; i++) {
 				if (i == 0)
@@ -793,8 +762,8 @@ de.titus.core.Namespace.create("de.titus.core.UUID", function() {
 			return tabstopMap;
 		};
 		
-		de.titus.core.StringUtils.preventTabs = function(aText, theTabStops, theTabStopChar) {
-			var tabstopMap = de.titus.core.StringUtils.getTabStopMap(theTabStops, theTabStopChar);
+		StringUtils.preventTabs = function(aText, theTabStops, theTabStopChar) {
+			var tabstopMap = StringUtils.getTabStopMap(theTabStops, theTabStopChar);
 			var tabStops = theTabStops;
 			var text = "";
 			var tabs = aText.split("\t");
@@ -813,9 +782,9 @@ de.titus.core.Namespace.create("de.titus.core.UUID", function() {
 		};
 		
 		// This is the function.
-		de.titus.core.StringUtils.format = function(aText, args) {
+		StringUtils.format = function(aText, args) {
 			var objects = arguments;
-			return aText.replace(de.titus.core.StringUtils.format.VARREGEX, function(item) {
+			return aText.replace(StringUtils.format.VARREGEX, function(item) {
 				var index = parseInt(item.substring(1, item.length - 1)) + 1;
 				var replace;
 				if (index > 0 && index < objects.length ) {
@@ -832,15 +801,14 @@ de.titus.core.Namespace.create("de.titus.core.UUID", function() {
 				return replace;
 			});
 		};
-		de.titus.core.StringUtils.format.VARREGEX = new RegExp("{-?[0-9]+}", "g");
+		StringUtils.format.VARREGEX = new RegExp("{-?[0-9]+}", "g");
 		
-		$.fn.de_titus_core_StringUtils = de.titus.core.StringUtils;
 	});
 })($);
 (function($) {
 	de.titus.core.Namespace.create("de.titus.core.EventBind", function() {
 		"use strict";
-		de.titus.core.EventBind = function(anElement, aContext) {
+		var EventBind = de.titus.core.EventBind = function(anElement, aContext) {
 			if (anElement.data(de.titus.core.EventBind.STATE.FINISHED) == undefined) {
 				
 				var eventType = anElement.attr("event-type");
@@ -873,16 +841,16 @@ de.titus.core.Namespace.create("de.titus.core.UUID", function() {
 			}
 		};
 		
-		de.titus.core.EventBind.EXPRESSIONRESOLVER = new de.titus.core.ExpressionResolver();
-		de.titus.core.EventBind.STATE = {
+		EventBind.EXPRESSIONRESOLVER = new de.titus.core.ExpressionResolver();
+		EventBind.STATE = {
 			FINISHED : "$$EventBind.FINISHED$$"
 		};
-		de.titus.core.EventBind.FINISHEDSTATE = {
+		EventBind.FINISHEDSTATE = {
 		FAIL : "fail",
 		READY : "ready"
 		};
 		
-		de.titus.core.EventBind.$$__execute__$$ = function(anEvent) {
+		EventBind.$$__execute__$$ = function(anEvent) {
 			var element = $(this);
 			if (element.attr("event-prevent-default") != undefined)
 				anEvent.preventDefault();
@@ -901,16 +869,7 @@ de.titus.core.Namespace.create("de.titus.core.UUID", function() {
 			
 			return !anEvent.isDefaultPrevented();
 		};
-		
-		$.fn.de_titus_core_EventBind = function(aContext) {
-			if (this.length == 1)
-				return de.titus.core.EventBind(this, aContext);
-			else if (this.length >= 1) {
-				return this.each(function() {
-					return $(this).de_titus_core_EventBind(aContext);
-				});
-			}
-		};
+		de.titus.core.jquery.Components.asComponent("de.titus.core.EventBind", de.titus.core.EventBind);
 		
 		$(document).ready(function() {
 			var hasAutorun = $("[event-autorun]");

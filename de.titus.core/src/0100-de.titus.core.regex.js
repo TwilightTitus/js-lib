@@ -1,15 +1,15 @@
 de.titus.core.Namespace.create("de.titus.core.regex.Matcher", function() {
-	de.titus.core.regex.Matcher = function(/* RegExp */aRegExp, /* String */aText) {
+	var Matcher = de.titus.core.regex.Matcher = function(/* RegExp */aRegExp, /* String */aText) {
 		this.internalRegex = aRegExp;
 		this.processingText = aText;
 		this.currentMatch = undefined;
 	}
 
-	de.titus.core.regex.Matcher.prototype.isMatching = /* boolean */function() {
+	Matcher.prototype.isMatching = /* boolean */function() {
 		return this.internalRegex.test(this.processingText);
 	};
 	
-	de.titus.core.regex.Matcher.prototype.next = /* boolean */function() {
+	Matcher.prototype.next = /* boolean */function() {
 		this.currentMatch = this.internalRegex.exec(this.processingText);
 		if (this.currentMatch != undefined) {
 			this.processingText = this.processingText.replace(this.currentMatch[0], "");
@@ -18,19 +18,19 @@ de.titus.core.Namespace.create("de.titus.core.regex.Matcher", function() {
 		return false;
 	};
 	
-	de.titus.core.regex.Matcher.prototype.getMatch = /* String */function() {
+	Matcher.prototype.getMatch = /* String */function() {
 		if (this.currentMatch != undefined)
 			return this.currentMatch[0];
 		return undefined;
 	};
 	
-	de.titus.core.regex.Matcher.prototype.getGroup = /* String */function(/* int */aGroupId) {
+	Matcher.prototype.getGroup = /* String */function(/* int */aGroupId) {
 		if (this.currentMatch != undefined)
 			return this.currentMatch[aGroupId];
 		return undefined;
 	};
 	
-	de.titus.core.regex.Matcher.prototype.replaceAll = /*String*/ function(/* String */aReplaceValue, /* String */aText) {
+	Matcher.prototype.replaceAll = /*String*/ function(/* String */aReplaceValue, /* String */aText) {
 		if (this.currentMatch != undefined)
 			return aText.replace(this.currentMatch[0], aReplaceValue);
 		return aText;
@@ -39,11 +39,11 @@ de.titus.core.Namespace.create("de.titus.core.regex.Matcher", function() {
 
 de.titus.core.Namespace.create("de.titus.core.regex.Regex", function() {
 	
-	de.titus.core.regex.Regex = function(/* String */aRegex, /* String */aOptions) {
+	var Regex = de.titus.core.regex.Regex = function(/* String */aRegex, /* String */aOptions) {
 		this.internalRegex = new RegExp(aRegex, aOptions);
 	};
 	
-	de.titus.core.regex.Regex.prototype.parse = /* de.titus.core.regex.Matcher */function(/* String */aText) {
+	Regex.prototype.parse = /* de.titus.core.regex.Matcher */function(/* String */aText) {
 		return new de.titus.core.regex.Matcher(this.internalRegex, aText);
 	};
 });

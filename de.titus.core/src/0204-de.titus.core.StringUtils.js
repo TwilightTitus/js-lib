@@ -1,22 +1,22 @@
 (function($) {
 	de.titus.core.Namespace.create("de.titus.core.StringUtils", function() {
-		de.titus.core.StringUtils = {};
-		de.titus.core.StringUtils.DEFAULTS = {};
-		de.titus.core.StringUtils.DEFAULTS.formatToHtml = {
+		var StringUtils = $.fn.de_titus_core_StringUtils = de.titus.core.StringUtils = {};
+		StringUtils.DEFAULTS = {};
+		StringUtils.DEFAULTS.formatToHtml = {
 		"tabsize" : 4,
 		"tabchar" : "&nbsp;",
 		"newlineTag" : "<br/>"
 		};
 		
-		de.titus.core.StringUtils.DEFAULTS.trimTextLength = {
+		StringUtils.DEFAULTS.trimTextLength = {
 			"postfix" : "..."
 		};
 		
-		de.titus.core.StringUtils.trimTextLength = function(aText, maxLength, theSettings) {
+		StringUtils.trimTextLength = function(aText, maxLength, theSettings) {
 			if (aText == undefined || typeof aText !== "string" || aText == "")
 				return aText;
 			
-			var settings = $.extend({}, theSettings, de.titus.core.StringUtils.DEFAULTS.trimTextLength);
+			var settings = $.extend({}, theSettings, StringUtils.DEFAULTS.trimTextLength);
 			
 			if (aText.length > maxLength) {
 				var end = maxLength - settings.postfix.length;
@@ -26,11 +26,11 @@
 			return aText;
 		};
 		
-		de.titus.core.StringUtils.formatToHtml = function(aText, theSettings) {
+		StringUtils.formatToHtml = function(aText, theSettings) {
 			if (aText == undefined || typeof aText !== "string" || aText == "")
 				return aText;
 			
-			var settings = $.extend({}, theSettings, de.titus.core.StringUtils.DEFAULTS.formatToHtml);
+			var settings = $.extend({}, theSettings, StringUtils.DEFAULTS.formatToHtml);
 			var text = aText.replace(new RegExp("\n\r", "g"), "\n");
 			var text = aText.replace(new RegExp("\r", "g"), "\n");
 			var lines = text.split("\n");
@@ -38,12 +38,12 @@
 			for (var i = 0; i < lines.length; i++) {
 				if (i != 0)
 					text = text + settings.newlineTag;
-				text = text + de.titus.core.StringUtils.preventTabs(lines[i], settings.tabsize, settings.tabchar);
+				text = text + StringUtils.preventTabs(lines[i], settings.tabsize, settings.tabchar);
 			}
 			return text;
 		};
 		
-		de.titus.core.StringUtils.getTabStopMap = function(tabSize, tabString) {
+		StringUtils.getTabStopMap = function(tabSize, tabString) {
 			var tabstopMap = [];
 			for (var i = 0; i <= tabSize; i++) {
 				if (i == 0)
@@ -55,8 +55,8 @@
 			return tabstopMap;
 		};
 		
-		de.titus.core.StringUtils.preventTabs = function(aText, theTabStops, theTabStopChar) {
-			var tabstopMap = de.titus.core.StringUtils.getTabStopMap(theTabStops, theTabStopChar);
+		StringUtils.preventTabs = function(aText, theTabStops, theTabStopChar) {
+			var tabstopMap = StringUtils.getTabStopMap(theTabStops, theTabStopChar);
 			var tabStops = theTabStops;
 			var text = "";
 			var tabs = aText.split("\t");
@@ -75,9 +75,9 @@
 		};
 		
 		// This is the function.
-		de.titus.core.StringUtils.format = function(aText, args) {
+		StringUtils.format = function(aText, args) {
 			var objects = arguments;
-			return aText.replace(de.titus.core.StringUtils.format.VARREGEX, function(item) {
+			return aText.replace(StringUtils.format.VARREGEX, function(item) {
 				var index = parseInt(item.substring(1, item.length - 1)) + 1;
 				var replace;
 				if (index > 0 && index < objects.length ) {
@@ -94,8 +94,7 @@
 				return replace;
 			});
 		};
-		de.titus.core.StringUtils.format.VARREGEX = new RegExp("{-?[0-9]+}", "g");
+		StringUtils.format.VARREGEX = new RegExp("{-?[0-9]+}", "g");
 		
-		$.fn.de_titus_core_StringUtils = de.titus.core.StringUtils;
 	});
 })($);

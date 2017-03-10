@@ -1,6 +1,6 @@
 (function($) {
 	de.titus.core.Namespace.create("de.titus.core.URL", function() {
-		de.titus.core.URL = function(aProtocol, aDomain, aPort, aPath, theParameter, aMarker) {
+		var URL = de.titus.core.URL = function(aProtocol, aDomain, aPort, aPath, theParameter, aMarker) {
 			
 			var protocol = aProtocol;
 			var domain = aDomain;
@@ -65,7 +65,7 @@
 			};
 		};
 		
-		de.titus.core.URL.prototype.getParameter = function(aKey) {
+		URL.prototype.getParameter = function(aKey) {
 			var value = this.getParameters()[aKey];
 			if (value == undefined)
 				return undefined;
@@ -75,11 +75,11 @@
 				return value[0];
 		};
 		
-		de.titus.core.URL.prototype.getParameters = function(aKey) {
+		URL.prototype.getParameters = function(aKey) {
 			return this.getParameters()[aKey];
 		};
 		
-		de.titus.core.URL.prototype.addParameter = function(aKey, aValue, append) {
+		URL.prototype.addParameter = function(aKey, aValue, append) {
 			if (this.getParameters()[aKey] == undefined) {
 				this.getParameters()[aKey] = [];
 			}
@@ -96,7 +96,7 @@
 			}
 		};
 		
-		de.titus.core.URL.prototype.getQueryString = function() {
+		URL.prototype.getQueryString = function() {
 			if (this.getParameters() != undefined) {
 				var parameters = this.getParameters();
 				var result = "?";
@@ -125,7 +125,7 @@
 			}
 		};
 		
-		de.titus.core.URL.prototype.asString = function() {
+		URL.prototype.asString = function() {
 			var result = this.getProtocol() + "://" + this.getDomain() + ":" + this.getPort();
 			
 			if (this.getPath() != undefined)
@@ -139,7 +139,7 @@
 			return result;
 		};
 		
-		de.titus.core.URL.prototype.toString = function() {
+		URL.prototype.toString = function() {
 			return this.asString();
 		};
 		

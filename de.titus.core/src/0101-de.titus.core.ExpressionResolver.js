@@ -1,13 +1,13 @@
 de.titus.core.Namespace.create("de.titus.core.ExpressionResolver", function() {
 	
-	de.titus.core.ExpressionResolver = function(varRegex) {
+	var ExpressionResolver = de.titus.core.ExpressionResolver = function(varRegex) {
 		this.regex = new de.titus.core.regex.Regex(varRegex || de.titus.core.ExpressionResolver.TEXT_EXPRESSION_REGEX);
 	};
 	
 	/**
 	 * static variables
 	 */
-	de.titus.core.ExpressionResolver.TEXT_EXPRESSION_REGEX = "\\$\\{([^\\$\\{\\}]*)\\}";
+	ExpressionResolver.TEXT_EXPRESSION_REGEX = "\\$\\{([^\\$\\{\\}]*)\\}";
 	
 	/**
 	 * @param aText
@@ -16,7 +16,7 @@ de.titus.core.Namespace.create("de.titus.core.ExpressionResolver", function() {
 	 * 
 	 * @returns
 	 */
-	de.titus.core.ExpressionResolver.prototype.resolveText = function(aText, aDataContext, aDefaultValue) {
+	ExpressionResolver.prototype.resolveText = function(aText, aDataContext, aDefaultValue) {
 		var text = aText;
 		var matcher = this.regex.parse(text);
 		while (matcher.next()) {
@@ -39,7 +39,7 @@ de.titus.core.Namespace.create("de.titus.core.ExpressionResolver", function() {
 	 * 
 	 * @returns
 	 */
-	de.titus.core.ExpressionResolver.prototype.resolveExpression = function(aExpression, aDataContext, aDefaultValue) {
+	ExpressionResolver.prototype.resolveExpression = function(aExpression, aDataContext, aDefaultValue) {
 		var matcher = this.regex.parse(aExpression);
 		if (matcher.next()) {
 			return this.internalResolveExpression(matcher.getGroup(1), aDataContext, aDefaultValue);
@@ -55,7 +55,7 @@ de.titus.core.Namespace.create("de.titus.core.ExpressionResolver", function() {
 	 * 
 	 * @returns
 	 */
-	de.titus.core.ExpressionResolver.prototype.internalResolveExpression = function(aExpression, aDataContext, aDefaultValue) {
+	ExpressionResolver.prototype.internalResolveExpression = function(aExpression, aDataContext, aDefaultValue) {
 		try {
 			return de.titus.core.SpecialFunctions.doEvalWithContext(aExpression, aDataContext, aDefaultValue);			
 		} catch (e) {
