@@ -6,7 +6,8 @@
 			this.context = aContext;
 			this.processor = aProcessor;
 			this.root = isRoot;
-			this.callback = aCallback;
+			if(typeof aCallback === "function" || Array.isArray(aCallback))
+				this.callback = aCallback;
 			this.__preventChilds = false;
 			this.__taskchain = de.titus.jstl.TaskRegistry.taskchain;
 			this.__currentTask = undefined;
@@ -41,6 +42,22 @@
 				this.context = $.extend(this.context, aContext);
 			else
 				this.context = aContext;
+			
+			return this;
+		};
+		
+		TaskChain.prototype.appendCallback = function(aCallback) {
+			if (TaskChain.LOGGER.isDebugEnabled())
+				TaskChain.LOGGER.logDebug("appendCallback()");
+			if(typeof aCallback !== "function")
+				return;
+			
+			if(Array.isArray(this.callback))				
+				this.callback.push(aCallback);
+			else if(this.callback)
+				this.callback = [this.callback, aCallback]
+			else
+				this.callback = aCallback;
 			
 			return this;
 		};
@@ -87,8 +104,12 @@
 			if (TaskChain.LOGGER.isDebugEnabled())
 				TaskChain.LOGGER.logDebug("finish()");
 			
-			if (this.callback)
+			if (typeof this.callback === "function")
 				this.callback(this.element, this.context, this.processor, this);
+			else if(Array.isArray(this.callback))
+				for(var i = 0; i < this.callback.length; i++)
+					if (typeof this.callback[i] === "function")
+						this.callback[i](this.element, this.context, this.processor, this);
 			
 			this.element.trigger(de.titus.jstl.Constants.EVENTS.onSuccess, [
 				this.context, this.processor

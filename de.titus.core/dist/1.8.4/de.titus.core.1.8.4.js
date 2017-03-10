@@ -183,6 +183,14 @@ if (de.titus.core.Namespace == undefined) {
 	};
 })($);
 (function() {
+    "use strict";
+    de.titus.core.Namespace.create("de.titus.core.ArrayUtils", function() {
+	var ArrayUtils = de.titus.core.ArrayUtils = {
+	    
+	}
+    });
+})($);
+(function() {
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.core.PagingUtils", function() {
 		var PagingUtils = de.titus.core.PagingUtils = {
@@ -637,27 +645,16 @@ de.titus.core.Namespace.create("de.titus.core.ExpressionResolver", function() {
 		};
 		
 		Page.prototype.detectBrowser = function() {
-			/* http://stackoverflow.com/a/21712356/2120330 */
-			var result = {
-			"ie" : false,
-			"edge": false,
-			"other" : false
-			};
-			var ua = window.navigator.userAgent;			
-			if (ua.indexOf('MSIE ') > 0)
-				result.ie = 8;
-			else if (ua.indexOf("Trident/7.0") > 0)
-				result.ie = 11;
-			else if (ua.indexOf("Trident/6.0") > 0)
-				result.ie = 10;
-			else if (ua.indexOf("Trident/5.0") > 0)
-				result.ie = 9;	
-			else if (ua.indexOf('Edge/') > 0)
-				result.edge = 1;	
-			else
-				result.other = true;
+			if(Page.BROWSER)
+				return Page.BROWSER;
 			
-			return result;
+			Page.BROWSER = {};
+			if(document.documentMode)
+				Page.BROWSER.ie = document.documentMode;			
+			else
+				Page.BROWSER.other = true;
+			
+			return Page.BROWSER;
 		};
 		
 		Page.prototype.setData = function(aKey, aValue) {
@@ -679,7 +676,6 @@ de.titus.core.Namespace.create("de.titus.core.ExpressionResolver", function() {
 		if ($.fn.de_titus_core_Page == undefined) {
 			$.fn.de_titus_core_Page = de.titus.core.Page.getInstance;
 		}
-		;
 	});
 })($);
 de.titus.core.Namespace.create("de.titus.core.UUID", function() {

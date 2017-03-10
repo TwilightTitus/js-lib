@@ -18,8 +18,10 @@
 				    var children = aElement.children();
 				    if (children.length == 0)
 					    aTaskChain.nextTask();
-				    else {
-					    aProcessor.compute($(children[0]), aTaskChain.context, Children.ElementChain.bind({}, children, 1, aTaskChain));
+				    else{
+				    	var child = $(children[0]);
+				    	if(child && child.length == 1)
+				    		aProcessor.compute(child, aTaskChain.context, Children.ElementChain.bind({}, children, 1, aTaskChain));
 				    }
 			    } else
 				    aTaskChain.nextTask();
@@ -33,7 +35,8 @@
 			    aParentTaskChain.updateContext(aContext, true);
 			    if (aIndex < theChildren.length) {
 				    var next = $(theChildren[aIndex]);
-				    aProcessor.compute(next, aParentTaskChain.context, Children.ElementChain.bind({}, theChildren, aIndex + 1, aParentTaskChain));
+				    if(next && next.length == 1)
+				    	aProcessor.compute(next, aParentTaskChain.context, Children.ElementChain.bind({}, theChildren, aIndex + 1, aParentTaskChain));
 			    } else
 				    aParentTaskChain.nextTask();
 		    }

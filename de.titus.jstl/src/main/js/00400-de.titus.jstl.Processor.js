@@ -15,6 +15,8 @@
 			if (Processor.LOGGER.isDebugEnabled())
 				Processor.LOGGER.logDebug("execute compute(" + aElement + ", " + aContext + ")");
 			if (!aElement) {
+				this.element.removeClass("jstl-ready");
+				this.element.addClass("jstl-running");
 				this.element.trigger(de.titus.jstl.Constants.EVENTS.onStart, [
 				        aContext, this
 				]);
@@ -57,9 +59,10 @@
 					aFunction(anEvent.delegateTarget, anEvent.data);
 				});
 				return this;
-			} else {
-				
+			} else {				
 				setTimeout((function(aProcessor) {
+					this.removeClass("jstl-running");
+					this.addClass("jstl-ready");
 					this.trigger(de.titus.jstl.Constants.EVENTS.onReady, [
 						aProcessor
 					]);

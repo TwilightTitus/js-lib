@@ -10,9 +10,9 @@
 				    Include.LOGGER.logDebug("execute run(" + aElement + ", " + aContext + ", " + aProcessor + ")");
 			    
 			    var expression = aElement.attr("jstl-include");
-			    if (expression) {
+			    if (expression)
 				    Include.__compute(expression, aElement, aContext, aProcessor, aTaskChain);
-			    } else
+			    else
 				    aTaskChain.nextTask();
 		    },
 		    
@@ -35,7 +35,6 @@
 			    if (!disableCaching)
 				    cache = Include.CACHE[url];
 			    
-			   
 			    if (cache) {
 				    if (cache.onload)
 					    cache.callback.push(Include.__cacheCallback.bind({}, aElement, aProcessor, aContext, aTaskChain));

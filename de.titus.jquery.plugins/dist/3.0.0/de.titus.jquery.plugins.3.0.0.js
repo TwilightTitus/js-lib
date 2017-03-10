@@ -196,6 +196,14 @@ if (de.titus.core.Namespace == undefined) {
 	};
 })($);
 (function() {
+    "use strict";
+    de.titus.core.Namespace.create("de.titus.core.ArrayUtils", function() {
+	var ArrayUtils = de.titus.core.ArrayUtils = {
+	    
+	}
+    });
+})($);
+(function() {
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.core.PagingUtils", function() {
 		var PagingUtils = de.titus.core.PagingUtils = {
@@ -650,27 +658,16 @@ de.titus.core.Namespace.create("de.titus.core.ExpressionResolver", function() {
 		};
 		
 		Page.prototype.detectBrowser = function() {
-			/* http://stackoverflow.com/a/21712356/2120330 */
-			var result = {
-			"ie" : false,
-			"edge": false,
-			"other" : false
-			};
-			var ua = window.navigator.userAgent;			
-			if (ua.indexOf('MSIE ') > 0)
-				result.ie = 8;
-			else if (ua.indexOf("Trident/7.0") > 0)
-				result.ie = 11;
-			else if (ua.indexOf("Trident/6.0") > 0)
-				result.ie = 10;
-			else if (ua.indexOf("Trident/5.0") > 0)
-				result.ie = 9;	
-			else if (ua.indexOf('Edge/') > 0)
-				result.edge = 1;	
-			else
-				result.other = true;
+			if(Page.BROWSER)
+				return Page.BROWSER;
 			
-			return result;
+			Page.BROWSER = {};
+			if(document.documentMode)
+				Page.BROWSER.ie = document.documentMode;			
+			else
+				Page.BROWSER.other = true;
+			
+			return Page.BROWSER;
 		};
 		
 		Page.prototype.setData = function(aKey, aValue) {
@@ -692,7 +689,6 @@ de.titus.core.Namespace.create("de.titus.core.ExpressionResolver", function() {
 		if ($.fn.de_titus_core_Page == undefined) {
 			$.fn.de_titus_core_Page = de.titus.core.Page.getInstance;
 		}
-		;
 	});
 })($);
 de.titus.core.Namespace.create("de.titus.core.UUID", function() {
@@ -1509,7 +1505,8 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 			this.context = aContext;
 			this.processor = aProcessor;
 			this.root = isRoot;
-			this.callback = aCallback;
+			if(typeof aCallback === "function" || Array.isArray(aCallback))
+				this.callback = aCallback;
 			this.__preventChilds = false;
 			this.__taskchain = de.titus.jstl.TaskRegistry.taskchain;
 			this.__currentTask = undefined;
@@ -1544,6 +1541,22 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 				this.context = $.extend(this.context, aContext);
 			else
 				this.context = aContext;
+			
+			return this;
+		};
+		
+		TaskChain.prototype.appendCallback = function(aCallback) {
+			if (TaskChain.LOGGER.isDebugEnabled())
+				TaskChain.LOGGER.logDebug("appendCallback()");
+			if(typeof aCallback !== "function")
+				return;
+			
+			if(Array.isArray(this.callback))				
+				this.callback.push(aCallback);
+			else if(this.callback)
+				this.callback = [this.callback, aCallback]
+			else
+				this.callback = aCallback;
 			
 			return this;
 		};
@@ -1590,8 +1603,12 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 			if (TaskChain.LOGGER.isDebugEnabled())
 				TaskChain.LOGGER.logDebug("finish()");
 			
-			if (this.callback)
+			if (typeof this.callback === "function")
 				this.callback(this.element, this.context, this.processor, this);
+			else if(Array.isArray(this.callback))
+				for(var i = 0; i < this.callback.length; i++)
+					if (typeof this.callback[i] === "function")
+						this.callback[i](this.element, this.context, this.processor, this);
 			
 			this.element.trigger(de.titus.jstl.Constants.EVENTS.onSuccess, [
 				this.context, this.processor
@@ -1622,8 +1639,10 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 				    var children = aElement.children();
 				    if (children.length == 0)
 					    aTaskChain.nextTask();
-				    else {
-					    aProcessor.compute($(children[0]), aTaskChain.context, Children.ElementChain.bind({}, children, 1, aTaskChain));
+				    else{
+				    	var child = $(children[0]);
+				    	if(child && child.length == 1)
+				    		aProcessor.compute(child, aTaskChain.context, Children.ElementChain.bind({}, children, 1, aTaskChain));
 				    }
 			    } else
 				    aTaskChain.nextTask();
@@ -1637,7 +1656,8 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 			    aParentTaskChain.updateContext(aContext, true);
 			    if (aIndex < theChildren.length) {
 				    var next = $(theChildren[aIndex]);
-				    aProcessor.compute(next, aParentTaskChain.context, Children.ElementChain.bind({}, theChildren, aIndex + 1, aParentTaskChain));
+				    if(next && next.length == 1)
+				    	aProcessor.compute(next, aParentTaskChain.context, Children.ElementChain.bind({}, theChildren, aIndex + 1, aParentTaskChain));
 			    } else
 				    aParentTaskChain.nextTask();
 		    }
@@ -1962,7 +1982,8 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 			    
 			    var ignore = aElement.attr("jstl-text-ignore");
 			    if (!ignore) {
-				    Text.normalize(aElement[0]);
+			    	if(!de.titus.core.Page.getInstance().detectBrowser().other)//IE BUG
+			    		Text.normalize(aElement[0]);
 				    var contenttype = aElement.attr("jstl-text-content-type") || "text";
 				    aElement.contents().filter(function() {
 					    return (this.nodeType === 3 || this.nodeType === 4) && this.textContent != undefined && this.textContent.trim() != "";
@@ -2177,9 +2198,9 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 				    Include.LOGGER.logDebug("execute run(" + aElement + ", " + aContext + ", " + aProcessor + ")");
 			    
 			    var expression = aElement.attr("jstl-include");
-			    if (expression) {
+			    if (expression)
 				    Include.__compute(expression, aElement, aContext, aProcessor, aTaskChain);
-			    } else
+			    else
 				    aTaskChain.nextTask();
 		    },
 		    
@@ -2202,7 +2223,6 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 			    if (!disableCaching)
 				    cache = Include.CACHE[url];
 			    
-			   
 			    if (cache) {
 				    if (cache.onload)
 					    cache.callback.push(Include.__cacheCallback.bind({}, aElement, aProcessor, aContext, aTaskChain));
@@ -2394,6 +2414,8 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 			if (Processor.LOGGER.isDebugEnabled())
 				Processor.LOGGER.logDebug("execute compute(" + aElement + ", " + aContext + ")");
 			if (!aElement) {
+				this.element.removeClass("jstl-ready");
+				this.element.addClass("jstl-running");
 				this.element.trigger(de.titus.jstl.Constants.EVENTS.onStart, [
 				        aContext, this
 				]);
@@ -2436,9 +2458,10 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 					aFunction(anEvent.delegateTarget, anEvent.data);
 				});
 				return this;
-			} else {
-				
+			} else {				
 				setTimeout((function(aProcessor) {
+					this.removeClass("jstl-running");
+					this.addClass("jstl-ready");
 					this.trigger(de.titus.jstl.Constants.EVENTS.onReady, [
 						aProcessor
 					]);
