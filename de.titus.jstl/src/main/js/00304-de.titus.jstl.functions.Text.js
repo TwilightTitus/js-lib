@@ -11,7 +11,7 @@
 			    var ignore = aElement.attr("jstl-text-ignore");
 			    if (!ignore) {
 				    Text.normalize(aElement[0]);
-				    var contenttype = aElement.attr("jstl-text-type") || "text";
+				    var contenttype = aElement.attr("jstl-text-content-type") || "text";
 				    aElement.contents().filter(function() {
 					    return (this.nodeType === 3 || this.nodeType === 4) && this.textContent != undefined && this.textContent.trim() != "";
 				    }).each(function() {
