@@ -1,6 +1,3 @@
-<ul jstl-if="items && items.length > 0" jstl-foreach="items" class="items">
-	<li jstl-text-type="html" typeahead-selection-id="${itemVar.id}">${itemVar.display}</li>
-</ul>
-<ul jstl-if="items == undefined || items.length == 0" class="items">
-	<li>No Suggestions found for: <b>${value}</b></li>
-</ul>
+<div jstl-foreach="items">
+	<div class="typeahead-item" jstl-text-content-type="html" typeahead-selection-id="${itemVar.id}">${itemVar.display}</div>
+</div>

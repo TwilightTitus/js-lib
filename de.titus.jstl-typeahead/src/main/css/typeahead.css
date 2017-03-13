@@ -24,3 +24,11 @@
     cursor: pointer;
 }
 
+[typeahead-selection-id]:LAST-CHILD.active , [typeahead-selection-id]:LAST-CHILD:HOVER{
+	border-radius: 0px 0px 15px 15px;
+}
+
+.typeahead-item {
+	padding: 3px 10px;
+}
+
