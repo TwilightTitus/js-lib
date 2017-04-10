@@ -1424,9 +1424,10 @@ de.titus.core.Namespace.create("de.titus.jstl.Constants", function() {
 			CONTEXT:2,
 			MANIPULATION:3,
 			CONTENT:4,
-			CHILDREN:5,
-			BINDING:6,
-			READY:7
+			CLEANING: 5,
+			CHILDREN:6,
+			BINDING:7,
+			FINISH:8
 		}
 	};	
 });
@@ -2360,7 +2361,7 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 			    
 			    var varname = aElement.attr("jstl-databind-name");
 			    if (varname && varname.trim() != "") {
-				    var value = this.__value(aElement, aDataContext, aProcessor);
+				    var value = Databind.__value(aElement, aDataContext, aProcessor);
 				    if (value != undefined)
 					    aElement.data(varname, value);
 			    }

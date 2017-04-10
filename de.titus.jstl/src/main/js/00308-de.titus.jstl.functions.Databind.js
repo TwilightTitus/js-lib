@@ -9,7 +9,7 @@
 			    
 			    var varname = aElement.attr("jstl-databind-name");
 			    if (varname && varname.trim() != "") {
-				    var value = this.__value(aElement, aDataContext, aProcessor);
+				    var value = Databind.__value(aElement, aDataContext, aProcessor);
 				    if (value != undefined)
 					    aElement.data(varname, value);
 			    }
