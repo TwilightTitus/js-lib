@@ -6,33 +6,21 @@
 		<style type="text/css" ></style>
 		<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/>
 		<link rel="stylesheet" type="text/css" href="css/boostrap.addons.css"/>
-		
-		<script type="application/javascript" src="js/jquery-2.1.4.min.js"></script>
-		<script type="application/javascript" src="js/bootstrap.min.js"></script>
-		<script type="application/javascript" src="../../de.titus.jquery.plugins/dist/2.11.0/de.titus.jquery.plugins.2.11.0.min.js"></script>
-		<script type="application/javascript" src="../dist/0.5.0-beta/de.titus.form-0.5.0-beta.js"></script>
-		<style type="text/css">
-			
-			
-		</style>
-		<script type="text/javascript">
-		var config = [
-			{"filter": "", "logLevel": "DEBUG", "appenders":["de.titus.logging.MemoryAppender"]},
-			{"filter": "de.titus", "logLevel": "DEBUG", "appenders":["de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender"]}
-		];
+		<link rel="stylesheet" type="text/css" href="css/formular.css"/>
 		
 		
-		de.titus.logging.LoggerFactory.getInstance().setConfig(config);
-		
-		
-		</script>
 	</head>
 	<body>
 		<div class="container">
 			<form action="/rest/test" method="post"  data-form="" data-form-init="" data-form-submit="" data-form-cancel="">	
 				<div class="row form-group" data-form-step-panel="">
 			        <div class="col-xs-12">
-			            <ul class="nav nav-pills nav-justified thumbnail setup-panel">
+			            <ul class="nav nav-pills nav-justified thumbnail step-panel">
+			             <li data-form-step="form-step-start">
+			                	<a>
+				                    <span class="list-group-item-heading">start</span>
+			                    </a>
+			                </li>
 			                <li data-form-step="1">
 			                	<a>
 				                    <span class="list-group-item-heading">User Info</span>
@@ -75,7 +63,7 @@
 	    					<input type="text" class="form-control" name="givenname" />
 	    					<div class="help-block text-danger" data-form-validation="value == undefined || value.trim() == ''">Enter your given name!</div>					
 						</div>
-						<div class="form-group" data-form-field="age" data-form-field-type="number" data-form-condition="">
+						<!-- div class="form-group" data-form-field="age" data-form-field-type="number" data-form-condition="">
 							<label for="age">age:</label>
 	    					<input type="number" class="form-control" name="age" />
 	    					<div class="text-danger help-block " data-form-validation="value == undefined || value.trim() == ''">Enter your age</div>
@@ -94,8 +82,8 @@
 							    <input type="text" class="form-control" readonly="readonly" />						   
 							</div>
 							<div class="help-block text-danger" data-form-validation="value == undefined || value.trim() == ''">Select a file!</div>
-						</div>
-						<div data-form-field="list" data-form-field-type="list" data-form-condition="">
+						</div -->
+						<!-- div data-form-field="list" data-form-field-type="list" data-form-condition="">
 							<div data-form-field-list-template="">
 								<div class="form-group" data-form-field="name" data-form-field-type="text" data-form-condition="">
 									<label class="control-label" for="name">name:</label>							
@@ -118,10 +106,10 @@
 							<div>
 								<button data-form-field-list-add-action="">+</button>
 							</div>
-						</div>
+						</div -->
 					<p>
 				</div>			
-				<div data-form-page="" data-form-step="2" data-form-condition="age >= 18">			
+				<!-- div data-form-page="" data-form-step="2" data-form-condition="age >= 18">			
 					<h3>Address</h3>
 					<p>			
 						<div class="form-group" data-form-field="street" data-form-field-type="text" data-form-condition="">
@@ -166,16 +154,33 @@
 	    					<textarea class="form-control" rows="5" id="comment"></textarea>
 						</div>					
 					<p>		
-				</div>
+				</div -->
 				
-				<div data-form-step-control="">
-					<button data-form-step-back="" type="button" class="btn btn-primary pull-left">previous step</button>
-					<button data-form-step-next="" type="button" class="btn btn-primary pull-right">next step</button>
-					<button data-form-step-summary="" type="button" class="btn btn-primary pull-right">summary</button>
-					<button data-form-step-submit="" type="button" class="btn btn-primary pull-right">submit</button>
+				<div data-form-controls="">
+					<button data-form-control="back" type="button" class="btn btn-primary pull-left">previous step</button>
+					<button data-form-control="reset" type="button" class="btn btn-primary" style="text-align: center;">reset</button>
+					<button data-form-control="next" type="button" class="btn btn-primary pull-right">next step</button>
+					<button data-form-control="submit" type="button" class="btn btn-primary pull-right">submit</button>
 				</div>
 				
 			</form>
-		</div>	
+		</div>
+		
+		<script type="application/javascript" src="js/jquery-2.1.4.min.js"></script>
+		<script type="application/javascript" src="js/bootstrap.min.js"></script>
+		<script type="application/javascript" src="../../de.titus.core/dist/1.8.5/de.titus.core.1.8.5.min.js"></script>
+		<script type="application/javascript" src="../../de.titus.logging/dist/2.0.0/de.titus.logging.2.0.0.min.js"></script>
+		<script type="application/javascript" src="../dist/0.6.0-beta/de.titus.form-0.6.0-beta.js"></script>
+		<script type="text/javascript">
+		var config = [
+			{"filter": "", "logLevel": "DEBUG", "appenders":["de.titus.logging.MemoryAppender"]},
+			{"filter": "de.titus", "logLevel": "DEBUG", "appenders":["de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender"]}
+		];
+		
+		
+		de.titus.logging.LoggerFactory.getInstance().setConfig(config);
+		
+		
+		</script>
 	</body>
 </html>

@@ -1,59 +1,59 @@
-(function() {
+(function($) {
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.form.Condition", function() {
-		var Condition = function(aElement, aDataController, aExpressionResolver) {
-			if(Condition.LOGGER.isDebugEnabled())
+		var Condition = de.titus.form.Condition = function(aElement) {
+			if (Condition.LOGGER.isDebugEnabled())
 				Condition.LOGGER.logDebug("constructor");
-			
-			this.data = {};
-			this.data.element = aElement;
-			this.data.dataController = aDataController;
-			this.data.expressionResolver = aExpressionResolver;
-			this.data.state = false;
+
+			this.data = {
+			    element : aElement,
+			    formular : undefined,
+			    expression : (aElement.attr("data-form-condition") || "").trim(),
+			    expressionResolver : new de.titus.core.ExpressionResolver()
+			};
+
+			setTimeout(Condition.prototype.__init.bind(this), 1);
 		};
-		
+
 		Condition.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.Condition");
-		
-		Condition.prototype.doCheck = function(aCallback, callOnlyByChange) {
-			if(Condition.LOGGER.isDebugEnabled())
-				Condition.LOGGER.logDebug("doCheck()");
-				
-			var state = false;
-			var condition = this.data.element.attr(de.titus.form.Setup.prefix + de.titus.form.Constants.ATTRIBUTE.CONDITION);			
-			if(condition != undefined && condition.trim() != ""){
-				if(Condition.LOGGER.isDebugEnabled())
-					Condition.LOGGER.logDebug("doCheck() -> condition: " + condition);
-				
-				var data = this.data.dataController.getData();
-				if(Condition.LOGGER.isDebugEnabled())
-					Condition.LOGGER.logDebug("doCheck() -> data: " + JSON.stringify(data));
-				
-				var condition = this.data.expressionResolver.resolveExpression(condition, data, false);
-				if(typeof condition === "function")
-					state = condition(data, this);
-				else
-					state = condition === true; 
+
+		Condition.prototype.__init = function() {
+			if (Condition.LOGGER.isDebugEnabled())
+				Condition.LOGGER.logDebug("__init()");
+
+			this.data.formular = de.titus.form.utils.FormularUtils.getFormular(this.data.element);
+
+			if (this.data.expression != "") {
+				de.titus.form.utils.EventUtils.handleEvent(this.data.formular.data.element, [ de.titus.form.Constants.EVENTS.CONDITION_STATE_CHANGED, de.titus.form.Constants.EVENTS.VALIDATION_STATE_CHANGED ], Condition.prototype.__doCheck.bind(this));
 			}
-			else			
-				state = true;	
-			
-			if(aCallback == undefined)
-				this.data.state = state;
-			else if(aCallback != undefined && callOnlyByChange && this.data.state != state){
-				this.data.state = state;
-				aCallback(this.data.state);
-			}
-			else if(aCallback != undefined && callOnlyByChange && this.data.state == state){
-				this.data.state = state;
-			}
-			else{
-				this.data.state = state;
-				aCallback(this.data.state);
-			}
-			
-			return this.data.state;					
+
+			de.titus.form.utils.EventUtils.handleEvent(this.data.element, [ de.titus.form.Constants.EVENTS.INITIALIZED ], Condition.prototype.__doCheck.bind(this));
 		};
-		
-		de.titus.form.Condition = Condition
-	});	
-})();
+
+		Condition.prototype.__doCheck = function(aEvent) {
+			if (Condition.LOGGER.isDebugEnabled())
+				Condition.LOGGER.logDebug("__doCheck() -> expression: \"" + this.data.expression + "\"");
+
+			aEvent.preventDefault();
+			if (aEvent.type != de.titus.form.Constants.EVENTS.INITIALIZED)
+				aEvent.stopPropagation();
+
+			if (aEvent.currentTarget == this.data.element && (aEvent.type == de.titus.form.Constants.EVENTS.CONDITION_STATE_CHANGED || aEvent.Type == de.titus.form.Constants.EVENTS.VALIDATION_STATE_CHANGED))
+				; // IGNORE CONDTION_STATE_CHANGE AND VALIDATION_STATE_CHANGED
+					// ON SELF
+			else if (this.data.expression == "")
+				de.titus.form.utils.EventUtils.triggerEvent(this.data.element, de.titus.form.Constants.EVENTS.CONDITION_MET);
+			else {
+				var data = this.data.formular.getData("object", true, false);
+
+				var result = this.data.expressionResolver.resolveExpression(this.data.expression, data, false);
+				if (result)
+					de.titus.form.utils.EventUtils.triggerEvent(this.data.element, de.titus.form.Constants.EVENTS.CONDITION_MET);
+				else
+					de.titus.form.utils.EventUtils.triggerEvent(this.data.element, de.titus.form.Constants.EVENTS.CONDITION_NOT_MET);
+			}
+		};
+
+		de.titus.core.jquery.Components.asComponent("formular_Condition", de.titus.form.Condition);
+	});
+})($);

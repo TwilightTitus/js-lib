@@ -1,150 +1,137 @@
 (function() {
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.form.Field", function() {
-		var Field = function(aElement, aDataController, aExpressionResolver) {
+		var Field = de.titus.form.Field = function(aElement) {
 			if (Field.LOGGER.isDebugEnabled())
 				Field.LOGGER.logDebug("constructor");
-			
-			this.data = {};
-			this.data.element = aElement;
-			this.data.dataController = aDataController;
-			this.data.name = aElement.attr(de.titus.form.Setup.prefix + "-field");
-			this.data.type = aElement.attr(de.titus.form.Setup.prefix + "-field-type");
-			this.data.expressionResolver = aExpressionResolver || new de.titus.core.ExpressionResolver();
-			this.data.conditionHandle = new de.titus.form.Condition(this.data.element, this.data.dataController, this.data.expressionResolver);
-			this.data.validationHandle = new de.titus.form.Validation(this.data.element, this.data.dataController, this.data.expressionResolver);
-			this.data.messageHandle = new de.titus.form.Message(this.data.element, this.data.dataController, this.data.expressionResolver);
-			this.data.firstCall = true;
-			this.data.active = undefined;
-			this.data.valid = false;
-			
-			this.init();
+
+			this.data = {
+			    element : aElement,
+			    page : undefined,
+			    formular : undefined,
+			    name : (aElement.attr("data-form-field") || "").trim(),
+			    type : (aElement.attr("data-form-field-type") || "default").trim(),
+			    required : (aElement.attr("data-form-required") !== undefined),
+			    condition : false,
+			    valid : false,
+			    controller : undefined
+			};
+
+			this.hide();
+
+			setTimeout(Field.prototype.__init.bind(this), 1);
 		};
-		
+
 		Field.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.Field");
-		
-		Field.prototype.init = function() {
+
+		Field.prototype.__init = function() {
 			if (Field.LOGGER.isDebugEnabled())
 				Field.LOGGER.logDebug("init()");
-			
-			var initializeFunction = de.titus.form.Setup.fieldtypes[this.data.type] || de.titus.form.Setup.fieldtypes["default"];
-			if (initializeFunction == undefined || typeof initializeFunction !== "function")
-				throw "The fieldtype \"" + this.data.type + "\" is not available!";
 
-			this.data.element.on(de.titus.form.Constants.EVENTS.FIELD_VALUE_CHANGED, Field.prototype.doValueChange.bind(this));
-			this.fieldController = initializeFunction(this.data.element);
+			this.data.page = de.titus.form.utils.FormularUtils.getPage(this.data.element);
+			this.data.formular = de.titus.form.utils.FormularUtils.getFormular(this.data.element);
+			this.data.controller = de.titus.form.Registry.getFieldController(this.data.type, this.data.element);
+
+			de.titus.form.utils.EventUtils.handleEvent(this.data.element, [ de.titus.form.Constants.EVENTS.CONDITION_MET, de.titus.form.Constants.EVENTS.CONDITION_NOT_MET ], Field.prototype.__changeConditionState.bind(this));
+			de.titus.form.utils.EventUtils.handleEvent(this.data.element, [ de.titus.form.Constants.EVENTS.VALIDATION_VALID, de.titus.form.Constants.EVENTS.VALIDATION_INVALID ], Field.prototype.__changeValidationState.bind(this));
+
+			this.data.element.formular_Condition();
+			this.data.element.formular_Validation();
+
+			de.titus.form.utils.EventUtils.triggerEvent(this.data.element, de.titus.form.Constants.EVENTS.INITIALIZED);
 		};
-		
-		Field.prototype.doConditionCheck = function() {
+
+		Field.prototype.__changeConditionState = function(aEvent) {
 			if (Field.LOGGER.isDebugEnabled())
-				Field.LOGGER.logDebug("doConditionCheck()");
-			
-			this.data.active = this.data.conditionHandle.doCheck();			
-			if (this.data.active)
-				this.fieldController.showField(this.data.dataController.getData(this.data.name), this.data.dataController.getData());
-			else
-				this.setInactiv();			
-			
-			if (this.data.active) {
-				this.data.element.trigger(de.titus.form.Constants.EVENTS.FIELD_ACTIVE);
-				this.data.element.removeClass(de.titus.form.Constants.EVENTS.FIELD_INACTIVE);
-				this.data.element.addClass(de.titus.form.Constants.EVENTS.FIELD_ACTIVE);				
-			} else {
-				this.data.element.trigger(de.titus.form.Constants.EVENTS.FIELD_INACTIVE);
-				this.data.element.removeClass(de.titus.form.Constants.EVENTS.FIELD_ACTIVE);
-				this.data.element.addClass(de.titus.form.Constants.EVENTS.FIELD_INACTIVE);
+				Field.LOGGER.logDebug("__changeConditionState()  for \"" + this.data.name + "\" -> " + aEvent.type);
+
+			aEvent.preventDefault();
+			aEvent.stopPropagation();
+
+			var condition = false;
+			if (aEvent.type == de.titus.form.Constants.EVENTS.CONDITION_MET)
+				condition = true;
+
+			if (this.data.condition != condition) {
+				this.data.condition = condition;
+				if (this.data.condition)
+					this.show();
+				else
+					this.hide();
+
+				de.titus.form.utils.EventUtils.triggerEvent(this.data.element, de.titus.form.Constants.EVENTS.CONDITION_STATE_CHANGED);
 			}
-			
-			if(this.data.firstCall){
-				this.data.firstCall = false;
-				this.data.element.trigger(de.titus.form.Constants.EVENTS.FIELD_VALUE_CHANGED);				
+		};
+
+		Field.prototype.__changeValidationState = function(aEvent) {
+			if (Field.LOGGER.isDebugEnabled())
+				Field.LOGGER.logDebug("__changeValidationState() for field \"" + this.data.name + "\" -> " + aEvent.type);
+
+			aEvent.preventDefault();
+			aEvent.stopPropagation();
+
+			var valid = false;
+			if (aEvent.type == de.titus.form.Constants.EVENTS.VALIDATION_VALID)
+				valid = true;
+
+			if (this.data.valid != valid) {
+				if (Field.LOGGER.isDebugEnabled())
+					Field.LOGGER.logDebug("__changeValidationState() for field \"" + this.data.name + "\" from " + this.data.valid  + " -> " + valid);
+				
+				this.data.valid = valid;
+				de.titus.form.utils.EventUtils.triggerEvent(this.data.element, de.titus.form.Constants.EVENTS.VALIDATION_STATE_CHANGED);
 			}
-			
-			if (Field.LOGGER.isDebugEnabled())
-				Field.LOGGER.logDebug("doConditionCheck() -> result: " + this.data.active);
-			
-			this.data.messageHandle.showMessage();
-			return this.data.active;
-		};
-		
-		Field.prototype.setInactiv = function() {
-			if (Field.LOGGER.isDebugEnabled())
-				Field.LOGGER.logDebug("setInactiv()");
-			this.data.dataController.changeValue(this.data.name, undefined, this);
-			this.fieldController.hideField();
-		};
-		
-		Field.prototype.showSummary = function() {
-			if (Field.LOGGER.isDebugEnabled())
-				Field.LOGGER.logDebug("showSummary()");
-			
-			if (!this.data.active)
-				return;
-			
-			this.fieldController.showSummary();
-		};
-		
-		Field.prototype.doValueChange = function(aEvent) {
-			if (Field.LOGGER.isDebugEnabled())
-				Field.LOGGER.logDebug("doValueChange() -> event type: " + (aEvent != undefined ? aEvent.type : ""));
-			
-			var value = this.fieldController.getValue();
-			if (this.doValidate(value))
-				this.data.dataController.changeValue(this.data.name, value, this);
-			else
-				this.data.dataController.changeValue(this.data.name, undefined, this);
-			
-			if (aEvent == undefined)
-				this.data.element.trigger($.Event(de.titus.form.Constants.EVENTS.FIELD_VALUE_CHANGED));
-			else if (aEvent.type != de.titus.form.Constants.EVENTS.FIELD_VALUE_CHANGED) {
-				aEvent.preventDefault();
-				aEvent.stopPropagation();
-				this.data.element.trigger($.Event(de.titus.form.Constants.EVENTS.FIELD_VALUE_CHANGED));
-			}
-			
-			this.data.messageHandle.showMessage();
-		};
-		
-		Field.prototype.doValidate = function(aValue) {
-			if (Field.LOGGER.isDebugEnabled())
-				Field.LOGGER.logDebug("doValidate() -> field: " + this.data.name);
-			
-			this.data.valid = this.data.validationHandle.doCheck(aValue);			
+
 			if (this.data.valid) {
-				this.data.element.trigger(de.titus.form.Constants.EVENTS.FIELD_VALID);
-				this.data.element.removeClass(de.titus.form.Constants.EVENTS.FIELD_INVALID);
-				this.data.element.addClass(de.titus.form.Constants.EVENTS.FIELD_VALID);
+				this.data.element.removeClass("invalid");
+				this.data.element.addClass("valid");
 			} else {
-				this.data.element.trigger(de.titus.form.Constants.EVENTS.FIELD_INVALID);
-				this.data.element.removeClass(de.titus.form.Constants.EVENTS.FIELD_VALID);
-				this.data.element.addClass(de.titus.form.Constants.EVENTS.FIELD_INVALID);
+				this.data.element.removeClass("valid");
+				this.data.element.addClass("invalid");
 			}
-			
+		};
+
+		Field.prototype.hide = function() {
 			if (Field.LOGGER.isDebugEnabled())
-				Field.LOGGER.logDebug("doValidate() -> field: " + this.data.name + " - result: " + this.data.valid);
-			
-			return this.data.valid;
+				Field.LOGGER.logDebug("hide ()");
+
+			this.data.element.removeClass("active");
+			this.data.element.addClass("inactive");
+
 		};
-		
-		de.titus.form.Field = Field;
-		
-		$.fn.FormularField = function(aDataController) {
-			if (this.length == undefined || this.length == 0)
-				return;
-			else if (this.length > 1) {
-				var result = [];
-				this.each(function() {
-					result.push($(this).FormularField(aDataController));
-				});
-				return result;
-			} else {
-				var data = this.data("de.titus.form.Field");
-				if (data == undefined) {
-					data = new de.titus.form.Field(this, aDataController);
-					this.data("de.titus.form.Field", data);
-				}
-				return data;
-			}
+
+		Field.prototype.show = function() {
+			if (Field.LOGGER.isDebugEnabled())
+				Field.LOGGER.logDebug("show ()");
+
+			this.data.element.removeClass("inactive");
+			this.data.element.addClass("active");
+
+			de.titus.form.utils.EventUtils.triggerEvent(this.data.element, de.titus.form.Constants.EVENTS.FIELD_SHOW);
 		};
+
+		Field.prototype.summary = function() {
+			if (Field.LOGGER.isDebugEnabled())
+				Field.LOGGER.logDebug("summary ()");
+
+			this.data.element.removeClass("inactive");
+			this.data.element.addClass("active");
+
+			de.titus.form.utils.EventUtils.triggerEvent(this.data.element, de.titus.form.Constants.EVENTS.FIELD_SUMMARY);
+		};
+
+		Field.prototype.getData = function(acceptInvalid) {
+			if (Field.LOGGER.isDebugEnabled())
+				Field.LOGGER.logDebug("getData()");
+
+			if (this.data.condition && (this.data.valid || acceptInvalid))
+				return {
+				    name : this.data.name,
+				    type : this.data.type,
+				    value : this.data.controller.getValue()
+				};
+		};
+
+		de.titus.core.jquery.Components.asComponent("formular_Field", de.titus.form.Field);
 	});
 })();

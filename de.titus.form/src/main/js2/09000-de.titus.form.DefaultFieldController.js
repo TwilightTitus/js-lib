@@ -1,7 +1,7 @@
 (function() {
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.form.DefaultFieldController", function() {
-		var DefaultFieldController = de.titus.form.DefaultFieldController= function(aElement) {
+		var DefaultFieldController = function(aElement) {
 			if (DefaultFieldController.LOGGER.isDebugEnabled())
 				DefaultFieldController.LOGGER.logDebug("constructor");
 			
@@ -9,17 +9,17 @@
 			this.input = undefined;
 			this.type = undefined;
 			this.filedata = undefined;
-			this.timeoutId = undefined;
-			setTimeout(DefaultFieldController.prototype.__init.bind(this), 1);
+			this.timeoutId == undefined;
+			this.init();
 		};
 		DefaultFieldController.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.DefaultFieldController");
 		
 		DefaultFieldController.prototype.valueChanged = function(aEvent) {
 			aEvent.preventDefault();
-			de.titus.form.utils.EventUtils.triggerEvent(this.element, de.titus.form.Constants.EVENTS.FIELD_VALUE_CHANGED);
+			this.element.trigger(de.titus.form.Constants.EVENTS.FIELD_VALUE_CHANGED);
 		};
 		
-		DefaultFieldController.prototype.__init = function() {
+		DefaultFieldController.prototype.init = function() {
 			if (DefaultFieldController.LOGGER.isDebugEnabled())
 				DefaultFieldController.LOGGER.logDebug("init()");
 			
@@ -50,6 +50,7 @@
 						
 					}).bind(this));
 				}
+				
 			}
 			
 			if (DefaultFieldController.LOGGER.isDebugEnabled())
@@ -70,19 +71,19 @@
 			var $__THIS__$ = this;
 			var reader = new FileReader();
 			var count = input.files.length;
-			reader.addEventListener("load", (function() {
+			reader.addEventListener("load", function() {
 				if (DefaultFieldController.LOGGER.isDebugEnabled())
 					DefaultFieldController.LOGGER.logDebug("readFileData() -> reader load event!");
 				
 				count--;
 				if (multiple)
-					this.fileData.push(reader.result);
+					$__THIS__$.fileData.push(reader.result);
 				else
-					this.fileData = reader.result;
+					$__THIS__$.fileData = reader.result;
 				
 				if (count == 0)
-					de.titus.form.utils.EventUtils.triggerEvent(this.element, de.titus.form.Constants.EVENTS.FIELD_VALUE_CHANGED);
-			}).bind(this), false);
+					$__THIS__$.element.trigger(de.titus.form.Constants.EVENTS.FIELD_VALUE_CHANGED);
+			}, false);
 			
 			var textField = this.element.find("input[type='text'][readonly]");
 			if (textField.length == 1)
@@ -92,6 +93,35 @@
 				if (textField.length == 1)
 					textField.val(textField.val() != "" ? textField.val() + ", " + input.files[i].name : input.files[i].name);
 			}
+		};
+		
+		DefaultFieldController.prototype.showField = function(aValue, aData) {
+			if (DefaultFieldController.LOGGER.isDebugEnabled())
+				DefaultFieldController.LOGGER.logDebug("showField()");
+			
+			if (this.type == "select")
+				this.element.find("select").prop("disabled", false);
+			else
+				this.element.find("input, textarea").prop("disabled", false);
+			this.element.show();
+		};
+		
+		DefaultFieldController.prototype.showSummary = function() {
+			if (DefaultFieldController.LOGGER.isDebugEnabled())
+				DefaultFieldController.LOGGER.logDebug("showSummary()");
+			
+			if (this.type == "select")
+				this.element.find("select").prop("disabled", true);
+			else
+				this.element.find("input, textarea").prop("disabled", true);
+			
+		};
+		
+		DefaultFieldController.prototype.hideField = function() {
+			if (DefaultFieldController.LOGGER.isDebugEnabled())
+				DefaultFieldController.LOGGER.logDebug("hideField()");
+			
+			this.element.hide()
 		};
 		
 		DefaultFieldController.prototype.getValue = function() {
@@ -114,8 +144,10 @@
 				return this.element.find("input, textarea").first().val();
 		};
 		
-		de.titus.form.Registry.registFieldController("default", function(aElement) {
-			return new DefaultFieldController(aElement);
+		de.titus.form.Registry.registFieldController("default", function(aElement, aFieldname, aValueChangeListener) {
+			return new DefaultFieldController(aElement, aFieldname, aValueChangeListener);
 		});
+		
+		de.titus.form.DefaultFieldController = DefaultFieldController;
 	});
 })();

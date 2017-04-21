@@ -1,43 +1,91 @@
 (function() {
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.form.StepPanel", function() {
-		var StepPanel = function(aForm) {
+		var StepPanel = de.titus.form.StepPanel = function(aElement) {
 			if (StepPanel.LOGGER.isDebugEnabled())
 				StepPanel.LOGGER.logDebug("constructor");
-			
-			this.data = {};
-			this.data.element = aForm.data.element.find("[" + de.titus.form.Setup.prefix + "-step-panel" + "]");
-			this.data.stepPanel = undefined;
-			this.data.stepPanelSummaryState = this.data.element.find("[" + de.titus.form.Setup.prefix + "-step='" + de.titus.form.Constants.STATE.SUMMARY + "']");
-			this.data.stepPanelSubmitedState = this.data.element.find("[" + de.titus.form.Setup.prefix + "-step='" + de.titus.form.Constants.STATE.SUBMITED + "']");
-			this.data.form = aForm;
-			this.init();
+
+			this.data = {
+			    element : aElement,
+			    panelElement : aElement.find("[data-form-step-panel]"),
+			    steps : [],
+			    current : undefined
+			};
+
+			setTimeout(StepPanel.prototype.__init.bind(this), 1);
 		};
-		
+
 		StepPanel.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.StepPanel");
-		
-		StepPanel.prototype.init = function() {
+
+		StepPanel.prototype.__init = function() {
 			if (StepPanel.LOGGER.isDebugEnabled())
 				StepPanel.LOGGER.logDebug("init()");
-			
-		};
-		
-		StepPanel.prototype.update = function() {
-			if (StepPanel.LOGGER.isDebugEnabled())
-				StepPanel.LOGGER.logDebug("update()");
-			this.data.element.find(".active").removeClass("active")
 
-			if (this.data.form.data.state == de.titus.form.Constants.STATE.SUMMARY && this.data.stepPanelSummaryState != undefined)
-				this.data.stepPanelSummaryState.addClass("active");
-			else if (this.data.form.data.state == de.titus.form.Constants.STATE.SUBMITED && this.data.stepPanelSubmitedState != undefined)
-				this.data.stepPanelSubmitedState.addClass("active");
-			else {
-				var page = this.data.form.getCurrentPage();
-				if (page)
-					this.data.element.find("[" + de.titus.form.Setup.prefix + "-step='" + page.data.step + "']").addClass("active");
+			var steps = [];
+			var index = 0;
+			this.data.panelElement.find("[data-form-step]").each(function() {
+				var element = $(this);
+				var step = {
+				    index : index++,
+				    id : element.attr("data-form-step").toLowerCase(),
+				    element : element
+				};
+				steps.push(step);
+			});
+
+			this.data.steps = steps;
+
+			de.titus.form.utils.EventUtils.handleEvent(this.data.element, [ de.titus.form.Constants.EVENTS.PAGE_CHANGED, de.titus.form.Constants.EVENTS.INITIALIZED ], StepPanel.prototype.update.bind(this));
+		};
+
+		StepPanel.prototype.setStep = function(aId) {
+			if (StepPanel.LOGGER.isDebugEnabled())
+				StepPanel.LOGGER.logDebug("setStep(\"" + aId + "\")");
+			var step = this.getStep(aId);
+			if (step != undefined) {
+				if (this.data.current) {
+					this.data.current.element.removeClass("active");
+					this.data.element.removeClass("step-" + this.data.current.element.id);
+				}
+				this.data.current = step;
+				this.data.current.element.addClass("active");
+				this.data.element.addClass("step-" + aId);
 			}
 		};
-		
-		de.titus.form.StepPanel = StepPanel;
+
+		StepPanel.prototype.getStep = function(aId) {
+			if (StepPanel.LOGGER.isDebugEnabled())
+				StepPanel.LOGGER.logDebug("getStep(\"" + aId + "\")");
+			if (!aId)
+				return;
+
+			var id = aId.toLowerCase();
+			for (var i = 0; i < this.data.steps.length; i++) {
+				var step = this.data.steps[i];
+				if (step.id == id)
+					return step;
+			}
+		};
+
+		StepPanel.prototype.update = function(aEvent) {
+			if (StepPanel.LOGGER.isDebugEnabled())
+				StepPanel.LOGGER.logDebug("update() -> " + aEvent.type);
+
+			var formular = this.data.element.Formular();
+			var pageController = this.data.element.formular_PageController();
+			var state = formular.data.state;
+			var stepId = de.titus.form.Constants.SPECIALSTEPS.START;
+
+			if (state == de.titus.form.Constants.STATE.INPUT && pageController.getCurrentPage())
+				stepId = pageController.getCurrentPage().data.step;
+			else if (state == de.titus.form.Constants.STATE.SUMMARY)
+				stepId = de.titus.form.Constants.SPECIALSTEPS.SUMMARY;
+			else if (state == de.titus.form.Constants.STATE.SUBMITTED)
+				stepId = de.titus.form.Constants.SPECIALSTEPS.SUBMITTED;
+
+			this.setStep(stepId);
+		};
+
+		de.titus.core.jquery.Components.asComponent("formular_StepPanel", de.titus.form.StepPanel);
 	});
 })($);

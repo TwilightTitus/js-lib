@@ -1,69 +1,103 @@
 (function() {
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.form.Validation", function() {
-		var Validation = function(aElement, aDataController, aExpressionResolver) {
+		var Validation = de.titus.form.Validation = function(aElement) {
 			if (Validation.LOGGER.isDebugEnabled())
 				Validation.LOGGER.logDebug("constructor");
-			
-			this.data = {};
-			this.data.element = aElement;
-			this.data.dataController = aDataController;
-			this.data.expressionResolver = aExpressionResolver;
-			this.data.state = false;
-		};
-		
-		Validation.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.Validation");
-		
-		Validation.prototype.doCheck = function(aValue) {
-			if (Validation.LOGGER.isDebugEnabled())
-				Validation.LOGGER.logDebug("doCheck()");
-			
-			this.data.state = this.doValidate(aValue);
-			
-			if (Validation.LOGGER.isDebugEnabled())
-				Validation.LOGGER.logDebug("doCheck() -> " + this.data.state);
-			return this.data.state;
-		};
-		
-		Validation.prototype.doValidate = function(aValue) {
-			if (Validation.LOGGER.isDebugEnabled())
-				Validation.LOGGER.logDebug("doValidate()");
-			
-			var validationAttr = de.titus.form.Setup.prefix + de.titus.form.Constants.ATTRIBUTE.VALIDATION;
-			var validationElements = this.data.element.find("[" + validationAttr + "]");
-			validationElements.removeClass("active");
-			var data = {
-			value : aValue,
-			data : this.data.dataController.getData()
+
+			this.data = {
+			    element : aElement,
+			    formular : undefined,
+			    field : undefined,
+			    required : (aElement.attr("data-form-required") !== undefined),
+			    expressionResolver : new de.titus.core.ExpressionResolver(),
+			    validations : []
 			};
-			
-			for (var i = 0; i < validationElements.length; i++) {
-				var element = $(validationElements[i]);
-				var validation = element.attr(validationAttr);
-				if (validation != undefined && validation.trim() != "") {
-					if (Validation.LOGGER.isDebugEnabled())
-						Validation.LOGGER.logDebug("doCheck() -> expression: \"" + validation + "\"; data: \"" + JSON.stringify(data) + "\"");
-					
-					var result = false;
-					var result = this.data.expressionResolver.resolveExpression(validation, data, false);
-					if (typeof result === "function")
-						result = result(data.value, data.data, this) || false;
-					else
-						result = result === true;
-					
-					if (Validation.LOGGER.isDebugEnabled())
-						Validation.LOGGER.logDebug("doCheck() -> expression: \"" + validation + "\"; result: \"" + result + "\"");
-					
-					if (result) {
-						element.addClass("active");
-						return false;
-					}
+
+			setTimeout(Validation.prototype.__init.bind(this), 1);
+		};
+
+		Validation.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.Validation");
+
+		Validation.prototype.__init = function() {
+			if (Validation.LOGGER.isDebugEnabled())
+				Validation.LOGGER.logDebug("__init()");
+
+			this.data.formular = de.titus.form.utils.FormularUtils.getFormular(this.data.element);
+			this.data.field = de.titus.form.utils.FormularUtils.getField(this.data.element);
+			var validations = [];
+			this.data.element.find("[data-form-validation]").each(function() {
+				var element = $(this);
+				element.addClass("inactive");
+
+				var validation = {
+				    element : element,
+				    expression : (element.attr("data-form-validation") || "").trim()
+				};
+
+				validations.push(validation);
+			});
+
+			this.data.validations = validations;
+
+			if (this.data.required || this.data.validations.length > 0) {
+				de.titus.form.utils.EventUtils.handleEvent(this.data.element, [ de.titus.form.Constants.EVENTS.CONDITION_STATE_CHANGED, de.titus.form.Constants.EVENTS.FIELD_VALUE_CHANGED ], Validation.prototype.__doValidate.bind(this));
+				de.titus.form.utils.EventUtils.handleEvent(this.data.formular.data.element, [ de.titus.form.Constants.EVENTS.CONDITION_STATE_CHANGED, de.titus.form.Constants.EVENTS.VALIDATION_STATE_CHANGED ], Validation.prototype.__doValidate.bind(this));
+			}
+
+			de.titus.form.utils.EventUtils.handleEvent(this.data.element, [ de.titus.form.Constants.EVENTS.INITIALIED ], Validation.prototype.__doValidate.bind(this));
+		};
+
+		Validation.prototype.__doValidate = function(aEvent) {
+			if (Validation.LOGGER.isDebugEnabled())
+				Validation.LOGGER.logDebug("__doValidate() -> " + aEvent.type);
+
+			var valid = true;
+			aEvent.preventDefault();
+
+			if (aEvent.type != de.titus.form.Constants.EVENTS.INITIALIZED)
+				aEvent.stopPropagation();
+
+			// IGNORE VALIDATION_STATE_CHANGED ON SELF ELEMENT
+			if (aEvent.currentTarget == this.data.element && aEvent.Type == de.titus.form.Constants.EVENTS.VALIDATION_STATE_CHANGED)
+				return;
+
+			if (aEvent.type == de.titus.form.Constants.EVENTS.CONDITION_STATE_CHANGED  && aEvent.currentTarget == this.data.element)
+				valid = !this.data.field.data.required && !this.data.field.data.condition;
+			else 
+				valid = this.__checkValidation();
+
+			if (valid)
+				de.titus.form.utils.EventUtils.triggerEvent(this.data.element, de.titus.form.Constants.EVENTS.VALIDATION_VALID);
+			else
+				de.titus.form.utils.EventUtils.triggerEvent(this.data.element, de.titus.form.Constants.EVENTS.VALIDATION_INVALID);
+		};
+		
+		Validation.prototype.__checkValidation = function() {
+			var valid = true;
+			var formularData = this.data.formular.getData("object", true);
+			var fieldData = this.data.field.getData(true);
+
+			var data = {
+			    value : fieldData ? fieldData.value : undefined,
+			    form : formularData
+			};
+
+			for (var i = 0; i < this.data.validations.length; i++) {
+				var validation = this.data.validations[i];
+				if (this.data.expressionResolver.resolveExpression(validation.expression, data, true)) {
+					validation.element.removeClass("inactive");
+					validation.element.addClass("active");
+					valid = false;
+				} else {
+					validation.element.removeClass("active");
+					validation.element.addClass("inactive");
 				}
 			}
 			
-			return true;
-		};
-		
-		de.titus.form.Validation = Validation;
+			return valid;
+		}
+
+		de.titus.core.jquery.Components.asComponent("formular_Validation", de.titus.form.Validation);
 	});
 })();
