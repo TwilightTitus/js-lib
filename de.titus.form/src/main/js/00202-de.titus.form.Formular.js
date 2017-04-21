@@ -34,6 +34,7 @@
 			this.data.element.formular_StepPanel();
 			this.data.element.formular_FormularControls();
 			this.data.element.formular_PageController();
+			this.data.element.find("[data-form-message]").formular_Message();
 
 			de.titus.form.utils.EventUtils.triggerEvent(this.data.element, de.titus.form.Constants.EVENTS.INITIALIZED);
 			this.data.element.addClass("initialized");

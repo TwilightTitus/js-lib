@@ -193,6 +193,8 @@
 				if (EventUtils.LOGGER.isDebugEnabled())
 					EventUtils.LOGGER.logDebug("triggerEvent(\"" + aEvent + "\")");
 				
+				EventUtils.__checkOfUndefined(aEvent);
+				
 				setTimeout((function(aEvent, aData){
 					if (EventUtils.LOGGER.isDebugEnabled())
 						EventUtils.LOGGER.logDebug("fire event event \"" + aEvent + "\"");
@@ -204,11 +206,24 @@
 				
 				if (EventUtils.LOGGER.isDebugEnabled())
 					EventUtils.LOGGER.logDebug("handleEvent(\"" + aEvent + "\")");
+				
+				EventUtils.__checkOfUndefined(aEvent);
+				
 				if(Array.isArray(aEvent))
 					aElement.on(aEvent.join(" "), aSelector, aCallback);
 				else
 					aElement.on(aEvent, aSelector, aCallback);
+			},
+			__checkOfUndefined : function(aValue){
+				if(Array.isArray(aValue))
+					for(var i = 0; i < aValue.length; i++)
+						if(aValue[i] == undefined)
+							throw new Error("Error: undefined value at array index \"" + i + "\"");
+				else
+					if(aValue == undefined)
+						throw new Error("Error: undefined value");
 			}
+			
 		};
 	});
 	
@@ -464,6 +479,58 @@
 		de.titus.core.jquery.Components.asComponent("formular_Field", de.titus.form.Field);
 	});
 })();
+(function($) {
+	"use strict";
+	de.titus.core.Namespace.create("de.titus.form.Message", function() {
+		var Message = de.titus.form.Message = function(aElement) {
+			if (Message.LOGGER.isDebugEnabled())
+				Message.LOGGER.logDebug("constructor");
+
+			this.data = {
+			    element : aElement,
+			    formular : undefined,
+			    expression : (aElement.attr("data-form-message") || "").trim(),
+			    expressionResolver : new de.titus.core.ExpressionResolver()
+			};
+
+			setTimeout(Message.prototype.__init.bind(this), 1);
+		};
+
+		Message.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.Message");
+
+		Message.prototype.__init = function() {
+			if (Message.LOGGER.isDebugEnabled())
+				Message.LOGGER.logDebug("__init()");
+
+			this.data.formular = de.titus.form.utils.FormularUtils.getFormular(this.data.element);
+
+			if (this.data.expression != "") {
+				de.titus.form.utils.EventUtils.handleEvent(this.data.formular.data.element, [ de.titus.form.Constants.EVENTS.INITIALIZED, de.titus.form.Constants.EVENTS.FIELD_VALUE_CHANGED, de.titus.form.Constants.EVENTS.VALIDATION_STATE_CHANGED ], Message.prototype.__doCheck.bind(this));
+			}
+
+			setTimeout(Message.prototype.__doCheck.bind(this), 1);
+		};
+
+		Message.prototype.__doCheck = function() {
+			if (Message.LOGGER.isDebugEnabled())
+				Message.LOGGER.logDebug("__doCheck() -> expression: \"" + this.data.expression + "\"");
+
+
+			var data = this.data.formular.getData("object", true, false);
+
+			var result = this.data.expressionResolver.resolveExpression(this.data.expression, data, false);
+			if (result) {
+				this.data.element.removeClass("inactive");
+				this.data.element.addClass("active");
+			} else {
+				this.data.element.removeClass("active");
+				this.data.element.addClass("inactive");
+			}
+		};
+
+		de.titus.core.jquery.Components.asComponent("formular_Message", de.titus.form.Message);
+	});
+})($);
 (function() {
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.form.Validation", function() {
@@ -507,11 +574,10 @@
 			this.data.validations = validations;
 
 			if (this.data.required || this.data.validations.length > 0) {
-				de.titus.form.utils.EventUtils.handleEvent(this.data.element, [ de.titus.form.Constants.EVENTS.CONDITION_STATE_CHANGED, de.titus.form.Constants.EVENTS.FIELD_VALUE_CHANGED ], Validation.prototype.__doValidate.bind(this));
+				de.titus.form.utils.EventUtils.handleEvent(this.data.element, [de.titus.form.Constants.EVENTS.INITIALIZED, de.titus.form.Constants.EVENTS.CONDITION_STATE_CHANGED, de.titus.form.Constants.EVENTS.FIELD_VALUE_CHANGED ], Validation.prototype.__doValidate.bind(this));
 				de.titus.form.utils.EventUtils.handleEvent(this.data.formular.data.element, [ de.titus.form.Constants.EVENTS.CONDITION_STATE_CHANGED, de.titus.form.Constants.EVENTS.VALIDATION_STATE_CHANGED ], Validation.prototype.__doValidate.bind(this));
-			}
-
-			de.titus.form.utils.EventUtils.handleEvent(this.data.element, [ de.titus.form.Constants.EVENTS.INITIALIED ], Validation.prototype.__doValidate.bind(this));
+			} else
+				de.titus.form.utils.EventUtils.triggerEvent(this.data.element, de.titus.form.Constants.EVENTS.VALIDATION_VALID);
 		};
 
 		Validation.prototype.__doValidate = function(aEvent) {
@@ -521,37 +587,50 @@
 			var valid = true;
 			aEvent.preventDefault();
 
-			if (aEvent.type != de.titus.form.Constants.EVENTS.INITIALIZED)
+			if (aEvent.type != de.titus.form.Constants.EVENTS.INITIALIZED && aEvent.type != de.titus.form.Constants.EVENTS.FIELD_VALUE_CHANGED)
 				aEvent.stopPropagation();
 
 			// IGNORE VALIDATION_STATE_CHANGED ON SELF ELEMENT
 			if (aEvent.currentTarget == this.data.element && aEvent.Type == de.titus.form.Constants.EVENTS.VALIDATION_STATE_CHANGED)
 				return;
-
-			if (aEvent.type == de.titus.form.Constants.EVENTS.CONDITION_STATE_CHANGED  && aEvent.currentTarget == this.data.element)
-				valid = !this.data.field.data.required && !this.data.field.data.condition;
-			else 
-				valid = this.__checkValidation();
+			if (aEvent.type == de.titus.form.Constants.EVENTS.CONDITION_STATE_CHANGED && aEvent.currentTarget != this.data.element)
+				return;
+			
+			var fieldData = this.data.field.getData(true);
+			var valueEmpty = this.__valueEmpty(fieldData);
+			
+			if (this.data.required && !this.data.field.data.condition)
+				valid = false;
+			else if (this.data.validations.length == 0)
+				valid = !this.data.required || !valueEmpty;
+			else if (this.data.validations.length > 0 && valueEmpty)
+				valid = !this.data.required;
+			else
+				valid = this.__checkValidation(fieldData);
 
 			if (valid)
 				de.titus.form.utils.EventUtils.triggerEvent(this.data.element, de.titus.form.Constants.EVENTS.VALIDATION_VALID);
 			else
 				de.titus.form.utils.EventUtils.triggerEvent(this.data.element, de.titus.form.Constants.EVENTS.VALIDATION_INVALID);
 		};
-		
-		Validation.prototype.__checkValidation = function() {
-			var valid = true;
-			var formularData = this.data.formular.getData("object", true);
-			var fieldData = this.data.field.getData(true);
 
+		Validation.prototype.__checkValidation = function(aFieldData) {
+			if (Validation.LOGGER.isDebugEnabled())
+				Validation.LOGGER.logDebug("__checkValidation()");
+
+			var formularData = this.data.formular.getData("object", true);
 			var data = {
-			    value : fieldData ? fieldData.value : undefined,
+			    value : aFieldData ? aFieldData.value : undefined,
 			    form : formularData
 			};
-
+			
+			var valid = true;
 			for (var i = 0; i < this.data.validations.length; i++) {
 				var validation = this.data.validations[i];
-				if (this.data.expressionResolver.resolveExpression(validation.expression, data, true)) {
+				var test = this.data.expressionResolver.resolveExpression(validation.expression, data, true)
+					if (Validation.LOGGER.isDebugEnabled())
+						Validation.LOGGER.logDebug("__checkValidation() -> rexpression: \"" + validation.expression + "\" -> " + test);
+				if (test) {
 					validation.element.removeClass("inactive");
 					validation.element.addClass("active");
 					valid = false;
@@ -560,9 +639,13 @@
 					validation.element.addClass("inactive");
 				}
 			}
-			
+
 			return valid;
-		}
+		};
+		
+		Validation.prototype.__valueEmpty = function(aFieldData) {
+			return aFieldData == undefined || aFieldData.value == undefined || (Array.isArray(aFieldData.value) && aFieldData.value.length == 0) || (typeof aFieldData.value === "string" && aFieldData.value.trim().length == 0);
+		};
 
 		de.titus.core.jquery.Components.asComponent("formular_Validation", de.titus.form.Validation);
 	});
@@ -603,6 +686,7 @@
 			this.data.element.formular_StepPanel();
 			this.data.element.formular_FormularControls();
 			this.data.element.formular_PageController();
+			this.data.element.find("[data-form-message]").formular_Message();
 
 			de.titus.form.utils.EventUtils.triggerEvent(this.data.element, de.titus.form.Constants.EVENTS.INITIALIZED);
 			this.data.element.addClass("initialized");
@@ -677,7 +761,7 @@
 			this.data.submit.hide();
 
 			de.titus.form.utils.EventUtils.handleEvent(this.data.element, [de.titus.form.Constants.EVENTS.VALIDATION_STATE_CHANGED ], FormularControls.prototype.update.bind(this), "[data-form-page]");
-			de.titus.form.utils.EventUtils.handleEvent(this.data.element, [ de.titus.form.Constants.EVENTS.INITIALIZED, de.titus.form.Constants.EVENTS.PAGE_CHANGED, de.titus.form.Constants.EVENTS.PAGE_SUMMARY, de.titus.form.Constants.EVENTS.ACTION_SUMMARY, de.titus.form.Constants.EVENTS.ACTION_SUBMIT, de.titus.form.Constants.EVENTS.SUBMITTED ], FormularControls.prototype.update.bind(this));
+			de.titus.form.utils.EventUtils.handleEvent(this.data.element, [ de.titus.form.Constants.EVENTS.INITIALIZED, de.titus.form.Constants.EVENTS.PAGE_CHANGED, de.titus.form.Constants.EVENTS.PAGE_SUMMARY, de.titus.form.Constants.EVENTS.ACTION_SUMMARY, de.titus.form.Constants.EVENTS.ACTION_SUBMIT, de.titus.form.Constants.EVENTS.SUCCESSED ], FormularControls.prototype.update.bind(this));
 
 		};
 

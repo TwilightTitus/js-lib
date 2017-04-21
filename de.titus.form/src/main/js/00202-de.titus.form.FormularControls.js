@@ -33,7 +33,7 @@
 			this.data.submit.hide();
 
 			de.titus.form.utils.EventUtils.handleEvent(this.data.element, [de.titus.form.Constants.EVENTS.VALIDATION_STATE_CHANGED ], FormularControls.prototype.update.bind(this), "[data-form-page]");
-			de.titus.form.utils.EventUtils.handleEvent(this.data.element, [ de.titus.form.Constants.EVENTS.INITIALIZED, de.titus.form.Constants.EVENTS.PAGE_CHANGED, de.titus.form.Constants.EVENTS.PAGE_SUMMARY, de.titus.form.Constants.EVENTS.ACTION_SUMMARY, de.titus.form.Constants.EVENTS.ACTION_SUBMIT, de.titus.form.Constants.EVENTS.SUBMITTED ], FormularControls.prototype.update.bind(this));
+			de.titus.form.utils.EventUtils.handleEvent(this.data.element, [ de.titus.form.Constants.EVENTS.INITIALIZED, de.titus.form.Constants.EVENTS.PAGE_CHANGED, de.titus.form.Constants.EVENTS.PAGE_SUMMARY, de.titus.form.Constants.EVENTS.ACTION_SUMMARY, de.titus.form.Constants.EVENTS.ACTION_SUBMIT, de.titus.form.Constants.EVENTS.SUCCESSED ], FormularControls.prototype.update.bind(this));
 
 		};
 

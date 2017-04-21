@@ -13,12 +13,18 @@
 }
 
 [data-form] .valid {
+}
+
+[data-form] .invalid {
+}
+
+.dev-mode [data-form] .valid {
 	border-style: solid;
 	border-width: 1px;
 	border-color: green;
 }
 
-[data-form] .invalid {
+.dev-mode [data-form] .invalid {
 	border-style: solid;
 	border-width: 1px;
 	border-color: red;
