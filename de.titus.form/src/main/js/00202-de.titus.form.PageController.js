@@ -81,7 +81,12 @@
 			if (PageController.LOGGER.isDebugEnabled())
 				PageController.LOGGER.logDebug("getPrevPage()");
 
-			for (var i = this.data.currentPage - 1; 0 <= i; i--) {
+			var formular = this.data.element.Formular();
+			var startIndex = this.data.currentPage - 1;
+			if(formular.data.state == de.titus.form.Constants.STATE.SUMMARY)
+				startIndex = this.data.pages.length - 1;			
+			
+			for (var i = startIndex; 0 <= i; i--) {
 				var page = this.data.pages[i];
 				if (page.data.condition)
 					return page;
@@ -130,6 +135,7 @@
 
 			this.data.element.addClass("summary");
 
+			//TODO REFACTORING TO EVENT SYSTEM
 			for (var i = 0; i < this.data.pages.length; i++) {
 				var page = this.data.pages[i];
 				page.summary();

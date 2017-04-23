@@ -106,9 +106,10 @@
 				Page.LOGGER.logDebug("summary ()");
 			
 			if (this.data.condition) {
-				this.data.element.formular_utils_SetActive();
 				for (var i = 0; i < this.data.fields.length; i++)
 					this.data.fields[i].summary();
+
+				this.data.element.formular_utils_SetActive();
 			}
 		};
 		
