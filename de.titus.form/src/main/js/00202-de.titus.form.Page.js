@@ -7,7 +7,6 @@
 			this.data = {
 			    element : aElement,
 			    formular : undefined,
-			    index : aIndex,
 			    name : aElement.attr("data-form-page"),
 			    condition : undefined,
 			    valid : undefined,
@@ -129,25 +128,6 @@
 			return result;
 		};
 		
-		$.fn.formular_Page = function(aIndex) {
-			if (this.length == 0)
-				return;
-			else if (this.length > 1) {
-				var pages = [];
-				var index = 0;
-				this.each(function() {
-					pages.push($(this).formular_Condition(index++));
-				});
-				
-				return pages;
-			} else {
-				var page = this.data("de.titus.form.Page");
-				if (!page) {
-					page = new de.titus.form.Page(this, aIndex);
-					this.data("de.titus.form.Page", page);
-				}
-				return page;
-			}
-		};
+		de.titus.core.jquery.Components.asComponent("formular_Page", de.titus.form.Page);
 	});
 })($);
