@@ -112,9 +112,9 @@
 		Field.prototype.summary = function() {
 			if (Field.LOGGER.isDebugEnabled())
 				Field.LOGGER.logDebug("summary ()");
-			
-			this.data.element.formular_utils_SetActive();
+
 			de.titus.form.utils.EventUtils.triggerEvent(this.data.element, de.titus.form.Constants.EVENTS.FIELD_SUMMARY);
+			this.data.element.formular_utils_SetActive();
 		};
 		
 		Field.prototype.getData = function(acceptInvalid) {

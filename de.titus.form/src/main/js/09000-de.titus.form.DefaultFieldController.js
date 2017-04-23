@@ -52,6 +52,13 @@
 				}
 			}
 			
+			de.titus.form.utils.EventUtils.handleEvent(this.element, de.titus.form.Constants.EVENTS.FIELD_SUMMARY, (function(){
+				if (this.type == "select")
+					this.element.find("select").prop("disabled", true);
+				else
+					this.element.find("input, textarea").prop("disabled", true);
+			}).bind(this));
+			
 			if (DefaultFieldController.LOGGER.isDebugEnabled())
 				DefaultFieldController.LOGGER.logDebug("init() -> detect type: " + this.type);
 		};

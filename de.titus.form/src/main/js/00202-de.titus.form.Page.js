@@ -102,6 +102,9 @@
 			if (Page.LOGGER.isDebugEnabled())
 				Page.LOGGER.logDebug("summary ()");
 			
+			for (var i = 0; i < this.data.fields.length; i++)
+				this.data.fields[i].summary();
+			
 			this.show();
 		};
 		

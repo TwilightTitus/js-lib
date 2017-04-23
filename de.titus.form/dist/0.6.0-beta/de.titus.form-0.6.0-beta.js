@@ -490,9 +490,9 @@
 		Field.prototype.summary = function() {
 			if (Field.LOGGER.isDebugEnabled())
 				Field.LOGGER.logDebug("summary ()");
-			
-			this.data.element.formular_utils_SetActive();
+
 			de.titus.form.utils.EventUtils.triggerEvent(this.data.element, de.titus.form.Constants.EVENTS.FIELD_SUMMARY);
+			this.data.element.formular_utils_SetActive();
 		};
 		
 		Field.prototype.getData = function(acceptInvalid) {
@@ -976,6 +976,9 @@
 			if (Page.LOGGER.isDebugEnabled())
 				Page.LOGGER.logDebug("summary ()");
 			
+			for (var i = 0; i < this.data.fields.length; i++)
+				this.data.fields[i].summary();
+			
 			this.show();
 		};
 		
@@ -1356,6 +1359,13 @@
 					}).bind(this));
 				}
 			}
+			
+			de.titus.form.utils.EventUtils.handleEvent(this.element, de.titus.form.Constants.EVENTS.FIELD_SUMMARY, (function(){
+				if (this.type == "select")
+					this.element.find("select").prop("disabled", true);
+				else
+					this.element.find("input, textarea").prop("disabled", true);
+			}).bind(this));
 			
 			if (DefaultFieldController.LOGGER.isDebugEnabled())
 				DefaultFieldController.LOGGER.logDebug("init() -> detect type: " + this.type);
