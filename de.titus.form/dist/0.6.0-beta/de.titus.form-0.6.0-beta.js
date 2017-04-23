@@ -482,17 +482,19 @@
 		Field.prototype.show = function() {
 			if (Field.LOGGER.isDebugEnabled())
 				Field.LOGGER.logDebug("show ()");
-			
-			this.data.element.formular_utils_SetActive();
-			de.titus.form.utils.EventUtils.triggerEvent(this.data.element, de.titus.form.Constants.EVENTS.FIELD_SHOW);
+			if (this.data.condition) {
+				this.data.element.formular_utils_SetActive();
+				de.titus.form.utils.EventUtils.triggerEvent(this.data.element, de.titus.form.Constants.EVENTS.FIELD_SHOW);
+			}
 		};
 		
 		Field.prototype.summary = function() {
 			if (Field.LOGGER.isDebugEnabled())
 				Field.LOGGER.logDebug("summary ()");
-
-			de.titus.form.utils.EventUtils.triggerEvent(this.data.element, de.titus.form.Constants.EVENTS.FIELD_SUMMARY);
-			this.data.element.formular_utils_SetActive();
+			if (this.data.condition) {
+				de.titus.form.utils.EventUtils.triggerEvent(this.data.element, de.titus.form.Constants.EVENTS.FIELD_SUMMARY);
+				this.data.element.formular_utils_SetActive();
+			}
 		};
 		
 		Field.prototype.getData = function(acceptInvalid) {
@@ -968,18 +970,22 @@
 			if (Page.LOGGER.isDebugEnabled())
 				Page.LOGGER.logDebug("show ()");
 			
-			if (this.data.condition)
+			if (this.data.condition) {
 				this.data.element.formular_utils_SetActive();
+				for (var i = 0; i < this.data.fields.length; i++)
+					this.data.fields[i].show();
+			}
 		};
 		
 		Page.prototype.summary = function() {
 			if (Page.LOGGER.isDebugEnabled())
 				Page.LOGGER.logDebug("summary ()");
 			
-			for (var i = 0; i < this.data.fields.length; i++)
-				this.data.fields[i].summary();
-			
-			this.show();
+			if (this.data.condition) {
+				this.data.element.formular_utils_SetActive();
+				for (var i = 0; i < this.data.fields.length; i++)
+					this.data.fields[i].summary();
+			}
 		};
 		
 		Page.prototype.getData = function(includeInvalidPage, includeInvalidField) {
@@ -1359,6 +1365,13 @@
 					}).bind(this));
 				}
 			}
+			
+			de.titus.form.utils.EventUtils.handleEvent(this.element, de.titus.form.Constants.EVENTS.FIELD_SHOW, (function(){
+				if (this.type == "select")
+					this.element.find("select").prop("disabled", false);
+				else
+					this.element.find("input, textarea").prop("disabled", false);
+			}).bind(this));
 			
 			de.titus.form.utils.EventUtils.handleEvent(this.element, de.titus.form.Constants.EVENTS.FIELD_SUMMARY, (function(){
 				if (this.type == "select")

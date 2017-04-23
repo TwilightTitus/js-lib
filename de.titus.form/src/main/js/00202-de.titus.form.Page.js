@@ -94,18 +94,22 @@
 			if (Page.LOGGER.isDebugEnabled())
 				Page.LOGGER.logDebug("show ()");
 			
-			if (this.data.condition)
+			if (this.data.condition) {
 				this.data.element.formular_utils_SetActive();
+				for (var i = 0; i < this.data.fields.length; i++)
+					this.data.fields[i].show();
+			}
 		};
 		
 		Page.prototype.summary = function() {
 			if (Page.LOGGER.isDebugEnabled())
 				Page.LOGGER.logDebug("summary ()");
 			
-			for (var i = 0; i < this.data.fields.length; i++)
-				this.data.fields[i].summary();
-			
-			this.show();
+			if (this.data.condition) {
+				this.data.element.formular_utils_SetActive();
+				for (var i = 0; i < this.data.fields.length; i++)
+					this.data.fields[i].summary();
+			}
 		};
 		
 		Page.prototype.getData = function(includeInvalidPage, includeInvalidField) {

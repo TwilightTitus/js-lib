@@ -52,6 +52,13 @@
 				}
 			}
 			
+			de.titus.form.utils.EventUtils.handleEvent(this.element, de.titus.form.Constants.EVENTS.FIELD_SHOW, (function(){
+				if (this.type == "select")
+					this.element.find("select").prop("disabled", false);
+				else
+					this.element.find("input, textarea").prop("disabled", false);
+			}).bind(this));
+			
 			de.titus.form.utils.EventUtils.handleEvent(this.element, de.titus.form.Constants.EVENTS.FIELD_SUMMARY, (function(){
 				if (this.type == "select")
 					this.element.find("select").prop("disabled", true);
