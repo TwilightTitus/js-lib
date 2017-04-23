@@ -6,6 +6,10 @@
 	display: block;
 }
 
+[data-form] [data-form-step-panel] [data-form-step].inactive {
+	display: table-cell;
+}
+
 [data-form] .inactive {
 	display: none;
 }

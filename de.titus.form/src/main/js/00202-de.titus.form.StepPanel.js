@@ -25,6 +25,7 @@
 			var index = 0;
 			this.data.panelElement.find("[data-form-step]").each(function() {
 				var element = $(this);
+				element.formular_utils_SetInactive();
 				var step = {
 				    index : index++,
 				    id : element.attr("data-form-step").toLowerCase(),
@@ -35,7 +36,7 @@
 
 			this.data.steps = steps;
 
-			de.titus.form.utils.EventUtils.handleEvent(this.data.element, [ de.titus.form.Constants.EVENTS.PAGE_CHANGED, de.titus.form.Constants.EVENTS.INITIALIZED ], StepPanel.prototype.update.bind(this));
+			de.titus.form.utils.EventUtils.handleEvent(this.data.element, [de.titus.form.Constants.EVENTS.STATE_CHANGED, de.titus.form.Constants.EVENTS.PAGE_CHANGED, de.titus.form.Constants.EVENTS.INITIALIZED ], StepPanel.prototype.update.bind(this));
 		};
 
 		StepPanel.prototype.setStep = function(aId) {
@@ -44,11 +45,11 @@
 			var step = this.getStep(aId);
 			if (step != undefined) {
 				if (this.data.current) {
-					this.data.current.element.removeClass("active");
-					this.data.element.removeClass("step-" + this.data.current.element.id);
+					this.data.current.element.formular_utils_SetInactive();
+					this.data.element.removeClass("step-" + this.data.current.id);
 				}
 				this.data.current = step;
-				this.data.current.element.addClass("active");
+				this.data.current.element.formular_utils_SetActive();
 				this.data.element.addClass("step-" + aId);
 			}
 		};

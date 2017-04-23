@@ -24,7 +24,7 @@
 			this.data.formular = de.titus.form.utils.FormularUtils.getFormular(this.data.element);
 
 			if (this.data.expression != "") {
-				de.titus.form.utils.EventUtils.handleEvent(this.data.formular.data.element, [ de.titus.form.Constants.EVENTS.CONDITION_STATE_CHANGED, de.titus.form.Constants.EVENTS.VALIDATION_STATE_CHANGED ], Condition.prototype.__doCheck.bind(this));
+				de.titus.form.utils.EventUtils.handleEvent(this.data.formular.data.element, [ de.titus.form.Constants.EVENTS.CONDITION_STATE_CHANGED, de.titus.form.Constants.EVENTS.VALIDATION_STATE_CHANGED, de.titus.form.Constants.EVENTS.FIELD_VALUE_CHANGED], Condition.prototype.__doCheck.bind(this));
 			}
 
 			de.titus.form.utils.EventUtils.handleEvent(this.data.element, [ de.titus.form.Constants.EVENTS.INITIALIZED ], Condition.prototype.__doCheck.bind(this));
@@ -35,7 +35,7 @@
 				Condition.LOGGER.logDebug("__doCheck() -> expression: \"" + this.data.expression + "\"");
 
 			aEvent.preventDefault();
-			if (aEvent.type != de.titus.form.Constants.EVENTS.INITIALIZED)
+			if (aEvent.type != de.titus.form.Constants.EVENTS.INITIALIZED && aEvent.type != de.titus.form.Constants.EVENTS.VALUE_CHANGED)
 				aEvent.stopPropagation();
 
 			if (aEvent.currentTarget == this.data.element && (aEvent.type == de.titus.form.Constants.EVENTS.CONDITION_STATE_CHANGED || aEvent.Type == de.titus.form.Constants.EVENTS.VALIDATION_STATE_CHANGED))

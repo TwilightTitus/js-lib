@@ -5,6 +5,7 @@
 		    INITIALIZED : "form-initialized",
 		    SUCCESSED : "form-successed",
 		    FAILED : "form-failed",
+		    STATE_CHANGED: "form-state-changed",
 		    
 		    ACTION_RESET : "form-action-reset",
 		    ACTION_SUBMIT : "form-action-submit",

@@ -35,9 +35,8 @@
 			});
 			this.data.pages = pages;
 
-			de.titus.form.utils.EventUtils.handleEvent(this.data.element, [de.titus.form.Constants.EVENTS.CONDITION_STATE_CHANGED], PageController.prototype.toNextPage.bind(this));
 			de.titus.form.utils.EventUtils.handleEvent(this.data.element, de.titus.form.Constants.EVENTS.ACTION_PAGE_BACK, PageController.prototype.toPrevPage.bind(this));
-			de.titus.form.utils.EventUtils.handleEvent(this.data.element, de.titus.form.Constants.EVENTS.ACTION_PAGE_NEXT, PageController.prototype.toNextPage.bind(this));
+			de.titus.form.utils.EventUtils.handleEvent(this.data.element, [de.titus.form.Constants.EVENTS.ACTION_PAGE_NEXT, de.titus.form.Constants.EVENTS.INITIALIZED], PageController.prototype.toNextPage.bind(this));
 
 			de.titus.form.utils.EventUtils.triggerEvent(this.data.element, de.titus.form.Constants.EVENTS.ACTION_PAGE_NEXT);
 		};
