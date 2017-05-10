@@ -125,16 +125,20 @@
 			}
 		};
 		
+		URL.prototype.getMarkerString = function() {
+			if (this.getMarker() != undefined)
+				return "#" + this.getMarker();
+			
+			return "";
+		};
+		
 		URL.prototype.asString = function() {
 			var result = this.getProtocol() + "://" + this.getDomain() + ":" + this.getPort();
 			
 			if (this.getPath() != undefined)
 				result = result + this.getPath();
 			
-			if (this.getMarker() != undefined)
-				result = result + "#" + this.getMarker();
-			
-			result = result + this.getQueryString();
+			result = result + this.getQueryString() + this.getMarkerString();
 			
 			return result;
 		};

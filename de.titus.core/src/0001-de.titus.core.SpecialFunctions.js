@@ -1,38 +1,37 @@
 de.titus.core.Namespace.create("de.titus.core.SpecialFunctions", function() {
 	
 	var SpecialFunctions = de.titus.core.SpecialFunctions = {
-	    doEval : function(aStatement, aContext, aCallback) {
-		    if (aCallback)
-		    	SpecialFunctions.doEvalWithContext(aStatement, (aContext || {}), undefined, aCallback);
-		    else {
-			    if (typeof aStatement !== "string")
-				    return aStatement;
+		 STATEMENTS : {},
+		    doEval : function(aStatement, aContext, aCallback) {
+			    if (aCallback)
+				    SpecialFunctions.doEvalWithContext(aStatement, (aContext || {}), undefined, aCallback);
 			    else {
-				    var result = undefined;
-				    var runContext = aContext || {};
-				    var statement = aStatement.trim();
-				    if(statement.length == 0)
-				    	return result;
-				    
-				    with (runContext) {
-					    try {
-						    eval("result = " + statement + ";");
-					    } catch (e) {
-						    if (!console)
-							    return;
-						    else if (console.warn)
-							    console.warn("de.titus.core.SpecialFunctions.doEval ***Warn*** expression: " + aStatement + ": ", e);
-						    else if (console.log)
-							    console.log("de.titus.core.SpecialFunctions.doEval ***Warn*** expression: " + aStatement + ": ", e);
-						    return undefined;
+				    if (typeof aStatement !== "string")
+					    return aStatement;
+				    else {
+					    var runContext = aContext || {};
+					    if(runContext["$$$$___STATEMENT___VALUE___$$$___TEXT___$$$$"] !== undefined)
+					    	return undefined;
+					    
+					    var $$$$___STATEMENT___VALUE___$$$___TEXT___$$$$ = aStatement;				    
+					    with (runContext) {
+						    try {
+							    return eval("(function(){ return " + $$$$___STATEMENT___VALUE___$$$___TEXT___$$$$ + ";})()");
+						    } catch (e) {
+							    if (!console)
+								    return;
+							    else if (console.error)
+								    console.error("de.titus.core.SpecialFunctions.doEval ***Error*** expression: " + aStatement + ": ", e);
+							    else if (console.log)
+								    console.log("de.titus.core.SpecialFunctions.doEval ***Error*** expression: " + aStatement + ": ", e);
+							    return undefined;
+						    }
 					    }
 				    }
-				    return result;
+				    
+				    return undefined;
 			    }
-			    
-			    return undefined;
-		    }
-	    },
+		    },
 	    
 	    /**
 		 * 
