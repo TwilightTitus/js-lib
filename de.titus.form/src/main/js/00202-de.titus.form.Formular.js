@@ -22,12 +22,15 @@
 
 			this.data.element.on(de.titus.form.Constants.EVENTS.ACTION_PAGE_BACK, (function() {
 				this.data.state = de.titus.form.Constants.STATE.INPUT;
+				de.titus.form.utils.EventUtils.triggerEvent(this.data.element, de.titus.form.Constants.EVENTS.STATE_CHANGED);
 			}).bind(this));
 			this.data.element.on(de.titus.form.Constants.EVENTS.ACTION_PAGE_NEXT, (function() {
 				this.data.state = de.titus.form.Constants.STATE.INPUT;
+				de.titus.form.utils.EventUtils.triggerEvent(this.data.element, de.titus.form.Constants.EVENTS.STATE_CHANGED);
 			}).bind(this));
-			this.data.element.on(de.titus.form.Constants.EVENTS.ACTION_SUMMARY, (function() {
+			this.data.element.on(de.titus.form.Constants.EVENTS.PAGE_SUMMARY, (function() {
 				this.data.state = de.titus.form.Constants.STATE.SUMMARY;
+				de.titus.form.utils.EventUtils.triggerEvent(this.data.element, de.titus.form.Constants.EVENTS.STATE_CHANGED);
 			}).bind(this));
 			this.data.element.on(de.titus.form.Constants.EVENTS.ACTION_SUBMIT, Formular.prototype.submit.bind(this));
 
@@ -65,6 +68,9 @@
 			if (Formular.LOGGER.isDebugEnabled())
 				Formular.LOGGER.logDebug("submit ()");
 
+			
+			this.data.state = de.titus.form.Constants.STATE.SUBMITTED;
+			de.titus.form.utils.EventUtils.triggerEvent(this.data.element, de.titus.form.Constants.EVENTS.STATE_CHANGED);
 		};
 	});
 

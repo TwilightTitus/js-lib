@@ -36,14 +36,14 @@
 			                    	<span class="list-group-item-heading">Hobbies</span>
 			                    </a>
 			                </li>
-			                <li data-form-step="form-state-summary">
+			                <li data-form-step="form-step-summary">
 			                	<a>
 			                    	<span class="list-group-item-heading">Summary</span>
 			                    </a>
 			                </li>
-			                <li data-form-step="form-state-submited">
+			                <li data-form-step="form-step-submitted">
 			                	<a>
-			                    	<span class="list-group-item-heading">Submited</span>
+			                    	<span class="list-group-item-heading">Submitted</span>
 			                    </a>
 			                </li>
 			            </ul>
@@ -58,10 +58,10 @@
 	    					<input type="text" class="form-control" name="name" />
 	    					<div class="help-block text-danger" data-form-validation="value == undefined || value.trim() == ''">Enter your name!</div>				
 						</div>
-						<div class="form-group" data-form-field="givenname" data-form-field-type="text" data-form-condition="name != undefined && name.trim() != ''">
+						<div class="form-group" data-form-field="givenname" data-form-field-type="text" data-form-condition="name != undefined && name.trim() == 'Max'">
 							<label for="givenname">given name:</label>
 	    					<input type="text" class="form-control" name="givenname" />
-	    					<div class="help-block text-danger" data-form-validation="value == undefined || value.trim().toLowerCase() == 'mustermann'">Enter your given name!</div>					
+	    					<div class="help-block text-danger" data-form-validation="value == undefined || value.trim() == 'mustermann'">Enter your given name!</div>					
 						</div>
 						<div class="form-group" data-form-field="age" data-form-field-type="number" data-form-condition="">
 							<label for="age">age:</label>
@@ -174,7 +174,7 @@
 		<script type="text/javascript">
 		var config = [
 			{"filter": "", "logLevel": "DEBUG", "appenders":["de.titus.logging.MemoryAppender"]},
-			{"filter": "de.titus", "logLevel": "ERROR", "appenders":["de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender"]}
+			{"filter": "de.titus.form.PageCon", "logLevel": "DEBUG", "appenders":["de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender"]}
 		];
 		
 		

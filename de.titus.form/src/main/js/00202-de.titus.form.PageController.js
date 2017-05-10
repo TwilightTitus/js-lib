@@ -4,142 +4,170 @@
 		var PageController = de.titus.form.PageController = function(aElement) {
 			if (PageController.LOGGER.isDebugEnabled())
 				PageController.LOGGER.logDebug("constructor");
-
+			
 			this.data = {
 			    element : aElement,
 			    pages : [],
-			    currentPage : -1
+			    pageHandles : [],
+			    currentHandle : undefined
 			};
-
+			
 			setTimeout(PageController.prototype.__init.bind(this), 1);
 		};
-
+		
 		PageController.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.PageController");
-
+		
 		PageController.prototype.__init = function() {
 			if (PageController.LOGGER.isDebugEnabled())
 				PageController.LOGGER.logDebug("__init()");
-
-			var pages = [];
-			var index = 0;
+			
 			var formularElement = this.data.element;
-			var lastStep = de.titus.form.Constants.SPECIALSTEPS.START;
-			this.data.element.find("[data-form-page]").each(function() {
-				var element = $(this);
-				var page = element.formular_Page(index++);
-				var step = element.attr("data-form-step") || lastStep;
-				page.data.step = step;
-
-				page.hide();
-				pages.push(page);
-			});
-			this.data.pages = pages;
-
-			de.titus.form.utils.EventUtils.handleEvent(this.data.element, [de.titus.form.Constants.EVENTS.CONDITION_STATE_CHANGED], PageController.prototype.toNextPage.bind(this));
+			this.data.pages = this.data.element.find("[data-form-page]").formular_Page();
+			this.data.pageHandles = this.__initPageHandles();
+			
 			de.titus.form.utils.EventUtils.handleEvent(this.data.element, de.titus.form.Constants.EVENTS.ACTION_PAGE_BACK, PageController.prototype.toPrevPage.bind(this));
-			de.titus.form.utils.EventUtils.handleEvent(this.data.element, de.titus.form.Constants.EVENTS.ACTION_PAGE_NEXT, PageController.prototype.toNextPage.bind(this));
-
+			de.titus.form.utils.EventUtils.handleEvent(this.data.element, [
+			        de.titus.form.Constants.EVENTS.ACTION_PAGE_NEXT, de.titus.form.Constants.EVENTS.INITIALIZED
+			], PageController.prototype.toNextPage.bind(this));
+			
 			de.titus.form.utils.EventUtils.triggerEvent(this.data.element, de.titus.form.Constants.EVENTS.ACTION_PAGE_NEXT);
 		};
-
-		PageController.prototype.isFirstPage = function() {
-			return this.data.currentPage <= 0;
+		
+		PageController.prototype.__initPageHandles = function() {
+			var handles = [];
+			var index = 0;
+			var lastStep = de.titus.form.Constants.SPECIALSTEPS.START;
+			for (var i = 0; i < this.data.pages.length; i++) {
+				var page = this.data.pages[i];
+				var step = (page.data.element.attr("[data-form-step]") || "").trim();
+				if (page.data.step != "")
+					lastStep = step;
+				
+				page.hide();
+				
+				var handle = new de.titus.form.PageControlHandle(page, i, lastStep, this);
+				
+				handles.push(handle);
+			}
+			
+			var show = function() {				
+				var pages = this.data.pageController.data.pages;
+				for (var i = 0; i < pages.length; i++)
+					pages[i].summary();
+				
+				de.titus.form.utils.EventUtils.triggerEvent(this.data.pageController.data.element, de.titus.form.Constants.EVENTS.PAGE_SUMMARY);
+			};
+			
+			var hide = function() {				
+				var pages = this.data.pageController.data.pages;
+				for (var i = 0; i < pages.length; i++)
+					pages[i].hide();
+				
+			};
+			
+			var summaryHandle = new de.titus.form.PageControlHandle({data :{valid: true, condition:true}}, handles.length, de.titus.form.Constants.SPECIALSTEPS.SUMMARY, this);
+			summaryHandle.show = show.bind(summaryHandle);			
+			summaryHandle.hide = hide.bind(summaryHandle);			
+			handles.push(summaryHandle);
+			
+			var submittedHandle = new de.titus.form.PageControlHandle({data :{valid: true, condition:true}}, handles.length, de.titus.form.Constants.SPECIALSTEPS.SUBMITTED, this);
+			submittedHandle.show = show.bind(submittedHandle);			
+			submittedHandle.hide = hide.bind(submittedHandle);	
+			handles.push(submittedHandle);
+			
+			return handles;
 		};
-
+		
+		PageController.prototype.isFirstPage = function() {
+			if (PageController.LOGGER.isDebugEnabled())
+				PageController.LOGGER.logDebug("isFirstPage()");
+			return this.data.currentHandle && this.data.currentHandle.data.index == 0;
+		};
+		
 		PageController.prototype.getCurrentPage = function() {
 			if (PageController.LOGGER.isDebugEnabled())
 				PageController.LOGGER.logDebug("getCurrentPage()");
-
-			if (this.data.currentPage < 0)
-				return;
-
-			return this.data.pages[this.data.currentPage];
+			
+			if (this.data.currentHandle)
+				return this.data.currentHandle.data.page;
 		};
-
+		
 		PageController.prototype.hasNextPage = function() {
 			if (PageController.LOGGER.isDebugEnabled())
 				PageController.LOGGER.logDebug("hasNextPage()");
-
-			return this.getNextPage() != undefined;
+			
+			return this.__getNextPageHandle() != undefined;
 		};
-
-		PageController.prototype.getNextPage = function() {
+		
+		PageController.prototype.__getNextPageHandle = function() {
 			if (PageController.LOGGER.isDebugEnabled())
-				PageController.LOGGER.logDebug("getNextPage()");
-
-			var currentPage = this.getCurrentPage();
-			if (currentPage && !currentPage.data.valid)
-				return currentPage;
-
-			for (var i = this.data.currentPage + 1; i < this.data.pages.length; i++) {
-				var page = this.data.pages[i];
-				if (page.data.condition)
-					return page;
+				PageController.LOGGER.logDebug("__getNextPageHandle()");
+			
+			if (this.data.currentHandle && !this.data.currentHandle.data.page.data.valid)
+				return this.data.currentHandle;
+			else if (!this.data.currentHandle)
+				return this.data.pageHandles[0];
+			else {
+				for (var i = this.data.currentHandle.data.index + 1; i < this.data.pageHandles.length; i++) {
+					var handle = this.data.pageHandles[i];
+					if (handle.data.page.data.condition)
+						return handle;
+				}
+				return this.data.currentHandle;
 			}
 		};
-
-		PageController.prototype.getPrevPage = function() {
+		
+		PageController.prototype.__getPrevPageHandle = function() {
 			if (PageController.LOGGER.isDebugEnabled())
-				PageController.LOGGER.logDebug("getPrevPage()");
-
-			for (var i = this.data.currentPage - 1; 0 <= i; i--) {
-				var page = this.data.pages[i];
-				if (page.data.condition)
-					return page;
+				PageController.LOGGER.logDebug("__getPrevPageHandle()");
+			
+			if (!this.data.currentHandle)
+				return this.data.pageHandles[0];
+			else {
+				for (var i = this.data.currentHandle.data.index - 1; 0 <= i; i--) {
+					var handle = this.data.pageHandles[i];
+					if (handle.data.page.data.condition)
+						return handle;
+				}
+				return this.data.currentHandle;
 			}
 		};
-
-		PageController.prototype.toPage = function(aPage) {
+		
+		PageController.prototype.__toPageHandle = function(aPageHandle) {
 			if (PageController.LOGGER.isDebugEnabled())
-				PageController.LOGGER.logDebug("toPage()");
-			if (aPage) {
-
-				this.data.element.removeClass("summary");
-
-				var currentPage = this.getCurrentPage();
-				if (currentPage)
-					currentPage.hide();
-
-				this.data.currentPage = aPage.data.index;
-				aPage.show();
+				PageController.LOGGER.logDebug("__toPage()");
+			
+			if (aPageHandle) {
+				if (this.data.currentHandle) {
+					this.data.element.removeClass("step-" + this.data.currentHandle.data.step);
+					this.data.currentHandle.hide();
+				}
+				
+				this.data.currentHandle = aPageHandle;
+				this.data.element.addClass("step-" + this.data.currentHandle.data.step);
+				this.data.currentHandle.show();
+				
 				de.titus.form.utils.EventUtils.triggerEvent(this.data.element, de.titus.form.Constants.EVENTS.PAGE_CHANGED);
-
 			}
 		};
-
+		
 		PageController.prototype.toPrevPage = function() {
 			if (PageController.LOGGER.isDebugEnabled())
 				PageController.LOGGER.logDebug("toPrevPage()");
-
-			var page = this.getPrevPage();
-			this.toPage(page);
+			
+			var page = this.__getPrevPageHandle();
+			this.__toPageHandle(page);
 		};
-
+		
 		PageController.prototype.toNextPage = function() {
 			if (PageController.LOGGER.isDebugEnabled())
 				PageController.LOGGER.logDebug("toNextPage()");
-			var page = this.getNextPage();
-			if(page)
-				this.toPage(page);
-			else if(this.data.currentPage >= 0)
-				this.toSummary();
+			
+			var page = this.__getNextPageHandle();
+			if (page)
+				this.__toPageHandle(page);
 		};
-
-		PageController.prototype.toSummary = function() {
-			if (PageController.LOGGER.isDebugEnabled())
-				PageController.LOGGER.logDebug("toSummary()");
-
-			this.data.element.addClass("summary");
-
-			for (var i = 0; i < this.data.pages.length; i++) {
-				var page = this.data.pages[i];
-				page.summary();
-			}
-
-			de.titus.form.utils.EventUtils.triggerEvent(this.data.element, de.titus.form.Constants.EVENTS.PAGE_CHANGED);
-			de.titus.form.utils.EventUtils.triggerEvent(this.data.element, de.titus.form.Constants.EVENTS.PAGE_SUMMARY);
-		};
-
+		
 		de.titus.core.jquery.Components.asComponent("formular_PageController", de.titus.form.PageController);
 	});
 })($);
