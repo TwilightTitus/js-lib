@@ -7,6 +7,7 @@
 			this.data = {
 			    element : aElement,
 			    formular : undefined,
+			    type : de.titus.form.Constants.TYPES.PAGE,
 			    name : aElement.attr("data-form-page"),
 			    step : (aElement.attr("data-form-step") || "").trim(),
 			    condition : undefined,

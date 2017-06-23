@@ -11,7 +11,7 @@
 				
 				setTimeout((function(aEvent, aData){
 					if (EventUtils.LOGGER.isDebugEnabled())
-						EventUtils.LOGGER.logDebug("fire event event \"" + aEvent + "\"");
+						EventUtils.LOGGER.logDebug(["fire event event \"", aEvent, "\"\non ", this, "\nwith data \"" + aData + "\"!"]);
 					this.trigger(aEvent, aData);
 				}).bind(aElement, aEvent, aData), 1);
 			},
@@ -19,7 +19,7 @@
 				//TODO REFECTORING TO ONE SETTINGS PARAMETER OBJECT
 				
 				if (EventUtils.LOGGER.isDebugEnabled())
-					EventUtils.LOGGER.logDebug("handleEvent(\"" + aEvent + "\")");
+					EventUtils.LOGGER.logDebug(["handleEvent \"", aEvent, "\"\nat ", aElement, "\nwith selector ", aSelector]);
 				
 				EventUtils.__checkOfUndefined(aEvent);
 				

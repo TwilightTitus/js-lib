@@ -28,7 +28,9 @@
 		<echo message="Building ${ant.project.name}-${project.version}.js" />
 		<mkdir dir="${dir.dist}" />
 		<concat destfile="${dir.dist}/${ant.project.name}-${project.version}.js">
-			<fileset dir="${dir.src}" includes="*.js" />
+			<fileset dir="${dir.src}" casesensitive="false">
+				<include name="**/*.js"/>
+			</fileset>
 		</concat>
 		<echo message="${ant.project.name}-${project.version}.js built." />
 		<echo message="minify ${ant.project.name}-${project.version}.js" />

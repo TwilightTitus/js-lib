@@ -65,6 +65,7 @@
 
 			var summaryHandle = new de.titus.form.PageControlHandle({
 				data : {
+					type: de.titus.form.Constants.TYPES.SUMMARY_PAGE,
 				    valid : true,
 				    condition : true
 				}
@@ -75,6 +76,7 @@
 
 			var submittedHandle = new de.titus.form.PageControlHandle({
 				data : {
+					type: de.titus.form.Constants.TYPES.SUBMITTED_PAGE,
 				    valid : true,
 				    condition : true
 				}
@@ -106,6 +108,13 @@
 
 			if (this.data.currentHandle)
 				return this.data.currentHandle.data.page;
+		};
+		
+		PageController.prototype.getNextPage = function() {
+			if (PageController.LOGGER.isDebugEnabled())
+				PageController.LOGGER.logDebug("getNextPage()");
+
+			return this.__getNextPageHandle().data.page;
 		};
 
 		PageController.prototype.hasNextPage = function() {

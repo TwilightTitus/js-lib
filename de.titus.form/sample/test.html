@@ -59,7 +59,7 @@
 	    					<div class="help-block text-danger" data-form-validation="value != undefined && value.trim() != ''">Enter your name!</div>
 	    					<div class="text-info help-block ">If your name "Max", then you must enter your given name!</div>				
 						</div>
-						<div class="form-group" data-form-field="givenname" data-form-field-type="text" data-form-condition="name != undefined && name.trim() == 'Max'">
+						<div class="form-group" data-form-field="givenname" data-form-field-type="text" data-form-condition="name != undefined && name.trim() == 'Max'" data-form-required="">
 							<label for="givenname">given name:</label>
 	    					<input type="text" class="form-control" name="givenname" />
 	    					<div class="help-block text-danger" data-form-validation="value != undefined && value.trim() != 'mustermann'">Enter your given name!</div>					
@@ -158,11 +158,12 @@
 					<p>		
 				</div>
 				
-				<div data-form-controls="">
-					<button data-form-control="back" type="button" class="btn btn-primary pull-left">previous step</button>
-					<button data-form-control="reset" type="button" class="btn btn-primary" style="text-align: center;">reset</button>
-					<button data-form-control="next" type="button" class="btn btn-primary pull-right">next step</button>
-					<button data-form-control="submit" type="button" class="btn btn-primary pull-right">submit</button>
+				<div>
+					<button data-form-button-back="" type="button" class="btn btn-primary pull-left">previous step</button>
+					<button data-form-button-reset="" type="button" class="btn btn-primary" style="text-align: center;">reset</button>
+					<button data-form-button-next="" type="button" class="btn btn-primary pull-right">next step</button>
+					<button data-form-button-summary="" type="button" class="btn btn-primary pull-right">summary</button>
+					<button data-form-button-submit="" type="button" class="btn btn-primary pull-right">submit</button>
 				</div>
 				
 			</form>
@@ -171,14 +172,15 @@
 		<script type="application/javascript" src="js/jquery-2.1.4.min.js"></script>
 		<script type="application/javascript" src="js/bootstrap.min.js"></script>
 		<script type="application/javascript" src="js/de.titus.core.1.8.8.js"></script>
-		<script type="application/javascript" src="js/de.titus.logging.2.0.0.min.js"></script>
+		<script type="application/javascript" src="js/de.titus.logging.2.1.0.js"></script>
 		<script type="application/javascript" src="../dist/0.6.0-beta/de.titus.form-0.6.0-beta.js"></script>
 		<script type="text/javascript">
 		var config = [
 			{"filter": "", "logLevel": "DEBUG", "appenders":["de.titus.logging.MemoryAppender"]},
 			{"filter": "de.titus.form.utils.EventUtils", "logLevel": "ERROR", "appenders":["de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender"]},
 			{"filter": "de.titus.form.StepPanel", "logLevel": "ERROR", "appenders":["de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender"]},
-			{"filter": "de.titus.form.Page", "logLevel": "DEBUG", "appenders":["de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender"]}
+			{"filter": "de.titus.form.Page", "logLevel": "ERROR", "appenders":["de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender"]},
+			{"filter": "de.titus.form.buttons", "logLevel": "DEBUG", "appenders":["de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender"]}
 		];
 		
 		
