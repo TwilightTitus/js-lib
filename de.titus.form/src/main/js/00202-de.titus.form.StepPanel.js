@@ -1,4 +1,4 @@
-(function() {
+(function($, EVENTTYPES) {
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.form.StepPanel", function() {
 		var StepPanel = de.titus.form.StepPanel = function(aElement) {
@@ -36,7 +36,26 @@
 
 			this.data.steps = steps;
 
-			de.titus.form.utils.EventUtils.handleEvent(this.data.element, [de.titus.form.Constants.EVENTS.STATE_CHANGED, de.titus.form.Constants.EVENTS.PAGE_CHANGED, de.titus.form.Constants.EVENTS.INITIALIZED ], StepPanel.prototype.update.bind(this));
+			de.titus.form.utils.EventUtils.handleEvent(this.data.element, [EVENTTYPES.STATE_CHANGED, EVENTTYPES.PAGE_CHANGED ], StepPanel.prototype.update.bind(this));
+		};
+		
+		StepPanel.prototype.update = function(aEvent) {
+			if (StepPanel.LOGGER.isDebugEnabled())
+				StepPanel.LOGGER.logDebug("update() -> " + aEvent.type);
+
+			var formular = this.data.element.Formular();
+			var pageController = this.data.element.formular_PageController();
+			var state = formular.data.state;
+			var stepId = de.titus.form.Constants.SPECIALSTEPS.START;
+
+			if (state == de.titus.form.Constants.STATE.INPUT && pageController.getCurrentPage())
+				stepId = pageController.getCurrentPage().data.step;
+			else if (state == de.titus.form.Constants.STATE.SUMMARY)
+				stepId = de.titus.form.Constants.SPECIALSTEPS.SUMMARY;
+			else if (state == de.titus.form.Constants.STATE.SUBMITTED)
+				stepId = de.titus.form.Constants.SPECIALSTEPS.SUBMITTED;
+
+			this.setStep(stepId);
 		};
 
 		StepPanel.prototype.setStep = function(aId) {
@@ -68,25 +87,7 @@
 			}
 		};
 
-		StepPanel.prototype.update = function(aEvent) {
-			if (StepPanel.LOGGER.isDebugEnabled())
-				StepPanel.LOGGER.logDebug("update() -> " + aEvent.type);
-
-			var formular = this.data.element.Formular();
-			var pageController = this.data.element.formular_PageController();
-			var state = formular.data.state;
-			var stepId = de.titus.form.Constants.SPECIALSTEPS.START;
-
-			if (state == de.titus.form.Constants.STATE.INPUT && pageController.getCurrentPage())
-				stepId = pageController.getCurrentPage().data.step;
-			else if (state == de.titus.form.Constants.STATE.SUMMARY)
-				stepId = de.titus.form.Constants.SPECIALSTEPS.SUMMARY;
-			else if (state == de.titus.form.Constants.STATE.SUBMITTED)
-				stepId = de.titus.form.Constants.SPECIALSTEPS.SUBMITTED;
-
-			this.setStep(stepId);
-		};
-
 		de.titus.core.jquery.Components.asComponent("formular_StepPanel", de.titus.form.StepPanel);
 	});
-})($);
+		
+})($,de.titus.form.Constants.EVENTS);

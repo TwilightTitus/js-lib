@@ -1,4 +1,4 @@
-(function() {
+(function($, EVENTTYPES) {
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.form.Formular", function() {
 		var Formular = de.titus.form.Formular = function(aElement) {
@@ -20,26 +20,26 @@
 			if (Formular.LOGGER.isDebugEnabled())
 				Formular.LOGGER.logDebug("init()");
 
-			this.data.element.on(de.titus.form.Constants.EVENTS.ACTION_PAGE_BACK, (function() {
+			this.data.element.on(EVENTTYPES.ACTION_PAGE_BACK, (function() {
 				this.data.state = de.titus.form.Constants.STATE.INPUT;
-				de.titus.form.utils.EventUtils.triggerEvent(this.data.element, de.titus.form.Constants.EVENTS.STATE_CHANGED);
+				de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.STATE_CHANGED);
 			}).bind(this));
-			this.data.element.on(de.titus.form.Constants.EVENTS.ACTION_PAGE_NEXT, (function() {
+			this.data.element.on(EVENTTYPES.ACTION_PAGE_NEXT, (function() {
 				this.data.state = de.titus.form.Constants.STATE.INPUT;
-				de.titus.form.utils.EventUtils.triggerEvent(this.data.element, de.titus.form.Constants.EVENTS.STATE_CHANGED);
+				de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.STATE_CHANGED);
 			}).bind(this));
-			this.data.element.on(de.titus.form.Constants.EVENTS.PAGE_SUMMARY, (function() {
+			this.data.element.on(EVENTTYPES.PAGE_SUMMARY, (function() {
 				this.data.state = de.titus.form.Constants.STATE.SUMMARY;
-				de.titus.form.utils.EventUtils.triggerEvent(this.data.element, de.titus.form.Constants.EVENTS.STATE_CHANGED);
+				de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.STATE_CHANGED);
 			}).bind(this));
-			this.data.element.on(de.titus.form.Constants.EVENTS.ACTION_SUBMIT, Formular.prototype.submit.bind(this));
+			this.data.element.on(EVENTTYPES.ACTION_SUBMIT, Formular.prototype.submit.bind(this));
 
 			this.data.element.formular_StepPanel();
 			this.data.element.formular_FormularControls();
 			this.data.element.formular_PageController();
 			this.data.element.find("[data-form-message]").formular_Message();
 
-			de.titus.form.utils.EventUtils.triggerEvent(this.data.element, de.titus.form.Constants.EVENTS.INITIALIZED);
+			de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.INITIALIZED);
 			this.data.element.addClass("initialized");
 		};
 
@@ -57,10 +57,10 @@
 
 			var modelType = (aModelType || "object").trim().toLowerCase();
 			var result = de.titus.form.utils.DataUtils[modelType](data);
-			
+
 			if (Formular.LOGGER.isDebugEnabled())
 				Formular.LOGGER.logDebug("getData (\"" + aModelType + "\") -> " + JSON.stringify(result));
-			
+
 			return result;
 		};
 
@@ -68,9 +68,8 @@
 			if (Formular.LOGGER.isDebugEnabled())
 				Formular.LOGGER.logDebug("submit ()");
 
-			
 			this.data.state = de.titus.form.Constants.STATE.SUBMITTED;
-			de.titus.form.utils.EventUtils.triggerEvent(this.data.element, de.titus.form.Constants.EVENTS.STATE_CHANGED);
+			de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.STATE_CHANGED);
 		};
 	});
 
@@ -79,4 +78,4 @@
 	$(document).ready(function() {
 		$('[data-form]').Formular();
 	});
-})($);
+})($, de.titus.form.Constants.EVENTS);

@@ -13,7 +13,7 @@
 		    ACTION_PAGE_NEXT : "form-action-page-next",
 		    ACTION_SUMMARY : "form-action-page-summary",
 
-
+		    PAGE_INITIALIZED : "form-page-initialized",
 		    PAGE_CHANGED : "form-page-changed",
 		    PAGE_SHOW : "form-page-show",
 		    PAGE_HIDE: "form-page-hide",
