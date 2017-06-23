@@ -28,9 +28,6 @@
 			de.titus.form.utils.EventUtils.handleEvent(this.data.element, EVENTTYPES.ACTION_PAGE_BACK, PageController.prototype.toPrevPage.bind(this));
 			de.titus.form.utils.EventUtils.handleEvent(this.data.element, EVENTTYPES.ACTION_PAGE_NEXT, PageController.prototype.toNextPage.bind(this));
 			de.titus.form.utils.EventUtils.handleEvent(this.data.element, EVENTTYPES.CONDITION_STATE_CHANGED, PageController.prototype.__checkCurrentPage.bind(this));
-
-			// de.titus.form.utils.EventUtils.triggerEvent(this.data.element,
-			// EVENTTYPES.ACTION_PAGE_NEXT);
 		};
 
 		PageController.prototype.__initPageHandles = function() {
