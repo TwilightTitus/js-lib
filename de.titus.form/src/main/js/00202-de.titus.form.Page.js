@@ -31,7 +31,7 @@
 			this.data.element.formular_Condition();
 
 
-			de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.INITIALIZED);
+			de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.PAGE_INITIALIZED);
 		};
 
 		Page.prototype.__changeConditionState = function(aEvent) {
@@ -41,19 +41,14 @@
 			aEvent.preventDefault();
 			aEvent.stopPropagation();			
 
-			var firstCheck = false;
-			if(this.data.condition == undefined)
-				firstCheck = true;
-			
+	
 			var condition = false;
 			if (aEvent.type == EVENTTYPES.CONDITION_MET)
 				condition = true;			
 
 			if (this.data.condition != condition) {
 				this.data.condition = condition;
-				de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.CONDITION_STATE_CHANGED);
-				if(firstCheck)
-					de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.PAGE_INITIALIZED);
+				de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.CONDITION_STATE_CHANGED);				
 			}
 		};
 
