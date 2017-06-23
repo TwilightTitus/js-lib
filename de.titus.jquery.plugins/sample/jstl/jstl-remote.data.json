@@ -1,4 +1,5 @@
 {
+"jstlTemplate" : "jstl-template.html",
 	"remoteData": "remote data",
 	"startIndex": 2,
 	"testImage": "https://www.google.de/images/nav_logo100633543.png",

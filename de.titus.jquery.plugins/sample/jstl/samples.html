@@ -3,7 +3,7 @@
 <head>
 <title>JSTL Samples</title>
 <script src="../../libs/jquery-1.11.1.js" type="text/javascript"></script>
-<script src="../../dist/3.0.0/de.titus.jquery.plugins.3.0.0.js"
+<script src="../../dist/3.0.1/de.titus.jquery.plugins.3.0.1.js"
 	type="text/javascript"></script>
 <link type="text/css" href="style.css" rel="stylesheet" />
 
@@ -18,7 +18,7 @@
                 ]
             }, {
                 "filter" : "de.titus",
-                "logLevel" : "DEBUG",
+                "logLevel" : "ERROR",
                 "appenders" : [
 	                "de.titus.logging.ConsolenAppender"
                 ]
@@ -35,7 +35,7 @@
 				jstl-data-var="newData" jstl-foreach="${newData.list}"
 				jstl-foreach-var="listItem" jstl-foreach-status="listStatus">
 				<span>${listStatus.index} </span> <span>id: ${listItem.id}</span> <span>name:
-					${listItem.name}</span> <span>name: ${jstlTemplate}</span> <br />
+					${listItem.name}</span> <span>name: ${newData.jstlTemplate}</span> <br />
 			</div>
 		</div>
 
@@ -216,13 +216,13 @@
 		/*<!--*/
 
         function load(aElement) {
-	        $(aElement).hide();
+	        //$(aElement).hide();
 	        //alert("load");
         };
         
         function success(aElement) {
 	        //alert("success");
-	        $(aElement).show();
+	        //$(aElement).show();
         };
         
         function toArray(value) {
@@ -265,9 +265,9 @@
 	        });
 	        
 	        $("#test").on(de.titus.jstl.Constants.EVENTS.onLoad, function(event) {
-		        console.log("load event");
-		        console.log(event);
-		        event.stopPropagation();
+		        //console.log("load event");
+		        //console.log(event);
+		        //event.stopPropagation();
 	        });
 	        
 	        $("#test").jstl(data);
