@@ -58,6 +58,15 @@
 			
 			this.data.state = de.titus.form.Constants.STATE.SUBMITTED;
 			de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.STATE_CHANGED);
+			
+			console.log("object model: ");
+			console.log(this.getData("object"));
+			console.log("key-value model: ");
+			console.log(this.getData("key-value"));
+			console.log("list-model model: ");
+			console.log(this.getData("list-model"));
+			console.log("data-model model: ");
+			console.log(this.getData("data-model"));
 		};
 	});
 	

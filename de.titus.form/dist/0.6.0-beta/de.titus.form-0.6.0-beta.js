@@ -103,40 +103,7 @@
 		};
 	});
 })();
-(function($){
-	"use strict";
-	de.titus.core.Namespace.create("de.titus.form.utils.JQueryFunctions", function() {
-		
-		$.fn.formular_utils_RemoveAddClass = function(aRemoveClass, anAddClass){
-			if(this.length == 0) return;
-			else if(this.length > 1){
-				this.each(function(){$(this).formular_utils_RemoveAddClass(aRemoveClass, anAddClass);});
-				return this;
-			}
-			else{
-				this.removeClass(aRemoveClass);
-				this.addClass(anAddClass);
-			}
-		};		
-		
-		$.fn.formular_utils_SetActive = function(){
-			this.formular_utils_RemoveAddClass("inactive", "active");
-		};
-		
-		$.fn.formular_utils_SetInactive = function(){
-			this.formular_utils_RemoveAddClass("active", "inactive");
-		};
-		
-		$.fn.formular_utils_SetValid = function(){
-			this.formular_utils_RemoveAddClass("invalid", "valid");
-		};
-		
-		$.fn.formular_utils_SetInvalid = function(){
-			this.formular_utils_RemoveAddClass("valid", "invalid");
-		};
-		
-	});	
-})($);(function($, EVENTTYPES) {
+(function($, EVENTTYPES) {
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.form.Condition", function() {
 		var Condition = de.titus.form.Condition = function(aElement) {
@@ -579,6 +546,15 @@
 			
 			this.data.state = de.titus.form.Constants.STATE.SUBMITTED;
 			de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.STATE_CHANGED);
+			
+			console.log("object model: ");
+			console.log(this.getData("object"));
+			console.log("key-value model: ");
+			console.log(this.getData("key-value"));
+			console.log("list-model model: ");
+			console.log(this.getData("list-model"));
+			console.log("data-model model: ");
+			console.log(this.getData("data-model"));
 		};
 	});
 	
@@ -1477,7 +1453,7 @@
 				if (DataUtils.LOGGER.isDebugEnabled())
 					DataUtils.LOGGER.logDebug("data of fields to list-model: " + JSON.stringify(theData) );
 				
-				return theDatas;
+				return theData;
 			},
 			"data-model": function(theData){
 				if (DataUtils.LOGGER.isDebugEnabled())
@@ -1627,4 +1603,37 @@
 		};
 	});
 	
+})($);(function($){
+	"use strict";
+	de.titus.core.Namespace.create("de.titus.form.utils.JQueryFunctions", function() {
+		
+		$.fn.formular_utils_RemoveAddClass = function(aRemoveClass, anAddClass){
+			if(this.length == 0) return;
+			else if(this.length > 1){
+				this.each(function(){$(this).formular_utils_RemoveAddClass(aRemoveClass, anAddClass);});
+				return this;
+			}
+			else{
+				this.removeClass(aRemoveClass);
+				this.addClass(anAddClass);
+			}
+		};		
+		
+		$.fn.formular_utils_SetActive = function(){
+			this.formular_utils_RemoveAddClass("inactive", "active");
+		};
+		
+		$.fn.formular_utils_SetInactive = function(){
+			this.formular_utils_RemoveAddClass("active", "inactive");
+		};
+		
+		$.fn.formular_utils_SetValid = function(){
+			this.formular_utils_RemoveAddClass("invalid", "valid");
+		};
+		
+		$.fn.formular_utils_SetInvalid = function(){
+			this.formular_utils_RemoveAddClass("valid", "invalid");
+		};
+		
+	});	
 })($);

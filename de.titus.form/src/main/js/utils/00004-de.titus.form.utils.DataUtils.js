@@ -34,7 +34,7 @@
 				if (DataUtils.LOGGER.isDebugEnabled())
 					DataUtils.LOGGER.logDebug("data of fields to list-model: " + JSON.stringify(theData) );
 				
-				return theDatas;
+				return theData;
 			},
 			"data-model": function(theData){
 				if (DataUtils.LOGGER.isDebugEnabled())
