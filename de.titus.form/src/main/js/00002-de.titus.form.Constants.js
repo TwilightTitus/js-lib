@@ -41,7 +41,6 @@
 		
 		de.titus.form.Constants.STATE = {
 		    INPUT : "form-state-input",
-		    SUMMARY : "form-state-summary",
 		    SUBMITTED : "form-state-submitted",
 		};
 		

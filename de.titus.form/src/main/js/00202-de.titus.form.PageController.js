@@ -26,7 +26,7 @@
 			this.data.pageHandles = this.__initPageHandles();
 
 			de.titus.form.utils.EventUtils.handleEvent(this.data.element, EVENTTYPES.ACTION_PAGE_BACK, PageController.prototype.toPrevPage.bind(this));
-			de.titus.form.utils.EventUtils.handleEvent(this.data.element, EVENTTYPES.ACTION_PAGE_NEXT, PageController.prototype.toNextPage.bind(this));
+			de.titus.form.utils.EventUtils.handleEvent(this.data.element, [EVENTTYPES.ACTION_PAGE_NEXT, EVENTTYPES.ACTION_SUMMARY, EVENTTYPES.ACTION_SUBMIT], PageController.prototype.toNextPage.bind(this));
 			de.titus.form.utils.EventUtils.handleEvent(this.data.element, EVENTTYPES.CONDITION_STATE_CHANGED, PageController.prototype.__checkCurrentPage.bind(this));
 		};
 
@@ -181,7 +181,8 @@
 				PageController.LOGGER.logDebug("toPrevPage()");
 
 			var page = this.__getPrevPageHandle();
-			this.__toPageHandle(page);
+			if (page)
+				this.__toPageHandle(page);
 		};
 
 		PageController.prototype.toNextPage = function() {

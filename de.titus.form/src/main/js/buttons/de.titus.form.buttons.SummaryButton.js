@@ -19,7 +19,7 @@
 				SummaryButton.LOGGER.logDebug("__init()");
 			
 			de.titus.form.utils.EventUtils.handleEvent(this.data.element, "click", SummaryButton.prototype.execute.bind(this));
-			de.titus.form.utils.EventUtils.handleEvent(this.data.formularElement, [ EVENTTYPES.PAGE_CHANGED, EVENTTYPES.VALIDATION_STATE_CHANGED ], SummaryButton.prototype.update.bind(this), "[data-form-page]");
+			de.titus.form.utils.EventUtils.handleEvent(this.data.formularElement, [ EVENTTYPES.PAGE_CHANGED, EVENTTYPES.VALIDATION_STATE_CHANGED ], SummaryButton.prototype.update.bind(this));
 			this.data.element.formular_utils_SetInactive();
 		};
 		
@@ -33,16 +33,13 @@
 			if (SummaryButton.LOGGER.isDebugEnabled())
 				SummaryButton.LOGGER.logDebug("update() -> " + aEvent.type);
 			
-			if (aEvent.type == EVENTTYPES.VALIDATION_STATE_CHANGED) {
-				var pageController = this.data.formularElement.formular_PageController();
-				var page = pageController.getCurrentPage();
-				if (page && page.data.condition && page.data.valid) {
-					var nextPage = pageController.getNextPage();
-					if (nextPage.data.type == de.titus.form.Constants.TYPES.SUMMARY_PAGE)
-						return this.data.element.formular_utils_SetActive();
-				}
+			var pageController = this.data.formularElement.formular_PageController();
+			var page = pageController.getCurrentPage();
+			if (page && page.data.condition && page.data.valid) {
+				var nextPage = pageController.getNextPage();
+				if (nextPage.data.type == de.titus.form.Constants.TYPES.SUMMARY_PAGE)
+					return this.data.element.formular_utils_SetActive();
 			}
-			
 			this.data.element.formular_utils_SetInactive();
 		};
 		
