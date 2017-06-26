@@ -19,7 +19,7 @@
 				BackButton.LOGGER.logDebug("__init()");
 			
 			de.titus.form.utils.EventUtils.handleEvent(this.data.element, "click", BackButton.prototype.execute.bind(this));
-			de.titus.form.utils.EventUtils.handleEvent(this.data.formularElement, [ EVENTTYPES.PAGE_CHANGED , EVENTTYPES.STATE_CHANGED], BackButton.prototype.update.bind(this));
+			de.titus.form.utils.EventUtils.handleEvent(this.data.formularElement, [ EVENTTYPES.PAGE_CHANGED], BackButton.prototype.update.bind(this));
 			this.data.element.formular_utils_SetInactive();
 		};
 		

@@ -26,9 +26,9 @@
 
 			this.data.formular = de.titus.form.utils.FormularUtils.getFormular(this.data.element);
 			de.titus.form.utils.EventUtils.handleEvent(this.data.element, [ EVENTTYPES.CONDITION_MET, EVENTTYPES.CONDITION_NOT_MET ], Page.prototype.__changeConditionState.bind(this));
-			de.titus.form.utils.EventUtils.handleEvent(this.data.element, [ EVENTTYPES.CONDITION_STATE_CHANGED, EVENTTYPES.VALIDATION_STATE_CHANGED ], Page.prototype.__changeValidationState.bind(this), "[data-form-field]");
+			de.titus.form.utils.EventUtils.handleEvent(this.data.element, [ EVENTTYPES.CONDITION_STATE_CHANGED, EVENTTYPES.VALIDATION_STATE_CHANGED ], Page.prototype.__changeValidationState.bind(this));
 
-			this.data.fields = this.data.element.find("[data-form-field]").formular_Field();
+			this.data.fields = this.data.element.formular_field_utils_getSubFields();
 			this.data.element.formular_Condition();
 
 

@@ -12,8 +12,8 @@
 			    expressionResolver : new de.titus.core.ExpressionResolver()
 			};
 
-			//setTimeout(Condition.prototype.__init.bind(this), 1);
-			this.__init();
+			setTimeout(Condition.prototype.__init.bind(this), 1);
+			//this.__init();
 		};
 
 		Condition.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.Condition");
@@ -46,6 +46,9 @@
 				de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.CONDITION_MET);
 			else {
 				var data = this.data.formular.getData("object", true, false);
+				
+				if (Condition.LOGGER.isDebugEnabled())
+					Condition.LOGGER.logDebug(["__doCheck() -> data: \"", data,  "\""]);
 
 				var result = this.data.expressionResolver.resolveExpression(this.data.expression, data, false);
 				if (result)

@@ -43,6 +43,9 @@
 					data = data.concat(pageData);
 			}
 			
+			if (Formular.LOGGER.isDebugEnabled())
+				Formular.LOGGER.logDebug("nativ data: ", data);
+			
 			var modelType = (aModelType || "object").trim().toLowerCase();
 			var result = de.titus.form.utils.DataUtils[modelType](data);
 			

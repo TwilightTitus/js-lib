@@ -24,7 +24,7 @@
 				ValidationController.LOGGER.logDebug("__init()");
 
 			this.data.formular = de.titus.form.utils.FormularUtils.getFormular(this.data.element);
-			this.data.field = de.titus.form.utils.FormularUtils.getField(this.data.element);
+			this.data.field = this.data.element.formular_field_utils_getAssociatedField();
 
 			if (this.data.required || this.data.validations.length > 0) {
 				de.titus.form.utils.EventUtils.handleEvent(this.data.element, [ EVENTTYPES.INITIALIZED, EVENTTYPES.CONDITION_STATE_CHANGED, EVENTTYPES.FIELD_VALUE_CHANGED ], ValidationController.prototype.__doValidate.bind(this));

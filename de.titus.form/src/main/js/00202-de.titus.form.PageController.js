@@ -23,6 +23,8 @@
 
 			var formularElement = this.data.element;
 			this.data.pages = this.data.element.find("[data-form-page]").formular_Page();
+			if(!Array.isArray(this.data.pages))
+				this.data.pages = [this.data.pages];
 			this.data.pageHandles = this.__initPageHandles();
 
 			de.titus.form.utils.EventUtils.handleEvent(this.data.element, EVENTTYPES.ACTION_PAGE_BACK, PageController.prototype.toPrevPage.bind(this));
