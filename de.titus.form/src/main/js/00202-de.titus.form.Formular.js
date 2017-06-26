@@ -18,9 +18,9 @@
 		
 		Formular.prototype.__init = function() {
 			if (Formular.LOGGER.isDebugEnabled())
-				Formular.LOGGER.logDebug("init()");			
+				Formular.LOGGER.logDebug("init()");
 			
-			de.titus.form.utils.EventUtils.handleEvent(this.data.element, [EVENTTYPES.ACTION_SUBMIT], Formular.prototype.submit.bind(this));
+			de.titus.form.utils.EventUtils.handleEvent(this.data.element, [ EVENTTYPES.ACTION_SUBMIT ], Formular.prototype.submit.bind(this));
 			
 			this.data.element.formular_StepPanel();
 			this.data.element.formular_FormularControls();
@@ -59,17 +59,23 @@
 			if (Formular.LOGGER.isDebugEnabled())
 				Formular.LOGGER.logDebug("submit ()");
 			
-			this.data.state = de.titus.form.Constants.STATE.SUBMITTED;
-			de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.STATE_CHANGED);
-			
-			console.log("object model: ");
-			console.log(this.getData("object"));
-			console.log("key-value model: ");
-			console.log(this.getData("key-value"));
-			console.log("list-model model: ");
-			console.log(this.getData("list-model"));
-			console.log("data-model model: ");
-			console.log(this.getData("data-model"));
+			try {
+				console.log("object model: ");
+				console.log(this.getData("object"));
+				console.log("key-value model: ");
+				console.log(this.getData("key-value"));
+				console.log("list-model model: ");
+				console.log(this.getData("list-model"));
+				console.log("data-model model: ");
+				console.log(this.getData("data-model"));
+				
+				this.data.state = de.titus.form.Constants.STATE.SUBMITTED;
+				de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.STATE_CHANGED);
+				de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.SUCCESSED);
+			} catch (e) {
+				Formular.LOGGER.logError(e);
+				de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.FAILED);
+			}
 		};
 	});
 	

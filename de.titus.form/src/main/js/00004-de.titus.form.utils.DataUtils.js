@@ -50,27 +50,32 @@
 					    });
 				    }
 				    if (item.items && item.items.length > 0)
-					    Array.prototype.push(result, DataUtils["list-model"](item.items, name));
+					    Array.prototype.push.apply(result, DataUtils["list-model"](item.items, name));
 			    }
 			    return result;
 		    },
 
-		    "data-model" : function(theData, aContextName) {
+		    "data-model" : function(theData) {
 			    if (DataUtils.LOGGER.isDebugEnabled())
-				    DataUtils.LOGGER.logDebug("data of fields to data-model: " + JSON.stringify(theData));
-			    var result = {};
-			    for (var i = 0; i < theData.length; i++)
-				    DataUtils.__addToDataModel(theData[i], result);
-
-			    if (DataUtils.LOGGER.isDebugEnabled())
-				    DataUtils.LOGGER.logDebug("data of fields to data-model: result: " + JSON.stringify(result));
-
-			    return result;
+				    DataUtils.LOGGER.logDebug(["data of fields to data-model: ", theData]);
+			   
+			    return DataUtils.__addToDataModel(theData, {});
 		    },
 		    
-		    __addToDataModel : function(aData, aContext, aContextName) {
-			    //{name:"", value:"", type:"", items:[]}
-		    	//NAMES SPLITTING 
+		    __addToDataModel : function(aData, aContext, aContextName) {		    	
+		    	for(var i = 0; i < aData.length; i++){
+		    		var data = aData[i];
+		    		var name = aContextName != undefined && aContextName.trim() != "" ? aContextName + "." + data.name : data.name;
+		    		if(data.value != undefined){		    		
+			    		var context = DataUtils.__getObjectContext(name, aContext);
+			    		context["$value"] = data.value;
+			    		context["$type"] = data.type;
+		    		}
+		    		if(data.items && data.items.length > 0)
+		    			DataUtils.__addToDataModel(data.items, aContext, name);
+		    	}
+		    	
+		    	return aContext;
 		    },
 		   
 		    __getObjectContext : function(aContextName, aRoot) {

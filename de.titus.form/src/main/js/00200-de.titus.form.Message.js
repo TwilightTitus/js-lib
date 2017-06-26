@@ -38,13 +38,10 @@
 			var data = this.data.formular.getData("object", true, false);
 
 			var result = this.data.expressionResolver.resolveExpression(this.data.expression, data, false);
-			if (result) {
-				this.data.element.removeClass("inactive");
-				this.data.element.addClass("active");
-			} else {
-				this.data.element.removeClass("active");
-				this.data.element.addClass("inactive");
-			}
+			if (result)
+				this.data.element.formular_utils_SetActive();
+			else
+				this.data.element.formular_utils_SetInactive();
 		};
 
 		de.titus.core.jquery.Components.asComponent("formular_Message", de.titus.form.Message);

@@ -87,7 +87,8 @@
 			</form>
 		</div>
 		
-		<script type="application/javascript" src="js/jquery-2.1.4.min.js"></script>
+		<!-- script type="application/javascript" src="js/jquery-2.1.4.min.js"></script-->
+		<script type="application/javascript" src="js/jquery-2.2.4.js"></script>
 		<script type="application/javascript" src="js/bootstrap.min.js"></script>
 		<script type="application/javascript" src="js/de.titus.core.1.8.8.js"></script>
 		<script type="application/javascript" src="js/de.titus.logging.2.1.0.js"></script>
@@ -96,13 +97,14 @@
 		var config = [
 			{"filter": "", "logLevel": "DEBUG", "appenders":["de.titus.logging.MemoryAppender"]},			
 			{"filter": "de.titus.form.Formular", "logLevel": "DEBUG", "appenders":["de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender"]},
-			{"filter": "de.titus.form.utils.EventUtils", "logLevel": "ERROR", "appenders":["de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender"]},
+			{"filter": "de.titus.form.utils.EventUtils", "logLevel": "DEBUG", "appenders":["de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender"]},
 			{"filter": "de.titus.form.StepPanel", "logLevel": "ERROR", "appenders":["de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender"]},
 			{"filter": "de.titus.form.Page", "logLevel": "ERROR", "appenders":["de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender"]},
 			{"filter": "de.titus.form.buttons", "logLevel": "ERROR", "appenders":["de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender"]},
 			{"filter": "de.titus.form.Condition", "logLevel": "ERROR", "appenders":["de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender"]},
 			{"filter": "de.titus.form.ValidationController", "logLevel": "ERROR", "appenders":["de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender"]},
-			{"filter": "de.titus.form.ContainerField", "logLevel": "DEBUG", "appenders":["de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender"]}
+			{"filter": "de.titus.form.ContainerField", "logLevel": "DEBUG", "appenders":["de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender"]},
+			{"filter": "de.titus.form.utils.DataUtils", "logLevel": "DEBUG", "appenders":["de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender"]}
 			
 		];
 		

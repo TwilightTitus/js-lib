@@ -141,26 +141,48 @@
 			    return result;
 		    },
 
-		    "list-model" : function(theData) {
+		    "list-model" : function(theData, aContextName) {
 			    if (DataUtils.LOGGER.isDebugEnabled())
 				    DataUtils.LOGGER.logDebug("data of fields to list-model: " + JSON.stringify(theData));
-
-			    return theData;
+			    var result = [];
+			    for (var i = 0; i < theData.length; i++) {
+				    var item = theData[i];
+				    var name = aContextName != undefined && aContextName.trim() != "" ? aContextName + "." + item.name : item.name;
+				    if (theData[i].value != undefined) {
+					    result.push({
+					        name : name,
+					        value : item.value
+					    });
+				    }
+				    if (item.items && item.items.length > 0)
+					    Array.prototype.push.apply(result, DataUtils["list-model"](item.items, name));
+			    }
+			    return result;
 		    },
 
 		    "data-model" : function(theData) {
 			    if (DataUtils.LOGGER.isDebugEnabled())
-				    DataUtils.LOGGER.logDebug("data of fields to data-model: " + JSON.stringify(theData));
-
-			    var result = {};
-			    for (var i = 0; i < theData.length; i++) {
-				    var data = theData[i];
-				    DataUtils.__toSimpleObject(data, result);
-			    }
-
-			    return result;
+				    DataUtils.LOGGER.logDebug(["data of fields to data-model: ", theData]);
+			   
+			    return DataUtils.__addToDataModel(theData, {});
 		    },
-
+		    
+		    __addToDataModel : function(aData, aContext, aContextName) {		    	
+		    	for(var i = 0; i < aData.length; i++){
+		    		var data = aData[i];
+		    		var name = aContextName != undefined && aContextName.trim() != "" ? aContextName + "." + data.name : data.name;
+		    		if(data.value != undefined){		    		
+			    		var context = DataUtils.__getObjectContext(name, aContext);
+			    		context["$value"] = data.value;
+			    		context["$type"] = data.type;
+		    		}
+		    		if(data.items && data.items.length > 0)
+		    			DataUtils.__addToDataModel(data.items, aContext, name);
+		    	}
+		    	
+		    	return aContext;
+		    },
+		   
 		    __getObjectContext : function(aContextName, aRoot) {
 			    if (aContextName == undefined || aContextName.trim() == '')
 				    return aRoot;
@@ -191,7 +213,7 @@
 					    key = fullname.substring(lastIndex + 1);
 					    contextName = fullname.substring(0, lastIndex);
 				    }
-				    
+
 				    var context = DataUtils.__getObjectContext(contextName, aContext);
 				    context[key] = data;
 			    }
@@ -542,13 +564,10 @@
 			var data = this.data.formular.getData("object", true, false);
 
 			var result = this.data.expressionResolver.resolveExpression(this.data.expression, data, false);
-			if (result) {
-				this.data.element.removeClass("inactive");
-				this.data.element.addClass("active");
-			} else {
-				this.data.element.removeClass("active");
-				this.data.element.addClass("inactive");
-			}
+			if (result)
+				this.data.element.formular_utils_SetActive();
+			else
+				this.data.element.formular_utils_SetInactive();
 		};
 
 		de.titus.core.jquery.Components.asComponent("formular_Message", de.titus.form.Message);
@@ -711,9 +730,9 @@
 		
 		Formular.prototype.__init = function() {
 			if (Formular.LOGGER.isDebugEnabled())
-				Formular.LOGGER.logDebug("init()");			
+				Formular.LOGGER.logDebug("init()");
 			
-			de.titus.form.utils.EventUtils.handleEvent(this.data.element, [EVENTTYPES.ACTION_SUBMIT], Formular.prototype.submit.bind(this));
+			de.titus.form.utils.EventUtils.handleEvent(this.data.element, [ EVENTTYPES.ACTION_SUBMIT ], Formular.prototype.submit.bind(this));
 			
 			this.data.element.formular_StepPanel();
 			this.data.element.formular_FormularControls();
@@ -752,17 +771,23 @@
 			if (Formular.LOGGER.isDebugEnabled())
 				Formular.LOGGER.logDebug("submit ()");
 			
-			this.data.state = de.titus.form.Constants.STATE.SUBMITTED;
-			de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.STATE_CHANGED);
-			
-			console.log("object model: ");
-			console.log(this.getData("object"));
-			console.log("key-value model: ");
-			console.log(this.getData("key-value"));
-			console.log("list-model model: ");
-			console.log(this.getData("list-model"));
-			console.log("data-model model: ");
-			console.log(this.getData("data-model"));
+			try {
+				console.log("object model: ");
+				console.log(this.getData("object"));
+				console.log("key-value model: ");
+				console.log(this.getData("key-value"));
+				console.log("list-model model: ");
+				console.log(this.getData("list-model"));
+				console.log("data-model model: ");
+				console.log(this.getData("data-model"));
+				
+				this.data.state = de.titus.form.Constants.STATE.SUBMITTED;
+				de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.STATE_CHANGED);
+				de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.SUCCESSED);
+			} catch (e) {
+				Formular.LOGGER.logError(e);
+				de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.FAILED);
+			}
 		};
 	});
 	
