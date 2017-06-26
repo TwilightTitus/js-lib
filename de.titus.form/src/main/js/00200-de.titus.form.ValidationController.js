@@ -9,7 +9,6 @@
 			    element : aElement,
 			    formular : undefined,
 			    field : undefined,
-			    required : (aElement.attr("data-form-required") !== undefined),
 			    expressionResolver : new de.titus.core.ExpressionResolver(),
 			    validations : aElement.find("[data-form-validation]")
 			};
@@ -61,12 +60,12 @@
 			else
 				this.data.element.removeClass("no-value");
 
-			if (this.data.required && !this.data.field.data.condition)
+			if (this.data.field.data.required && !this.data.field.data.condition)
 				valid = false;
 			else if (this.data.validations.length == 0)
-				valid = !this.data.required || !valueEmpty;
+				valid = !this.data.field.data.required || !valueEmpty;
 			else if (this.data.validations.length > 0 && valueEmpty)
-				valid = !this.data.required;
+				valid = !this.data.field.data.required;
 			else
 				valid = this.__checkValidations(fieldData);
 

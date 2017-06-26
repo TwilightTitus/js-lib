@@ -1,10 +1,10 @@
 (function($, EventUtils, EVENTTYPES) {
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.form.ContainerField", function() {
-		var Field = de.titus.form.ContainerField = function(aElement) {
-			if (Field.LOGGER.isDebugEnabled())
-				Field.LOGGER.logDebug("constructor");
-
+		var ContainerField = de.titus.form.ContainerField = function(aElement) {
+			if (ContainerField.LOGGER.isDebugEnabled())
+				ContainerField.LOGGER.logDebug("constructor");
+			
 			this.data = {
 			    element : aElement,
 			    page : undefined,
@@ -12,114 +12,98 @@
 			    name : (aElement.attr("data-form-container-field") || "").trim(),
 			    required : (aElement.attr("data-form-required") !== undefined),
 			    condition : undefined,
-			    valid : undefined,
+			    //always valid, because it's only a container
+			    valid : true,
 			    fields : []
 			};
-
+			
 			this.hide();
-
-			setTimeout(Field.prototype.__init.bind(this), 1);
+			
+			setTimeout(ContainerField.prototype.__init.bind(this), 1);
 		};
-
-		Field.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.ContainerField");
-
-		Field.prototype.__init = function() {
-			if (Field.LOGGER.isDebugEnabled())
-				Field.LOGGER.logDebug("init()");
-
-			EventUtils.handleEvent(this.data.element, [ EVENTTYPES.CONDITION_MET, EVENTTYPES.CONDITION_NOT_MET ], Field.prototype.__changeConditionState.bind(this));
-			EventUtils.handleEvent(this.data.element, [ EVENTTYPES.VALIDATION_VALID, EVENTTYPES.VALIDATION_INVALID ], Field.prototype.__changeValidationState.bind(this));
-
+		
+		ContainerField.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.ContainerField");
+		
+		ContainerField.prototype.__init = function() {
+			if (ContainerField.LOGGER.isDebugEnabled())
+				ContainerField.LOGGER.logDebug("init()");
+			
+			EventUtils.handleEvent(this.data.element, [ EVENTTYPES.CONDITION_MET, EVENTTYPES.CONDITION_NOT_MET ], ContainerField.prototype.__changeConditionState.bind(this));			
+			EventUtils.handleEvent(this.data.element, [ EVENTTYPES.CONDITION_STATE_CHANGED, EVENTTYPES.VALIDATION_STATE_CHANGED, EVENTTYPES.FIELD_VALUE_CHANGED ], ContainerField.prototype.__changeValidationStateOfFields.bind(this), "*");
+			
 			this.data.fields = this.data.element.formular_field_utils_getSubFields();
-
+			
 			this.data.element.formular_Condition();
-			this.data.element.formular_ValidationController();
-
+			
 			EventUtils.triggerEvent(this.data.element, EVENTTYPES.INITIALIZED);
 		};
-
-		Field.prototype.__changeConditionState = function(aEvent) {
-			if (Field.LOGGER.isDebugEnabled())
-				Field.LOGGER.logDebug([ "__changeConditionState()  for \"", this.data.name, "\" -> ", aEvent ]);
-
+		
+		ContainerField.prototype.__changeConditionState = function(aEvent) {
+			if (ContainerField.LOGGER.isDebugEnabled())
+				ContainerField.LOGGER.logDebug([ "__changeConditionState()  for \"", this.data.name, "\" -> ", aEvent ]);
+			
 			aEvent.preventDefault();
 			aEvent.stopPropagation();
-
+			
 			var condition = false;
 			if (aEvent.type == EVENTTYPES.CONDITION_MET)
 				condition = true;
-
+			
 			if (this.data.condition != condition) {
 				this.data.condition = condition;
 				if (this.data.condition)
 					this.show();
 				else
 					this.hide();
-
+				
 				EventUtils.triggerEvent(this.data.element, EVENTTYPES.CONDITION_STATE_CHANGED);
 			}
 		};
+		
+		ContainerField.prototype.__changeValidationStateOfFields = function(aEvent) {
+			//only a visible change!
+			var valid = de.titus.form.utils.FormularUtils.isFieldsValid(this.data.fields);
+			if (valid)
+				this.data.element.formular_utils_SetValid();
+			else
+				this.data.element.formular_utils_SetInvalid();
+			
+		}
 
-		Field.prototype.__changeValidationState = function(aEvent) {
-			if (Field.LOGGER.isDebugEnabled())
-				Field.LOGGER.logDebug("__changeValidationState() for field \"" + this.data.name + "\" -> " + aEvent.type);
-
-			aEvent.preventDefault();
-			aEvent.stopPropagation();
-
-			var valid = false;
-			if (aEvent.type == EVENTTYPES.VALIDATION_VALID)
-				valid = true;
-
-			if (this.data.valid != valid) {
-				if (Field.LOGGER.isDebugEnabled())
-					Field.LOGGER.logDebug("__changeValidationState() for field \"" + this.data.name + "\" from " + this.data.valid + " -> " + valid);
-
-				this.data.valid = valid;
-
-				if (this.data.valid)
-					this.data.element.formular_utils_SetValid();
-				else
-					this.data.element.formular_utils_SetInvalid();
-
-				EventUtils.triggerEvent(this.data.element, EVENTTYPES.VALIDATION_STATE_CHANGED);
-			}
-		};
-
-		Field.prototype.hide = function() {
-			if (Field.LOGGER.isDebugEnabled())
-				Field.LOGGER.logDebug("hide ()");
-
+		ContainerField.prototype.hide = function() {
+			if (ContainerField.LOGGER.isDebugEnabled())
+				ContainerField.LOGGER.logDebug("hide ()");
+			
 			this.data.element.formular_utils_SetInactive();
 			for (var i = 0; i < this.data.fields.length; i++)
 				this.data.fields[i].hide();
 		};
-
-		Field.prototype.show = function() {
-			if (Field.LOGGER.isDebugEnabled())
-				Field.LOGGER.logDebug("show ()");
+		
+		ContainerField.prototype.show = function() {
+			if (ContainerField.LOGGER.isDebugEnabled())
+				ContainerField.LOGGER.logDebug("show ()");
 			if (this.data.condition) {
 				this.data.element.formular_utils_SetActive();
 				for (var i = 0; i < this.data.fields.length; i++)
 					this.data.fields[i].show();
 			}
 		};
-
-		Field.prototype.summary = function() {
-			if (Field.LOGGER.isDebugEnabled())
-				Field.LOGGER.logDebug("summary ()");
+		
+		ContainerField.prototype.summary = function() {
+			if (ContainerField.LOGGER.isDebugEnabled())
+				ContainerField.LOGGER.logDebug("summary ()");
 			if (this.data.condition) {
 				for (var i = 0; i < this.data.fields.length; i++)
 					this.data.fields[i].summary();
-
+				
 				this.data.element.formular_utils_SetActive();
 			}
 		};
-
-		Field.prototype.getData = function(acceptInvalid) {
-			if (Field.LOGGER.isDebugEnabled())
-				Field.LOGGER.logDebug("getData()");
-
+		
+		ContainerField.prototype.getData = function(acceptInvalid) {
+			if (ContainerField.LOGGER.isDebugEnabled())
+				ContainerField.LOGGER.logDebug("getData()");
+			
 			if (this.data.condition && (this.data.valid || acceptInvalid)) {
 				var items = [];
 				for (var i = 0; i < this.data.fields.length; i++) {
@@ -127,7 +111,7 @@
 					if (value)
 						items.push(value);
 				}
-
+				
 				return {
 				    name : this.data.name,
 				    $type : "container-field",
@@ -135,7 +119,5 @@
 				};
 			}
 		};
-
-		de.titus.core.jquery.Components.asComponent("formular_ContainerField", de.titus.form.ContainerField);
 	});
 })($, de.titus.form.utils.EventUtils, de.titus.form.Constants.EVENTS);

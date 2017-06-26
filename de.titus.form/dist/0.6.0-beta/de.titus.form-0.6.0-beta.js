@@ -304,63 +304,74 @@
 		};
 	});
 	
-})($);(function($){
+})($);(function($) {
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.form.utils.FormularUtils", function() {
 		var FormularUtils = de.titus.form.utils.FormularUtils = {
-			LOGGER : de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.utils.FormularUtils"),
-			
-			getFormularElement : function(aElement){
-				if (FormularUtils.LOGGER.isDebugEnabled())
-					FormularUtils.LOGGER.logDebug("getFormularElement()");
-				
-				if(aElement.is("[data-form]"))
-					return aElement;
-				else{
-					var parent = aElement.parents("[data-form]").first();
-					if(parent.length == 1)
-						return parent;
-				}
-				
-			},
-			getFormular : function(aElement){
-				if (FormularUtils.LOGGER.isDebugEnabled())
-					FormularUtils.LOGGER.logDebug("getFormular()");
-				
-				var formularElement = FormularUtils.getFormularElement(aElement);
-				if(formularElement)
-					return formularElement.Formular();
-			},
-			
-			getPage : function(aElement){
-				if (FormularUtils.LOGGER.isDebugEnabled())
-					FormularUtils.LOGGER.logDebug("getPage()");
-				
-				if(aElement.is("[data-form-page]"))
-					return aElement.formular_Page();
-				else{
-					var parent = aElement.parents("[data-form-page]").first();
-					if(parent.length == 1)
-						return parent.formular_Page();
-				}
-				
-			},
-			getField : function(aElement){
-				if (FormularUtils.LOGGER.isDebugEnabled())
-					FormularUtils.LOGGER.logDebug("getField()");
-				
-				if(aElement.is("[data-form-field]"))
-					return aElement.formular_Field();
-				else{
-					var parent = aElement.parents("[data-form-field]").first();
-					if(parent.length == 1)
-						return parent.formular_Field();
-				}
-			}
-		};
+		    LOGGER : de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.utils.FormularUtils"),
+		    
+		    getFormularElement : function(aElement) {
+			    if (FormularUtils.LOGGER.isDebugEnabled())
+				    FormularUtils.LOGGER.logDebug("getFormularElement()");
+			    
+			    if (aElement.is("[data-form]"))
+				    return aElement;
+			    else {
+				    var parent = aElement.parents("[data-form]").first();
+				    if (parent.length == 1)
+					    return parent;
+			    }
+			    
+		    },
+		    getFormular : function(aElement) {
+			    if (FormularUtils.LOGGER.isDebugEnabled())
+				    FormularUtils.LOGGER.logDebug("getFormular()");
+			    
+			    var formularElement = FormularUtils.getFormularElement(aElement);
+			    if (formularElement)
+				    return formularElement.Formular();
+		    },
+		    
+		    getPage : function(aElement) {
+			    if (FormularUtils.LOGGER.isDebugEnabled())
+				    FormularUtils.LOGGER.logDebug("getPage()");
+			    
+			    if (aElement.is("[data-form-page]"))
+				    return aElement.formular_Page();
+			    else {
+				    var parent = aElement.parents("[data-form-page]").first();
+				    if (parent.length == 1)
+					    return parent.formular_Page();
+			    }
+			    
+		    },
+		    getField : function(aElement) {
+			    if (FormularUtils.LOGGER.isDebugEnabled())
+				    FormularUtils.LOGGER.logDebug("getField()");
+			    
+			    if (aElement.is("[data-form-field]"))
+				    return aElement.formular_Field();
+			    else {
+				    var parent = aElement.parents("[data-form-field]").first();
+				    if (parent.length == 1)
+					    return parent.formular_Field();
+			    }
+		    },
+		    
+		    isFieldsValid : function(theFields) {
+			    for (var i = 0; i < theFields.length; i++) {
+			    	var data = theFields[i].data;
+				    if (!data.valid)
+					    return false;
+			    }
+			    
+			    return true;
+		    }
+		}
 	});
 	
-})($);(function($){
+})($);
+(function($){
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.form.utils.JQueryFunctions", function() {
 		
@@ -459,63 +470,57 @@
 (function($) {
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.form.Field", function() {
-		de.titus.form.Field = function(aElement){};
+		de.titus.form.Field = function(aElement) {
+		};
 	});
 	
-	$.fn.formular_field_utils_getSubFields = function(){
-		
+	$.fn.formular_field_utils_getSubFields = function() {
 		var result = [];
-		this.children().each(function(){
+		this.children().each(function() {
 			var element = $(this);
-			if(element.is("[data-form-field], [data-form-container-field], [data-form-list-field]"))
+			if (element.is("[data-form-field], [data-form-container-field], [data-form-list-field]"))
 				result.push(element.formular_Field());
-			else{
+			else {
 				var subFields = element.formular_field_utils_getSubFields();
-				if(subFields)
+				if (subFields)
 					Array.prototype.push.apply(result, subFields);
-			}			
+			}
 		});
 		
 		return result;
-		
-		
-		//return this.find("[data-form-field], [data-form-container-field], [data-form-list-field]").formular_Field();
 	};
 	
-	$.fn.formular_field_utils_getAssociatedField = function(){		
+	$.fn.formular_field_utils_getAssociatedField = function() {
 		var field = this.formular_Field();
-		if(field)
+		if (field)
 			return field;
 		
-		return this.parent().formular_field_utils_getAssociatedField();		
+		return this.parent().formular_field_utils_getAssociatedField();
 	};
 	
-	
-	
-	$.fn.formular_Field = function(){
-		if(this.length == 0)
+	$.fn.formular_Field = function() {
+		if (this.length == 0)
 			return;
-		else if(this.length > 1){
+		else if (this.length > 1) {
 			var result = [];
-			this.each(function(){
+			this.each(function() {
 				var field = $(this).formular_Field();
-				if(field)
+				if (field)
 					result.push(field);
 			});
 			
 			return result;
-		}
-		else{
+		} else {
 			var field = this.data("de.titus.form.Field");
-			if(!field){
-				if(this.is("[data-form-field]"))
+			if (!field) {
+				if (this.is("[data-form-field]"))
 					field = new de.titus.form.SingleField(this);
-				else if(this.is("[data-form-container-field]"))
+				else if (this.is("[data-form-container-field]"))
 					field = new de.titus.form.ContainerField(this);
-				else if(this.is("[data-form-list-field]"))
+				else if (this.is("[data-form-list-field]"))
 					field = new de.titus.form.ListField(this);
 				
-				if(field)
+				if (field)
 					this.data("de.titus.form.Field", field);
 			}
 			
@@ -614,7 +619,6 @@
 			    element : aElement,
 			    formular : undefined,
 			    field : undefined,
-			    required : (aElement.attr("data-form-required") !== undefined),
 			    expressionResolver : new de.titus.core.ExpressionResolver(),
 			    validations : aElement.find("[data-form-validation]")
 			};
@@ -666,12 +670,12 @@
 			else
 				this.data.element.removeClass("no-value");
 
-			if (this.data.required && !this.data.field.data.condition)
+			if (this.data.field.data.required && !this.data.field.data.condition)
 				valid = false;
 			else if (this.data.validations.length == 0)
-				valid = !this.data.required || !valueEmpty;
+				valid = !this.data.field.data.required || !valueEmpty;
 			else if (this.data.validations.length > 0 && valueEmpty)
-				valid = !this.data.required;
+				valid = !this.data.field.data.required;
 			else
 				valid = this.__checkValidations(fieldData);
 
@@ -842,108 +846,97 @@
 			    valid : undefined,
 			    fields : []
 			};
-
+			
 			setTimeout(Page.prototype.__init.bind(this), 1);
 		};
-
+		
 		Page.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.Page");
-
+		
 		Page.prototype.__init = function() {
 			if (Page.LOGGER.isDebugEnabled())
 				Page.LOGGER.logDebug("init()");
-
+			
 			this.data.formular = de.titus.form.utils.FormularUtils.getFormular(this.data.element);
 			de.titus.form.utils.EventUtils.handleEvent(this.data.element, [ EVENTTYPES.CONDITION_MET, EVENTTYPES.CONDITION_NOT_MET ], Page.prototype.__changeConditionState.bind(this));
 			de.titus.form.utils.EventUtils.handleEvent(this.data.element, [ EVENTTYPES.CONDITION_STATE_CHANGED, EVENTTYPES.VALIDATION_STATE_CHANGED ], Page.prototype.__changeValidationState.bind(this));
-
+			
 			this.data.fields = this.data.element.formular_field_utils_getSubFields();
 			this.data.element.formular_Condition();
-
-
+			
 			de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.PAGE_INITIALIZED);
 		};
-
+		
 		Page.prototype.__changeConditionState = function(aEvent) {
 			if (Page.LOGGER.isDebugEnabled())
 				Page.LOGGER.logDebug("__changeConditionState () for page {name: \"" + this.data.name + "\", step: \"" + this.data.step + "\"}  -> " + aEvent.type);
-
+			
 			aEvent.preventDefault();
-			aEvent.stopPropagation();			
-
-	
+			aEvent.stopPropagation();
+			
 			var condition = false;
 			if (aEvent.type == EVENTTYPES.CONDITION_MET)
-				condition = true;			
-
+				condition = true;
+			
 			if (this.data.condition != condition) {
 				this.data.condition = condition;
-				de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.CONDITION_STATE_CHANGED);				
+				de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.CONDITION_STATE_CHANGED);
 			}
 		};
-
+		
 		Page.prototype.__changeValidationState = function(aEvent) {
 			if (Page.LOGGER.isDebugEnabled())
 				Page.LOGGER.logDebug("__changeValidationState () for page {name: \"" + this.data.name + "\", step: \"" + this.data.step + "\"}  -> " + aEvent.type);
-
+			
 			aEvent.preventDefault();
-
-			var valid = this.__allFieldsValid();
+			
+			var valid = de.titus.form.utils.FormularUtils.isFieldsValid(this.data.fields);
 			if (this.data.valid != valid) {
 				this.data.valid = valid;
-
+				
 				if (this.data.valid)
 					this.data.element.formular_utils_SetValid();
 				else
 					this.data.element.formular_utils_SetInvalid();
-
+				
 				de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.VALIDATION_STATE_CHANGED);
 			}
 		};
-
-		Page.prototype.__allFieldsValid = function() {
-			for (var i = 0; i < this.data.fields.length; i++) {
-				if (!this.data.fields[i].data.valid)
-					return false;
-			}
-
-			return true;
-		};
-
+		
 		Page.prototype.hide = function() {
 			if (Page.LOGGER.isDebugEnabled())
 				Page.LOGGER.logDebug("hide ()");
-
+			
 			this.data.element.formular_utils_SetInactive();
-
+			
 		};
-
+		
 		Page.prototype.show = function() {
 			if (Page.LOGGER.isDebugEnabled())
 				Page.LOGGER.logDebug("show ()");
-
+			
 			if (this.data.condition) {
 				this.data.element.formular_utils_SetActive();
 				for (var i = 0; i < this.data.fields.length; i++)
 					this.data.fields[i].show();
 			}
 		};
-
+		
 		Page.prototype.summary = function() {
 			if (Page.LOGGER.isDebugEnabled())
 				Page.LOGGER.logDebug("summary ()");
-
+			
 			if (this.data.condition) {
 				for (var i = 0; i < this.data.fields.length; i++)
 					this.data.fields[i].summary();
-
+				
 				this.data.element.formular_utils_SetActive();
 			}
 		};
-
+		
 		Page.prototype.getData = function(includeInvalidPage, includeInvalidField) {
 			if (Page.LOGGER.isDebugEnabled())
 				Page.LOGGER.logDebug("getData()");
-
+			
 			var result = [];
 			if (this.data.condition && (this.data.valid || includeInvalidPage)) {
 				for (var i = 0; i < this.data.fields.length; i++) {
@@ -952,10 +945,10 @@
 						result.push(data);
 				}
 			}
-
+			
 			return result;
 		};
-
+		
 		de.titus.core.jquery.Components.asComponent("formular_Page", de.titus.form.Page);
 	});
 })($, de.titus.form.Constants.EVENTS);
@@ -1655,10 +1648,10 @@
 (function($, EventUtils, EVENTTYPES) {
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.form.ContainerField", function() {
-		var Field = de.titus.form.ContainerField = function(aElement) {
-			if (Field.LOGGER.isDebugEnabled())
-				Field.LOGGER.logDebug("constructor");
-
+		var ContainerField = de.titus.form.ContainerField = function(aElement) {
+			if (ContainerField.LOGGER.isDebugEnabled())
+				ContainerField.LOGGER.logDebug("constructor");
+			
 			this.data = {
 			    element : aElement,
 			    page : undefined,
@@ -1666,114 +1659,98 @@
 			    name : (aElement.attr("data-form-container-field") || "").trim(),
 			    required : (aElement.attr("data-form-required") !== undefined),
 			    condition : undefined,
-			    valid : undefined,
+			    //always valid, because it's only a container
+			    valid : true,
 			    fields : []
 			};
-
+			
 			this.hide();
-
-			setTimeout(Field.prototype.__init.bind(this), 1);
+			
+			setTimeout(ContainerField.prototype.__init.bind(this), 1);
 		};
-
-		Field.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.ContainerField");
-
-		Field.prototype.__init = function() {
-			if (Field.LOGGER.isDebugEnabled())
-				Field.LOGGER.logDebug("init()");
-
-			EventUtils.handleEvent(this.data.element, [ EVENTTYPES.CONDITION_MET, EVENTTYPES.CONDITION_NOT_MET ], Field.prototype.__changeConditionState.bind(this));
-			EventUtils.handleEvent(this.data.element, [ EVENTTYPES.VALIDATION_VALID, EVENTTYPES.VALIDATION_INVALID ], Field.prototype.__changeValidationState.bind(this));
-
+		
+		ContainerField.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.ContainerField");
+		
+		ContainerField.prototype.__init = function() {
+			if (ContainerField.LOGGER.isDebugEnabled())
+				ContainerField.LOGGER.logDebug("init()");
+			
+			EventUtils.handleEvent(this.data.element, [ EVENTTYPES.CONDITION_MET, EVENTTYPES.CONDITION_NOT_MET ], ContainerField.prototype.__changeConditionState.bind(this));			
+			EventUtils.handleEvent(this.data.element, [ EVENTTYPES.CONDITION_STATE_CHANGED, EVENTTYPES.VALIDATION_STATE_CHANGED, EVENTTYPES.FIELD_VALUE_CHANGED ], ContainerField.prototype.__changeValidationStateOfFields.bind(this), "*");
+			
 			this.data.fields = this.data.element.formular_field_utils_getSubFields();
-
+			
 			this.data.element.formular_Condition();
-			this.data.element.formular_ValidationController();
-
+			
 			EventUtils.triggerEvent(this.data.element, EVENTTYPES.INITIALIZED);
 		};
-
-		Field.prototype.__changeConditionState = function(aEvent) {
-			if (Field.LOGGER.isDebugEnabled())
-				Field.LOGGER.logDebug([ "__changeConditionState()  for \"", this.data.name, "\" -> ", aEvent ]);
-
+		
+		ContainerField.prototype.__changeConditionState = function(aEvent) {
+			if (ContainerField.LOGGER.isDebugEnabled())
+				ContainerField.LOGGER.logDebug([ "__changeConditionState()  for \"", this.data.name, "\" -> ", aEvent ]);
+			
 			aEvent.preventDefault();
 			aEvent.stopPropagation();
-
+			
 			var condition = false;
 			if (aEvent.type == EVENTTYPES.CONDITION_MET)
 				condition = true;
-
+			
 			if (this.data.condition != condition) {
 				this.data.condition = condition;
 				if (this.data.condition)
 					this.show();
 				else
 					this.hide();
-
+				
 				EventUtils.triggerEvent(this.data.element, EVENTTYPES.CONDITION_STATE_CHANGED);
 			}
 		};
+		
+		ContainerField.prototype.__changeValidationStateOfFields = function(aEvent) {
+			//only a visible change!
+			var valid = de.titus.form.utils.FormularUtils.isFieldsValid(this.data.fields);
+			if (valid)
+				this.data.element.formular_utils_SetValid();
+			else
+				this.data.element.formular_utils_SetInvalid();
+			
+		}
 
-		Field.prototype.__changeValidationState = function(aEvent) {
-			if (Field.LOGGER.isDebugEnabled())
-				Field.LOGGER.logDebug("__changeValidationState() for field \"" + this.data.name + "\" -> " + aEvent.type);
-
-			aEvent.preventDefault();
-			aEvent.stopPropagation();
-
-			var valid = false;
-			if (aEvent.type == EVENTTYPES.VALIDATION_VALID)
-				valid = true;
-
-			if (this.data.valid != valid) {
-				if (Field.LOGGER.isDebugEnabled())
-					Field.LOGGER.logDebug("__changeValidationState() for field \"" + this.data.name + "\" from " + this.data.valid + " -> " + valid);
-
-				this.data.valid = valid;
-
-				if (this.data.valid)
-					this.data.element.formular_utils_SetValid();
-				else
-					this.data.element.formular_utils_SetInvalid();
-
-				EventUtils.triggerEvent(this.data.element, EVENTTYPES.VALIDATION_STATE_CHANGED);
-			}
-		};
-
-		Field.prototype.hide = function() {
-			if (Field.LOGGER.isDebugEnabled())
-				Field.LOGGER.logDebug("hide ()");
-
+		ContainerField.prototype.hide = function() {
+			if (ContainerField.LOGGER.isDebugEnabled())
+				ContainerField.LOGGER.logDebug("hide ()");
+			
 			this.data.element.formular_utils_SetInactive();
 			for (var i = 0; i < this.data.fields.length; i++)
 				this.data.fields[i].hide();
 		};
-
-		Field.prototype.show = function() {
-			if (Field.LOGGER.isDebugEnabled())
-				Field.LOGGER.logDebug("show ()");
+		
+		ContainerField.prototype.show = function() {
+			if (ContainerField.LOGGER.isDebugEnabled())
+				ContainerField.LOGGER.logDebug("show ()");
 			if (this.data.condition) {
 				this.data.element.formular_utils_SetActive();
 				for (var i = 0; i < this.data.fields.length; i++)
 					this.data.fields[i].show();
 			}
 		};
-
-		Field.prototype.summary = function() {
-			if (Field.LOGGER.isDebugEnabled())
-				Field.LOGGER.logDebug("summary ()");
+		
+		ContainerField.prototype.summary = function() {
+			if (ContainerField.LOGGER.isDebugEnabled())
+				ContainerField.LOGGER.logDebug("summary ()");
 			if (this.data.condition) {
 				for (var i = 0; i < this.data.fields.length; i++)
 					this.data.fields[i].summary();
-
+				
 				this.data.element.formular_utils_SetActive();
 			}
 		};
-
-		Field.prototype.getData = function(acceptInvalid) {
-			if (Field.LOGGER.isDebugEnabled())
-				Field.LOGGER.logDebug("getData()");
-
+		
+		ContainerField.prototype.getData = function(acceptInvalid) {
+			if (ContainerField.LOGGER.isDebugEnabled())
+				ContainerField.LOGGER.logDebug("getData()");
+			
 			if (this.data.condition && (this.data.valid || acceptInvalid)) {
 				var items = [];
 				for (var i = 0; i < this.data.fields.length; i++) {
@@ -1781,7 +1758,7 @@
 					if (value)
 						items.push(value);
 				}
-
+				
 				return {
 				    name : this.data.name,
 				    $type : "container-field",
@@ -1789,8 +1766,6 @@
 				};
 			}
 		};
-
-		de.titus.core.jquery.Components.asComponent("formular_ContainerField", de.titus.form.ContainerField);
 	});
 })($, de.titus.form.utils.EventUtils, de.titus.form.Constants.EVENTS);
 (function($, EVENTTYPES) {
@@ -1799,7 +1774,7 @@
 		var Field = de.titus.form.SingleField = function(aElement) {
 			if (Field.LOGGER.isDebugEnabled())
 				Field.LOGGER.logDebug("constructor");
-
+			
 			this.data = {
 			    element : aElement,
 			    page : undefined,
@@ -1811,87 +1786,87 @@
 			    valid : undefined,
 			    controller : undefined
 			};
-
+			
 			this.hide();
-
+			
 			setTimeout(Field.prototype.__init.bind(this), 1);
 		};
-
+		
 		Field.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.SingleField");
-
+		
 		Field.prototype.__init = function() {
 			if (Field.LOGGER.isDebugEnabled())
 				Field.LOGGER.logDebug("init()");
-
+			
 			this.data.page = de.titus.form.utils.FormularUtils.getPage(this.data.element);
 			this.data.formular = de.titus.form.utils.FormularUtils.getFormular(this.data.element);
 			this.data.controller = de.titus.form.Registry.getFieldController(this.data.type, this.data.element);
-
+			
 			de.titus.form.utils.EventUtils.handleEvent(this.data.element, [ EVENTTYPES.CONDITION_MET, EVENTTYPES.CONDITION_NOT_MET ], Field.prototype.__changeConditionState.bind(this));
 			de.titus.form.utils.EventUtils.handleEvent(this.data.element, [ EVENTTYPES.VALIDATION_VALID, EVENTTYPES.VALIDATION_INVALID ], Field.prototype.__changeValidationState.bind(this));
-
+			
 			this.data.element.formular_Condition();
 			this.data.element.formular_ValidationController();
-
+			
 			de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.INITIALIZED);
 		};
-
+		
 		Field.prototype.__changeConditionState = function(aEvent) {
 			if (Field.LOGGER.isDebugEnabled())
 				Field.LOGGER.logDebug("__changeConditionState()  for \"" + this.data.name + "\" -> " + aEvent.type);
-
+			
 			aEvent.preventDefault();
 			aEvent.stopPropagation();
-
+			
 			var condition = false;
 			if (aEvent.type == EVENTTYPES.CONDITION_MET)
 				condition = true;
-
+			
 			if (this.data.condition != condition) {
 				this.data.condition = condition;
 				if (this.data.condition)
 					this.show();
 				else
 					this.hide();
-
+				
 				de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.CONDITION_STATE_CHANGED);
 			}
 		};
-
+		
 		Field.prototype.__changeValidationState = function(aEvent) {
 			if (Field.LOGGER.isDebugEnabled())
 				Field.LOGGER.logDebug("__changeValidationState() for field \"" + this.data.name + "\" -> " + aEvent.type);
-
+			
 			aEvent.preventDefault();
 			aEvent.stopPropagation();
-
+			
 			var valid = false;
 			if (aEvent.type == EVENTTYPES.VALIDATION_VALID)
 				valid = true;
-
+			
 			if (this.data.valid != valid) {
 				if (Field.LOGGER.isDebugEnabled())
 					Field.LOGGER.logDebug("__changeValidationState() for field \"" + this.data.name + "\" from " + this.data.valid + " -> " + valid);
-
+				
 				this.data.valid = valid;
-
+				
 				if (this.data.valid)
 					this.data.element.formular_utils_SetValid();
 				else
 					this.data.element.formular_utils_SetInvalid();
-
+				
 				de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.VALIDATION_STATE_CHANGED);
 			}
 		};
-
+		
 		Field.prototype.hide = function() {
 			if (Field.LOGGER.isDebugEnabled())
 				Field.LOGGER.logDebug("hide ()");
-
+			
 			this.data.element.formular_utils_SetInactive();
 			de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.FIELD_HIDE);
 		};
-
+		
 		Field.prototype.show = function() {
 			if (Field.LOGGER.isDebugEnabled())
 				Field.LOGGER.logDebug("show ()");
@@ -1900,7 +1875,7 @@
 				de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.FIELD_SHOW);
 			}
 		};
-
+		
 		Field.prototype.summary = function() {
 			if (Field.LOGGER.isDebugEnabled())
 				Field.LOGGER.logDebug("summary ()");
@@ -1909,12 +1884,12 @@
 				this.data.element.formular_utils_SetActive();
 			}
 		};
-
+		
 		Field.prototype.getData = function(acceptInvalid) {
 			if (Field.LOGGER.isDebugEnabled())
 				Field.LOGGER.logDebug("getData()");
-
-			if (this.data.condition && (this.data.valid || acceptInvalid)){
+			
+			if (this.data.condition && (this.data.valid || acceptInvalid)) {
 				return {
 				    name : this.data.name,
 				    type : this.data.type,
