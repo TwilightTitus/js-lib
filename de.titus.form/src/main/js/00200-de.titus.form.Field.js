@@ -45,11 +45,11 @@
 			var field = this.data("de.titus.form.Field");
 			if (!field) {
 				if (this.is("[data-form-field]"))
-					field = new de.titus.form.SingleField(this);
+					field = new de.titus.form.fields.SingleField(this);
 				else if (this.is("[data-form-container-field]"))
-					field = new de.titus.form.ContainerField(this);
+					field = new de.titus.form.fields.ContainerField(this);
 				else if (this.is("[data-form-list-field]"))
-					field = new de.titus.form.ListField(this);
+					field = new de.titus.form.fields.ListField(this);
 				
 				if (field)
 					this.data("de.titus.form.Field", field);

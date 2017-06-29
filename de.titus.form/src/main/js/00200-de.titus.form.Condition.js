@@ -8,6 +8,7 @@
 			this.data = {
 			    element : aElement,
 			    formular : undefined,
+			    dataContext : undefined,
 			    expression : (aElement.attr("data-form-condition") || "").trim(),
 			    expressionResolver : new de.titus.core.ExpressionResolver()
 			};
@@ -21,10 +22,10 @@
 		Condition.prototype.__init = function() {
 			if (Condition.LOGGER.isDebugEnabled())
 				Condition.LOGGER.logDebug("__init()");
-
-			this.data.formular = de.titus.form.utils.FormularUtils.getFormular(this.data.element);
-
+			
 			if (this.data.expression != "") {
+				this.data.formular = de.titus.form.utils.FormularUtils.getFormular(this.data.element);
+				this.data.dataContext = this.data.element.formular_findDataContext();
 				de.titus.form.utils.EventUtils.handleEvent(this.data.formular.data.element, [EVENTTYPES.CONDITION_STATE_CHANGED, EVENTTYPES.VALIDATION_STATE_CHANGED, EVENTTYPES.FIELD_VALUE_CHANGED], Condition.prototype.__doCheck.bind(this));
 			}
 			
@@ -45,7 +46,7 @@
 			else if (this.data.expression == "")
 				de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.CONDITION_MET);
 			else {
-				var data = this.data.formular.getData("object", true, false);
+				var data = this.data.dataContext.getData(false);
 				
 				if (Condition.LOGGER.isDebugEnabled())
 					Condition.LOGGER.logDebug(["__doCheck() -> data: \"", data,  "\""]);

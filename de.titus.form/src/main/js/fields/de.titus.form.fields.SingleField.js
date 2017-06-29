@@ -1,7 +1,7 @@
 (function($, EVENTTYPES) {
 	"use strict";
-	de.titus.core.Namespace.create("de.titus.form.SingleField", function() {
-		var Field = de.titus.form.SingleField = function(aElement) {
+	de.titus.core.Namespace.create("de.titus.form.fields.SingleField", function() {
+		var Field = de.titus.form.fields.SingleField = function(aElement) {
 			if (Field.LOGGER.isDebugEnabled())
 				Field.LOGGER.logDebug("constructor");
 			
@@ -22,7 +22,7 @@
 			setTimeout(Field.prototype.__init.bind(this), 1);
 		};
 		
-		Field.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.SingleField");
+		Field.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.fields.SingleField");
 		
 		Field.prototype.__init = function() {
 			if (Field.LOGGER.isDebugEnabled())

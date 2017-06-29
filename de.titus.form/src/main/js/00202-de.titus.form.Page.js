@@ -101,14 +101,14 @@
 			}
 		};
 		
-		Page.prototype.getData = function(includeInvalidPage, includeInvalidField) {
+		Page.prototype.getData = function(includeInvalid) {
 			if (Page.LOGGER.isDebugEnabled())
 				Page.LOGGER.logDebug("getData()");
 			
 			var result = [];
-			if (this.data.condition && (this.data.valid || includeInvalidPage)) {
+			if (this.data.condition && (this.data.valid || includeInvalid)) {
 				for (var i = 0; i < this.data.fields.length; i++) {
-					var data = this.data.fields[i].getData(includeInvalidField);
+					var data = this.data.fields[i].getData(includeInvalid);
 					if (data != undefined)
 						result.push(data);
 				}

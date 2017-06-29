@@ -8,6 +8,7 @@
 			this.data = {
 			    element : aElement,
 			    formular : undefined,
+			    dataContext : undefined,
 			    field : undefined,
 			    expressionResolver : new de.titus.core.ExpressionResolver(),
 			    validations : aElement.find("[data-form-validation]")
@@ -24,6 +25,7 @@
 
 			this.data.formular = de.titus.form.utils.FormularUtils.getFormular(this.data.element);
 			this.data.field = this.data.element.formular_field_utils_getAssociatedField();
+			this.data.dataContext = this.data.element.formular_findDataContext();
 
 			if (this.data.required || this.data.validations.length > 0) {
 				de.titus.form.utils.EventUtils.handleEvent(this.data.element, [ EVENTTYPES.INITIALIZED, EVENTTYPES.CONDITION_STATE_CHANGED, EVENTTYPES.FIELD_VALUE_CHANGED ], ValidationController.prototype.__doValidate.bind(this));

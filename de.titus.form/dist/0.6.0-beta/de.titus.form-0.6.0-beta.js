@@ -37,6 +37,8 @@
 		    ACTION_PAGE_BACK : "form-action-page-back",
 		    ACTION_PAGE_NEXT : "form-action-page-next",
 		    ACTION_SUMMARY : "form-action-page-summary",
+		    ACTION_LIST_FIELD_ADD : "form-action-list-field-add",
+		    ACTION_LIST_FIELD_REMOVE : "form-action-list-field-remove",
 		    
 		    PAGE_INITIALIZED : "form-page-initialized",
 		    PAGE_CHANGED : "form-page-changed",
@@ -366,7 +368,7 @@
 			    }
 			    
 			    return true;
-		    }
+		    }	   
 		}
 	});
 	
@@ -385,7 +387,15 @@
 				this.removeClass(aRemoveClass);
 				this.addClass(anAddClass);
 			}
-		};		
+		};
+		
+		$.fn.formular_utils_SetInitializing = function(){
+			this.formular_utils_RemoveAddClass("initialized", "initializing");
+		};
+		
+		$.fn.formular_utils_SetInitialized = function(){
+			this.formular_utils_RemoveAddClass("initializing", "initialized");
+		};
 		
 		$.fn.formular_utils_SetActive = function(){
 			this.formular_utils_RemoveAddClass("inactive", "active");
@@ -414,6 +424,7 @@
 			this.data = {
 			    element : aElement,
 			    formular : undefined,
+			    dataContext : undefined,
 			    expression : (aElement.attr("data-form-condition") || "").trim(),
 			    expressionResolver : new de.titus.core.ExpressionResolver()
 			};
@@ -427,10 +438,10 @@
 		Condition.prototype.__init = function() {
 			if (Condition.LOGGER.isDebugEnabled())
 				Condition.LOGGER.logDebug("__init()");
-
-			this.data.formular = de.titus.form.utils.FormularUtils.getFormular(this.data.element);
-
+			
 			if (this.data.expression != "") {
+				this.data.formular = de.titus.form.utils.FormularUtils.getFormular(this.data.element);
+				this.data.dataContext = this.data.element.formular_findDataContext();
 				de.titus.form.utils.EventUtils.handleEvent(this.data.formular.data.element, [EVENTTYPES.CONDITION_STATE_CHANGED, EVENTTYPES.VALIDATION_STATE_CHANGED, EVENTTYPES.FIELD_VALUE_CHANGED], Condition.prototype.__doCheck.bind(this));
 			}
 			
@@ -451,7 +462,7 @@
 			else if (this.data.expression == "")
 				de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.CONDITION_MET);
 			else {
-				var data = this.data.formular.getData("object", true, false);
+				var data = this.data.dataContext.getData(false);
 				
 				if (Condition.LOGGER.isDebugEnabled())
 					Condition.LOGGER.logDebug(["__doCheck() -> data: \"", data,  "\""]);
@@ -467,6 +478,64 @@
 		de.titus.core.jquery.Components.asComponent("formular_Condition", de.titus.form.Condition);
 	});
 })($, de.titus.form.Constants.EVENTS);
+(function($) {
+	"use strict";
+	de.titus.core.Namespace.create("de.titus.form.DataContext", function() {
+		var DataContext = de.titus.form.DataContext = function(aElement, aGetData) {
+			this.data = {
+			    element : aElement,
+			    getData : aGetData
+			}
+		};
+
+		DataContext.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.DataContext");
+
+		DataContext.getData = function(includeInvalid, aModelType) {
+			if (DataContext.LOGGER.isDebugEnabled())
+				DataContext.LOGGER.logDebug("getData (\"" + includeInvalid + "\", \"" + aModelType + "\")");
+			
+			var data = this.data.getData(includeInvalid);
+			
+			if (DataContext.LOGGER.isDebugEnabled())
+				DataContext.LOGGER.logDebug(["nativ data: ", data]);
+			
+			var modelType = (aModelType || "object").trim().toLowerCase();
+			var result = de.titus.form.utils.DataUtils[modelType](data);
+			
+			if (DataContext.LOGGER.isDebugEnabled())
+				DataContext.LOGGER.logDebug(["getData() -> ", result]);
+			
+			return result;
+		};
+
+		$.fn.formular_DataContext = function(aGetData) {
+			if (this.length == 1) {
+				var dataContext = this.data("de.titus.form.DataContext");
+				if (!dataContext && typeof aGetData === "function") {
+					dataContext = de.titus.form.DataContext(this, aGetData);
+					this.data("de.titus.form.DataContext", dataContext);
+					this.attr("data-form-data-context", "")
+				}
+
+				return dataContext;
+			}
+		};
+
+		$.fn.formular_findDataContext = function() {
+			if (this.length == 1) {
+				if (this.attr("data-form-data-context") || this.attr("data-form"))
+					return this.formular_DataContext();
+				else
+					return this.parent.formular_findDataContext();
+			}
+		};
+		
+		$.fn.formular_findParentDataContext = function() {
+			return this.parent.formular_findDataContext();
+		};
+	});
+
+})($);
 (function($) {
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.form.Field", function() {
@@ -514,11 +583,11 @@
 			var field = this.data("de.titus.form.Field");
 			if (!field) {
 				if (this.is("[data-form-field]"))
-					field = new de.titus.form.SingleField(this);
+					field = new de.titus.form.fields.SingleField(this);
 				else if (this.is("[data-form-container-field]"))
-					field = new de.titus.form.ContainerField(this);
+					field = new de.titus.form.fields.ContainerField(this);
 				else if (this.is("[data-form-list-field]"))
-					field = new de.titus.form.ListField(this);
+					field = new de.titus.form.fields.ListField(this);
 				
 				if (field)
 					this.data("de.titus.form.Field", field);
@@ -727,6 +796,13 @@
 			    state : de.titus.form.Constants.STATE.INPUT,
 			    expressionResolver : new de.titus.core.ExpressionResolver()
 			};
+			
+			this.data.element.formular_DataContext((function(includeInvalid){
+				return {
+					$formular : this.__getNativData(includeInvalid)
+				};
+			}).bind(this))
+			
 			setTimeout(Formular.prototype.__init.bind(this), 1);
 		};
 		
@@ -747,18 +823,26 @@
 			this.data.element.addClass("initialized");
 		};
 		
-		Formular.prototype.getData = function(aModelType, includeInvalidPage, includeInvalidField) {
+		Formular.prototype.__getNativData = function(includeInvalid) {
 			if (Formular.LOGGER.isDebugEnabled())
-				Formular.LOGGER.logDebug("getData (\"" + aModelType + "\")");
+				Formular.LOGGER.logDebug("__getNativData (\"" + includeInvalid + "\")");
 			
 			var data = [];
 			var pages = this.data.element.formular_PageController().data.pages;
 			for (var i = 0; i < pages.length; i++) {
-				var pageData = pages[i].getData(includeInvalidPage, includeInvalidField);
+				var pageData = pages[i].getData(includeInvalid);
 				if (pageData != undefined && pageData.length > 0)
 					data = data.concat(pageData);
 			}
+
+			return data;
+		};
+		
+		Formular.prototype.getData = function(includeInvalid, aModelType) {
+			if (Formular.LOGGER.isDebugEnabled())
+				Formular.LOGGER.logDebug("getData (\"" + includeInvalid + "\", \"" + aModelType + "\")");
 			
+			var data = this.__getNativData(includeInvalid);
 			if (Formular.LOGGER.isDebugEnabled())
 				Formular.LOGGER.logDebug("nativ data: ", data);
 			
@@ -766,7 +850,7 @@
 			var result = de.titus.form.utils.DataUtils[modelType](data);
 			
 			if (Formular.LOGGER.isDebugEnabled())
-				Formular.LOGGER.logDebug("getData (\"" + aModelType + "\") -> " + JSON.stringify(result));
+				Formular.LOGGER.logDebug(["getData () -> ", result]);
 			
 			return result;
 		};
@@ -933,14 +1017,14 @@
 			}
 		};
 		
-		Page.prototype.getData = function(includeInvalidPage, includeInvalidField) {
+		Page.prototype.getData = function(includeInvalid) {
 			if (Page.LOGGER.isDebugEnabled())
 				Page.LOGGER.logDebug("getData()");
 			
 			var result = [];
-			if (this.data.condition && (this.data.valid || includeInvalidPage)) {
+			if (this.data.condition && (this.data.valid || includeInvalid)) {
 				for (var i = 0; i < this.data.fields.length; i++) {
-					var data = this.data.fields[i].getData(includeInvalidField);
+					var data = this.data.fields[i].getData(includeInvalid);
 					if (data != undefined)
 						result.push(data);
 				}
@@ -1647,8 +1731,8 @@
 })($);
 (function($, EventUtils, EVENTTYPES) {
 	"use strict";
-	de.titus.core.Namespace.create("de.titus.form.ContainerField", function() {
-		var ContainerField = de.titus.form.ContainerField = function(aElement) {
+	de.titus.core.Namespace.create("de.titus.form.fields.ContainerField", function() {
+		var ContainerField = de.titus.form.fields.ContainerField = function(aElement) {
 			if (ContainerField.LOGGER.isDebugEnabled())
 				ContainerField.LOGGER.logDebug("constructor");
 			
@@ -1669,7 +1753,7 @@
 			setTimeout(ContainerField.prototype.__init.bind(this), 1);
 		};
 		
-		ContainerField.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.ContainerField");
+		ContainerField.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.fields.ContainerField");
 		
 		ContainerField.prototype.__init = function() {
 			if (ContainerField.LOGGER.isDebugEnabled())
@@ -1768,10 +1852,191 @@
 		};
 	});
 })($, de.titus.form.utils.EventUtils, de.titus.form.Constants.EVENTS);
+(function($, EventUtils, EVENTTYPES) {
+	"use strict";
+	de.titus.core.Namespace.create("de.titus.form.fields.ListField", function() {
+		var ListField = de.titus.form.fields.ListField = function(aElement) {
+			if (ListField.LOGGER.isDebugEnabled())
+				ListField.LOGGER.logDebug("constructor");
+
+			this.data = {
+			    element : aElement,
+			    page : undefined,
+			    formular : undefined,
+			    name : (aElement.attr("data-form-list-field") || "").trim(),
+			    template : aElement.find("[data-form-content-template]").detach(),
+			    contentContainer : aElement.find("[data-form-content-container]"),
+			    addButton: aElement.find("[data-form-list-field-action-add]"),
+			    required : (aElement.attr("data-form-required") !== undefined),
+			    condition : undefined,
+			    // always valid, because it's only a container
+			    valid : true,
+			    items : []
+			};
+
+			this.hide();
+
+			setTimeout(ListField.prototype.__init.bind(this), 1);
+		};
+
+		ListField.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.fields.ListField");
+
+		ListField.prototype.__init = function() {
+			if (ListField.LOGGER.isDebugEnabled())
+				ListField.LOGGER.logDebug("init()");
+
+			EventUtils.handleEvent(this.data.element, [ EVENTTYPES.CONDITION_MET, EVENTTYPES.CONDITION_NOT_MET ], ListField.prototype.__changeConditionState.bind(this));
+			EventUtils.handleEvent(this.data.element, [ EVENTTYPES.CONDITION_STATE_CHANGED, EVENTTYPES.VALIDATION_STATE_CHANGED, EVENTTYPES.FIELD_VALUE_CHANGED ], ListField.prototype.__changeValidationStateOfFields.bind(this), "*");			
+
+			this.data.element.formular_Condition();
+			this.data.element.formular_ValidationController();
+			
+			EventUtils.handleEvent(this.data.addButton, [ "click" ], ListField.prototype.__addItem.bind(this));
+
+			EventUtils.triggerEvent(this.data.element, EVENTTYPES.INITIALIZED);
+		};
+
+		ListField.prototype.__addItem = function(aEvent) {
+			var item = {
+			    id : ("item-" + de.titus.core.UUID()),
+			    index : this.data.items.length,
+			    element : this.data.template.clone(),
+			    fields : []
+			};
+			item.element = this.data.template.clone();
+			item.element.attr("id", item.id);
+			item.element.attr("data-index", item.index);
+			item.element.formular_utils_SetInitializing();
+
+			this.data.items.push(item);
+			item.element.appendTo(this.data.contentContainer);
+			EventUtils.handleEvent(item.element.find("[data-form-list-field-action-remove]"), [ "click" ], ListField.prototype.__removeItem.bind(this));
+
+			setTimeout(ListField.prototype.__initializeItem.bind(this, item), 1);
+		};
+
+		ListField.prototype.__initializeItem = function(aItem) {
+			aItem.fields = aItem.element.formular_field_utils_getSubFields();
+
+			aItem.element.formular_utils_SetInitialized();
+		};
+
+		ListField.prototype.__removeItem = function(aEvent) {
+			
+		};
+
+		ListField.prototype.__changeConditionState = function(aEvent) {
+			if (ListField.LOGGER.isDebugEnabled())
+				ListField.LOGGER.logDebug([ "__changeConditionState()  for \"", this.data.name, "\" -> ", aEvent ]);
+
+			aEvent.preventDefault();
+			aEvent.stopPropagation();
+
+			var condition = false;
+			if (aEvent.type == EVENTTYPES.CONDITION_MET)
+				condition = true;
+
+			if (this.data.condition != condition) {
+				this.data.condition = condition;
+				if (this.data.condition)
+					this.show();
+				else
+					this.hide();
+
+				EventUtils.triggerEvent(this.data.element, EVENTTYPES.CONDITION_STATE_CHANGED);
+			}
+		};
+
+		ListField.prototype.__changeValidationStateOfFields = function(aEvent) {
+			// only a visible change!
+			var valid = this.__isListItemsValid();
+			if (valid)
+				this.data.element.formular_utils_SetValid();
+			else
+				this.data.element.formular_utils_SetInvalid();
+
+		};
+
+		ListField.prototype.__isListItemsValid = function() {
+			for (var i = 0; i < this.data.items.length; i++) {
+				var item = this.data.items[i];
+				if (!de.titus.form.utils.FormularUtils.isFieldsValid(item.fields))
+					return false;
+			}
+
+			return true;
+		};
+
+		ListField.prototype.hide = function() {
+			if (ListField.LOGGER.isDebugEnabled())
+				ListField.LOGGER.logDebug("hide ()");
+
+			this.data.element.formular_utils_SetInactive();
+			for (var i = 0; i < this.data.items.length; i++) {
+				var item = this.data.items[i];
+				for (var j = 0; j < item.fields.length; j++)
+					item.fields[j].hide();
+			}
+		};
+
+		ListField.prototype.show = function() {
+			if (ListField.LOGGER.isDebugEnabled())
+				ListField.LOGGER.logDebug("show ()");
+			if (this.data.condition) {
+				this.data.element.formular_utils_SetActive();
+				for (var i = 0; i < this.data.items.length; i++) {
+					var item = this.data.items[i];
+					for (var j = 0; j < item.fields.length; j++)
+						item.fields[j].show();
+				}
+			}
+		};
+
+		ListField.prototype.summary = function() {
+			if (ListField.LOGGER.isDebugEnabled())
+				ListField.LOGGER.logDebug("summary ()");
+			if (this.data.condition) {
+				for (var i = 0; i < this.data.items.length; i++) {
+					var item = this.data.items[i];
+					for (var j = 0; j < item.fields.length; j++)
+						item.fields[j].summary();
+				}
+				this.data.element.formular_utils_SetActive();
+			}
+		};
+
+		ListField.prototype.getData = function(acceptInvalid) {
+			if (ListField.LOGGER.isDebugEnabled())
+				ListField.LOGGER.logDebug("getData()");
+
+			if (this.data.condition && (this.data.valid || acceptInvalid)) {
+				var items = [];
+
+				for (var i = 0; i < this.data.items.length; i++) {
+					var item = this.data.items[i];
+					var data = {
+						name : this.data.name,
+					    $type : "list-field",
+					    items : []
+					};
+					for (var j = 0; j < item.fields.length; j++) {
+						var fieldData = item.fields[j].getData(acceptInvalid);
+						if (fieldData)
+							data.items.push(fieldData);
+					}
+					if (data.items.length > 0)
+						items.push(data);
+				}
+
+				return items;
+			}
+		};
+	});
+})($, de.titus.form.utils.EventUtils, de.titus.form.Constants.EVENTS);
 (function($, EVENTTYPES) {
 	"use strict";
-	de.titus.core.Namespace.create("de.titus.form.SingleField", function() {
-		var Field = de.titus.form.SingleField = function(aElement) {
+	de.titus.core.Namespace.create("de.titus.form.fields.SingleField", function() {
+		var Field = de.titus.form.fields.SingleField = function(aElement) {
 			if (Field.LOGGER.isDebugEnabled())
 				Field.LOGGER.logDebug("constructor");
 			
@@ -1792,7 +2057,7 @@
 			setTimeout(Field.prototype.__init.bind(this), 1);
 		};
 		
-		Field.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.SingleField");
+		Field.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.fields.SingleField");
 		
 		Field.prototype.__init = function() {
 			if (Field.LOGGER.isDebugEnabled())

@@ -1,7 +1,7 @@
 (function($, EventUtils, EVENTTYPES) {
 	"use strict";
-	de.titus.core.Namespace.create("de.titus.form.ContainerField", function() {
-		var ContainerField = de.titus.form.ContainerField = function(aElement) {
+	de.titus.core.Namespace.create("de.titus.form.fields.ContainerField", function() {
+		var ContainerField = de.titus.form.fields.ContainerField = function(aElement) {
 			if (ContainerField.LOGGER.isDebugEnabled())
 				ContainerField.LOGGER.logDebug("constructor");
 			
@@ -22,7 +22,7 @@
 			setTimeout(ContainerField.prototype.__init.bind(this), 1);
 		};
 		
-		ContainerField.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.ContainerField");
+		ContainerField.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.fields.ContainerField");
 		
 		ContainerField.prototype.__init = function() {
 			if (ContainerField.LOGGER.isDebugEnabled())

@@ -12,7 +12,15 @@
 				this.removeClass(aRemoveClass);
 				this.addClass(anAddClass);
 			}
-		};		
+		};
+		
+		$.fn.formular_utils_SetInitializing = function(){
+			this.formular_utils_RemoveAddClass("initialized", "initializing");
+		};
+		
+		$.fn.formular_utils_SetInitialized = function(){
+			this.formular_utils_RemoveAddClass("initializing", "initialized");
+		};
 		
 		$.fn.formular_utils_SetActive = function(){
 			this.formular_utils_RemoveAddClass("inactive", "active");

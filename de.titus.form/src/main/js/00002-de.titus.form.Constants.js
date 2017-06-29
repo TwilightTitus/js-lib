@@ -18,6 +18,8 @@
 		    ACTION_PAGE_BACK : "form-action-page-back",
 		    ACTION_PAGE_NEXT : "form-action-page-next",
 		    ACTION_SUMMARY : "form-action-page-summary",
+		    ACTION_LIST_FIELD_ADD : "form-action-list-field-add",
+		    ACTION_LIST_FIELD_REMOVE : "form-action-list-field-remove",
 		    
 		    PAGE_INITIALIZED : "form-page-initialized",
 		    PAGE_CHANGED : "form-page-changed",

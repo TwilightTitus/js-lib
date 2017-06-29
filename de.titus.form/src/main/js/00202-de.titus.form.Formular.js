@@ -11,6 +11,13 @@
 			    state : de.titus.form.Constants.STATE.INPUT,
 			    expressionResolver : new de.titus.core.ExpressionResolver()
 			};
+			
+			this.data.element.formular_DataContext((function(includeInvalid){
+				return {
+					$formular : this.__getNativData(includeInvalid)
+				};
+			}).bind(this))
+			
 			setTimeout(Formular.prototype.__init.bind(this), 1);
 		};
 		
@@ -31,18 +38,26 @@
 			this.data.element.addClass("initialized");
 		};
 		
-		Formular.prototype.getData = function(aModelType, includeInvalidPage, includeInvalidField) {
+		Formular.prototype.__getNativData = function(includeInvalid) {
 			if (Formular.LOGGER.isDebugEnabled())
-				Formular.LOGGER.logDebug("getData (\"" + aModelType + "\")");
+				Formular.LOGGER.logDebug("__getNativData (\"" + includeInvalid + "\")");
 			
 			var data = [];
 			var pages = this.data.element.formular_PageController().data.pages;
 			for (var i = 0; i < pages.length; i++) {
-				var pageData = pages[i].getData(includeInvalidPage, includeInvalidField);
+				var pageData = pages[i].getData(includeInvalid);
 				if (pageData != undefined && pageData.length > 0)
 					data = data.concat(pageData);
 			}
+
+			return data;
+		};
+		
+		Formular.prototype.getData = function(includeInvalid, aModelType) {
+			if (Formular.LOGGER.isDebugEnabled())
+				Formular.LOGGER.logDebug("getData (\"" + includeInvalid + "\", \"" + aModelType + "\")");
 			
+			var data = this.__getNativData(includeInvalid);
 			if (Formular.LOGGER.isDebugEnabled())
 				Formular.LOGGER.logDebug("nativ data: ", data);
 			
@@ -50,7 +65,7 @@
 			var result = de.titus.form.utils.DataUtils[modelType](data);
 			
 			if (Formular.LOGGER.isDebugEnabled())
-				Formular.LOGGER.logDebug("getData (\"" + aModelType + "\") -> " + JSON.stringify(result));
+				Formular.LOGGER.logDebug(["getData () -> ", result]);
 			
 			return result;
 		};
