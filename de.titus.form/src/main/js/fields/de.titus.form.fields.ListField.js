@@ -7,20 +7,25 @@
 
 			this.data = {
 			    element : aElement,
-			    page : undefined,
-			    formular : undefined,
+			    dataContext : undefined,
 			    name : (aElement.attr("data-form-list-field") || "").trim(),
 			    template : aElement.find("[data-form-content-template]").detach(),
 			    contentContainer : aElement.find("[data-form-content-container]"),
-			    addButton: aElement.find("[data-form-list-field-action-add]"),
+			    addButton : aElement.find("[data-form-list-field-action-add]"),
 			    required : (aElement.attr("data-form-required") !== undefined),
 			    condition : undefined,
 			    // always valid, because it's only a container
-			    valid : true,
+			    valid : undefined,
 			    items : []
 			};
 
 			this.hide();
+
+			this.data.element.formular_DataContext((function(aFilter) {
+				var data = this.data.dataContext.getData(aFilter);
+				data.$list = this.getData(aFilter);
+				return data;
+			}).bind(this));
 
 			setTimeout(ListField.prototype.__init.bind(this), 1);
 		};
@@ -31,12 +36,13 @@
 			if (ListField.LOGGER.isDebugEnabled())
 				ListField.LOGGER.logDebug("init()");
 
+			this.data.dataContext = this.data.element.formular_findParentDataContext();
 			EventUtils.handleEvent(this.data.element, [ EVENTTYPES.CONDITION_MET, EVENTTYPES.CONDITION_NOT_MET ], ListField.prototype.__changeConditionState.bind(this));
-			EventUtils.handleEvent(this.data.element, [ EVENTTYPES.CONDITION_STATE_CHANGED, EVENTTYPES.VALIDATION_STATE_CHANGED, EVENTTYPES.FIELD_VALUE_CHANGED ], ListField.prototype.__changeValidationStateOfFields.bind(this), "*");			
+			EventUtils.handleEvent(this.data.element, [ EVENTTYPES.CONDITION_STATE_CHANGED, EVENTTYPES.VALIDATION_STATE_CHANGED, EVENTTYPES.FIELD_VALUE_CHANGED ], ListField.prototype.__changeValidationStateOfFields.bind(this), "*");
 
 			this.data.element.formular_Condition();
 			this.data.element.formular_ValidationController();
-			
+
 			EventUtils.handleEvent(this.data.addButton, [ "click" ], ListField.prototype.__addItem.bind(this));
 
 			EventUtils.triggerEvent(this.data.element, EVENTTYPES.INITIALIZED);
@@ -47,11 +53,13 @@
 			    id : ("item-" + de.titus.core.UUID()),
 			    index : this.data.items.length,
 			    element : this.data.template.clone(),
-			    fields : []
+			    field : undefined
 			};
 			item.element = this.data.template.clone();
 			item.element.attr("id", item.id);
 			item.element.attr("data-index", item.index);
+			if (item.element.attr("data-form-container-field") == undefined)
+				item.element.attr("data-form-container-field", "");
 			item.element.formular_utils_SetInitializing();
 
 			this.data.items.push(item);
@@ -62,13 +70,13 @@
 		};
 
 		ListField.prototype.__initializeItem = function(aItem) {
-			aItem.fields = aItem.element.formular_field_utils_getSubFields();
+			aItem.field = aItem.element.formular_Field();
 
 			aItem.element.formular_utils_SetInitialized();
 		};
 
 		ListField.prototype.__removeItem = function(aEvent) {
-			
+
 		};
 
 		ListField.prototype.__changeConditionState = function(aEvent) {
@@ -94,9 +102,8 @@
 		};
 
 		ListField.prototype.__changeValidationStateOfFields = function(aEvent) {
-			// only a visible change!
-			var valid = this.__isListItemsValid();
-			if (valid)
+			this.data.valid = this.__isListItemsValid();
+			if (this.data.valid)
 				this.data.element.formular_utils_SetValid();
 			else
 				this.data.element.formular_utils_SetInvalid();
@@ -106,7 +113,7 @@
 		ListField.prototype.__isListItemsValid = function() {
 			for (var i = 0; i < this.data.items.length; i++) {
 				var item = this.data.items[i];
-				if (!de.titus.form.utils.FormularUtils.isFieldsValid(item.fields))
+				if (!item.field.data.valid)
 					return false;
 			}
 
@@ -120,8 +127,7 @@
 			this.data.element.formular_utils_SetInactive();
 			for (var i = 0; i < this.data.items.length; i++) {
 				var item = this.data.items[i];
-				for (var j = 0; j < item.fields.length; j++)
-					item.fields[j].hide();
+				item.field.hide();
 			}
 		};
 
@@ -132,8 +138,7 @@
 				this.data.element.formular_utils_SetActive();
 				for (var i = 0; i < this.data.items.length; i++) {
 					var item = this.data.items[i];
-					for (var j = 0; j < item.fields.length; j++)
-						item.fields[j].show();
+					item.field.show();
 				}
 			}
 		};
@@ -144,37 +149,32 @@
 			if (this.data.condition) {
 				for (var i = 0; i < this.data.items.length; i++) {
 					var item = this.data.items[i];
-					for (var j = 0; j < item.fields.length; j++)
-						item.fields[j].summary();
+					item.field.summary();
 				}
 				this.data.element.formular_utils_SetActive();
 			}
 		};
 
-		ListField.prototype.getData = function(acceptInvalid) {
+		ListField.prototype.getData = function(aFilter) {
 			if (ListField.LOGGER.isDebugEnabled())
-				ListField.LOGGER.logDebug("getData()");
+				ListField.LOGGER.logDebug("getData(\"", aFilter, "\")");
 
-			if (this.data.condition && (this.data.valid || acceptInvalid)) {
+			if (this.data.condition) {
 				var items = [];
 
 				for (var i = 0; i < this.data.items.length; i++) {
 					var item = this.data.items[i];
-					var data = {
-						name : this.data.name,
-					    $type : "list-field",
-					    items : []
-					};
-					for (var j = 0; j < item.fields.length; j++) {
-						var fieldData = item.fields[j].getData(acceptInvalid);
-						if (fieldData)
-							data.items.push(fieldData);
-					}
-					if (data.items.length > 0)
-						items.push(data);
+					var fieldData = item.field.getData(aFilter);
+					if (fieldData)
+						items.push(fieldData);
 				}
 
-				return items;
+				return {
+				    name : this.data.name,
+				    type : "list-field",
+				    $type : "list-field",
+				    items : items
+				};
 			}
 		};
 	});

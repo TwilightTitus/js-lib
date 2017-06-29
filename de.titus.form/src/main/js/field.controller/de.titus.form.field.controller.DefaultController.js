@@ -112,20 +112,29 @@
 			if (DefaultController.LOGGER.isDebugEnabled())
 				DefaultController.LOGGER.logDebug("getValue()");
 
-			if (this.type == "select")
-				return this.element.find("select").val();
-			else if (this.type == "radio")
-				return this.element.find("input:checked").val();
-			else if (this.type == "checkbox") {
-				var result = [];
+			if (this.type == "select") {
+				var value = this.element.find("select").val();
+				if (value && value.length > 0)
+					return value;
+			} else if (this.type == "radio") {
+				var value = this.element.find("input:checked").val();
+				if (value && value.trim() != "")
+					return value;
+			} else if (this.type == "checkbox") {
+				var values = [];
 				this.element.find("input:checked").each(function() {
-					result.push($(this).val());
+					var value = $(this).val();
+					if (value && value.trim() != "")
+						values.push(value);
 				});
-				return result;
+				return values.length > 0 ? values : undefined;
 			} else if (this.type == "file")
 				return this.fileData;
-			else
-				return this.element.find("input, textarea").first().val();
+			else {
+				var value = this.element.find("input, textarea").first().val();
+				if (value && value.trim() != "")
+					return value;
+			}
 		};
 
 		de.titus.form.Registry.registFieldController("default", function(aElement) {

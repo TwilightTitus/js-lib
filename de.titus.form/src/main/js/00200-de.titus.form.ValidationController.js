@@ -15,6 +15,7 @@
 			};
 
 			setTimeout(ValidationController.prototype.__init.bind(this), 1);
+			// this.__init();
 		};
 
 		ValidationController.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.ValidationController");
@@ -23,13 +24,13 @@
 			if (ValidationController.LOGGER.isDebugEnabled())
 				ValidationController.LOGGER.logDebug("__init()");
 
-			this.data.formular = de.titus.form.utils.FormularUtils.getFormular(this.data.element);
+			var formularElement = de.titus.form.utils.FormularUtils.getFormularElement(this.data.element);
 			this.data.field = this.data.element.formular_field_utils_getAssociatedField();
 			this.data.dataContext = this.data.element.formular_findDataContext();
 
-			if (this.data.required || this.data.validations.length > 0) {
+			if (this.data.field.data.required || this.data.validations.length > 0) {
 				de.titus.form.utils.EventUtils.handleEvent(this.data.element, [ EVENTTYPES.INITIALIZED, EVENTTYPES.CONDITION_STATE_CHANGED, EVENTTYPES.FIELD_VALUE_CHANGED ], ValidationController.prototype.__doValidate.bind(this));
-				de.titus.form.utils.EventUtils.handleEvent(this.data.formular.data.element, [ EVENTTYPES.CONDITION_STATE_CHANGED, EVENTTYPES.VALIDATION_STATE_CHANGED ], ValidationController.prototype.__doValidate.bind(this));
+				de.titus.form.utils.EventUtils.handleEvent(formularElement, [ EVENTTYPES.CONDITION_STATE_CHANGED, EVENTTYPES.VALIDATION_STATE_CHANGED ], ValidationController.prototype.__doValidate.bind(this));
 			} else
 				de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.VALIDATION_VALID);
 		};
@@ -54,22 +55,33 @@
 
 			this.data.validations.formular_utils_SetInactive();
 
-			var fieldData = this.data.field.getData(true);
-			var valueEmpty = this.__valueEmpty(fieldData);
+			var fieldData = this.data.field.getData({
+				includeInvalid : true
+			});
+			var hasValue = !this.__valueEmpty(fieldData);
 
-			if (valueEmpty)
-				this.data.element.addClass("no-value");
-			else
+			if (hasValue)
 				this.data.element.removeClass("no-value");
-
-			if (this.data.field.data.required && !this.data.field.data.condition)
-				valid = false;
-			else if (this.data.validations.length == 0)
-				valid = !this.data.field.data.required || !valueEmpty;
-			else if (this.data.validations.length > 0 && valueEmpty)
-				valid = !this.data.field.data.required;
 			else
-				valid = this.__checkValidations(fieldData);
+				this.data.element.addClass("no-value");
+
+			var condition = this.data.field.data.condition;
+			var required = this.data.field.data.required;
+			var hasValidations = this.data.validations.length > 0;
+
+			if (required) {
+				if (condition && hasValue && hasValidations)
+					valid = this.__checkValidations(fieldData);
+				else if (condition && hasValue && !hasValidations)
+					valid = true;
+				else
+					valid = false;
+			} else {
+				if (hasValue && condition && hasValidations)
+					valid = this.__checkValidations(fieldData);
+				else
+					valid = true;
+			}
 
 			if (valid)
 				de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.VALIDATION_VALID);
@@ -79,19 +91,25 @@
 
 		ValidationController.prototype.__checkValidations = function(aFieldData) {
 			if (ValidationController.LOGGER.isDebugEnabled())
-				ValidationController.LOGGER.logDebug("__checkValidation()");
+				ValidationController.LOGGER.logDebug([ "__checkValidation(\"", aFieldData, "\")" ]);
 
-			var formularData = this.data.formular.getData("object", true);
-			var data = {
-			    value : aFieldData ? aFieldData.value : undefined,
-			    form : formularData
-			};
+			var dataContext = this.data.dataContext.getData({
+			    includeInvalid : false,
+			    includeActivePage : true,
+			    includeInvalidOnActivePage : true,
+			    modelType : "object"
+			});
+			dataContext.$field = aFieldData;
+			dataContext.$value = aFieldData ? aFieldData.value : undefined;
+
+			if (ValidationController.LOGGER.isDebugEnabled())
+				ValidationController.LOGGER.logDebug([ "__checkValidation() -> dataContext: \"", dataContext, "\"" ]);
 
 			var valid = true;
 			this.data.validations.each(function() {
 				var element = $(this);
 				var validation = element.formular_Validation();
-				if (!validation.validate(data)) {
+				if (!validation.validate(dataContext)) {
 					element.formular_utils_SetActive();
 					valid = false;
 				}

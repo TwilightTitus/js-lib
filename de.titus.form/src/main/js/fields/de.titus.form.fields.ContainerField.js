@@ -4,81 +4,88 @@
 		var ContainerField = de.titus.form.fields.ContainerField = function(aElement) {
 			if (ContainerField.LOGGER.isDebugEnabled())
 				ContainerField.LOGGER.logDebug("constructor");
-			
+
 			this.data = {
 			    element : aElement,
-			    page : undefined,
-			    formular : undefined,
+			    dataContext : undefined,
 			    name : (aElement.attr("data-form-container-field") || "").trim(),
+			    active : false,
 			    required : (aElement.attr("data-form-required") !== undefined),
 			    condition : undefined,
-			    //always valid, because it's only a container
-			    valid : true,
+			    // always valid, because it's only a container
+			    valid : undefined,
 			    fields : []
 			};
-			
+
 			this.hide();
-			
+
+			this.data.element.formular_DataContext((function(aFilter) {
+				var data = this.data.dataContext.getData(aFilter);
+				data.$container = this.getData(aFilter);
+				return data;
+			}).bind(this));
+
 			setTimeout(ContainerField.prototype.__init.bind(this), 1);
 		};
-		
+
 		ContainerField.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.fields.ContainerField");
-		
+
 		ContainerField.prototype.__init = function() {
 			if (ContainerField.LOGGER.isDebugEnabled())
 				ContainerField.LOGGER.logDebug("init()");
-			
-			EventUtils.handleEvent(this.data.element, [ EVENTTYPES.CONDITION_MET, EVENTTYPES.CONDITION_NOT_MET ], ContainerField.prototype.__changeConditionState.bind(this));			
+
+			this.data.dataContext = this.data.element.formular_findParentDataContext();
+			EventUtils.handleEvent(this.data.element, [ EVENTTYPES.CONDITION_MET, EVENTTYPES.CONDITION_NOT_MET ], ContainerField.prototype.__changeConditionState.bind(this));
 			EventUtils.handleEvent(this.data.element, [ EVENTTYPES.CONDITION_STATE_CHANGED, EVENTTYPES.VALIDATION_STATE_CHANGED, EVENTTYPES.FIELD_VALUE_CHANGED ], ContainerField.prototype.__changeValidationStateOfFields.bind(this), "*");
-			
+
 			this.data.fields = this.data.element.formular_field_utils_getSubFields();
-			
+
 			this.data.element.formular_Condition();
-			
+
 			EventUtils.triggerEvent(this.data.element, EVENTTYPES.INITIALIZED);
 		};
-		
+
 		ContainerField.prototype.__changeConditionState = function(aEvent) {
 			if (ContainerField.LOGGER.isDebugEnabled())
 				ContainerField.LOGGER.logDebug([ "__changeConditionState()  for \"", this.data.name, "\" -> ", aEvent ]);
-			
+
 			aEvent.preventDefault();
 			aEvent.stopPropagation();
-			
+
 			var condition = false;
 			if (aEvent.type == EVENTTYPES.CONDITION_MET)
 				condition = true;
-			
+
 			if (this.data.condition != condition) {
 				this.data.condition = condition;
 				if (this.data.condition)
 					this.show();
 				else
 					this.hide();
-				
+
 				EventUtils.triggerEvent(this.data.element, EVENTTYPES.CONDITION_STATE_CHANGED);
 			}
 		};
-		
+
 		ContainerField.prototype.__changeValidationStateOfFields = function(aEvent) {
-			//only a visible change!
-			var valid = de.titus.form.utils.FormularUtils.isFieldsValid(this.data.fields);
-			if (valid)
+			this.data.valid = de.titus.form.utils.FormularUtils.isFieldsValid(this.data.fields);
+			if (this.data.valid)
 				this.data.element.formular_utils_SetValid();
 			else
 				this.data.element.formular_utils_SetInvalid();
-			
 		}
 
 		ContainerField.prototype.hide = function() {
 			if (ContainerField.LOGGER.isDebugEnabled())
 				ContainerField.LOGGER.logDebug("hide ()");
-			
+
+			this.data.active = false;
 			this.data.element.formular_utils_SetInactive();
 			for (var i = 0; i < this.data.fields.length; i++)
 				this.data.fields[i].hide();
+
 		};
-		
+
 		ContainerField.prototype.show = function() {
 			if (ContainerField.LOGGER.isDebugEnabled())
 				ContainerField.LOGGER.logDebug("show ()");
@@ -86,34 +93,36 @@
 				this.data.element.formular_utils_SetActive();
 				for (var i = 0; i < this.data.fields.length; i++)
 					this.data.fields[i].show();
+
+				this.data.active = true;
 			}
 		};
-		
+
 		ContainerField.prototype.summary = function() {
 			if (ContainerField.LOGGER.isDebugEnabled())
 				ContainerField.LOGGER.logDebug("summary ()");
 			if (this.data.condition) {
 				for (var i = 0; i < this.data.fields.length; i++)
 					this.data.fields[i].summary();
-				
+
 				this.data.element.formular_utils_SetActive();
 			}
 		};
-		
-		ContainerField.prototype.getData = function(acceptInvalid) {
+
+		ContainerField.prototype.getData = function(aFilter) {
 			if (ContainerField.LOGGER.isDebugEnabled())
-				ContainerField.LOGGER.logDebug("getData()");
-			
-			if (this.data.condition && (this.data.valid || acceptInvalid)) {
+				ContainerField.LOGGER.logDebug("getData(\"", aFilter, "\")");
+
+			if (this.data.condition) {
 				var items = [];
 				for (var i = 0; i < this.data.fields.length; i++) {
-					var value = this.data.fields[i].getData(acceptInvalid);
+					var value = this.data.fields[i].getData(aFilter);
 					if (value)
 						items.push(value);
 				}
-				
+
 				return {
-				    name : this.data.name,
+				    name : this.data.name || "$container",
 				    $type : "container-field",
 				    items : items
 				};

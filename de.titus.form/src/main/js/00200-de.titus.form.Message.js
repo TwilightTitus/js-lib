@@ -8,6 +8,7 @@
 			this.data = {
 			    element : aElement,
 			    formular : undefined,
+			    dataContext : undefined,
 			    expression : (aElement.attr("data-form-message") || "").trim(),
 			    expressionResolver : new de.titus.core.ExpressionResolver()
 			};
@@ -34,8 +35,12 @@
 			if (Message.LOGGER.isDebugEnabled())
 				Message.LOGGER.logDebug("__doCheck() -> expression: \"" + this.data.expression + "\"");
 
-
-			var data = this.data.formular.getData("object", true, false);
+			var data = this.data.formular.getData({
+			    includeInvalid : false,
+			    includeActivePage : true,
+			    includeInvalidAtActivePage : true,
+			    modelType : "object"
+			});
 
 			var result = this.data.expressionResolver.resolveExpression(this.data.expression, data, false);
 			if (result)

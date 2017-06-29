@@ -10,21 +10,34 @@
 
 		DataContext.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.DataContext");
 
-		DataContext.getData = function(includeInvalid, aModelType) {
+		DataContext.prototype.getData = function(aFilter) {
 			if (DataContext.LOGGER.isDebugEnabled())
-				DataContext.LOGGER.logDebug("getData (\"" + includeInvalid + "\", \"" + aModelType + "\")");
-			
-			var data = this.data.getData(includeInvalid);
-			
+				DataContext.LOGGER.logDebug("getData (\"", aFilter, "\")");
+
+			var filter = $.extend({}, aFilter);
+			filter.modelType = undefined;
+			var data = this.data.getData(filter);
 			if (DataContext.LOGGER.isDebugEnabled())
-				DataContext.LOGGER.logDebug(["nativ data: ", data]);
-			
-			var modelType = (aModelType || "object").trim().toLowerCase();
-			var result = de.titus.form.utils.DataUtils[modelType](data);
-			
+				DataContext.LOGGER.logDebug([ "getData() -> nativ data: ", data ]);
+
+			if (!aFilter.modelType)
+				return data;
+
+			var modelType = aFilter.modelType.trim().toLowerCase();
+			var result = {};
+			for (name in data) {
+				if (Array.isArray(data[name])) {
+					var model = de.titus.form.utils.DataUtils[modelType](data[name]);
+					if (Array.isArray(model))
+						result[name] = model;
+					else if (typeof model !== "undefined")
+						$.extend(result, model);
+				}
+			}
+
 			if (DataContext.LOGGER.isDebugEnabled())
-				DataContext.LOGGER.logDebug(["getData() -> ", result]);
-			
+				DataContext.LOGGER.logDebug([ "getData() -> model result: ", result ]);
+
 			return result;
 		};
 
@@ -32,7 +45,7 @@
 			if (this.length == 1) {
 				var dataContext = this.data("de.titus.form.DataContext");
 				if (!dataContext && typeof aGetData === "function") {
-					dataContext = de.titus.form.DataContext(this, aGetData);
+					dataContext = new de.titus.form.DataContext(this, aGetData);
 					this.data("de.titus.form.DataContext", dataContext);
 					this.attr("data-form-data-context", "")
 				}
@@ -43,15 +56,16 @@
 
 		$.fn.formular_findDataContext = function() {
 			if (this.length == 1) {
-				if (this.attr("data-form-data-context") || this.attr("data-form"))
+				if (this.attr("data-form-data-context") != undefined || this.attr("data-form") != undefined)
 					return this.formular_DataContext();
 				else
-					return this.parent.formular_findDataContext();
+					return this.parent().formular_findDataContext();
 			}
 		};
-		
+
 		$.fn.formular_findParentDataContext = function() {
-			return this.parent.formular_findDataContext();
+			if (this.length == 1)
+				return this.parent().formular_findDataContext();
 		};
 	});
 

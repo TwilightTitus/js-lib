@@ -56,19 +56,19 @@
 						<div class="form-group" data-form-field="name" data-form-field-type="text" data-form-condition=""  data-form-required="">
 							<label class="control-label" for="name">name:</label>							
 	    					<input type="text" class="form-control" name="name" />
-	    					<div class="help-block text-danger" data-form-validation="value != undefined && value.trim() != ''">Enter your name!</div>
-	    					<div class="text-info help-block ">If your name "Max", then you must enter your given name!</div>				
+	    					<div class="help-block text-danger" data-form-validation="$value != undefined && $value.trim().toLowerCase() == 'max'">Enter your name!</div>
+	    					<div class="text-info help-block ">If your name must be "Max"!</div>				
 						</div>
-						<div class="form-group" data-form-field="givenname" data-form-field-type="text" data-form-condition="name != undefined && name.trim() == 'Max'" data-form-required="">
+						<div class="form-group" data-form-field="givenname" data-form-field-type="text" data-form-condition="name != undefined && name.trim().toLowerCase() == 'max'" data-form-required="">
 							<label for="givenname">given name:</label>
 	    					<input type="text" class="form-control" name="givenname" />
-	    					<div class="help-block text-danger" data-form-validation="value != undefined && value.trim() != 'mustermann'">Enter your given name!</div>					
+	    					<div class="help-block text-danger" data-form-validation="$value != undefined && $value.trim().toLowerCase() != 'mustermann'">Enter your given name!</div>					
 						</div>
 						<div class="form-group" data-form-field="age" data-form-field-type="number" data-form-condition="">
 							<label for="age">age:</label>
 	    					<input type="number" class="form-control" name="age" />
-	    					<div class="text-danger help-block " data-form-validation="value != undefined && value.trim() != ''">Enter your age</div>
-	    					<div class="text-danger help-block " data-form-validation="value >= 0">You are not born? Really?</div>
+	    					<div class="text-danger help-block " data-form-validation="$value != undefined && $value.trim() != ''">Enter your age</div>
+	    					<div class="text-danger help-block " data-form-validation="$value >= 0">You are not born? Really?</div>
 	    					<div class="text-info help-block " data-form-message="name != undefined && name == 'Child'">Your name is Child? If you are age like a child?</div>
 	    					<div class="text-info help-block " data-form-message="age == undefined || age == ''">You can enter your age!</div>
 	    					<div class="text-info help-block " data-form-message="age != undefined && age != '' && age < 14">Your are a child.</div>
@@ -85,30 +85,6 @@
 							</div>
 							<div class="help-block text-danger" data-form-validation="value == undefined || value.trim() == ''">Select a file!</div>
 						</div>
-						<!-- div data-form-field="list" data-form-field-type="list" data-form-condition="">
-							<div data-form-field-list-template="">
-								<div class="form-group" data-form-field="name" data-form-field-type="text" data-form-condition="">
-									<label class="control-label" for="name">name:</label>							
-			    					<input type="text" class="form-control" name="name" />
-			    					<div class="help-block text-danger" data-form-validation="value == undefined || value.trim() == ''">Enter your name!</div>				
-								</div>
-								<div data-form-field="file" data-form-field-type="file" data-form-condition="">
-									<div class="input-group">
-										 <label class="input-group-btn">
-									    	<span class="btn btn-primary">
-									        	Browse&hellip; <input type="file" style="display: none;" accept="*/*" />
-									        </span>
-									    </label>
-									    <input type="text" class="form-control" readonly="readonly" />						   
-									</div>
-									<div class="help-block text-danger" data-form-validation="value == undefined || value.trim() == ''">Select a file!</div>
-								</div>
-							</div>
-							<div data-form-field-list-content=""></div>
-							<div>
-								<button data-form-field-list-add-action="">+</button>
-							</div>
-						</div -->
 					<p>
 				</div>			
 				<div data-form-page="" data-form-step="2" data-form-condition="age >= 18">			
@@ -136,7 +112,7 @@
 				<div data-form-page="" data-form-step="3" data-form-condition="">			
 					<h3>Hobbies</h3>
 					<p>						
-						<div data-form-field="hobbys" data-form-field-type="checklist" data-form-condition="" data-form-required="">
+						<div data-form-field="hobbies" data-form-required="">
 							<label for="date">Hobbies?</label>
 							<div class="checkbox">
 								<label><input type="checkbox" name="hobbys" value="football"/>football</label>
@@ -180,7 +156,12 @@
 			{"filter": "de.titus.form.utils.EventUtils", "logLevel": "ERROR", "appenders":["de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender"]},
 			{"filter": "de.titus.form.StepPanel", "logLevel": "ERROR", "appenders":["de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender"]},
 			{"filter": "de.titus.form.Page", "logLevel": "ERROR", "appenders":["de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender"]},
-			{"filter": "de.titus.form.buttons", "logLevel": "DEBUG", "appenders":["de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender"]}
+			{"filter": "de.titus.form.Condition", "logLevel": "ERROR", "appenders":["de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender"]},
+			{"filter": "de.titus.form.ValidationController", "logLevel": "ERROR", "appenders":["de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender"]},
+			{"filter": "de.titus.form.buttons", "logLevel": "ERROR", "appenders":["de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender"]},
+			{"filter": "de.titus.form.DataContext", "logLevel": "ERROR", "appenders":["de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender"]}
+			
+			
 		];
 		
 		
