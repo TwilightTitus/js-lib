@@ -17,7 +17,10 @@
 			    fields : []
 			};
 
-			this.data.element.formular_DataContext({data: Page.prototype.getData.bind(this), scope: "$page"});
+			this.data.element.formular_DataContext({
+			    data : Page.prototype.getData.bind(this),
+			    scope : "$page"
+			});
 			setTimeout(Page.prototype.__init.bind(this), 1);
 		};
 
@@ -113,11 +116,9 @@
 				Page.LOGGER.logDebug([ "getData(\"", aFilter, "\") -> page: \"", this, "\"" ]);
 
 			var result = {};
-			if ((aFilter.includeActivePage && this.data.active) || (this.data.condition && (this.data.valid || aFilter.includeInvalid))) {
-				var filter = $.extend({}, aFilter);
-				filter.includeInvalid = aFilter.includeInvalid || aFilter.includeInvalidOnActivePage && this.data.active;
+			if (this.data.active || (this.data.condition && this.data.valid)) {
 				for (var i = 0; i < this.data.fields.length; i++) {
-					var data = this.data.fields[i].getData(filter);
+					var data = this.data.fields[i].getData(aFilter);
 					if (data && data.value)
 						result[data.name] = data;
 				}

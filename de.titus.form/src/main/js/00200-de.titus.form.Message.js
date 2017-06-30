@@ -13,7 +13,7 @@
 			};
 			this.data.element.formular_utils_SetInactive();
 			setTimeout(Message.prototype.__init.bind(this), 1);
-			//this.__init();
+			// this.__init();
 		};
 
 		Message.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.Message");
@@ -34,10 +34,11 @@
 				Message.LOGGER.logDebug([ "__doCheck(\"", aEvent, "\")" ]);
 
 			var data = this.data.dataContext.getData({
-			    includeInvalid : false,
-			    includeActivePage : true,
-			    includeInvalidAtActivePage : true
+			    condition : false,
+			    validate : true
 			});
+
+			data = de.titus.form.data.utils.DataUtils.toModel(data, "object");
 			if (Message.LOGGER.isDebugEnabled())
 				Message.LOGGER.logDebug([ "__doCheck() -> data context: \"", data, "\", expression: \"", this.data.expression, "\"" ]);
 

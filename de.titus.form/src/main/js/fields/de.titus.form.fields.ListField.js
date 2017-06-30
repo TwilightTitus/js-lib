@@ -38,7 +38,7 @@
 			this.data.dataContext = this.data.element.formular_findParentDataContext();
 			EventUtils.handleEvent(this.data.element, [ EVENTTYPES.CONDITION_MET, EVENTTYPES.CONDITION_NOT_MET ], ListField.prototype.__changeConditionState.bind(this));
 			EventUtils.handleEvent(this.data.element, [ EVENTTYPES.CONDITION_STATE_CHANGED, EVENTTYPES.VALIDATION_STATE_CHANGED, EVENTTYPES.FIELD_VALUE_CHANGED ], ListField.prototype.__doValidation.bind(this), "*");
-			
+
 			this.data.element.formular_Condition();
 
 			EventUtils.handleEvent(this.data.addButton, [ "click" ], ListField.prototype.__addItem.bind(this));
@@ -107,12 +107,12 @@
 			}
 
 		};
-		
+
 		ListField.prototype.__doCheckAddButton = function() {
-			if(this.data.items.length < this.data.max)
+			if (this.data.items.length < this.data.max)
 				this.data.element.find("[data-form-list-field-action-add]").formular_utils_SetActive();
 			else
-				this.data.element.find("[data-form-list-field-action-add]").formular_utils_SetInactive();				
+				this.data.element.find("[data-form-list-field-action-add]").formular_utils_SetInactive();
 		};
 
 		ListField.prototype.__changeConditionState = function(aEvent) {
@@ -139,16 +139,15 @@
 
 		ListField.prototype.__doValidation = function() {
 			var valid = false;
-			
-			if( this.data.items.length == 0)
+
+			if (this.data.items.length == 0)
 				valid = !this.data.required;
-			else if(this.data.items.length < this.data.min)
+			else if (this.data.items.length < this.data.min)
 				valid = false;
-			else if(this.data.items.length > this.data.max)
+			else if (this.data.items.length > this.data.max)
 				valid = false;
 			else
 				valid = this.__isListItemsValid();
-			
 
 			if (this.data.valid != valid) {
 				this.data.valid = valid;
@@ -219,7 +218,7 @@
 			if (ListField.LOGGER.isDebugEnabled())
 				ListField.LOGGER.logDebug("getData(\"", aFilter, "\")");
 
-			if (this.data.condition) {
+			if (this.data.condition && (this.data.valid || aFilter.validate || aFilter.condition)) {
 				var items = [];
 
 				for (var i = 0; i < this.data.items.length; i++) {

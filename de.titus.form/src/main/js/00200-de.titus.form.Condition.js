@@ -14,7 +14,7 @@
 			};
 
 			setTimeout(Condition.prototype.__init.bind(this), 1);
-			//this.__init();
+			// this.__init();
 		};
 
 		Condition.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.Condition");
@@ -47,10 +47,11 @@
 				de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.CONDITION_MET);
 			else {
 				var data = this.data.dataContext.getData({
-				    includeInvalid : false,
-				    includeActivePage : true
+				    condition : true,
+				    validate : false
 				});
 
+				data = de.titus.form.data.utils.DataUtils.toModel(data, "object");
 				if (Condition.LOGGER.isDebugEnabled())
 					Condition.LOGGER.logDebug([ "__doCheck() -> data: \"", data, "\", expression: \"", this.data.expression, "\"" ]);
 

@@ -302,7 +302,7 @@
 			};
 
 			setTimeout(Condition.prototype.__init.bind(this), 1);
-			//this.__init();
+			// this.__init();
 		};
 
 		Condition.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.Condition");
@@ -335,10 +335,11 @@
 				de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.CONDITION_MET);
 			else {
 				var data = this.data.dataContext.getData({
-				    includeInvalid : false,
-				    includeActivePage : true
+				    condition : true,
+				    validate : false
 				});
 
+				data = de.titus.form.data.utils.DataUtils.toModel(data, "object");
 				if (Condition.LOGGER.isDebugEnabled())
 					Condition.LOGGER.logDebug([ "__doCheck() -> data: \"", data, "\", expression: \"", this.data.expression, "\"" ]);
 
@@ -502,7 +503,7 @@
 			};
 			this.data.element.formular_utils_SetInactive();
 			setTimeout(Message.prototype.__init.bind(this), 1);
-			//this.__init();
+			// this.__init();
 		};
 
 		Message.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.Message");
@@ -523,10 +524,11 @@
 				Message.LOGGER.logDebug([ "__doCheck(\"", aEvent, "\")" ]);
 
 			var data = this.data.dataContext.getData({
-			    includeInvalid : false,
-			    includeActivePage : true,
-			    includeInvalidAtActivePage : true
+			    condition : false,
+			    validate : true
 			});
+
+			data = de.titus.form.data.utils.DataUtils.toModel(data, "object");
 			if (Message.LOGGER.isDebugEnabled())
 				Message.LOGGER.logDebug([ "__doCheck() -> data context: \"", data, "\", expression: \"", this.data.expression, "\"" ]);
 
@@ -599,7 +601,7 @@
 		ValidationController.prototype.__init = function() {
 			if (ValidationController.LOGGER.isDebugEnabled())
 				ValidationController.LOGGER.logDebug("__init()");
-			
+
 			this.data.field = this.data.element.formular_field_utils_getAssociatedField();
 			this.data.dataContext = this.data.element.formular_findDataContext();
 
@@ -632,7 +634,8 @@
 			this.data.validations.formular_utils_SetInactive();
 
 			var fieldData = this.data.field.getData({
-				includeInvalid : true
+			    condition : false,
+			    validate : true
 			});
 			var hasValue = !this.__valueEmpty(fieldData);
 
@@ -669,22 +672,21 @@
 			if (ValidationController.LOGGER.isDebugEnabled())
 				ValidationController.LOGGER.logDebug([ "__checkValidation(\"", aFieldData, "\")" ]);
 
-			var dataContext = this.data.dataContext.getData({
-			    includeInvalid : false,
-			    includeActivePage : true,
-			    includeInvalidOnActivePage : true
+			var data = this.data.dataContext.getData({
+			    condition : false,
+			    validate : true
 			});
-			dataContext.$field = aFieldData;
-			dataContext.$value = aFieldData ? aFieldData.value : undefined;
+			data.$value = aFieldData ? aFieldData.value : undefined;
 
+			data = de.titus.form.data.utils.DataUtils.toModel(data, "object");
 			if (ValidationController.LOGGER.isDebugEnabled())
-				ValidationController.LOGGER.logDebug([ "__checkValidation() -> dataContext: \"", dataContext, "\"" ]);
+				ValidationController.LOGGER.logDebug([ "__checkValidation() -> dataContext: \"", data, "\"" ]);
 
 			var valid = true;
 			this.data.validations.each(function() {
 				var element = $(this);
 				var validation = element.formular_Validation();
-				if (!validation.validate(dataContext)) {
+				if (!validation.validate(data)) {
 					element.formular_utils_SetActive();
 					valid = false;
 				}
@@ -713,6 +715,12 @@
 			    expressionResolver : new de.titus.core.ExpressionResolver()
 			};
 
+			// this.data.element.formular_DataContext({
+			// data : (function(aFilter) {
+			// return this.getData(aFilter, "object");
+			// }).bind(this)
+			// });
+
 			this.data.element.formular_DataContext({
 				data : Formular.prototype.getData.bind(this)
 			});
@@ -740,9 +748,9 @@
 			}).bind(this), 100);
 		};
 
-		Formular.prototype.getData = function(aFilter) {
+		Formular.prototype.getData = function(aFilter, aModel) {
 			if (Formular.LOGGER.isDebugEnabled())
-				Formular.LOGGER.logDebug([ "getData (\"", aFilter, "\")" ]);
+				Formular.LOGGER.logDebug([ "getData (\"", aFilter, "\", \"", aModel, "\")" ]);
 
 			var result = {};
 			var pages = this.data.element.formular_PageController().data.pages;
@@ -752,8 +760,11 @@
 					result = $.extend(result, data);
 			}
 
+			if (aModel)
+				result = de.titus.form.data.utils.DataUtils.toModel(result, aModel);
+
 			if (Formular.LOGGER.isDebugEnabled())
-				Formular.LOGGER.logDebug([ "getData (\"", aFilter, "\") -> result: \"", result, "\"" ]);
+				Formular.LOGGER.logDebug([ "getData (\"", aFilter, "\", \"", aModel, "\") -> result: \"", result, "\"" ]);
 
 			return result;
 		};
@@ -836,7 +847,10 @@
 			    fields : []
 			};
 
-			this.data.element.formular_DataContext({data: Page.prototype.getData.bind(this), scope: "$page"});
+			this.data.element.formular_DataContext({
+			    data : Page.prototype.getData.bind(this),
+			    scope : "$page"
+			});
 			setTimeout(Page.prototype.__init.bind(this), 1);
 		};
 
@@ -932,11 +946,9 @@
 				Page.LOGGER.logDebug([ "getData(\"", aFilter, "\") -> page: \"", this, "\"" ]);
 
 			var result = {};
-			if ((aFilter.includeActivePage && this.data.active) || (this.data.condition && (this.data.valid || aFilter.includeInvalid))) {
-				var filter = $.extend({}, aFilter);
-				filter.includeInvalid = aFilter.includeInvalid || aFilter.includeInvalidOnActivePage && this.data.active;
+			if (this.data.active || (this.data.condition && this.data.valid)) {
 				for (var i = 0; i < this.data.fields.length; i++) {
-					var data = this.data.fields[i].getData(filter);
+					var data = this.data.fields[i].getData(aFilter);
 					if (data && data.value)
 						result[data.name] = data;
 				}
@@ -1513,6 +1525,25 @@
 })($, de.titus.form.Constants.EVENTS);
 (function($) {
 	"use strict";
+	de.titus.core.Namespace.create("de.titus.form.data.utils.DataUtils", function() {
+		var DataUtils = de.titus.form.data.utils.DataUtils = {
+		    LOGGER : de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.data.utils.DataUtils"),
+
+		    toModel : function(aData, aModel) {
+			    if (DataUtils.LOGGER.isDebugEnabled())
+				    DataUtils.LOGGER.logDebug([ "toModel (\"", aData, "\", \"", aModel, "\")" ]);
+
+			    var model = aModel.toLowerCase().trim();
+			    if (typeof DataUtils[model] === "function")
+				    return DataUtils[model](aData);
+			    return aData;
+		    }
+		};
+	});
+
+})($);
+(function($) {
+	"use strict";
 	de.titus.core.Namespace.create("de.titus.form.data.utils.ObjectModel", function() {
 		var ObjectModel = de.titus.form.data.utils.ObjectModel = {
 		    LOGGER : de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.data.utils.ObjectModel"),
@@ -1542,21 +1573,8 @@
 			    return result;
 		    }
 		};
-	});
 
-})($);
-(function($) {
-	"use strict";
-	de.titus.core.Namespace.create("de.titus.form.data.utils.DataUtils", function() {
-		var DataUtils = de.titus.form.data.utils.DataUtils = {
-		    LOGGER : de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.data.utils.DataUtils"),
-
-		    toModel : function(aData, aModel) {
-			    return DataUtils[aModel.toLowerCase()](aData);
-		    },
-
-		    "object" : de.titus.form.data.utils.ObjectModel.toModel
-		};
+		de.titus.form.data.utils.DataUtils["object"] = ObjectModel.toModel;
 	});
 
 })($);
@@ -1872,7 +1890,7 @@
 			this.data.dataContext = this.data.element.formular_findParentDataContext();
 			EventUtils.handleEvent(this.data.element, [ EVENTTYPES.CONDITION_MET, EVENTTYPES.CONDITION_NOT_MET ], ListField.prototype.__changeConditionState.bind(this));
 			EventUtils.handleEvent(this.data.element, [ EVENTTYPES.CONDITION_STATE_CHANGED, EVENTTYPES.VALIDATION_STATE_CHANGED, EVENTTYPES.FIELD_VALUE_CHANGED ], ListField.prototype.__doValidation.bind(this), "*");
-			
+
 			this.data.element.formular_Condition();
 
 			EventUtils.handleEvent(this.data.addButton, [ "click" ], ListField.prototype.__addItem.bind(this));
@@ -1941,12 +1959,12 @@
 			}
 
 		};
-		
+
 		ListField.prototype.__doCheckAddButton = function() {
-			if(this.data.items.length < this.data.max)
+			if (this.data.items.length < this.data.max)
 				this.data.element.find("[data-form-list-field-action-add]").formular_utils_SetActive();
 			else
-				this.data.element.find("[data-form-list-field-action-add]").formular_utils_SetInactive();				
+				this.data.element.find("[data-form-list-field-action-add]").formular_utils_SetInactive();
 		};
 
 		ListField.prototype.__changeConditionState = function(aEvent) {
@@ -1973,16 +1991,15 @@
 
 		ListField.prototype.__doValidation = function() {
 			var valid = false;
-			
-			if( this.data.items.length == 0)
+
+			if (this.data.items.length == 0)
 				valid = !this.data.required;
-			else if(this.data.items.length < this.data.min)
+			else if (this.data.items.length < this.data.min)
 				valid = false;
-			else if(this.data.items.length > this.data.max)
+			else if (this.data.items.length > this.data.max)
 				valid = false;
 			else
 				valid = this.__isListItemsValid();
-			
 
 			if (this.data.valid != valid) {
 				this.data.valid = valid;
@@ -2053,7 +2070,7 @@
 			if (ListField.LOGGER.isDebugEnabled())
 				ListField.LOGGER.logDebug("getData(\"", aFilter, "\")");
 
-			if (this.data.condition) {
+			if (this.data.condition && (this.data.valid || aFilter.validate || aFilter.condition)) {
 				var items = [];
 
 				for (var i = 0; i < this.data.items.length; i++) {
@@ -2090,8 +2107,11 @@
 			    valid : undefined,
 			    controller : undefined
 			};
-			
-			this.data.element.formular_DataContext({data: Field.prototype.getData.bind(this), scope: "$field"});
+
+			this.data.element.formular_DataContext({
+			    data : Field.prototype.getData.bind(this),
+			    scope : "$field"
+			});
 			this.hide();
 
 			setTimeout(Field.prototype.__init.bind(this), 1);
@@ -2193,7 +2213,7 @@
 			if (Field.LOGGER.isDebugEnabled())
 				Field.LOGGER.logDebug([ "getData(\"", aFilter, "\")" ]);
 
-			if (this.data.condition && (this.data.valid || aFilter.includeInvalid)) {
+			if (this.data.condition && (this.data.valid || aFilter.validate || aFilter.condition)) {
 				return {
 				    name : this.data.name,
 				    type : this.data.type,

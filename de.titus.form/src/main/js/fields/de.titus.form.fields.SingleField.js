@@ -15,8 +15,11 @@
 			    valid : undefined,
 			    controller : undefined
 			};
-			
-			this.data.element.formular_DataContext({data: Field.prototype.getData.bind(this), scope: "$field"});
+
+			this.data.element.formular_DataContext({
+			    data : Field.prototype.getData.bind(this),
+			    scope : "$field"
+			});
 			this.hide();
 
 			setTimeout(Field.prototype.__init.bind(this), 1);
@@ -118,7 +121,7 @@
 			if (Field.LOGGER.isDebugEnabled())
 				Field.LOGGER.logDebug([ "getData(\"", aFilter, "\")" ]);
 
-			if (this.data.condition && (this.data.valid || aFilter.includeInvalid)) {
+			if (this.data.condition && (this.data.valid || aFilter.validate || aFilter.condition)) {
 				return {
 				    name : this.data.name,
 				    type : this.data.type,

@@ -23,7 +23,7 @@
 		ValidationController.prototype.__init = function() {
 			if (ValidationController.LOGGER.isDebugEnabled())
 				ValidationController.LOGGER.logDebug("__init()");
-			
+
 			this.data.field = this.data.element.formular_field_utils_getAssociatedField();
 			this.data.dataContext = this.data.element.formular_findDataContext();
 
@@ -56,7 +56,8 @@
 			this.data.validations.formular_utils_SetInactive();
 
 			var fieldData = this.data.field.getData({
-				includeInvalid : true
+			    condition : false,
+			    validate : true
 			});
 			var hasValue = !this.__valueEmpty(fieldData);
 
@@ -93,22 +94,21 @@
 			if (ValidationController.LOGGER.isDebugEnabled())
 				ValidationController.LOGGER.logDebug([ "__checkValidation(\"", aFieldData, "\")" ]);
 
-			var dataContext = this.data.dataContext.getData({
-			    includeInvalid : false,
-			    includeActivePage : true,
-			    includeInvalidOnActivePage : true
+			var data = this.data.dataContext.getData({
+			    condition : false,
+			    validate : true
 			});
-			dataContext.$field = aFieldData;
-			dataContext.$value = aFieldData ? aFieldData.value : undefined;
+			data.$value = aFieldData ? aFieldData.value : undefined;
 
+			data = de.titus.form.data.utils.DataUtils.toModel(data, "object");
 			if (ValidationController.LOGGER.isDebugEnabled())
-				ValidationController.LOGGER.logDebug([ "__checkValidation() -> dataContext: \"", dataContext, "\"" ]);
+				ValidationController.LOGGER.logDebug([ "__checkValidation() -> dataContext: \"", data, "\"" ]);
 
 			var valid = true;
 			this.data.validations.each(function() {
 				var element = $(this);
 				var validation = element.formular_Validation();
-				if (!validation.validate(dataContext)) {
+				if (!validation.validate(data)) {
 					element.formular_utils_SetActive();
 					valid = false;
 				}

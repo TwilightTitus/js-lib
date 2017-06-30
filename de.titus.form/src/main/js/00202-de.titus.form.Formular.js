@@ -12,6 +12,12 @@
 			    expressionResolver : new de.titus.core.ExpressionResolver()
 			};
 
+			// this.data.element.formular_DataContext({
+			// data : (function(aFilter) {
+			// return this.getData(aFilter, "object");
+			// }).bind(this)
+			// });
+
 			this.data.element.formular_DataContext({
 				data : Formular.prototype.getData.bind(this)
 			});
@@ -39,9 +45,9 @@
 			}).bind(this), 100);
 		};
 
-		Formular.prototype.getData = function(aFilter) {
+		Formular.prototype.getData = function(aFilter, aModel) {
 			if (Formular.LOGGER.isDebugEnabled())
-				Formular.LOGGER.logDebug([ "getData (\"", aFilter, "\")" ]);
+				Formular.LOGGER.logDebug([ "getData (\"", aFilter, "\", \"", aModel, "\")" ]);
 
 			var result = {};
 			var pages = this.data.element.formular_PageController().data.pages;
@@ -51,8 +57,11 @@
 					result = $.extend(result, data);
 			}
 
+			if (aModel)
+				result = de.titus.form.data.utils.DataUtils.toModel(result, aModel);
+
 			if (Formular.LOGGER.isDebugEnabled())
-				Formular.LOGGER.logDebug([ "getData (\"", aFilter, "\") -> result: \"", result, "\"" ]);
+				Formular.LOGGER.logDebug([ "getData (\"", aFilter, "\", \"", aModel, "\") -> result: \"", result, "\"" ]);
 
 			return result;
 		};
