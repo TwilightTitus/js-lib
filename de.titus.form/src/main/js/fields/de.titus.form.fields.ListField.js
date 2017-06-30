@@ -18,15 +18,9 @@
 			    valid : undefined,
 			    items : []
 			};
-
+			
+			this.data.element.formular_DataContext({data: ListField.prototype.getData.bind(this), scope: "$list"});
 			this.hide();
-
-			this.data.element.formular_DataContext((function(aFilter) {
-				var data = this.data.dataContext.getData(aFilter);
-				data.$list = this.getData(aFilter);
-				return data;
-			}).bind(this));
-
 			setTimeout(ListField.prototype.__init.bind(this), 1);
 		};
 
@@ -57,13 +51,14 @@
 			};
 			item.element = this.data.template.clone();
 			item.element.attr("id", item.id);
-			item.element.attr("data-index", item.index);
+			item.element.attr("data-form-list-item", item.id); 
 			if (item.element.attr("data-form-container-field") == undefined)
-				item.element.attr("data-form-container-field", "");
+				item.element.attr("data-form-container-field", "item");
 			item.element.formular_utils_SetInitializing();
 
 			this.data.items.push(item);
 			item.element.appendTo(this.data.contentContainer);
+
 			EventUtils.handleEvent(item.element.find("[data-form-list-field-action-remove]"), [ "click" ], ListField.prototype.__removeItem.bind(this));
 
 			setTimeout(ListField.prototype.__initializeItem.bind(this, item), 1);
@@ -71,11 +66,27 @@
 
 		ListField.prototype.__initializeItem = function(aItem) {
 			aItem.field = aItem.element.formular_Field();
+			aItem.element.formular_DataContext({data: aItem.field.getData.bind(aItem.field), scope: "$item"});
 
 			aItem.element.formular_utils_SetInitialized();
+			EventUtils.triggerEvent(this.data.element, EVENTTYPES.FIELD_VALUE_CHANGED);
 		};
 
 		ListField.prototype.__removeItem = function(aEvent) {
+			
+			var target = $(aEvent.target);
+			var itemElement = target.parents("[data-form-list-item]");
+			var itemId = itemElement.attr("id");
+			
+			for(var i = 0; i < this.data.items.length; i++){
+				var item = this.data.items[i];
+				if(item.id == itemId){
+					this.data.items.splice(i, 1);
+					itemElement.remove();
+					EventUtils.triggerEvent(this.data.element, EVENTTYPES.FIELD_VALUE_CHANGED);
+					return;
+				}
+			}
 
 		};
 
@@ -165,8 +176,10 @@
 				for (var i = 0; i < this.data.items.length; i++) {
 					var item = this.data.items[i];
 					var fieldData = item.field.getData(aFilter);
-					if (fieldData)
+					if (fieldData) {
+						fieldData.name = "" + i;
 						items.push(fieldData);
+					}
 				}
 
 				return {

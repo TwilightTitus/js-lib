@@ -17,14 +17,9 @@
 			    fields : []
 			};
 
+			
+			this.data.element.formular_DataContext({data: ContainerField.prototype.getData.bind(this), scope: "$container"});
 			this.hide();
-
-			this.data.element.formular_DataContext((function(aFilter) {
-				var data = this.data.dataContext.getData(aFilter);
-				data.$container = this.getData(aFilter);
-				return data;
-			}).bind(this));
-
 			setTimeout(ContainerField.prototype.__init.bind(this), 1);
 		};
 
@@ -123,6 +118,7 @@
 
 				return {
 				    name : this.data.name || "$container",
+				    type : "container-field",
 				    $type : "container-field",
 				    items : items
 				};

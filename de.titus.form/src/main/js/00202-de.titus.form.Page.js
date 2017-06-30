@@ -17,14 +17,7 @@
 			    fields : []
 			};
 
-			this.data.element.formular_DataContext((function(aFilter) {
-				var filter = $.extend({}, aFilter);
-				filter.modelType = undefined;
-				var data = this.data.dataContext.getData(filter);
-				data.$page = this.getData(aFilter);
-				return data;
-			}).bind(this));
-
+			this.data.element.formular_DataContext({data: Page.prototype.getData.bind(this), scope: "$page"});
 			setTimeout(Page.prototype.__init.bind(this), 1);
 		};
 

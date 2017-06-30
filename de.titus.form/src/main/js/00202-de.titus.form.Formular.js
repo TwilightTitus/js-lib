@@ -11,13 +11,8 @@
 			state : de.titus.form.Constants.STATE.INPUT,
 			expressionResolver : new de.titus.core.ExpressionResolver()
 			};
-
-			this.data.element.formular_DataContext((function(aFilter) {
-				return {
-					$formular : this.__getNativData(aFilter)
-				};
-			}).bind(this))
-
+			
+			this.data.element.formular_DataContext({data: Formular.prototype.getData.bind(this)});
 			setTimeout(Formular.prototype.__init.bind(this), 1);
 		};
 

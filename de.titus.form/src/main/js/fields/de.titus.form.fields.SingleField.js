@@ -15,14 +15,9 @@
 			    valid : undefined,
 			    controller : undefined
 			};
-
-			this.data.valid = !this.data.required;
+			
+			this.data.element.formular_DataContext({data: Field.prototype.getData.bind(this), scope: "$field"});
 			this.hide();
-			this.data.element.formular_DataContext((function(aFilter) {
-				var data = this.data.dataContext.getData(aFilter);
-				data.$field = this.getData(aFilter);
-				return data;
-			}).bind(this));
 
 			setTimeout(Field.prototype.__init.bind(this), 1);
 		};

@@ -38,7 +38,7 @@
 				<div data-form-page=""  data-form-step="1" data-form-condition="">
 					<h3>User Info</h3>
 					<section>	
-						<div class="form-group" data-form-field="trigger" data-form-required="">
+						<!-- div class="form-group" data-form-field="trigger" data-form-required="">
 							<label class="control-label" for="name">You are a person?</label>							
 							<div class="radio">
 								<label><input type="radio" name="trigger" value="no"/>No, i am not a person!</label>
@@ -46,8 +46,8 @@
 	    					<div class="radio">
 								<label><input type="radio" name="trigger" value="yes"/>Yes, i am a person!</label>
 							</div>
-						</div>					
-						<div class="list-field" data-form-list-field="employees"  data-form-condition="trigger != undefined && trigger.trim() == 'yes'">
+						</div -->					
+						<div class="list-field" data-form-list-field="employees"  xxxdata-form-condition="trigger != undefined && trigger.trim() == 'yes'">
 							<div data-form-content-template="">
 								<div>
 									<h3>employee</h3>
@@ -110,10 +110,11 @@
 			{"filter": "de.titus.form.Page", "logLevel": "ERROR", "appenders":["de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender"]},
 			{"filter": "de.titus.form.buttons", "logLevel": "ERROR", "appenders":["de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender"]},
 			{"filter": "de.titus.form.Condition", "logLevel": "ERROR", "appenders":["de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender"]},
-			{"filter": "de.titus.form.ValidationController", "logLevel": "DEBUG", "appenders":["de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender"]},
+			{"filter": "de.titus.form.ValidationController", "logLevel": "ERROR", "appenders":["de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender"]},
 			{"filter": "de.titus.form.fields.ContainerField", "logLevel": "ERROR", "appenders":["de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender"]},
-			{"filter": "de.titus.form.fields.ListField", "logLevel": "DEBUG", "appenders":["de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender"]},
-			{"filter": "de.titus.form.utils.DataUtils", "logLevel": "ERROR", "appenders":["de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender"]}
+			{"filter": "de.titus.form.fields.ListField", "logLevel": "ERROR", "appenders":["de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender"]},
+			{"filter": "de.titus.form.utils.DataUtils", "logLevel": "ERROR", "appenders":["de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender"]},
+			{"filter": "de.titus.form.DataContext", "logLevel": "DEBUG", "appenders":["de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender"]}
 			
 		];
 		
