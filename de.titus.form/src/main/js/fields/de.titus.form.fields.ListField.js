@@ -66,7 +66,13 @@
 
 		ListField.prototype.__initializeItem = function(aItem) {
 			aItem.field = aItem.element.formular_Field();
-			aItem.element.formular_DataContext({data: aItem.field.getData.bind(aItem.field), scope: "$item"});
+			aItem.element.formular_DataContext({data: (function(aFilter){
+				var data = this.field.getData(aFilter);
+				if(data)
+					return data.value;
+			}).bind(aItem), scope: "$item"});
+
+			aItem.element.formular_initMessages();
 
 			aItem.element.formular_utils_SetInitialized();
 			EventUtils.triggerEvent(this.data.element, EVENTTYPES.FIELD_VALUE_CHANGED);
@@ -152,6 +158,8 @@
 					item.field.show();
 				}
 			}
+			this.data.element.find("[data-form-list-field-action-remove]").formular_utils_SetActive();
+			this.data.element.find("[data-form-list-field-action-add]").formular_utils_SetActive();
 		};
 
 		ListField.prototype.summary = function() {
@@ -164,6 +172,8 @@
 				}
 				this.data.element.formular_utils_SetActive();
 			}
+			this.data.element.find("[data-form-list-field-action-remove]").formular_utils_SetInactive();
+			this.data.element.find("[data-form-list-field-action-add]").formular_utils_SetInactive();
 		};
 
 		ListField.prototype.getData = function(aFilter) {
@@ -176,17 +186,15 @@
 				for (var i = 0; i < this.data.items.length; i++) {
 					var item = this.data.items[i];
 					var fieldData = item.field.getData(aFilter);
-					if (fieldData) {
-						fieldData.name = "" + i;
-						items.push(fieldData);
-					}
+					if (fieldData && fieldData.value)
+						items.push(fieldData.value);
 				}
 
 				return {
 				    name : this.data.name,
 				    type : "list-field",
 				    $type : "list-field",
-				    items : items
+				    value : items
 				};
 			}
 		};

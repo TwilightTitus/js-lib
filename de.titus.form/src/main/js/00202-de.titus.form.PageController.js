@@ -69,7 +69,8 @@
 				data : {
 					type: de.titus.form.Constants.TYPES.SUMMARY_PAGE,
 				    valid : true,
-				    condition : true
+				    condition : true,
+				    step : de.titus.form.Constants.SPECIALSTEPS.SUMMARY
 				}
 			}, handles.length, de.titus.form.Constants.SPECIALSTEPS.SUMMARY, this);
 			summaryHandle.show = show.bind(summaryHandle);
@@ -80,7 +81,8 @@
 				data : {
 					type: de.titus.form.Constants.TYPES.SUBMITTED_PAGE,
 				    valid : true,
-				    condition : true
+				    condition : true,
+				    step: de.titus.form.Constants.SPECIALSTEPS.SUBMITTED
 				}
 			}, handles.length, de.titus.form.Constants.SPECIALSTEPS.SUBMITTED, this);
 			submittedHandle.show = show.bind(submittedHandle);

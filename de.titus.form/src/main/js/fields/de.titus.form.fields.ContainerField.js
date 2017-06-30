@@ -109,18 +109,18 @@
 				ContainerField.LOGGER.logDebug("getData(\"", aFilter, "\")");
 
 			if (this.data.condition) {
-				var items = [];
+				var values = {};
 				for (var i = 0; i < this.data.fields.length; i++) {
 					var value = this.data.fields[i].getData(aFilter);
 					if (value)
-						items.push(value);
+						values[value.name] = value;
 				}
 
 				return {
 				    name : this.data.name || "$container",
 				    type : "container-field",
 				    $type : "container-field",
-				    items : items
+				    value : values
 				};
 			}
 		};

@@ -59,5 +59,13 @@
 		    SUBMITTED : "form-step-submitted"
 		};
 		
+		de.titus.form.Constants.STRUCTURELEMENTS = {
+			FORM : {selector: "[data-form]" },
+			PAGE : {selector: "[data-form-page]"},
+			SINGLEFIELD : {selector: "[data-form-field]"},
+			CONTAINERFIELD : {selector: "[data-form-container-field]"},
+			LISTFIELD : {selector: "[data-form-list-field]"},
+		};	
+		
 	});
 })();

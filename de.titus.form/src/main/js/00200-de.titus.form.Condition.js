@@ -13,8 +13,8 @@
 			    expressionResolver : new de.titus.core.ExpressionResolver()
 			};
 
-			// setTimeout(Condition.prototype.__init.bind(this), 1);
-			this.__init();
+			setTimeout(Condition.prototype.__init.bind(this), 1);
+			//this.__init();
 		};
 
 		Condition.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.Condition");
@@ -37,7 +37,7 @@
 				Condition.LOGGER.logDebug([ "__doCheck(\"", aEvent, "\") -> expression: \"", this.data.expression, "\", element: \"", this.data.element, "\", this: \"", this, "\"" ]);
 
 			aEvent.preventDefault();
-			if (aEvent.type != EVENTTYPES.INITIALIZED && aEvent.type != EVENTTYPES.VALUE_CHANGED)
+			if (aEvent.type != EVENTTYPES.INITIALIZED && aEvent.type != EVENTTYPES.FIELD_VALUE_CHANGED)
 				aEvent.stopPropagation();
 
 			if (aEvent.currentTarget == this.data.element && (aEvent.type == EVENTTYPES.CONDITION_STATE_CHANGED || aEvent.Type == EVENTTYPES.VALIDATION_STATE_CHANGED))
@@ -48,8 +48,7 @@
 			else {
 				var data = this.data.dataContext.getData({
 				    includeInvalid : false,
-				    includeActivePage : true,
-				    modelType : "object"
+				    includeActivePage : true
 				});
 
 				if (Condition.LOGGER.isDebugEnabled())

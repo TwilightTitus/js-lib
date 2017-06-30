@@ -112,14 +112,14 @@
 			if (Page.LOGGER.isDebugEnabled())
 				Page.LOGGER.logDebug([ "getData(\"", aFilter, "\") -> page: \"", this, "\"" ]);
 
-			var result = [];
+			var result = {};
 			if ((aFilter.includeActivePage && this.data.active) || (this.data.condition && (this.data.valid || aFilter.includeInvalid))) {
 				var filter = $.extend({}, aFilter);
 				filter.includeInvalid = aFilter.includeInvalid || aFilter.includeInvalidOnActivePage && this.data.active;
 				for (var i = 0; i < this.data.fields.length; i++) {
 					var data = this.data.fields[i].getData(filter);
-					if (data != undefined)
-						result.push(data);
+					if (data && data.value)
+						result[data.name] = data;
 				}
 			}
 

@@ -35,7 +35,7 @@
 			        </div>
 				</div>
 				
-				<div data-form-page=""  data-form-step="1" data-form-condition="">
+				<div data-form-page=""  data-form-step="form-step-start" data-form-condition="">
 					<h3>User Info</h3>
 					<section>	
 						<!-- div class="form-group" data-form-field="trigger" data-form-required="">
@@ -48,37 +48,40 @@
 							</div>
 						</div -->					
 						<div class="list-field" data-form-list-field="employees"  xxxdata-form-condition="trigger != undefined && trigger.trim() == 'yes'">
-							<div data-form-content-template="">
-								<div>
-									<h3>employee</h3>
-									<button data-form-list-field-action-remove="" type="button" class="btn btn-primary pull-right">remove</button>	
+							<div data-form-content-template="" class="panel panel-primary">
+								<div class="panel-heading">
+									<div>
+										employee
+										<button data-form-list-field-action-remove="" type="button" class="btn btn-danger pull-right">remove</button>
+									</div>
 								</div>
-								<section>
+								<section class="panel-body">
 									<div class="form-group" data-form-field="name" data-form-field-type="text" data-form-required="">
 										<label class="control-label" for="name">name:</label>							
 				    					<input type="text" class="form-control" name="name" />
 				    					<div class="help-block text-danger" data-form-validation="$value != undefined && $value.trim() != ''">Enter your name!</div>
 									</div>
-									<div class="form-group" data-form-field="givenname" data-form-field-type="text" data-form-condition="employee.name != undefined && employee.name.trim() != ''" data-form-required="">
+									<div class="form-group" data-form-field="givenname" data-form-field-type="text" data-form-condition="$item.name.value != undefined && $item.name.value.trim() != ''" data-form-required="">
 										<label for="givenname">given name:</label>
 				    					<input type="text" class="form-control" name="givenname" />
-				    					<div class="help-block text-danger" data-form-validation="value != undefined && value.trim() != 'mustermann'">Enter your given name!</div>					
+				    					<div class="help-block text-danger" data-form-validation="$value != undefined && $value.trim() != 'mustermann'">Enter your given name!</div>					
 									</div>
 									<div class="form-group" data-form-field="age" data-form-field-type="number" data-form-condition="">
 										<label for="age">age:</label>
 				    					<input type="number" class="form-control" name="age" />
-				    					<div class="text-danger help-block " data-form-validation="value != undefined && value.trim() != ''">Enter your age</div>
-				    					<div class="text-danger help-block " data-form-validation="value >= 0">You are not born? Really?</div>
-				    					<div class="text-info help-block " data-form-message="name != undefined && name == 'Child'">Your name is Child? If you are age like a child?</div>
-				    					<div class="text-info help-block " data-form-message="age == undefined || age == ''">You can enter your age!</div>
-				    					<div class="text-info help-block " data-form-message="age != undefined && age != '' && age < 14">Your are a child.</div>
-				    					<div class="text-info help-block " data-form-message="age != undefined && age != '' && age >= 14 && age < 18">Your are a Teenager.</div>
+				    					<div class="text-danger help-block " data-form-validation="$value != undefined && $value.trim() != ''">Enter your age</div>
+				    					<div class="text-danger help-block " data-form-validation="$value >= 0">You are not born? Really?</div>
+				    					<div class="text-info help-block " data-form-message="$item.name.value != undefined && $item.name.value == 'Child'">Your name is Child? If you are age like a child?</div>
+				    					<div class="text-info help-block " data-form-message="$item.age.value == undefined || $item.age.value == ''">You can enter your age!</div>
+				    					<div class="text-info help-block " data-form-message="$item.age.value != undefined && $item.age.value != '' && $item.age.value < 14">Your are a child.</div>
+				    					<div class="text-info help-block " data-form-message="$item.age.value != undefined && $item.age.value != '' && $item.age.value >= 14 && $item.age.value < 18">Your are a Teenager.</div>
 									</div>							
 								</section>
 							</div>
 							<div data-form-content-container=""></div>
-							<div class="list-buttons">
+							<div>
 								<button data-form-list-field-action-add="" type="button" class="btn btn-primary pull-left">add</button>
+								<div class="clearfix"></div>
 							</div>					
 						</div>
 					</section>
@@ -106,7 +109,7 @@
 			{"filter": "", "logLevel": "ERROR", "appenders":["de.titus.logging.MemoryAppender"]},			
 			{"filter": "de.titus.form.Formular", "logLevel": "ERROR", "appenders":["de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender"]},
 			{"filter": "de.titus.form.utils.EventUtils", "logLevel": "ERROR", "appenders":["de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender"]},
-			{"filter": "de.titus.form.StepPanel", "logLevel": "ERROR", "appenders":["de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender"]},
+			{"filter": "de.titus.form.StepPanel", "logLevel": "DEBUG", "appenders":["de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender"]},
 			{"filter": "de.titus.form.Page", "logLevel": "ERROR", "appenders":["de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender"]},
 			{"filter": "de.titus.form.buttons", "logLevel": "ERROR", "appenders":["de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender"]},
 			{"filter": "de.titus.form.Condition", "logLevel": "ERROR", "appenders":["de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender"]},
@@ -114,7 +117,9 @@
 			{"filter": "de.titus.form.fields.ContainerField", "logLevel": "ERROR", "appenders":["de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender"]},
 			{"filter": "de.titus.form.fields.ListField", "logLevel": "ERROR", "appenders":["de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender"]},
 			{"filter": "de.titus.form.utils.DataUtils", "logLevel": "ERROR", "appenders":["de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender"]},
-			{"filter": "de.titus.form.DataContext", "logLevel": "DEBUG", "appenders":["de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender"]}
+			{"filter": "de.titus.form.DataContext", "logLevel": "ERROR", "appenders":["de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender"]},
+			{"filter": "de.titus.form.Message", "logLevel": "ERROR", "appenders":["de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender"]}
+			
 			
 		];
 		

@@ -23,12 +23,12 @@
 		ValidationController.prototype.__init = function() {
 			if (ValidationController.LOGGER.isDebugEnabled())
 				ValidationController.LOGGER.logDebug("__init()");
-
-			var formularElement = de.titus.form.utils.FormularUtils.getFormularElement(this.data.element);
+			
 			this.data.field = this.data.element.formular_field_utils_getAssociatedField();
 			this.data.dataContext = this.data.element.formular_findDataContext();
 
 			if (this.data.field.data.required || this.data.validations.length > 0) {
+				var formularElement = de.titus.form.utils.FormularUtils.getFormularElement(this.data.element);
 				de.titus.form.utils.EventUtils.handleEvent(this.data.element, [ EVENTTYPES.INITIALIZED, EVENTTYPES.CONDITION_STATE_CHANGED, EVENTTYPES.FIELD_VALUE_CHANGED ], ValidationController.prototype.__doValidate.bind(this));
 				de.titus.form.utils.EventUtils.handleEvent(formularElement, [ EVENTTYPES.CONDITION_STATE_CHANGED, EVENTTYPES.VALIDATION_STATE_CHANGED ], ValidationController.prototype.__doValidate.bind(this));
 			} else
@@ -96,8 +96,7 @@
 			var dataContext = this.data.dataContext.getData({
 			    includeInvalid : false,
 			    includeActivePage : true,
-			    includeInvalidOnActivePage : true,
-			    modelType : "object"
+			    includeInvalidOnActivePage : true
 			});
 			dataContext.$field = aFieldData;
 			dataContext.$value = aFieldData ? aFieldData.value : undefined;

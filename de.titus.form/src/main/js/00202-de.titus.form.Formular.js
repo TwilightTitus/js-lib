@@ -6,13 +6,17 @@
 				Formular.LOGGER.logDebug("constructor");
 
 			this.data = {
-			element : aElement,
-			name : aElement.attr("data-form"),
-			state : de.titus.form.Constants.STATE.INPUT,
-			expressionResolver : new de.titus.core.ExpressionResolver()
+			    element : aElement,
+			    name : aElement.attr("data-form"),
+			    state : de.titus.form.Constants.STATE.INPUT,
+			    expressionResolver : new de.titus.core.ExpressionResolver()
 			};
-			
-			this.data.element.formular_DataContext({data: Formular.prototype.getData.bind(this)});
+
+			this.data.element.formular_DataContext({
+				data : Formular.prototype.getData.bind(this)
+			});
+
+			this.data.element.formular_utils_SetInitializing();
 			setTimeout(Formular.prototype.__init.bind(this), 1);
 		};
 
@@ -27,22 +31,24 @@
 			this.data.element.formular_StepPanel();
 			this.data.element.formular_FormularControls();
 			this.data.element.formular_PageController();
-			this.data.element.find("[data-form-message]").formular_Message();
+			this.data.element.formular_initMessages();
 
-			de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.INITIALIZED);
-			this.data.element.addClass("initialized");
+			setTimeout((function() {
+				de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.INITIALIZED);
+				this.data.element.formular_utils_SetInitialized();
+			}).bind(this), 100);
 		};
 
 		Formular.prototype.__getNativData = function(aFilter) {
 			if (Formular.LOGGER.isDebugEnabled())
 				Formular.LOGGER.logDebug("__getNativData (\"", aFilter, "\")");
 
-			var data = [];
+			var data = {};
 			var pages = this.data.element.formular_PageController().data.pages;
 			for (var i = 0; i < pages.length; i++) {
 				var pageData = pages[i].getData(aFilter);
 				if (pageData != undefined && pageData.length > 0)
-					data = data.concat(pageData);
+					$.extend(data, pageData);
 			}
 
 			return data;
@@ -56,16 +62,7 @@
 			if (Formular.LOGGER.isDebugEnabled())
 				Formular.LOGGER.logDebug("nativ data: ", data);
 
-			if (!aFilter.modelType)
-				return data;
-
-			var modelType = aFilter.modelType.trim().toLowerCase();
-			var result = de.titus.form.utils.DataUtils[modelType](data);
-
-			if (Formular.LOGGER.isDebugEnabled())
-				Formular.LOGGER.logDebug([ "getData () -> ", result ]);
-
-			return result;
+			return data;
 		};
 
 		Formular.prototype.submit = function() {

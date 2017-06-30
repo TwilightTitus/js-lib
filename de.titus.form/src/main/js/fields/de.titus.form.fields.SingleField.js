@@ -122,9 +122,8 @@
 				return {
 				    name : this.data.name,
 				    type : this.data.type,
-				    $type : "field",
-				    value : this.data.controller.getValue(),
-				    items : []
+				    $type : "single-field",
+				    value : this.data.controller.getValue()
 				};
 			}
 		};
