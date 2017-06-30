@@ -117,156 +117,16 @@
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.form.utils.DataUtils", function() {
 		var DataUtils = de.titus.form.utils.DataUtils = {
-		    LOGGER : de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.utils.DataUtils"),
-		    "nativ" : function(theData) {
-			    if (DataUtils.LOGGER.isDebugEnabled())
-				    DataUtils.LOGGER.logDebug([ "Get the nativ data structur: ", theData ]);
-			    return theData;
-		    },
+		    LOGGER : de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.utils.DataUtils"),		   
 
 		    "object" : function(theData) {
 			    if (DataUtils.LOGGER.isDebugEnabled())
 				    DataUtils.LOGGER.logDebug("data of fields to object: " + JSON.stringify(theData));
 
 			    var result = {};
-			    for (var i = 0; i < theData.length; i++)
-				    DataUtils.__addToObject(theData[i], result);
-
-			    if (DataUtils.LOGGER.isDebugEnabled())
-				    DataUtils.LOGGER.logDebug("data of fields to object: result: " + JSON.stringify(result));
 
 			    return result;
-		    },
-
-		    "key-value" : function(theData) {
-			    if (DataUtils.LOGGER.isDebugEnabled())
-				    DataUtils.LOGGER.logDebug("data of fields to key-value: " + JSON.stringify(theData));
-
-			    var result = {};
-			    for (var i = 0; i < theData.length; i++) {
-				    var data = theData[i];
-				    result[data.name] = data.value;
-			    }
-
-			    return result;
-		    },
-
-		    "list-model" : function(theData, aContextName) {
-			    if (DataUtils.LOGGER.isDebugEnabled())
-				    DataUtils.LOGGER.logDebug("data of fields to list-model: " + JSON.stringify(theData));
-			    var result = [];
-			    for (var i = 0; i < theData.length; i++) {
-				    var item = theData[i];
-				    var name = aContextName != undefined && aContextName.trim() != "" ? aContextName + "." + item.name : item.name;
-				    if (theData[i].value != undefined) {
-					    result.push({
-					        name : name,
-					        value : item.value
-					    });
-				    }
-				    if (item.items && item.items.length > 0)
-					    Array.prototype.push.apply(result, DataUtils["list-model"](item.items, name));
-			    }
-			    return result;
-		    },
-
-		    "data-model" : function(theData) {
-			    if (DataUtils.LOGGER.isDebugEnabled())
-				    DataUtils.LOGGER.logDebug(["data of fields to data-model: ", theData]);
-			   
-			    return DataUtils.__addToDataModel(theData, {});
-		    },
-		    
-		    __addToDataModel : function(aData, aContext, aContextName) {		    	
-		    	for(var i = 0; i < aData.length; i++){
-		    		var data = aData[i];
-		    		var name = aContextName != undefined && aContextName.trim() != "" ? aContextName + "." + data.name : data.name;
-		    		if(data.value != undefined){		    		
-			    		var context = DataUtils.__getObjectContext(name, aContext);
-			    		context["$value"] = data.value;
-			    		context["$type"] = data.type;
-		    		}
-		    		if(data.items && data.items.length > 0)
-		    			DataUtils.__addToDataModel(data.items, aContext, name);
-		    	}
-		    	
-		    	return aContext;
-		    },
-		   
-		    __getObjectContext : function(aContextName, aRoot) {
-			    if (aContextName == undefined || aContextName.trim() == '')
-				    return aRoot;
-
-			    var names = aContextName.split(".");
-			    var context = aRoot;
-			    for (var i = 0; i < names.length; i++) {
-				    if (context[names[i]] == undefined)
-					    context[names[i]] = {};
-				    context = context[names[i]];
-			    }
-
-			    return context;
-		    },
-
-		    __addToObject : function(aData, aContext, aContextName) {
-			    var data = aData.value;
-			    var fullname = aContextName ? aContextName + "." + aData.name : aData.name;
-			    if (aData.items && aData.items.length > 0) {
-				    for (var i = 0; i < aData.items.length; i++)
-					    DataUtils.__addToObject(aData.items[i], aContext, fullname);
-			    }
-			    if (data != undefined) {
-				    var contextName = undefined;
-				    var key = fullname;
-				    var lastIndex = fullname.lastIndexOf(".");
-				    if (lastIndex >= 0) {
-					    key = fullname.substring(lastIndex + 1);
-					    contextName = fullname.substring(0, lastIndex);
-				    }
-
-				    var context = DataUtils.__getObjectContext(contextName, aContext);
-				    context[key] = data;
-			    }
-		    },
-
-		    __toSimpleObject : function(aData, aContext) {
-			    var names = aData.name.split(".");
-			    var context = aContext;
-			    for (var i = 0; i < (names.length - 1); i++) {
-				    if (context[names[i]] == undefined)
-					    context[names] = {};
-				    context = context[names[i]];
-			    }
-			    context[names[names.length - 1]] = aData.value;
-		    },
-
-		    __toModelObject : function(aName, aData, aContext) {
-			    var names = aName.split(".");
-			    var context = aContext;
-			    context.items = context.items || [];
-
-			    for (var i = 0; i < names.length; i++) {
-				    var name = names[i];
-				    var item = DataUtils.__getItem(aName, context.items);
-				    if (item == undefined)
-					    item = {
-					        name : name,
-					        type : "unkown",
-					        items : []
-					    };
-
-				    context = item;
-			    }
-
-			    context.type = aData.type;
-			    context.value = aData.value;
-		    },
-		    __getItem : function(aName, theItems) {
-			    for (var i = 0; i < theItems.length; i++)
-				    if (theItems[i].name == aName)
-					    return theItems[i];
 		    }
-
 		};
 	});
 
@@ -552,26 +412,6 @@
 				DataContext.LOGGER.logDebug([ "getData() -> nativ data: ", dataContext ]);
 
 			return dataContext;
-
-			if (!aFilter.modelType)
-				return data;
-
-			var modelType = aFilter.modelType.trim().toLowerCase();
-			var result = {};
-			for ( var name in data) {
-				if (Array.isArray(data[name])) {
-					var model = de.titus.form.utils.DataUtils[modelType](data[name]);
-					if (Array.isArray(model))
-						result[name] = model;
-					else if (typeof model !== "undefined")
-						result = $.extend(result, model);
-				}
-			}
-
-			if (DataContext.LOGGER.isDebugEnabled())
-				DataContext.LOGGER.logDebug([ "getData() -> model result: ", result ]);
-
-			return result;
 		};
 
 		$.fn.formular_DataContext = function(aOption) {
@@ -1984,13 +1824,18 @@
 			    contentContainer : aElement.find("[data-form-content-container]"),
 			    addButton : aElement.find("[data-form-list-field-action-add]"),
 			    required : (aElement.attr("data-form-required") !== undefined),
+			    min : parseInt(aElement.attr("data-form-list-field-min") || "0"),
+			    max : parseInt(aElement.attr("data-form-list-field-max") || "0"),
 			    condition : undefined,
 			    // always valid, because it's only a container
 			    valid : undefined,
 			    items : []
 			};
-			
-			this.data.element.formular_DataContext({data: ListField.prototype.getData.bind(this), scope: "$list"});
+
+			this.data.element.formular_DataContext({
+			    data : ListField.prototype.getData.bind(this),
+			    scope : "$list"
+			});
 			this.hide();
 			setTimeout(ListField.prototype.__init.bind(this), 1);
 		};
@@ -2003,14 +1848,14 @@
 
 			this.data.dataContext = this.data.element.formular_findParentDataContext();
 			EventUtils.handleEvent(this.data.element, [ EVENTTYPES.CONDITION_MET, EVENTTYPES.CONDITION_NOT_MET ], ListField.prototype.__changeConditionState.bind(this));
-			EventUtils.handleEvent(this.data.element, [ EVENTTYPES.CONDITION_STATE_CHANGED, EVENTTYPES.VALIDATION_STATE_CHANGED, EVENTTYPES.FIELD_VALUE_CHANGED ], ListField.prototype.__changeValidationStateOfFields.bind(this), "*");
-
+			EventUtils.handleEvent(this.data.element, [ EVENTTYPES.CONDITION_STATE_CHANGED, EVENTTYPES.VALIDATION_STATE_CHANGED, EVENTTYPES.FIELD_VALUE_CHANGED ], ListField.prototype.__doValidation.bind(this), "*");
+			
 			this.data.element.formular_Condition();
-			this.data.element.formular_ValidationController();
 
 			EventUtils.handleEvent(this.data.addButton, [ "click" ], ListField.prototype.__addItem.bind(this));
 
 			EventUtils.triggerEvent(this.data.element, EVENTTYPES.INITIALIZED);
+			this.__doValidation();
 		};
 
 		ListField.prototype.__addItem = function(aEvent) {
@@ -2022,7 +1867,7 @@
 			};
 			item.element = this.data.template.clone();
 			item.element.attr("id", item.id);
-			item.element.attr("data-form-list-item", item.id); 
+			item.element.attr("data-form-list-item", item.id);
 			if (item.element.attr("data-form-container-field") == undefined)
 				item.element.attr("data-form-container-field", "item");
 			item.element.formular_utils_SetInitializing();
@@ -2037,34 +1882,48 @@
 
 		ListField.prototype.__initializeItem = function(aItem) {
 			aItem.field = aItem.element.formular_Field();
-			aItem.element.formular_DataContext({data: (function(aFilter){
-				var data = this.field.getData(aFilter);
-				if(data)
-					return data.value;
-			}).bind(aItem), scope: "$item"});
+			aItem.element.formular_DataContext({
+			    data : (function(aFilter) {
+				    var data = this.field.getData(aFilter);
+				    if (data)
+					    return data.value;
+			    }).bind(aItem),
+			    scope : "$item"
+			});
 
 			aItem.element.formular_initMessages();
 
 			aItem.element.formular_utils_SetInitialized();
 			EventUtils.triggerEvent(this.data.element, EVENTTYPES.FIELD_VALUE_CHANGED);
+			this.__doValidation();
+			this.__doCheckAddButton();
 		};
 
 		ListField.prototype.__removeItem = function(aEvent) {
-			
+
 			var target = $(aEvent.target);
 			var itemElement = target.parents("[data-form-list-item]");
 			var itemId = itemElement.attr("id");
-			
-			for(var i = 0; i < this.data.items.length; i++){
+
+			for (var i = 0; i < this.data.items.length; i++) {
 				var item = this.data.items[i];
-				if(item.id == itemId){
+				if (item.id == itemId) {
 					this.data.items.splice(i, 1);
 					itemElement.remove();
 					EventUtils.triggerEvent(this.data.element, EVENTTYPES.FIELD_VALUE_CHANGED);
+					this.__doValidation();
+					this.__doCheckAddButton();
 					return;
 				}
 			}
 
+		};
+		
+		ListField.prototype.__doCheckAddButton = function() {
+			if(this.data.items.length < this.data.max)
+				this.data.element.find("[data-form-list-field-action-add]").formular_utils_SetActive();
+			else
+				this.data.element.find("[data-form-list-field-action-add]").formular_utils_SetInactive();				
 		};
 
 		ListField.prototype.__changeConditionState = function(aEvent) {
@@ -2089,12 +1948,32 @@
 			}
 		};
 
-		ListField.prototype.__changeValidationStateOfFields = function(aEvent) {
-			this.data.valid = this.__isListItemsValid();
-			if (this.data.valid)
-				this.data.element.formular_utils_SetValid();
+		ListField.prototype.__doValidation = function() {
+			var valid = false;
+			
+			if( this.data.items.length == 0)
+				valid = !this.data.required;
+			else if(this.data.items.length < this.data.min)
+				valid = false;
+			else if(this.data.items.length > this.data.max)
+				valid = false;
 			else
-				this.data.element.formular_utils_SetInvalid();
+				valid = this.__isListItemsValid();
+			
+
+			if (this.data.valid != valid) {
+				this.data.valid = valid;
+				if (this.data.valid)
+					this.data.element.formular_utils_SetValid();
+				else
+					this.data.element.formular_utils_SetInvalid();
+
+				EventUtils.triggerEvent(this.data.element, EVENTTYPES.VALIDATION_STATE_CHANGED);
+			}
+		};
+
+		ListField.prototype.__changeValidationStateOfFields = function(aEvent) {
+			this.data.valid = this.__doValidation();
 
 		};
 
@@ -2130,7 +2009,7 @@
 				}
 			}
 			this.data.element.find("[data-form-list-field-action-remove]").formular_utils_SetActive();
-			this.data.element.find("[data-form-list-field-action-add]").formular_utils_SetActive();
+			this.__doCheckAddButton();
 		};
 
 		ListField.prototype.summary = function() {

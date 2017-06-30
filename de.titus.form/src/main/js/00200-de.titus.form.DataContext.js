@@ -39,26 +39,6 @@
 				DataContext.LOGGER.logDebug([ "getData() -> nativ data: ", dataContext ]);
 
 			return dataContext;
-
-			if (!aFilter.modelType)
-				return data;
-
-			var modelType = aFilter.modelType.trim().toLowerCase();
-			var result = {};
-			for ( var name in data) {
-				if (Array.isArray(data[name])) {
-					var model = de.titus.form.utils.DataUtils[modelType](data[name]);
-					if (Array.isArray(model))
-						result[name] = model;
-					else if (typeof model !== "undefined")
-						result = $.extend(result, model);
-				}
-			}
-
-			if (DataContext.LOGGER.isDebugEnabled())
-				DataContext.LOGGER.logDebug([ "getData() -> model result: ", result ]);
-
-			return result;
 		};
 
 		$.fn.formular_DataContext = function(aOption) {
