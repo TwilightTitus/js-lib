@@ -39,30 +39,22 @@
 			}).bind(this), 100);
 		};
 
-		Formular.prototype.__getNativData = function(aFilter) {
-			if (Formular.LOGGER.isDebugEnabled())
-				Formular.LOGGER.logDebug("__getNativData (\"", aFilter, "\")");
-
-			var data = {};
-			var pages = this.data.element.formular_PageController().data.pages;
-			for (var i = 0; i < pages.length; i++) {
-				var pageData = pages[i].getData(aFilter);
-				if (pageData != undefined && pageData.length > 0)
-					$.extend(data, pageData);
-			}
-
-			return data;
-		};
-
 		Formular.prototype.getData = function(aFilter) {
 			if (Formular.LOGGER.isDebugEnabled())
-				Formular.LOGGER.logDebug("getData (\"", aFilter, "\")");
+				Formular.LOGGER.logDebug([ "getData (\"", aFilter, "\")" ]);
 
-			var data = this.__getNativData(aFilter);
+			var result = {};
+			var pages = this.data.element.formular_PageController().data.pages;
+			for (var i = 0; i < pages.length; i++) {
+				var data = pages[i].getData(aFilter);
+				if (data)
+					result = $.extend(result, data);
+			}
+
 			if (Formular.LOGGER.isDebugEnabled())
-				Formular.LOGGER.logDebug("nativ data: ", data);
+				Formular.LOGGER.logDebug([ "getData (\"", aFilter, "\") -> result: \"", result, "\"" ]);
 
-			return data;
+			return result;
 		};
 
 		Formular.prototype.submit = function() {

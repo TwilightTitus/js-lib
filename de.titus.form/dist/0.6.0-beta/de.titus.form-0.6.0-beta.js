@@ -113,24 +113,6 @@
 		};
 	});
 })();
-(function($) {
-	"use strict";
-	de.titus.core.Namespace.create("de.titus.form.utils.DataUtils", function() {
-		var DataUtils = de.titus.form.utils.DataUtils = {
-		    LOGGER : de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.utils.DataUtils"),		   
-
-		    "object" : function(theData) {
-			    if (DataUtils.LOGGER.isDebugEnabled())
-				    DataUtils.LOGGER.logDebug("data of fields to object: " + JSON.stringify(theData));
-
-			    var result = {};
-
-			    return result;
-		    }
-		};
-	});
-
-})($);
 (function($){
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.form.utils.EventUtils", function() {
@@ -758,30 +740,22 @@
 			}).bind(this), 100);
 		};
 
-		Formular.prototype.__getNativData = function(aFilter) {
-			if (Formular.LOGGER.isDebugEnabled())
-				Formular.LOGGER.logDebug("__getNativData (\"", aFilter, "\")");
-
-			var data = {};
-			var pages = this.data.element.formular_PageController().data.pages;
-			for (var i = 0; i < pages.length; i++) {
-				var pageData = pages[i].getData(aFilter);
-				if (pageData != undefined && pageData.length > 0)
-					$.extend(data, pageData);
-			}
-
-			return data;
-		};
-
 		Formular.prototype.getData = function(aFilter) {
 			if (Formular.LOGGER.isDebugEnabled())
-				Formular.LOGGER.logDebug("getData (\"", aFilter, "\")");
+				Formular.LOGGER.logDebug([ "getData (\"", aFilter, "\")" ]);
 
-			var data = this.__getNativData(aFilter);
+			var result = {};
+			var pages = this.data.element.formular_PageController().data.pages;
+			for (var i = 0; i < pages.length; i++) {
+				var data = pages[i].getData(aFilter);
+				if (data)
+					result = $.extend(result, data);
+			}
+
 			if (Formular.LOGGER.isDebugEnabled())
-				Formular.LOGGER.logDebug("nativ data: ", data);
+				Formular.LOGGER.logDebug([ "getData (\"", aFilter, "\") -> result: \"", result, "\"" ]);
 
-			return data;
+			return result;
 		};
 
 		Formular.prototype.submit = function() {
@@ -1537,6 +1511,55 @@
 		de.titus.core.jquery.Components.asComponent("formular_buttons_SummaryButton", de.titus.form.buttons.SummaryButton);
 	});
 })($, de.titus.form.Constants.EVENTS);
+(function($) {
+	"use strict";
+	de.titus.core.Namespace.create("de.titus.form.data.utils.ObjectModel", function() {
+		var ObjectModel = de.titus.form.data.utils.ObjectModel = {
+		    LOGGER : de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.data.utils.ObjectModel"),
+
+		    toModel : function(aData) {
+			    if (ObjectModel.LOGGER.isDebugEnabled())
+				    ObjectModel.LOGGER.logDebug([ "toModel(\"", aData, "\"" ]);
+			    if (aData == undefined)
+				    return;
+
+			    if (typeof aData.$type === "string") {
+				    if (aData.$type == "single-field")
+					    return aData.value;
+				    else
+					    return ObjectModel.toModel(aData.value)
+			    } else if (Array.isArray(aData)) {
+				    var result = [];
+				    for (var i = 0; i < aData.length; i++)
+					    result.push(ObjectModel.toModel(aData[i]));
+			    } else if (typeof aData === "object") {
+				    var result = {};
+				    for ( var name in aData)
+					    result[name] = ObjectModel.toModel(aData[name]);
+			    } else
+				    return aData;
+
+			    return result;
+		    }
+		};
+	});
+
+})($);
+(function($) {
+	"use strict";
+	de.titus.core.Namespace.create("de.titus.form.data.utils.DataUtils", function() {
+		var DataUtils = de.titus.form.data.utils.DataUtils = {
+		    LOGGER : de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.data.utils.DataUtils"),
+
+		    toModel : function(aData, aModel) {
+			    return DataUtils[aModel.toLowerCase()](aData);
+		    },
+
+		    "object" : de.titus.form.data.utils.ObjectModel.toModel
+		};
+	});
+
+})($);
 (function($) {
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.form.field.controller.DefaultController", function() {
