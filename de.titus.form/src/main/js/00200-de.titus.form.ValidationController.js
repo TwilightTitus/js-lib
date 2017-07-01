@@ -76,9 +76,10 @@
 
 			var condition = this.data.field.data.condition;
 			var required = this.data.field.data.required;
+			var requiredOnActive = this.data.field.requiredOnActive;
 			var hasValidations = this.data.validations.length > 0;
 
-			if (required && !condition)
+			if ((required && !condition) || requiredOnActive)
 				valid = true;
 			else if (required) {
 				if (condition && hasValue && hasValidations)

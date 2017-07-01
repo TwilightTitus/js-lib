@@ -11,6 +11,7 @@
 			    name : (aElement.attr("data-form-field") || "").trim(),
 			    type : (aElement.attr("data-form-field-type") || "default").trim(),
 			    required : (aElement.attr("data-form-required") !== undefined),
+			    requiredOnActive : (aElement.attr("data-form-required") !== "on-condition-true"),
 			    condition : undefined,
 			    valid : undefined,
 			    controller : undefined

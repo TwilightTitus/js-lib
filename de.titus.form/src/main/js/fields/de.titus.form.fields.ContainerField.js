@@ -11,6 +11,7 @@
 			    name : (aElement.attr("data-form-container-field") || "").trim(),
 			    active : false,
 			    required : (aElement.attr("data-form-required") !== undefined),
+			    requiredOnActive : (aElement.attr("data-form-required") !== "on-condition-true"),
 			    condition : undefined,
 			    // always valid, because it's only a container
 			    valid : undefined,
