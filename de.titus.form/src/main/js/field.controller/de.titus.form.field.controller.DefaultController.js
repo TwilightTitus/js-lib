@@ -10,7 +10,11 @@
 			this.type = undefined;
 			this.filedata = undefined;
 			this.timeoutId = undefined;
-			setTimeout(DefaultController.prototype.__init.bind(this), 1);
+			this.data = {
+				type : undefined
+			};
+			// setTimeout(DefaultController.prototype.__init.bind(this), 1);
+			this.__init();
 		};
 		DefaultController.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.field.controller.DefaultController");
 
@@ -50,6 +54,8 @@
 
 					}).bind(this));
 				}
+
+				this.data.type = this.type;
 			}
 
 			de.titus.form.utils.EventUtils.handleEvent(this.element, de.titus.form.Constants.EVENTS.FIELD_SHOW, (function() {

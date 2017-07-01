@@ -111,21 +111,24 @@
 			if (ContainerField.LOGGER.isDebugEnabled())
 				ContainerField.LOGGER.logDebug("getData(\"", aFilter, "\")");
 
-			if (this.data.condition) {
-				var result;
-				if (this.data.active || (this.data.condition && this.data.valid))
-					result = de.titus.form.utils.FormularUtils.toBaseModel(this.data.fields, aFilter);
+			var result;
+			if (aFilter.example)
+				result = de.titus.form.utils.FormularUtils.toBaseModel(this.data.fields, aFilter);
+			else if (this.data.condition && (this.data.active || (this.data.condition && this.data.valid)))
+				result = de.titus.form.utils.FormularUtils.toBaseModel(this.data.fields, aFilter);
+			else
+				return;
 
-				if (this.data.name)
-					return {
-					    name : this.data.name || "$container",
-					    type : "container-field",
-					    $type : "container-field",
-					    value : result
-					};
-				else
-					return result;
-			}
+			if (this.data.name)
+				return {
+				    name : this.data.name,
+				    type : "container-field",
+				    $type : "container-field",
+				    value : result
+				};
+			else
+				return result;
+
 		};
 	});
 })($, de.titus.form.utils.EventUtils, de.titus.form.Constants.EVENTS);

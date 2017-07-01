@@ -116,8 +116,12 @@
 				Page.LOGGER.logDebug([ "getData(\"", aFilter, "\") -> page: \"", this, "\"" ]);
 
 			var result;
-			if (this.data.active || (this.data.condition && this.data.valid))
+			if (aFilter.example)
 				result = de.titus.form.utils.FormularUtils.toBaseModel(this.data.fields, aFilter);
+			else if (this.data.active || (this.data.condition && this.data.valid))
+				result = de.titus.form.utils.FormularUtils.toBaseModel(this.data.fields, aFilter);
+			else
+				return;
 
 			if (Page.LOGGER.isDebugEnabled())
 				Page.LOGGER.logDebug([ "getData() -> result: \"", result, "\"" ]);

@@ -24,6 +24,7 @@
 			this.hide();
 
 			setTimeout(Field.prototype.__init.bind(this), 1);
+			this.__init();
 		};
 
 		Field.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.fields.SingleField");
@@ -122,14 +123,20 @@
 			if (Field.LOGGER.isDebugEnabled())
 				Field.LOGGER.logDebug([ "getData(\"", aFilter, "\")" ]);
 
-			if (this.data.condition && (this.data.valid || aFilter.validate || aFilter.condition)) {
-				return {
-				    name : this.data.name,
-				    type : this.data.type,
-				    $type : "single-field",
-				    value : this.data.controller.getValue()
-				};
-			}
+			var result;
+			if (aFilter.example)
+				result = this.data.controller.getExample();
+			else if (this.data.condition && (this.data.valid || aFilter.validate || aFilter.condition))
+				result = this.data.controller.getValue();
+			else
+				return;
+
+			return {
+			    name : this.data.name,
+			    type : this.data.controller.data.type ? this.data.controller.data.type : this.data.type,
+			    $type : "single-field",
+			    value : result
+			};
 		};
 	});
 })($, de.titus.form.Constants.EVENTS);

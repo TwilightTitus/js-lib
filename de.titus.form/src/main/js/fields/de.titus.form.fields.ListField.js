@@ -218,23 +218,29 @@
 			if (ListField.LOGGER.isDebugEnabled())
 				ListField.LOGGER.logDebug("getData(\"", aFilter, "\")");
 
-			if (this.data.condition && (this.data.valid || aFilter.validate || aFilter.condition)) {
-				var items = [];
-
+			var items = [];
+			if (aFilter.example)
+				items = ListField.getExample(aFilter);
+			else if (this.data.condition && (this.data.valid || aFilter.validate || aFilter.condition)) {
 				for (var i = 0; i < this.data.items.length; i++) {
 					var item = this.data.items[i];
 					var fieldData = item.field.getData(aFilter);
 					if (fieldData && fieldData.value)
 						items.push(fieldData.value);
 				}
+			} else
+				return;
 
-				return {
-				    name : this.data.name,
-				    type : "list-field",
-				    $type : "list-field",
-				    value : items
-				};
-			}
+			return {
+			    name : this.data.name,
+			    type : "list-field",
+			    $type : "list-field",
+			    value : items
+			};
+		};
+
+		ListField.prototype.getExample = function(aFilter) {
+			// TODO
 		};
 	});
 })($, de.titus.form.utils.EventUtils, de.titus.form.Constants.EVENTS);
