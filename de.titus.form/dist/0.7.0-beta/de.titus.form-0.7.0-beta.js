@@ -2157,7 +2157,6 @@
 			this.hide();
 
 			setTimeout(Field.prototype.__init.bind(this), 1);
-			this.__init();
 		};
 
 		Field.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.fields.SingleField");
