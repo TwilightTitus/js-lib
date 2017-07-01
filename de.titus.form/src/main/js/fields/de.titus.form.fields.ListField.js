@@ -17,7 +17,6 @@
 			    min : parseInt(aElement.attr("data-form-list-field-min") || "0"),
 			    max : parseInt(aElement.attr("data-form-list-field-max") || "0"),
 			    condition : undefined,
-			    // always valid, because it's only a container
 			    valid : undefined,
 			    items : []
 			};
