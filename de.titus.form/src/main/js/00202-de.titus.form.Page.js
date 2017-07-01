@@ -118,6 +118,8 @@
 			var result = {};
 			if (this.data.active || (this.data.condition && this.data.valid)) {
 				for (var i = 0; i < this.data.fields.length; i++) {
+					// TODO container as child, but no name -> data would be an
+					// array of fields! fix it!! Same as container-field
 					var data = this.data.fields[i].getData(aFilter);
 					if (data && data.value)
 						result[data.name] = data;

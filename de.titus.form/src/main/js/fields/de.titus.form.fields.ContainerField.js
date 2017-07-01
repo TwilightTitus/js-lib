@@ -113,6 +113,8 @@
 			if (this.data.condition) {
 				var values = {};
 				for (var i = 0; i < this.data.fields.length; i++) {
+					// TODO container as child, but no name -> value would be an
+					// array of fields! fix it!! Same as page
 					var value = this.data.fields[i].getData(aFilter);
 					if (value)
 						values[value.name] = value;
