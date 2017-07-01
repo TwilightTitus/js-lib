@@ -109,7 +109,7 @@
 		};
 
 		ListField.prototype.__doCheckAddButton = function() {
-			if (this.data.items.length < this.data.max)
+			if (this.data.max == 0 || this.data.items.length < this.data.max)
 				this.data.element.find("[data-form-list-field-action-add]").formular_utils_SetActive();
 			else
 				this.data.element.find("[data-form-list-field-action-add]").formular_utils_SetInactive();
@@ -144,7 +144,7 @@
 				valid = !this.data.required;
 			else if (this.data.items.length < this.data.min)
 				valid = false;
-			else if (this.data.items.length > this.data.max)
+			else if (this.data.max != 0 && this.data.items.length > this.data.max)
 				valid = false;
 			else
 				valid = this.__isListItemsValid();

@@ -589,7 +589,8 @@
 			    dataContext : undefined,
 			    field : undefined,
 			    expressionResolver : new de.titus.core.ExpressionResolver(),
-			    validations : aElement.find("[data-form-validation]")
+			    validations : aElement.find("[data-form-validation]"),
+			    timeoutId : undefined
 			};
 
 			setTimeout(ValidationController.prototype.__init.bind(this), 1);
@@ -607,11 +608,18 @@
 
 			if (this.data.field.data.required || this.data.validations.length > 0) {
 				var formularElement = de.titus.form.utils.FormularUtils.getFormularElement(this.data.element);
-				de.titus.form.utils.EventUtils.handleEvent(this.data.element, [ EVENTTYPES.INITIALIZED, EVENTTYPES.CONDITION_STATE_CHANGED, EVENTTYPES.FIELD_VALUE_CHANGED ], ValidationController.prototype.__doValidate.bind(this));
-				de.titus.form.utils.EventUtils.handleEvent(formularElement, [ EVENTTYPES.CONDITION_STATE_CHANGED, EVENTTYPES.VALIDATION_STATE_CHANGED ], ValidationController.prototype.__doValidate.bind(this));
+				de.titus.form.utils.EventUtils.handleEvent(this.data.element, [ EVENTTYPES.INITIALIZED, EVENTTYPES.CONDITION_STATE_CHANGED, EVENTTYPES.FIELD_VALUE_CHANGED ], ValidationController.prototype.__doLazyValidate.bind(this));
+				de.titus.form.utils.EventUtils.handleEvent(formularElement, [ EVENTTYPES.CONDITION_STATE_CHANGED, EVENTTYPES.VALIDATION_STATE_CHANGED ], ValidationController.prototype.__doLazyValidate.bind(this));
 			} else
 				de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.VALIDATION_VALID);
 		};
+
+		ValidationController.prototype.__doLazyValidate = function(aEvent) {
+			if (this.data.timeoutId)
+				clearTimeout(this.data.timeoutId);
+
+			this.data.timeoutId = setTimeout(ValidationController.prototype.__doValidate.bind(this, aEvent), 300);
+		}
 
 		ValidationController.prototype.__doValidate = function(aEvent) {
 			if (ValidationController.LOGGER.isDebugEnabled())
@@ -648,7 +656,9 @@
 			var required = this.data.field.data.required;
 			var hasValidations = this.data.validations.length > 0;
 
-			if (required) {
+			if (required && !condition)
+				valid = true;
+			else if (required) {
 				if (condition && hasValue && hasValidations)
 					valid = this.__checkValidations(fieldData);
 				else if (condition && hasValue && !hasValidations)
@@ -957,7 +967,15 @@
 			if (Page.LOGGER.isDebugEnabled())
 				Page.LOGGER.logDebug([ "getData() -> result: \"", result, "\"" ]);
 
-			return result;
+			if (this.data.name)
+				return {
+				    name : this.data.name,
+				    type : "container-field",
+				    $type : "container-field",
+				    value : result
+				};
+			else
+				return result;
 		};
 
 		de.titus.core.jquery.Components.asComponent("formular_Page", de.titus.form.Page);
@@ -1741,8 +1759,10 @@
 			    fields : []
 			};
 
-			
-			this.data.element.formular_DataContext({data: ContainerField.prototype.getData.bind(this), scope: "$container"});
+			this.data.element.formular_DataContext({
+			    data : ContainerField.prototype.getData.bind(this),
+			    scope : "$container"
+			});
 			this.hide();
 			setTimeout(ContainerField.prototype.__init.bind(this), 1);
 		};
@@ -1840,12 +1860,15 @@
 						values[value.name] = value;
 				}
 
-				return {
-				    name : this.data.name || "$container",
-				    type : "container-field",
-				    $type : "container-field",
-				    value : values
-				};
+				if (this.data.name)
+					return {
+					    name : this.data.name || "$container",
+					    type : "container-field",
+					    $type : "container-field",
+					    value : values
+					};
+				else
+					return values;
 			}
 		};
 	});
@@ -1961,7 +1984,7 @@
 		};
 
 		ListField.prototype.__doCheckAddButton = function() {
-			if (this.data.items.length < this.data.max)
+			if (this.data.max == 0 || this.data.items.length < this.data.max)
 				this.data.element.find("[data-form-list-field-action-add]").formular_utils_SetActive();
 			else
 				this.data.element.find("[data-form-list-field-action-add]").formular_utils_SetInactive();
@@ -1996,7 +2019,7 @@
 				valid = !this.data.required;
 			else if (this.data.items.length < this.data.min)
 				valid = false;
-			else if (this.data.items.length > this.data.max)
+			else if (this.data.max != 0 && this.data.items.length > this.data.max)
 				valid = false;
 			else
 				valid = this.__isListItemsValid();

@@ -11,7 +11,8 @@
 			    dataContext : undefined,
 			    field : undefined,
 			    expressionResolver : new de.titus.core.ExpressionResolver(),
-			    validations : aElement.find("[data-form-validation]")
+			    validations : aElement.find("[data-form-validation]"),
+			    timeoutId : undefined
 			};
 
 			setTimeout(ValidationController.prototype.__init.bind(this), 1);
@@ -29,11 +30,18 @@
 
 			if (this.data.field.data.required || this.data.validations.length > 0) {
 				var formularElement = de.titus.form.utils.FormularUtils.getFormularElement(this.data.element);
-				de.titus.form.utils.EventUtils.handleEvent(this.data.element, [ EVENTTYPES.INITIALIZED, EVENTTYPES.CONDITION_STATE_CHANGED, EVENTTYPES.FIELD_VALUE_CHANGED ], ValidationController.prototype.__doValidate.bind(this));
-				de.titus.form.utils.EventUtils.handleEvent(formularElement, [ EVENTTYPES.CONDITION_STATE_CHANGED, EVENTTYPES.VALIDATION_STATE_CHANGED ], ValidationController.prototype.__doValidate.bind(this));
+				de.titus.form.utils.EventUtils.handleEvent(this.data.element, [ EVENTTYPES.INITIALIZED, EVENTTYPES.CONDITION_STATE_CHANGED, EVENTTYPES.FIELD_VALUE_CHANGED ], ValidationController.prototype.__doLazyValidate.bind(this));
+				de.titus.form.utils.EventUtils.handleEvent(formularElement, [ EVENTTYPES.CONDITION_STATE_CHANGED, EVENTTYPES.VALIDATION_STATE_CHANGED ], ValidationController.prototype.__doLazyValidate.bind(this));
 			} else
 				de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.VALIDATION_VALID);
 		};
+
+		ValidationController.prototype.__doLazyValidate = function(aEvent) {
+			if (this.data.timeoutId)
+				clearTimeout(this.data.timeoutId);
+
+			this.data.timeoutId = setTimeout(ValidationController.prototype.__doValidate.bind(this, aEvent), 300);
+		}
 
 		ValidationController.prototype.__doValidate = function(aEvent) {
 			if (ValidationController.LOGGER.isDebugEnabled())
@@ -70,7 +78,9 @@
 			var required = this.data.field.data.required;
 			var hasValidations = this.data.validations.length > 0;
 
-			if (required) {
+			if (required && !condition)
+				valid = true;
+			else if (required) {
 				if (condition && hasValue && hasValidations)
 					valid = this.__checkValidations(fieldData);
 				else if (condition && hasValue && !hasValidations)

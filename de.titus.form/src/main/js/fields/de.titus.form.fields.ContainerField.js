@@ -17,8 +17,10 @@
 			    fields : []
 			};
 
-			
-			this.data.element.formular_DataContext({data: ContainerField.prototype.getData.bind(this), scope: "$container"});
+			this.data.element.formular_DataContext({
+			    data : ContainerField.prototype.getData.bind(this),
+			    scope : "$container"
+			});
 			this.hide();
 			setTimeout(ContainerField.prototype.__init.bind(this), 1);
 		};
@@ -116,12 +118,15 @@
 						values[value.name] = value;
 				}
 
-				return {
-				    name : this.data.name || "$container",
-				    type : "container-field",
-				    $type : "container-field",
-				    value : values
-				};
+				if (this.data.name)
+					return {
+					    name : this.data.name || "$container",
+					    type : "container-field",
+					    $type : "container-field",
+					    value : values
+					};
+				else
+					return values;
 			}
 		};
 	});

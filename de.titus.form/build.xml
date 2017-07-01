@@ -34,14 +34,14 @@
 		</concat>
 		<echo message="${ant.project.name}-${project.version}.js built." />
 		<echo message="minify ${ant.project.name}-${project.version}.js" />
-		<copy file="${dir.dist}/${ant.project.name}-${project.version}.js" tofile="${dir.dist}/${ant.project.name}.min-${project.version}.js">
+		<copy file="${dir.dist}/${ant.project.name}-${project.version}.js" tofile="${dir.dist}/${ant.project.name}-${project.version}.min.js">
 		</copy>
 		<yuicompress linebreak="1000" warn="false" munge="no" preserveallsemicolons="true" outputfolder="${dir.dist}" charset="utf-8">
 			<fileset dir="${dir.dist}">
-				<include name="${ant.project.name}.min-${project.version}.js" />
+				<include name="${ant.project.name}-${project.version}.min.js" />
 			</fileset>
 		</yuicompress>
-		<echo message="${ant.project.name}.min-${project.version}.js built." />
+		<echo message="${ant.project.name}-${project.version}.min.js built." />
 	</target>
 
 

@@ -127,7 +127,15 @@
 			if (Page.LOGGER.isDebugEnabled())
 				Page.LOGGER.logDebug([ "getData() -> result: \"", result, "\"" ]);
 
-			return result;
+			if (this.data.name)
+				return {
+				    name : this.data.name,
+				    type : "container-field",
+				    $type : "container-field",
+				    value : result
+				};
+			else
+				return result;
 		};
 
 		de.titus.core.jquery.Components.asComponent("formular_Page", de.titus.form.Page);
