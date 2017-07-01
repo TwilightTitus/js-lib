@@ -36,9 +36,9 @@
 
 			this.data.steps = steps;
 
-			de.titus.form.utils.EventUtils.handleEvent(this.data.element, [EVENTTYPES.STATE_CHANGED, EVENTTYPES.PAGE_CHANGED ], StepPanel.prototype.update.bind(this));
+			de.titus.form.utils.EventUtils.handleEvent(this.data.element, [ EVENTTYPES.STATE_CHANGED, EVENTTYPES.PAGE_CHANGED ], StepPanel.prototype.update.bind(this));
 		};
-		
+
 		StepPanel.prototype.update = function(aEvent) {
 			if (StepPanel.LOGGER.isDebugEnabled())
 				StepPanel.LOGGER.logDebug("update() -> " + aEvent.type);
@@ -62,7 +62,7 @@
 			if (StepPanel.LOGGER.isDebugEnabled())
 				StepPanel.LOGGER.logDebug("setStep(\"" + aId + "\")");
 			var step = this.getStep(aId);
-			if (step != undefined) {
+			if (step !== undefined) {
 				if (this.data.current) {
 					this.data.current.element.formular_utils_SetInactive();
 					this.data.element.removeClass("step-" + this.data.current.id);
@@ -89,5 +89,5 @@
 
 		de.titus.core.jquery.Components.asComponent("formular_StepPanel", de.titus.form.StepPanel);
 	});
-		
-})($,de.titus.form.Constants.EVENTS);
+
+})($, de.titus.form.Constants.EVENTS);

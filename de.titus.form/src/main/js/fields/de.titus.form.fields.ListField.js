@@ -57,7 +57,7 @@
 			item.element = this.data.template.clone();
 			item.element.attr("id", item.id);
 			item.element.attr("data-form-list-item", item.id);
-			if (item.element.attr("data-form-container-field") == undefined)
+			if (item.element.attr("data-form-container-field") === undefined)
 				item.element.attr("data-form-container-field", "item");
 			item.element.formular_utils_SetInitializing();
 
@@ -109,7 +109,7 @@
 		};
 
 		ListField.prototype.__doCheckAddButton = function() {
-			if (this.data.max == 0 || this.data.items.length < this.data.max)
+			if (this.data.max === 0 || this.data.items.length < this.data.max)
 				this.data.element.find("[data-form-list-field-action-add]").formular_utils_SetActive();
 			else
 				this.data.element.find("[data-form-list-field-action-add]").formular_utils_SetInactive();
@@ -140,11 +140,11 @@
 		ListField.prototype.__doValidation = function() {
 			var valid = false;
 
-			if (this.data.items.length == 0)
+			if (this.data.items.length === 0)
 				valid = !this.data.required;
 			else if (this.data.items.length < this.data.min)
 				valid = false;
-			else if (this.data.max != 0 && this.data.items.length > this.data.max)
+			else if (this.data.max !== 0 && this.data.items.length > this.data.max)
 				valid = false;
 			else
 				valid = this.__isListItemsValid();

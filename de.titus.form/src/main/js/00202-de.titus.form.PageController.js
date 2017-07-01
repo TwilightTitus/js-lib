@@ -23,12 +23,12 @@
 
 			var formularElement = this.data.element;
 			this.data.pages = this.data.element.find("[data-form-page]").formular_Page();
-			if(!Array.isArray(this.data.pages))
-				this.data.pages = [this.data.pages];
+			if (!Array.isArray(this.data.pages))
+				this.data.pages = [ this.data.pages ];
 			this.data.pageHandles = this.__initPageHandles();
 
 			de.titus.form.utils.EventUtils.handleEvent(this.data.element, EVENTTYPES.ACTION_PAGE_BACK, PageController.prototype.toPrevPage.bind(this));
-			de.titus.form.utils.EventUtils.handleEvent(this.data.element, [EVENTTYPES.ACTION_PAGE_NEXT, EVENTTYPES.ACTION_SUMMARY, EVENTTYPES.ACTION_SUBMIT], PageController.prototype.toNextPage.bind(this));
+			de.titus.form.utils.EventUtils.handleEvent(this.data.element, [ EVENTTYPES.ACTION_PAGE_NEXT, EVENTTYPES.ACTION_SUMMARY, EVENTTYPES.ACTION_SUBMIT ], PageController.prototype.toNextPage.bind(this));
 			de.titus.form.utils.EventUtils.handleEvent(this.data.element, EVENTTYPES.CONDITION_STATE_CHANGED, PageController.prototype.__checkCurrentPage.bind(this));
 		};
 
@@ -38,7 +38,7 @@
 			var lastStep = de.titus.form.Constants.SPECIALSTEPS.START;
 			for (var i = 0; i < this.data.pages.length; i++) {
 				var page = this.data.pages[i];
-				if (page.data.step != "")
+				if (page.data.step !== "")
 					lastStep = page.data.step;
 				else
 					page.data.step = lastStep;
@@ -67,7 +67,7 @@
 
 			var summaryHandle = new de.titus.form.PageControlHandle({
 				data : {
-					type: de.titus.form.Constants.TYPES.SUMMARY_PAGE,
+				    type : de.titus.form.Constants.TYPES.SUMMARY_PAGE,
 				    valid : true,
 				    condition : true,
 				    step : de.titus.form.Constants.SPECIALSTEPS.SUMMARY
@@ -79,10 +79,10 @@
 
 			var submittedHandle = new de.titus.form.PageControlHandle({
 				data : {
-					type: de.titus.form.Constants.TYPES.SUBMITTED_PAGE,
+				    type : de.titus.form.Constants.TYPES.SUBMITTED_PAGE,
 				    valid : true,
 				    condition : true,
-				    step: de.titus.form.Constants.SPECIALSTEPS.SUBMITTED
+				    step : de.titus.form.Constants.SPECIALSTEPS.SUBMITTED
 				}
 			}, handles.length, de.titus.form.Constants.SPECIALSTEPS.SUBMITTED, this);
 			submittedHandle.show = show.bind(submittedHandle);
@@ -95,15 +95,15 @@
 		PageController.prototype.__checkCurrentPage = function() {
 			if (PageController.LOGGER.isDebugEnabled())
 				PageController.LOGGER.logDebug("__checkCurrentPage()");
-			if(!this.data.currentHandle && this.data.pageHandles[0].data.page.data.condition)
+			if (!this.data.currentHandle && this.data.pageHandles[0].data.page.data.condition)
 				this.__toPageHandle(this.data.pageHandles[0]);
-				
+
 		};
 
 		PageController.prototype.isFirstPage = function() {
 			if (PageController.LOGGER.isDebugEnabled())
 				PageController.LOGGER.logDebug("isFirstPage()");
-			return this.data.currentHandle && this.data.currentHandle.data.index == 0;
+			return this.data.currentHandle && this.data.currentHandle.data.index === 0;
 		};
 
 		PageController.prototype.getCurrentPage = function() {
@@ -113,7 +113,7 @@
 			if (this.data.currentHandle)
 				return this.data.currentHandle.data.page;
 		};
-		
+
 		PageController.prototype.getNextPage = function() {
 			if (PageController.LOGGER.isDebugEnabled())
 				PageController.LOGGER.logDebug("getNextPage()");
@@ -125,7 +125,7 @@
 			if (PageController.LOGGER.isDebugEnabled())
 				PageController.LOGGER.logDebug("hasNextPage()");
 
-			return this.__getNextPageHandle() != undefined;
+			return this.__getNextPageHandle() !== undefined;
 		};
 
 		PageController.prototype.__getNextPageHandle = function() {

@@ -7,13 +7,13 @@
 			var selectors = [];
 			for ( var name in ELEMENTS)
 				if (ELEMENTS[name].selector)
-					selectors.push(ELEMENTS[name].selector)
+					selectors.push(ELEMENTS[name].selector);
 
 			return selectors.join(", ");
 		}(de.titus.form.Constants.STRUCTURELEMENTS));
 
 		$.fn.formular_utils_RemoveAddClass = function(aRemoveClass, anAddClass) {
-			if (this.length == 0)
+			if (this.length === 0)
 				return;
 			else if (this.length > 1) {
 				this.each(function() {

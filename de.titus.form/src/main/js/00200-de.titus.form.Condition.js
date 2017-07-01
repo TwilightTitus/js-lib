@@ -23,7 +23,7 @@
 			if (Condition.LOGGER.isDebugEnabled())
 				Condition.LOGGER.logDebug("__init()");
 
-			if (this.data.expression != "") {
+			if (this.data.expression !== "") {
 				this.data.formular = de.titus.form.utils.FormularUtils.getFormular(this.data.element);
 				this.data.dataContext = this.data.element.formular_findDataContext();
 				de.titus.form.utils.EventUtils.handleEvent(this.data.formular.data.element, [ EVENTTYPES.CONDITION_STATE_CHANGED, EVENTTYPES.VALIDATION_STATE_CHANGED, EVENTTYPES.FIELD_VALUE_CHANGED ], Condition.prototype.__doCheck.bind(this));
@@ -43,7 +43,7 @@
 			if (aEvent.currentTarget == this.data.element && (aEvent.type == EVENTTYPES.CONDITION_STATE_CHANGED || aEvent.Type == EVENTTYPES.VALIDATION_STATE_CHANGED))
 				; // IGNORE CONDTION_STATE_CHANGE AND VALIDATION_STATE_CHANGED
 			// ON SELF
-			else if (this.data.expression == "")
+			else if (this.data.expression === "")
 				de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.CONDITION_MET);
 			else {
 				var data = this.data.dataContext.getData({

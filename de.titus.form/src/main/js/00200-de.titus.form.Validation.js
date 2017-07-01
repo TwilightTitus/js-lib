@@ -17,7 +17,7 @@
 		Validation.prototype.validate = function(aContext) {
 			if (Validation.LOGGER.isDebugEnabled())
 				Validation.LOGGER.logDebug("validate() -> expression: " + this.data.expression);
-			if (this.data.expression != "") {
+			if (this.data.expression !== "") {
 				var valid = this.data.expressionResolver.resolveExpression(this.data.expression, aContext, false);
 				return valid;
 			}

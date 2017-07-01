@@ -70,7 +70,7 @@
 				this.data.element.formular_utils_SetValid();
 			else
 				this.data.element.formular_utils_SetInvalid();
-		}
+		};
 
 		ContainerField.prototype.hide = function() {
 			if (ContainerField.LOGGER.isDebugEnabled())
@@ -111,24 +111,19 @@
 				ContainerField.LOGGER.logDebug("getData(\"", aFilter, "\")");
 
 			if (this.data.condition) {
-				var values = {};
-				for (var i = 0; i < this.data.fields.length; i++) {
-					// TODO container as child, but no name -> value would be an
-					// array of fields! fix it!! Same as page
-					var value = this.data.fields[i].getData(aFilter);
-					if (value)
-						values[value.name] = value;
-				}
+				var result;
+				if (this.data.active || (this.data.condition && this.data.valid))
+					result = de.titus.form.utils.FormularUtils.toBaseModel(this.data.fields, aFilter);
 
 				if (this.data.name)
 					return {
 					    name : this.data.name || "$container",
 					    type : "container-field",
 					    $type : "container-field",
-					    value : values
+					    value : result
 					};
 				else
-					return values;
+					return result;
 			}
 		};
 	});

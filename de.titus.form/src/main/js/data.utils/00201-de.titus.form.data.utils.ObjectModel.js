@@ -7,20 +7,20 @@
 		    toModel : function(aData) {
 			    if (ObjectModel.LOGGER.isDebugEnabled())
 				    ObjectModel.LOGGER.logDebug([ "toModel(\"", aData, "\"" ]);
-			    if (aData == undefined)
+			    if (aData === undefined)
 				    return;
-
+			    var result;
 			    if (typeof aData.$type === "string") {
 				    if (aData.$type == "single-field")
 					    return aData.value;
 				    else
-					    return ObjectModel.toModel(aData.value)
+					    return ObjectModel.toModel(aData.value);
 			    } else if (Array.isArray(aData)) {
-				    var result = [];
+				    result = [];
 				    for (var i = 0; i < aData.length; i++)
 					    result.push(ObjectModel.toModel(aData[i]));
 			    } else if (typeof aData === "object") {
-				    var result = {};
+				    result = {};
 				    for ( var name in aData)
 					    result[name] = ObjectModel.toModel(aData[name]);
 			    } else
@@ -29,8 +29,9 @@
 			    return result;
 		    }
 		};
-
-		de.titus.form.data.utils.DataUtils["object"] = ObjectModel.toModel;
+		$.extend(de.titus.form.data.utils.DataUtils, {
+			"object" : ObjectModel.toModel
+		});
 	});
 
 })($);

@@ -41,7 +41,7 @@
 				clearTimeout(this.data.timeoutId);
 
 			this.data.timeoutId = setTimeout(ValidationController.prototype.__doValidate.bind(this, aEvent), 300);
-		}
+		};
 
 		ValidationController.prototype.__doValidate = function(aEvent) {
 			if (ValidationController.LOGGER.isDebugEnabled())
@@ -127,7 +127,7 @@
 		};
 
 		ValidationController.prototype.__valueEmpty = function(aFieldData) {
-			return aFieldData == undefined || aFieldData.value == undefined || (Array.isArray(aFieldData.value) && aFieldData.value.length == 0) || (typeof aFieldData.value === "string" && aFieldData.value.trim().length == 0);
+			return aFieldData === undefined || aFieldData.value === undefined || (Array.isArray(aFieldData.value) && aFieldData.value.length === 0) || (typeof aFieldData.value === "string" && aFieldData.value.trim().length === 0);
 		};
 
 		de.titus.core.jquery.Components.asComponent("formular_ValidationController", de.titus.form.ValidationController);

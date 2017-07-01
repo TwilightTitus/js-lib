@@ -8,7 +8,7 @@
 			    scope : aOption.scope,
 			    parentDataContext : undefined,
 			    init : false
-			}
+			};
 		};
 
 		DataContext.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.DataContext");
@@ -47,7 +47,7 @@
 				if (!dataContext || aOption) {
 					dataContext = new de.titus.form.DataContext(this, aOption);
 					this.data("de.titus.form.DataContext", dataContext);
-					this.attr("data-form-data-context", "")
+					this.attr("data-form-data-context", "");
 				}
 
 				return dataContext;
@@ -56,7 +56,7 @@
 
 		$.fn.formular_findDataContext = function() {
 			if (this.length == 1) {
-				if (this.attr("data-form-data-context") != undefined || this.attr("data-form") != undefined)
+				if (this.attr("data-form-data-context") !== undefined || this.attr("data-form") !== undefined)
 					return this.formular_DataContext();
 				else
 					return this.parent().formular_findDataContext();

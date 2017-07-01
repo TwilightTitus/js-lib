@@ -115,16 +115,9 @@
 			if (Page.LOGGER.isDebugEnabled())
 				Page.LOGGER.logDebug([ "getData(\"", aFilter, "\") -> page: \"", this, "\"" ]);
 
-			var result = {};
-			if (this.data.active || (this.data.condition && this.data.valid)) {
-				for (var i = 0; i < this.data.fields.length; i++) {
-					// TODO container as child, but no name -> data would be an
-					// array of fields! fix it!! Same as container-field
-					var data = this.data.fields[i].getData(aFilter);
-					if (data && data.value)
-						result[data.name] = data;
-				}
-			}
+			var result;
+			if (this.data.active || (this.data.condition && this.data.valid))
+				result = de.titus.form.utils.FormularUtils.toBaseModel(this.data.fields, aFilter);
 
 			if (Page.LOGGER.isDebugEnabled())
 				Page.LOGGER.logDebug([ "getData() -> result: \"", result, "\"" ]);

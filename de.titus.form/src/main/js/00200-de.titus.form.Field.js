@@ -30,7 +30,7 @@
 		};
 
 		$.fn.formular_Field = function() {
-			if (this.length == 0)
+			if (this.length === 0)
 				return;
 			else if (this.length > 1) {
 				var result = [];

@@ -22,7 +22,7 @@
 			if (Message.LOGGER.isDebugEnabled())
 				Message.LOGGER.logDebug("__init()");
 
-			if (this.data.expression != "") {
+			if (this.data.expression !== "") {
 				var element = this.data.element.formular_field_utils_getAssociatedStructurElement();
 				this.data.dataContext = this.data.element.formular_findDataContext();
 				de.titus.form.utils.EventUtils.handleEvent(element, [ EVENTTYPES.INITIALIZED, EVENTTYPES.FIELD_VALUE_CHANGED ], Message.prototype.__doCheck.bind(this));
