@@ -13,7 +13,7 @@
 			    contentContainer : aElement.find("[data-form-content-container]"),
 			    addButton : aElement.find("[data-form-list-field-action-add]"),
 			    required : (aElement.attr("data-form-required") !== undefined),
-			    requiredOnActive : (aElement.attr("data-form-required") !== "on-condition-true"),
+			    requiredOnActive : (aElement.attr("data-form-required") === "on-condition-true"),
 			    min : parseInt(aElement.attr("data-form-list-field-min") || "0"),
 			    max : parseInt(aElement.attr("data-form-list-field-max") || "0"),
 			    condition : undefined,

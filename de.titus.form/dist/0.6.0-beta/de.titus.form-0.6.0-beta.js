@@ -665,23 +665,17 @@
 
 			var condition = this.data.field.data.condition;
 			var required = this.data.field.data.required;
+			var requiredOnActive = this.data.field.data.requiredOnActive;
 			var hasValidations = this.data.validations.length > 0;
 
-			if (required && !condition)
+			if (!condition && (requiredOnActive || !required))
 				valid = true;
-			else if (required) {
-				if (condition && hasValue && hasValidations)
-					valid = this.__checkValidations(fieldData);
-				else if (condition && hasValue && !hasValidations)
-					valid = true;
-				else
-					valid = false;
-			} else {
-				if (hasValue && condition && hasValidations)
-					valid = this.__checkValidations(fieldData);
-				else
-					valid = true;
-			}
+			else if (required && !hasValue)
+				valid = false;
+			else if (hasValue && hasValidations)
+				valid = this.__checkValidations(fieldData);
+			else
+				valid = true;
 
 			if (valid)
 				de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.VALIDATION_VALID);
@@ -1760,6 +1754,7 @@
 			    name : (aElement.attr("data-form-container-field") || "").trim(),
 			    active : false,
 			    required : (aElement.attr("data-form-required") !== undefined),
+			    requiredOnActive : (aElement.attr("data-form-required") === "on-condition-true"),
 			    condition : undefined,
 			    // always valid, because it's only a container
 			    valid : undefined,
@@ -1892,6 +1887,7 @@
 			    contentContainer : aElement.find("[data-form-content-container]"),
 			    addButton : aElement.find("[data-form-list-field-action-add]"),
 			    required : (aElement.attr("data-form-required") !== undefined),
+			    requiredOnActive : (aElement.attr("data-form-required") === "on-condition-true"),
 			    min : parseInt(aElement.attr("data-form-list-field-min") || "0"),
 			    max : parseInt(aElement.attr("data-form-list-field-max") || "0"),
 			    condition : undefined,
@@ -2130,6 +2126,7 @@
 			    name : (aElement.attr("data-form-field") || "").trim(),
 			    type : (aElement.attr("data-form-field-type") || "default").trim(),
 			    required : (aElement.attr("data-form-required") !== undefined),
+			    requiredOnActive : (aElement.attr("data-form-required") === "on-condition-true"),
 			    condition : undefined,
 			    valid : undefined,
 			    controller : undefined

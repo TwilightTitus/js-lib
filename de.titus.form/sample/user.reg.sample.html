@@ -153,12 +153,12 @@
 						</select>
 						<div class="help-block text-danger" data-form-validation="$value != undefined && $value.trim().toLowerCase() != ''">Choose the type of social!</div>
 					</div>
-					<div class="form-group" data-form-field="school" data-form-required="" data-form-condition="job == 'student'">
+					<div class="form-group" data-form-field="school" data-form-required="on-condition-true" data-form-condition="job == 'student'">
 						<label class="control-label" for="name">name of your school</label>
 						<input type="text" class="form-control" name="school" />
 						<div class="help-block text-danger" data-form-validation="$value != undefined && $value.trim().toLowerCase() != ''">Enter the name of your school!</div>
 					</div>
-					<div class="form-group" data-form-field="company" data-form-required="" data-form-condition="job == 'employee' || job == 'independent'">
+					<div class="form-group" data-form-field="company" data-form-required="on-condition-true" data-form-condition="job == 'employee' || job == 'independent'">
 						<label class="control-label" for="name">name of your company</label>
 						<input type="text" class="form-control" name="company" />
 						<div class="help-block text-danger" data-form-validation="$value != undefined && $value.trim().toLowerCase() != ''">Enter the name of your company!</div>
@@ -180,7 +180,7 @@
 	<script type="application/javascript" src="js/bootstrap.min.js"></script>
 	<script type="application/javascript" src="js/de.titus.core.1.8.8.js"></script>
 	<script type="application/javascript" src="js/de.titus.logging.2.1.0.min.js"></script>
-	<script type="application/javascript" src="../dist/0.6.0-beta/de.titus.form-0.6.0-beta.min.js"></script>
+	<script type="application/javascript" src="../dist/0.6.0-beta/de.titus.form-0.6.0-beta.js"></script>
 	<script type="application/javascript" src="js/multi.page.real.world.user.reg.sample.js"></script>
 	<script type="text/javascript">
 		var config = [ {

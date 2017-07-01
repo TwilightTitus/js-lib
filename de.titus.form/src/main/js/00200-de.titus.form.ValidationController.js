@@ -76,24 +76,17 @@
 
 			var condition = this.data.field.data.condition;
 			var required = this.data.field.data.required;
-			var requiredOnActive = this.data.field.requiredOnActive;
+			var requiredOnActive = this.data.field.data.requiredOnActive;
 			var hasValidations = this.data.validations.length > 0;
 
-			if ((required && !condition) || requiredOnActive)
+			if (!condition && (requiredOnActive || !required))
 				valid = true;
-			else if (required) {
-				if (condition && hasValue && hasValidations)
-					valid = this.__checkValidations(fieldData);
-				else if (condition && hasValue && !hasValidations)
-					valid = true;
-				else
-					valid = false;
-			} else {
-				if (hasValue && condition && hasValidations)
-					valid = this.__checkValidations(fieldData);
-				else
-					valid = true;
-			}
+			else if (required && !hasValue)
+				valid = false;
+			else if (hasValue && hasValidations)
+				valid = this.__checkValidations(fieldData);
+			else
+				valid = true;
 
 			if (valid)
 				de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.VALIDATION_VALID);
