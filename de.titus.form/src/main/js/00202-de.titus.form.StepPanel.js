@@ -1,4 +1,4 @@
-(function($, EVENTTYPES, CONSTANTS) {
+(function($, CONSTANTS) {
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.form.StepPanel", function() {
 		var StepPanel = de.titus.form.StepPanel = function(aElement) {

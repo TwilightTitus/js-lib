@@ -1,3 +1,8 @@
+
+.initializing {
+	display: none;
+}
+
 [data-form] {
 	display: none;
 }
