@@ -57,19 +57,37 @@
 					<div class="form-group" data-form-field="loginname" data-form-required="">
 						<label class="control-label" for="loginname">loginname</label>
 						<input type="text" class="form-control" name="loginname" />
-						<div class="help-block text-danger" data-form-validation="$value != undefined && $value.trim().toLowerCase() != ''">Enter your login name!</div>
-						<div class="help-block text-danger" data-form-validation="checkLoginName($value)">This loginname is not available!</div>
+						<div class="bg-danger" data-form-validation="$value != undefined && $value.trim().toLowerCase() != ''">Enter your login name!</div>
+						<div class="bg-danger" data-form-validation="checkLoginName($value)">Your loginname is not "user"!</div>
 						<div class="text-info help-block ">This is a test. Valid loginname is "user"!</div>
 					</div>
+					
 					<div class="form-group" data-form-field="password" data-form-required="">
 						<label for="password">password</label>
 						<input type="password" class="form-control" name="password" />
-						<div class="help-block text-danger" data-form-validation="!(/^(?=.*\d)(?=.*[a-zA-Z])[a-zA-Z0-9]{7,}$/.test(password))">Your password is not strength enough!</div>
+						<div class="bg-danger" data-form-validation="!(/^(?=.*\d)(?=.*[a-zA-Z])[a-zA-Z0-9]{7,}$/.test(password))">Your password is not strength enough!</div>
 					</div>
 					<div class="form-group" data-form-field="password_check" data-form-required="" data-form-condition="password != undefined && password != ''">
 						<label for="password_check">password</label>
 						<input type="password" class="form-control" name="password_check" />
-						<div class="help-block text-danger" data-form-validation="!(/^(?=.*\d)(?=.*[a-zA-Z])[a-zA-Z0-9]{7,}$/.test(password)) && password == $value">Password is wrong!</div>
+						<div class="bg-danger" data-form-validation="!(/^(?=.*\d)(?=.*[a-zA-Z])[a-zA-Z0-9]{7,}$/.test(password)) && password == $value">Password is wrong!</div>
+					</div>
+					<div class="form-group" data-form-field="displayname" data-form-required="" data-form-condition="password != undefined  && password.trim() != '' && password_check == password">
+						<label class="control-label" for="displayname">display name</label>
+						<input type="text" class="form-control" name="displayname" />
+						<div class="bg-danger" data-form-validation="$value != undefined && $value.trim().toLowerCase() != ''">Enter your display name!</div>
+					</div>					
+					<div data-form-field="avatar" data-form-condition="password != undefined  && password.trim() != '' && password_check == password">
+						<label class="control-label" for="avatar">avatar image</label>
+						<div class="input-group">
+							 <label class="input-group-btn">
+						    	<span class="btn btn-primary">
+						        	Browse&hellip; <input type="file" style="display: none;" accept="image/*" />
+						        </span>
+						    </label>
+						    <input type="text" class="form-control" readonly="readonly" name="avatar"/>						   
+						</div>
+						<div class="bg-danger" data-form-validation="$value != undefined && $value.trim() != ''">Select a image file!</div>
 					</div>
 				</section>
 			</div>
@@ -79,26 +97,26 @@
 					<div class="form-group" data-form-field="name" data-form-required="">
 						<label class="control-label" for="name">name</label>
 						<input type="text" class="form-control" name="name" />
-						<div class="help-block text-danger" data-form-validation="$value != undefined && $value.trim().toLowerCase() != ''">Enter your name!</div>
+						<div class="bg-danger" data-form-validation="$value != undefined && $value.trim().toLowerCase() != ''">Enter your name!</div>
 					</div>
 					<div class="form-group" data-form-field="familyname" data-form-required="">
 						<label class="control-label" for="familyname">familyname</label>
 						<input type="text" class="form-control" name="familyname" />
-						<div class="help-block text-danger" data-form-validation="$value != undefined && $value.trim().toLowerCase() != ''">Enter your familyname!</div>
+						<div class="bg-danger" data-form-validation="$value != undefined && $value.trim().toLowerCase() != ''">Enter your familyname!</div>
 					</div>
 					<div class="form-group" data-form-field="age" data-form-required="">
 						<label class="control-label" for="age">age</label>
 						<input type="number" class="form-control" name="age" />
-						<div class="help-block text-danger" data-form-validation="$value != undefined && $value.trim().toLowerCase() != ''">Enter your age!</div>
+						<div class="bg-danger" data-form-validation="$value != undefined && $value.trim().toLowerCase() != ''">Enter your age!</div>
 						<div class="text-danger help-block " data-form-validation="/\d*/.test($value)">Accept numbers only!</div>
 						<div class="text-danger help-block " data-form-validation="$value >= 0">You are not existing! You are not born!</div>
-						<div class="text-info help-block " data-form-message="age == undefined || age == ''">You can enter your age!</div>
-						<div class="text-info help-block " data-form-message="age != undefined && age != ''&& age >= 0 && age < 14">child</div>
-						<div class="text-info help-block " data-form-message="age != undefined && age != '' && age >= 14 && age < 18">Teenager</div>
-						<div class="text-info help-block " data-form-message="age != undefined && age != '' && age >= 18 && age < 21">young adult</div>
-						<div class="text-info help-block " data-form-message="age != undefined && age != '' && age >= 21 && age < 70">adult</div>
-						<div class="text-info help-block " data-form-message="age != undefined && age != '' && age >=70 && age < 100">You are really old!</div>
-						<div class="text-info help-block " data-form-message="age != undefined && age != '' && age >=110">You are really alive?</div>
+						<div class="text-muted " data-form-message="age == undefined || age == ''">You can enter your age!</div>
+						<div class="text-muted " data-form-message="age != undefined && age != ''&& age >= 0 && age < 14">child</div>
+						<div class="text-muted " data-form-message="age != undefined && age != '' && age >= 14 && age < 18">Teenager</div>
+						<div class="text-muted " data-form-message="age != undefined && age != '' && age >= 18 && age < 21">young adult</div>
+						<div class="text-muted " data-form-message="age != undefined && age != '' && age >= 21 && age < 70">adult</div>
+						<div class="text-muted " data-form-message="age != undefined && age != '' && age >=70 && age < 100">You are really old!</div>
+						<div class="text-muted " data-form-message="age != undefined && age != '' && age >=110">You are really alive?</div>
 					</div>
 				</section>
 			</div>
@@ -127,14 +145,14 @@
 												<option value="youtube">youtube</option>
 												<option value="instagram">instagram</option>
 											</select>
-											<div class="help-block text-danger" data-form-validation="$value != undefined && $value.trim().toLowerCase() != ''">Choose the type of social!</div>
+											<div class="bg-danger" data-form-validation="$value != undefined && $value.trim().toLowerCase() != ''">Choose the type of social!</div>
 										</div>
 									</div>
 									<div class="col-xs-12">
 										<div class="form-group" data-form-field="socialid" data-form-required="" data-form-condition="$item.socaltype != undefined && $item.socaltype != ''">
 											<label class="control-label" for="socialid">your social id</label>
 											<input type="text" class="form-control" name="socialid" />
-											<div class="help-block text-danger" data-form-validation="$value != undefined && $value.trim().toLowerCase() != ''">Enter your social id!</div>
+											<div class="bg-danger" data-form-validation="$value != undefined && $value.trim().toLowerCase() != ''">Enter your social id!</div>
 										</div>
 									</div>
 								</div>
@@ -161,17 +179,17 @@
 							<option value="independent">independent</option>
 							<option value="unemployed">unemployed</option>
 						</select>
-						<div class="help-block text-danger" data-form-validation="$value != undefined && $value.trim().toLowerCase() != ''">Choose the type of social!</div>
+						<div class="bg-danger" data-form-validation="$value != undefined && $value.trim().toLowerCase() != ''">Choose the type of social!</div>
 					</div>
 					<div class="form-group" data-form-field="school" data-form-required="on-condition-true" data-form-condition="job == 'student'">
 						<label class="control-label" for="name">name of your school</label>
 						<input type="text" class="form-control" name="school" />
-						<div class="help-block text-danger" data-form-validation="$value != undefined && $value.trim().toLowerCase() != ''">Enter the name of your school!</div>
+						<div class="bg-danger" data-form-validation="$value != undefined && $value.trim().toLowerCase() != ''">Enter the name of your school!</div>
 					</div>
 					<div class="form-group" data-form-field="company" data-form-required="on-condition-true" data-form-condition="job == 'employee' || job == 'independent'">
 						<label class="control-label" for="name">name of your company</label>
 						<input type="text" class="form-control" name="company" />
-						<div class="help-block text-danger" data-form-validation="$value != undefined && $value.trim().toLowerCase() != ''">Enter the name of your company!</div>
+						<div class="bg-danger" data-form-validation="$value != undefined && $value.trim().toLowerCase() != ''">Enter the name of your company!</div>
 					</div>
 				</section>
 			</div>

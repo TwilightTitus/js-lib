@@ -27,6 +27,7 @@
 		    PAGE_HIDE : "form-page-hide",
 		    PAGE_SUMMARY : "form-page-summary",
 		    
+		    FIELD_VALIDATED : "form-field-validated",
 		    FIELD_SHOW : "form-field-show",
 		    FIELD_HIDE : "form-field-hide",
 		    FIELD_SUMMARY : "form-field-SUMMARY",

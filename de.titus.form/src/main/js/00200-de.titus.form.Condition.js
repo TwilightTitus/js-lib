@@ -27,7 +27,7 @@
 			if (this.data.expression !== "") {
 				this.data.formular = de.titus.form.utils.FormularUtils.getFormular(this.data.element);
 				this.data.dataContext = this.data.element.formular_findDataContext();
-				de.titus.form.utils.EventUtils.handleEvent(this.data.formular.data.element, [ EVENTTYPES.CONDITION_STATE_CHANGED, EVENTTYPES.VALIDATION_STATE_CHANGED, EVENTTYPES.FIELD_VALUE_CHANGED ], Condition.prototype.__doCondition.bind(this));
+				de.titus.form.utils.EventUtils.handleEvent(this.data.formular.data.element, [ EVENTTYPES.CONDITION_STATE_CHANGED, EVENTTYPES.VALIDATION_STATE_CHANGED, EVENTTYPES.FIELD_VALIDATED ], Condition.prototype.__doCondition.bind(this));
 			}
 
 			de.titus.form.utils.EventUtils.handleEvent(this.data.element, [ EVENTTYPES.INITIALIZED ], Condition.prototype.__doCheck.bind(this));
@@ -49,7 +49,7 @@
 			if (aEvent.type != EVENTTYPES.INITIALIZED && aEvent.type != EVENTTYPES.FIELD_VALUE_CHANGED)
 				aEvent.stopPropagation();
 
-			if (aEvent.currentTarget == this.data.element && (aEvent.type == EVENTTYPES.CONDITION_STATE_CHANGED || aEvent.Type == EVENTTYPES.VALIDATION_STATE_CHANGED))
+			if (aEvent.currentTarget == this.data.element && (aEvent.type == EVENTTYPES.CONDITION_STATE_CHANGED || aEvent.Type == EVENTTYPES.VALIDATION_STATE_CHANGED || aEvebt.type == EVENTTYPES.FIELD_VALIDATED))
 				; // IGNORE CONDTION_STATE_CHANGE AND VALIDATION_STATE_CHANGED
 			// ON SELF
 			else if (this.data.expression === "")
