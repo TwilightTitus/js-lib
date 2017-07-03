@@ -59,6 +59,7 @@
 						<input type="text" class="form-control" name="loginname" />
 						<div class="help-block text-danger" data-form-validation="$value != undefined && $value.trim().toLowerCase() != ''">Enter your login name!</div>
 						<div class="help-block text-danger" data-form-validation="checkLoginName($value)">This loginname is not available!</div>
+						<div class="text-info help-block ">This is a test. Valid loginname is "user"!</div>
 					</div>
 					<div class="form-group" data-form-field="password" data-form-required="">
 						<label for="password">password</label>
@@ -89,10 +90,15 @@
 						<label class="control-label" for="age">age</label>
 						<input type="number" class="form-control" name="age" />
 						<div class="help-block text-danger" data-form-validation="$value != undefined && $value.trim().toLowerCase() != ''">Enter your age!</div>
-						<div class="text-danger help-block " data-form-validation="$value >= 0">You are not born? Really?</div>
+						<div class="text-danger help-block " data-form-validation="/\d*/.test($value)">Accept numbers only!</div>
+						<div class="text-danger help-block " data-form-validation="$value >= 0">You are not existing! You are not born!</div>
 						<div class="text-info help-block " data-form-message="age == undefined || age == ''">You can enter your age!</div>
-						<div class="text-info help-block " data-form-message="age != undefined && age != '' && age < 14">Your are a child.</div>
-						<div class="text-info help-block " data-form-message="age != undefined && age != '' && age >= 14 && age < 18">Your are a Teenager.</div>
+						<div class="text-info help-block " data-form-message="age != undefined && age != ''&& age >= 0 && age < 14">child</div>
+						<div class="text-info help-block " data-form-message="age != undefined && age != '' && age >= 14 && age < 18">Teenager</div>
+						<div class="text-info help-block " data-form-message="age != undefined && age != '' && age >= 18 && age < 21">young adult</div>
+						<div class="text-info help-block " data-form-message="age != undefined && age != '' && age >= 21 && age < 70">adult</div>
+						<div class="text-info help-block " data-form-message="age != undefined && age != '' && age >=70 && age < 100">You are really old!</div>
+						<div class="text-info help-block " data-form-message="age != undefined && age != '' && age >=110">You are really alive?</div>
 					</div>
 				</section>
 			</div>
@@ -185,7 +191,7 @@
 	<script type="application/javascript" src="js/de.titus.core.1.8.8.js"></script>
 	<script type="application/javascript" src="js/de.titus.logging.2.1.0.min.js"></script>
 	<script type="application/javascript" src="../dist/0.7.0-beta/de.titus.form-0.7.0-beta.js"></script>
-	<script type="application/javascript" src="js/multi.page.real.world.user.reg.sample.js"></script>
+	<script type="application/javascript" src="js/user.reg.sample.js"></script>
 	<script type="text/javascript">
 		var config = [ {
             "filter" : "",
