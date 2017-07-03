@@ -1237,7 +1237,7 @@
 		de.titus.core.jquery.Components.asComponent("formular_PageController", de.titus.form.PageController);
 	});
 })($, de.titus.form.Constants.EVENTS);
-(function($, EVENTTYPES, CONSTANTS) {
+(function($, CONSTANTS) {
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.form.StepPanel", function() {
 		var StepPanel = de.titus.form.StepPanel = function(aElement) {
