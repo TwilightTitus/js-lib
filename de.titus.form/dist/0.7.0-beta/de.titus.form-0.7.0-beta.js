@@ -309,7 +309,8 @@
 			    formular : undefined,
 			    dataContext : undefined,
 			    expression : (aElement.attr("data-form-condition") || "").trim(),
-			    expressionResolver : new de.titus.core.ExpressionResolver()
+			    expressionResolver : new de.titus.core.ExpressionResolver(),
+			    timeoutId: undefined
 			};
 
 			setTimeout(Condition.prototype.__init.bind(this), 1);
@@ -325,11 +326,19 @@
 			if (this.data.expression !== "") {
 				this.data.formular = de.titus.form.utils.FormularUtils.getFormular(this.data.element);
 				this.data.dataContext = this.data.element.formular_findDataContext();
-				de.titus.form.utils.EventUtils.handleEvent(this.data.formular.data.element, [ EVENTTYPES.CONDITION_STATE_CHANGED, EVENTTYPES.VALIDATION_STATE_CHANGED, EVENTTYPES.FIELD_VALUE_CHANGED ], Condition.prototype.__doCheck.bind(this));
+				de.titus.form.utils.EventUtils.handleEvent(this.data.formular.data.element, [ EVENTTYPES.CONDITION_STATE_CHANGED, EVENTTYPES.VALIDATION_STATE_CHANGED, EVENTTYPES.FIELD_VALUE_CHANGED ], Condition.prototype.__doCondition.bind(this));
 			}
 
 			de.titus.form.utils.EventUtils.handleEvent(this.data.element, [ EVENTTYPES.INITIALIZED ], Condition.prototype.__doCheck.bind(this));
 		};
+		
+		Condition.prototype.__doCondition = function(aEvent){
+			if(this.data.timeoutId)
+				clearTimeout(this.data.timeoutId);
+			
+			this.data.timeoutId = setTimeout(Condition.prototype.__doCheck.bind(this, aEvent), 100);
+		}
+		
 
 		Condition.prototype.__doCheck = function(aEvent) {
 			if (Condition.LOGGER.isDebugEnabled())
@@ -510,7 +519,8 @@
 			    element : aElement,
 			    dataContext : undefined,
 			    expression : (aElement.attr("data-form-message") || "").trim(),
-			    expressionResolver : new de.titus.core.ExpressionResolver()
+			    expressionResolver : new de.titus.core.ExpressionResolver(),
+			    timeoutId : undefined
 			};
 			this.data.element.formular_utils_SetInactive();
 			setTimeout(Message.prototype.__init.bind(this), 1);
@@ -526,8 +536,15 @@
 			if (this.data.expression !== "") {
 				var element = this.data.element.formular_field_utils_getAssociatedStructurElement();
 				this.data.dataContext = this.data.element.formular_findDataContext();
-				de.titus.form.utils.EventUtils.handleEvent(element, [ EVENTTYPES.INITIALIZED, EVENTTYPES.FIELD_VALUE_CHANGED ], Message.prototype.__doCheck.bind(this));
+				de.titus.form.utils.EventUtils.handleEvent(element, [ EVENTTYPES.INITIALIZED, EVENTTYPES.FIELD_VALUE_CHANGED ], Message.prototype.__doMessage.bind(this));
 			}
+		};
+
+		Message.prototype.__doMessage = function(aEvent) {
+			if (this.data.timeoutId)
+				clearTimeout(this.data.timeoutId);
+
+			this.data.timeoutId = setTimeout(Message.prototype.__doCheck.bind(this, aEvent), 300);
 		};
 
 		Message.prototype.__doCheck = function(aEvent) {
@@ -629,7 +646,7 @@
 			if (this.data.timeoutId)
 				clearTimeout(this.data.timeoutId);
 
-			this.data.timeoutId = setTimeout(ValidationController.prototype.__doValidate.bind(this, aEvent), 300);
+			this.data.timeoutId = setTimeout(ValidationController.prototype.__doValidate.bind(this, aEvent), 100);
 		};
 
 		ValidationController.prototype.__doValidate = function(aEvent) {
@@ -1220,7 +1237,7 @@
 		de.titus.core.jquery.Components.asComponent("formular_PageController", de.titus.form.PageController);
 	});
 })($, de.titus.form.Constants.EVENTS);
-(function($, EVENTTYPES) {
+(function($, EVENTTYPES, CONSTANTS) {
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.form.StepPanel", function() {
 		var StepPanel = de.titus.form.StepPanel = function(aElement) {
@@ -1258,7 +1275,7 @@
 
 			this.data.steps = steps;
 
-			de.titus.form.utils.EventUtils.handleEvent(this.data.element, [ EVENTTYPES.STATE_CHANGED, EVENTTYPES.PAGE_CHANGED ], StepPanel.prototype.update.bind(this));
+			de.titus.form.utils.EventUtils.handleEvent(this.data.element, [ CONSTANTS.EVENTS.STATE_CHANGED, CONSTANTS.EVENTS.PAGE_CHANGED ], StepPanel.prototype.update.bind(this));
 		};
 
 		StepPanel.prototype.update = function(aEvent) {
@@ -1268,14 +1285,14 @@
 			var formular = this.data.element.Formular();
 			var pageController = this.data.element.formular_PageController();
 			var state = formular.data.state;
-			var stepId = de.titus.form.Constants.SPECIALSTEPS.START;
+			var stepId = CONSTANTS.SPECIALSTEPS.START;
 
-			if (state == de.titus.form.Constants.STATE.INPUT && pageController.getCurrentPage())
+			if (state == CONSTANTS.STATE.INPUT && pageController.getCurrentPage())
 				stepId = pageController.getCurrentPage().data.step;
-			else if (state == de.titus.form.Constants.STATE.SUMMARY)
-				stepId = de.titus.form.Constants.SPECIALSTEPS.SUMMARY;
-			else if (state == de.titus.form.Constants.STATE.SUBMITTED)
-				stepId = de.titus.form.Constants.SPECIALSTEPS.SUBMITTED;
+			else if (state == CONSTANTS.STATE.SUMMARY)
+				stepId = CONSTANTS.SPECIALSTEPS.SUMMARY;
+			else if (state == CONSTANTS.STATE.SUBMITTED)
+				stepId = CONSTANTS.SPECIALSTEPS.SUBMITTED;
 
 			this.setStep(stepId);
 		};
@@ -1312,7 +1329,7 @@
 		de.titus.core.jquery.Components.asComponent("formular_StepPanel", de.titus.form.StepPanel);
 	});
 
-})($, de.titus.form.Constants.EVENTS);
+})($, de.titus.form.Constants);
 (function($, EVENTTYPES) {
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.form.buttons.BackButton", function() {

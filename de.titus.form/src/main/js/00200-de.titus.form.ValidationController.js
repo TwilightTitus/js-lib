@@ -40,7 +40,7 @@
 			if (this.data.timeoutId)
 				clearTimeout(this.data.timeoutId);
 
-			this.data.timeoutId = setTimeout(ValidationController.prototype.__doValidate.bind(this, aEvent), 300);
+			this.data.timeoutId = setTimeout(ValidationController.prototype.__doValidate.bind(this, aEvent), 100);
 		};
 
 		ValidationController.prototype.__doValidate = function(aEvent) {

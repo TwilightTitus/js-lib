@@ -10,7 +10,8 @@
 			    formular : undefined,
 			    dataContext : undefined,
 			    expression : (aElement.attr("data-form-condition") || "").trim(),
-			    expressionResolver : new de.titus.core.ExpressionResolver()
+			    expressionResolver : new de.titus.core.ExpressionResolver(),
+			    timeoutId: undefined
 			};
 
 			setTimeout(Condition.prototype.__init.bind(this), 1);
@@ -26,11 +27,19 @@
 			if (this.data.expression !== "") {
 				this.data.formular = de.titus.form.utils.FormularUtils.getFormular(this.data.element);
 				this.data.dataContext = this.data.element.formular_findDataContext();
-				de.titus.form.utils.EventUtils.handleEvent(this.data.formular.data.element, [ EVENTTYPES.CONDITION_STATE_CHANGED, EVENTTYPES.VALIDATION_STATE_CHANGED, EVENTTYPES.FIELD_VALUE_CHANGED ], Condition.prototype.__doCheck.bind(this));
+				de.titus.form.utils.EventUtils.handleEvent(this.data.formular.data.element, [ EVENTTYPES.CONDITION_STATE_CHANGED, EVENTTYPES.VALIDATION_STATE_CHANGED, EVENTTYPES.FIELD_VALUE_CHANGED ], Condition.prototype.__doCondition.bind(this));
 			}
 
 			de.titus.form.utils.EventUtils.handleEvent(this.data.element, [ EVENTTYPES.INITIALIZED ], Condition.prototype.__doCheck.bind(this));
 		};
+		
+		Condition.prototype.__doCondition = function(aEvent){
+			if(this.data.timeoutId)
+				clearTimeout(this.data.timeoutId);
+			
+			this.data.timeoutId = setTimeout(Condition.prototype.__doCheck.bind(this, aEvent), 100);
+		}
+		
 
 		Condition.prototype.__doCheck = function(aEvent) {
 			if (Condition.LOGGER.isDebugEnabled())

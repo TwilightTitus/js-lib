@@ -9,7 +9,8 @@
 			    element : aElement,
 			    dataContext : undefined,
 			    expression : (aElement.attr("data-form-message") || "").trim(),
-			    expressionResolver : new de.titus.core.ExpressionResolver()
+			    expressionResolver : new de.titus.core.ExpressionResolver(),
+			    timeoutId : undefined
 			};
 			this.data.element.formular_utils_SetInactive();
 			setTimeout(Message.prototype.__init.bind(this), 1);
@@ -25,8 +26,15 @@
 			if (this.data.expression !== "") {
 				var element = this.data.element.formular_field_utils_getAssociatedStructurElement();
 				this.data.dataContext = this.data.element.formular_findDataContext();
-				de.titus.form.utils.EventUtils.handleEvent(element, [ EVENTTYPES.INITIALIZED, EVENTTYPES.FIELD_VALUE_CHANGED ], Message.prototype.__doCheck.bind(this));
+				de.titus.form.utils.EventUtils.handleEvent(element, [ EVENTTYPES.INITIALIZED, EVENTTYPES.FIELD_VALUE_CHANGED ], Message.prototype.__doMessage.bind(this));
 			}
+		};
+
+		Message.prototype.__doMessage = function(aEvent) {
+			if (this.data.timeoutId)
+				clearTimeout(this.data.timeoutId);
+
+			this.data.timeoutId = setTimeout(Message.prototype.__doCheck.bind(this, aEvent), 300);
 		};
 
 		Message.prototype.__doCheck = function(aEvent) {

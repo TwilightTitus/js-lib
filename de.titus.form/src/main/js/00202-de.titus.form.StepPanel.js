@@ -1,4 +1,4 @@
-(function($, EVENTTYPES) {
+(function($, EVENTTYPES, CONSTANTS) {
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.form.StepPanel", function() {
 		var StepPanel = de.titus.form.StepPanel = function(aElement) {
@@ -36,7 +36,7 @@
 
 			this.data.steps = steps;
 
-			de.titus.form.utils.EventUtils.handleEvent(this.data.element, [ EVENTTYPES.STATE_CHANGED, EVENTTYPES.PAGE_CHANGED ], StepPanel.prototype.update.bind(this));
+			de.titus.form.utils.EventUtils.handleEvent(this.data.element, [ CONSTANTS.EVENTS.STATE_CHANGED, CONSTANTS.EVENTS.PAGE_CHANGED ], StepPanel.prototype.update.bind(this));
 		};
 
 		StepPanel.prototype.update = function(aEvent) {
@@ -46,14 +46,14 @@
 			var formular = this.data.element.Formular();
 			var pageController = this.data.element.formular_PageController();
 			var state = formular.data.state;
-			var stepId = de.titus.form.Constants.SPECIALSTEPS.START;
+			var stepId = CONSTANTS.SPECIALSTEPS.START;
 
-			if (state == de.titus.form.Constants.STATE.INPUT && pageController.getCurrentPage())
+			if (state == CONSTANTS.STATE.INPUT && pageController.getCurrentPage())
 				stepId = pageController.getCurrentPage().data.step;
-			else if (state == de.titus.form.Constants.STATE.SUMMARY)
-				stepId = de.titus.form.Constants.SPECIALSTEPS.SUMMARY;
-			else if (state == de.titus.form.Constants.STATE.SUBMITTED)
-				stepId = de.titus.form.Constants.SPECIALSTEPS.SUBMITTED;
+			else if (state == CONSTANTS.STATE.SUMMARY)
+				stepId = CONSTANTS.SPECIALSTEPS.SUMMARY;
+			else if (state == CONSTANTS.STATE.SUBMITTED)
+				stepId = CONSTANTS.SPECIALSTEPS.SUBMITTED;
 
 			this.setStep(stepId);
 		};
@@ -90,4 +90,4 @@
 		de.titus.core.jquery.Components.asComponent("formular_StepPanel", de.titus.form.StepPanel);
 	});
 
-})($, de.titus.form.Constants.EVENTS);
+})($, de.titus.form.Constants);
