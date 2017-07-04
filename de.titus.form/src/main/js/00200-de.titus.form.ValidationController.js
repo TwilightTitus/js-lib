@@ -30,7 +30,7 @@
 
 			if (this.data.field.data.required || this.data.validations.length > 0) {
 				var formularElement = de.titus.form.utils.FormularUtils.getFormularElement(this.data.element);
-				de.titus.form.utils.EventUtils.handleEvent(this.data.element, [ EVENTTYPES.INITIALIZED, EVENTTYPES.CONDITION_STATE_CHANGED, EVENTTYPES.FIELD_VALUE_CHANGED ], ValidationController.prototype.__doLazyValidate.bind(this));
+				de.titus.form.utils.EventUtils.handleEvent(this.data.element, [ EVENTTYPES.INITIALIZED, EVENTTYPES.FIELD_VALUE_CHANGED ], ValidationController.prototype.__doLazyValidate.bind(this));
 				de.titus.form.utils.EventUtils.handleEvent(formularElement, [ EVENTTYPES.CONDITION_STATE_CHANGED, EVENTTYPES.VALIDATION_STATE_CHANGED ], ValidationController.prototype.__doLazyValidate.bind(this));
 			} else
 				de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.VALIDATION_VALID);
@@ -53,13 +53,8 @@
 			if (aEvent.type != EVENTTYPES.INITIALIZED && aEvent.type != EVENTTYPES.FIELD_VALUE_CHANGED)
 				aEvent.stopPropagation();
 
-			// IGNORE ValidationController_STATE_CHANGED ON SELF ELEMENT
 			if (aEvent.currentTarget == this.data.element && aEvent.Type == EVENTTYPES.VALIDATION_STATE_CHANGED)
 				return;
-			// if (aEvent.type ==
-			// EVENTTYPES.CONDITION_STATE_CHANGED &&
-			// aEvent.currentTarget == this.data.element)
-			// return;
 
 			this.data.validations.formular_utils_SetInactive();
 

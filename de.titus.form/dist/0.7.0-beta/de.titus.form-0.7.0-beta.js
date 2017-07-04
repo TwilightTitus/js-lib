@@ -25,13 +25,13 @@
 		    SUMMARY_PAGE : "summary-page",
 		    SUBMITTED_PAGE : "submitted-page"
 		};
-		
+
 		de.titus.form.Constants.EVENTS = {
 		    INITIALIZED : "form-initialized",
 		    SUCCESSED : "form-successed",
 		    FAILED : "form-failed",
 		    STATE_CHANGED : "form-state-changed",
-		    
+
 		    ACTION_RESET : "form-action-reset",
 		    ACTION_SUBMIT : "form-action-submit",
 		    ACTION_PAGE_BACK : "form-action-page-back",
@@ -39,54 +39,65 @@
 		    ACTION_SUMMARY : "form-action-page-summary",
 		    ACTION_LIST_FIELD_ADD : "form-action-list-field-add",
 		    ACTION_LIST_FIELD_REMOVE : "form-action-list-field-remove",
-		    
+
 		    PAGE_INITIALIZED : "form-page-initialized",
 		    PAGE_CHANGED : "form-page-changed",
 		    PAGE_SHOW : "form-page-show",
 		    PAGE_HIDE : "form-page-hide",
 		    PAGE_SUMMARY : "form-page-summary",
-		    
+		    PAGE_SUBMITTED : "form-page-submitted",
+
 		    FIELD_VALIDATED : "form-field-validated",
 		    FIELD_SHOW : "form-field-show",
 		    FIELD_HIDE : "form-field-hide",
 		    FIELD_SUMMARY : "form-field-SUMMARY",
 		    FIELD_VALUE_CHANGED : "form-field-value-changed",
-		    
+
 		    VALIDATION_STATE_CHANGED : "form-validation-state-changed",
 		    VALIDATION_VALID : "form-validation-valid",
 		    VALIDATION_INVALID : "form-validation-invalid",
-		    
+
 		    CONDITION_STATE_CHANGED : "form-condition-state-changed",
 		    CONDITION_MET : "form-condition-met",
 		    CONDITION_NOT_MET : "form-condition-not-met"
 		};
-		
+
 		de.titus.form.Constants.STATE = {
 		    INPUT : "form-state-input",
 		    SUBMITTED : "form-state-submitted",
 		};
-		
+
 		de.titus.form.Constants.ATTRIBUTE = {
 		    VALIDATION : "-validation",
 		    VALIDATION_FAIL_ACTION : "-validation-fail-action",
 		    CONDITION : "-condition",
 		    MESSAGE : "-message"
 		};
-		
+
 		de.titus.form.Constants.SPECIALSTEPS = {
 		    START : "form-step-start",
 		    SUMMARY : "form-step-summary",
 		    SUBMITTED : "form-step-submitted"
 		};
-		
+
 		de.titus.form.Constants.STRUCTURELEMENTS = {
-			FORM : {selector: "[data-form]" },
-			PAGE : {selector: "[data-form-page]"},
-			SINGLEFIELD : {selector: "[data-form-field]"},
-			CONTAINERFIELD : {selector: "[data-form-container-field]"},
-			LISTFIELD : {selector: "[data-form-list-field]"},
-		};	
-		
+		    FORM : {
+			    selector : "[data-form]"
+		    },
+		    PAGE : {
+			    selector : "[data-form-page]"
+		    },
+		    SINGLEFIELD : {
+			    selector : "[data-form-field]"
+		    },
+		    CONTAINERFIELD : {
+			    selector : "[data-form-container-field]"
+		    },
+		    LISTFIELD : {
+			    selector : "[data-form-list-field]"
+		    },
+		};
+
 	});
 })();
 (function() {
@@ -637,7 +648,7 @@
 
 			if (this.data.field.data.required || this.data.validations.length > 0) {
 				var formularElement = de.titus.form.utils.FormularUtils.getFormularElement(this.data.element);
-				de.titus.form.utils.EventUtils.handleEvent(this.data.element, [ EVENTTYPES.INITIALIZED, EVENTTYPES.CONDITION_STATE_CHANGED, EVENTTYPES.FIELD_VALUE_CHANGED ], ValidationController.prototype.__doLazyValidate.bind(this));
+				de.titus.form.utils.EventUtils.handleEvent(this.data.element, [ EVENTTYPES.INITIALIZED, EVENTTYPES.FIELD_VALUE_CHANGED ], ValidationController.prototype.__doLazyValidate.bind(this));
 				de.titus.form.utils.EventUtils.handleEvent(formularElement, [ EVENTTYPES.CONDITION_STATE_CHANGED, EVENTTYPES.VALIDATION_STATE_CHANGED ], ValidationController.prototype.__doLazyValidate.bind(this));
 			} else
 				de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.VALIDATION_VALID);
@@ -660,13 +671,8 @@
 			if (aEvent.type != EVENTTYPES.INITIALIZED && aEvent.type != EVENTTYPES.FIELD_VALUE_CHANGED)
 				aEvent.stopPropagation();
 
-			// IGNORE ValidationController_STATE_CHANGED ON SELF ELEMENT
 			if (aEvent.currentTarget == this.data.element && aEvent.Type == EVENTTYPES.VALIDATION_STATE_CHANGED)
 				return;
-			// if (aEvent.type ==
-			// EVENTTYPES.CONDITION_STATE_CHANGED &&
-			// aEvent.currentTarget == this.data.element)
-			// return;
 
 			this.data.validations.formular_utils_SetInactive();
 
@@ -864,7 +870,7 @@
 (function($, EVENTTYPES) {
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.form.Page", function() {
-		var Page = de.titus.form.Page = function(aElement, aIndex) {
+		var Page = de.titus.form.Page = function(aElement) {
 			if (Page.LOGGER.isDebugEnabled())
 				Page.LOGGER.logDebug("constructor");
 			this.data = {
@@ -927,7 +933,10 @@
 				Page.LOGGER.logDebug([ "__changeConditionState (\"", aEvent, "\") -> page: \"", this, "\"" ]);
 
 			aEvent.preventDefault();
+			this.doValidate();
+		};
 
+		Page.prototype.doValidate = function() {
 			var valid = de.titus.form.utils.FormularUtils.isFieldsValid(this.data.fields);
 			if (this.data.valid != valid) {
 				this.data.valid = valid;
@@ -939,6 +948,8 @@
 
 				de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.VALIDATION_STATE_CHANGED);
 			}
+
+			return valid;
 		};
 
 		Page.prototype.hide = function() {
@@ -1062,6 +1073,7 @@
 			this.data.pages = this.data.element.find("[data-form-page]").formular_Page();
 			if (!Array.isArray(this.data.pages))
 				this.data.pages = [ this.data.pages ];
+
 			this.data.pageHandles = this.__initPageHandles();
 
 			de.titus.form.utils.EventUtils.handleEvent(this.data.element, EVENTTYPES.ACTION_PAGE_BACK, PageController.prototype.toPrevPage.bind(this));
@@ -1087,44 +1099,21 @@
 				handles.push(handle);
 			}
 
-			var show = function() {
-				var pages = this.data.pageController.data.pages;
-				for (var i = 0; i < pages.length; i++)
-					pages[i].summary();
+			var summaryPage = new de.titus.form.page.utils.VirtualPage(this.data.element, {
+			    pageController : this,
+			    type : de.titus.form.Constants.TYPES.SUMMARY_PAGE,
+			    step : de.titus.form.Constants.SPECIALSTEPS.SUMMARY,
+			    event : EVENTTYPES.PAGE_SUMMARY
+			});
+			handles.push(new de.titus.form.PageControlHandle(summaryPage, handles.length, summaryPage.data.step, this));
 
-				de.titus.form.utils.EventUtils.triggerEvent(this.data.pageController.data.element, EVENTTYPES.PAGE_SUMMARY);
-			};
-
-			var hide = function() {
-				var pages = this.data.pageController.data.pages;
-				for (var i = 0; i < pages.length; i++)
-					pages[i].hide();
-
-			};
-
-			var summaryHandle = new de.titus.form.PageControlHandle({
-				data : {
-				    type : de.titus.form.Constants.TYPES.SUMMARY_PAGE,
-				    valid : true,
-				    condition : true,
-				    step : de.titus.form.Constants.SPECIALSTEPS.SUMMARY
-				}
-			}, handles.length, de.titus.form.Constants.SPECIALSTEPS.SUMMARY, this);
-			summaryHandle.show = show.bind(summaryHandle);
-			summaryHandle.hide = hide.bind(summaryHandle);
-			handles.push(summaryHandle);
-
-			var submittedHandle = new de.titus.form.PageControlHandle({
-				data : {
-				    type : de.titus.form.Constants.TYPES.SUBMITTED_PAGE,
-				    valid : true,
-				    condition : true,
-				    step : de.titus.form.Constants.SPECIALSTEPS.SUBMITTED
-				}
-			}, handles.length, de.titus.form.Constants.SPECIALSTEPS.SUBMITTED, this);
-			submittedHandle.show = show.bind(submittedHandle);
-			submittedHandle.hide = hide.bind(submittedHandle);
-			handles.push(submittedHandle);
+			var submittedPage = new de.titus.form.page.utils.VirtualPage(this.data.element, {
+			    pageController : this,
+			    type : de.titus.form.Constants.TYPES.SUBMITTED_PAGE,
+			    step : de.titus.form.Constants.SPECIALSTEPS.SUBMITTED,
+			    event : EVENTTYPES.PAGE_SUBMITTED
+			});
+			handles.push(new de.titus.form.PageControlHandle(submittedPage, handles.length, submittedPage.data.step, this));
 
 			return handles;
 		};
@@ -1169,10 +1158,10 @@
 			if (PageController.LOGGER.isDebugEnabled())
 				PageController.LOGGER.logDebug("__getNextPageHandle()");
 
-			if (this.data.currentHandle && !this.data.currentHandle.data.page.data.valid)
-				return this.data.currentHandle;
-			else if (!this.data.currentHandle)
+			if (!this.data.currentHandle)
 				return;
+			else if (!this.data.currentHandle.data.page.doValidate())
+				return this.data.currentHandle;
 			else {
 				for (var i = this.data.currentHandle.data.index + 1; i < this.data.pageHandles.length; i++) {
 					var handle = this.data.pageHandles[i];
@@ -1221,18 +1210,18 @@
 			if (PageController.LOGGER.isDebugEnabled())
 				PageController.LOGGER.logDebug("toPrevPage()");
 
-			var page = this.__getPrevPageHandle();
-			if (page)
-				this.__toPageHandle(page);
+			var pageHandle = this.__getPrevPageHandle();
+			if (pageHandle)
+				this.__toPageHandle(pageHandle);
 		};
 
-		PageController.prototype.toNextPage = function() {
+		PageController.prototype.toNextPage = function(execute) {
 			if (PageController.LOGGER.isDebugEnabled())
 				PageController.LOGGER.logDebug("toNextPage()");
 
-			var page = this.__getNextPageHandle();
-			if (page)
-				this.__toPageHandle(page);
+			var pageHandle = this.__getNextPageHandle();
+			if (pageHandle)
+				this.__toPageHandle(pageHandle);
 		};
 
 		de.titus.core.jquery.Components.asComponent("formular_PageController", de.titus.form.PageController);
@@ -2294,3 +2283,38 @@
 		};
 	});
 })($, de.titus.form.Constants.EVENTS);
+(function($) {
+	"use strict";
+	de.titus.core.Namespace.create("de.titus.form.page.utils.VirtualPage", function() {
+		var Page = de.titus.form.page.utils.VirtualPage = function(aElement, theOptions) {
+			this.data = {
+			    element : aElement,
+			    pageController : theOptions.pageController,
+			    type : theOptions.type,
+			    valid : true,
+			    condition : true,
+			    step : theOptions.step,
+			    event : theOptions.event
+			};
+		};
+
+		Page.prototype.show = function() {
+			var pages = this.data.pageController.data.pages;
+			for (var i = 0; i < pages.length; i++)
+				pages[i].summary();
+
+			de.titus.form.utils.EventUtils.triggerEvent(this.data.element, this.data.event);
+		};
+
+		Page.prototype.hide = function() {
+			var pages = this.data.pageController.data.pages;
+			for (var i = 0; i < pages.length; i++)
+				pages[i].hide();
+
+		};
+
+		Page.prototype.doValidate = function() {
+			return true;
+		};
+	});
+})($);

@@ -60,9 +60,6 @@
 							<span class="glyphicon glyphicon-remove form-control-feedback"></span>
 						</div>
 						<div class="col-xs-12">
-							<div data-form-message="loginname == undefined || loginname.trim() == ''">
-								<span class="label label-danger">Enter your login name!</span>
-							</div>
 							<div data-form-validation="checkLoginName($value)">
 								<span class="label label-danger">Your loginname is not "user"!</span>
 							</div>
@@ -80,8 +77,8 @@
 							<span class="glyphicon glyphicon-remove form-control-feedback"></span>
 						</div>
 						<div class="col-xs-12">
-							<div data-form-validation="password != undefined && password.length >= 8">
-								<span class="label label-danger">Your password is not strength enough! min 8 chars</span>
+							<div data-form-validation="password != undefined && password.length >= 4">
+								<span class="label label-danger">Your password is not strength enough! min 4 chars</span>
 							</div>
 						</div>
 					</div>
@@ -109,11 +106,6 @@
 							<span class="glyphicon glyphicon-ok form-control-feedback"></span>
 							<span class="glyphicon glyphicon-remove form-control-feedback"></span>
 						</div>
-						<div class="col-xs-12">
-							<div data-form-validation="$value != undefined && $value.trim().toLowerCase() != ''">
-								<span class="label label-danger">Enter your display name!</span>
-							</div>
-						</div>
 					</div>					
 					<div class="form-group" data-form-field="avatar">
 						<div class="col-xs-12">
@@ -122,18 +114,14 @@
 						<div class="col-xs-12">
 							<div class="input-group has-feedback">
 								 <div class="input-group-btn">
-							    	<span >
-							        	Browse&hellip; <input type="file" style="display: none;" accept="image/*" />
+							    	<span class="btn btn-primary btn-file">
+							    		<input type="file" accept="image/*" />
+							        	<span class="glyphicon glyphicon-picture"></span> 
 							        </span>
 							    </div>
 							    <input type="text" class="form-control" readonly="readonly" name="avatar"/>
 							    <span class="glyphicon glyphicon-ok form-control-feedback"></span>
 								<span class="glyphicon glyphicon-remove form-control-feedback"></span>					   
-							</div>
-						</div>
-						<div class="col-xs-12">
-							<div data-form-validation="$value != undefined && $value.trim() != ''">
-								<span class="label label-danger">Select a image file!</span>
 							</div>
 						</div>
 					</div>
@@ -143,28 +131,43 @@
 				<h3>Personal Data</h3>
 				<section>
 					<div class="form-group has-feedback" data-form-field="name" data-form-required="">
-						<label class="control-label" for="name">name</label>
-						<input type="text" class="form-control" name="name" />
-						<div class="bg-danger" data-form-validation="$value != undefined && $value.trim().toLowerCase() != ''">Enter your name!</div>
+						<div class="col-xs-12">
+							<label class="control-label" for="name">name</label>
+						</div>
+						<div class="col-xs-12">
+							<input type="text" class="form-control" name="name" />
+							<span class="glyphicon glyphicon-ok form-control-feedback"></span>
+							<span class="glyphicon glyphicon-remove form-control-feedback"></span>	
+						</div>
 					</div>
 					<div class="form-group has-feedback" data-form-field="familyname" data-form-required="">
-						<label class="control-label" for="familyname">familyname</label>
-						<input type="text" class="form-control" name="familyname" />
-						<div class="bg-danger" data-form-validation="$value != undefined && $value.trim().toLowerCase() != ''">Enter your familyname!</div>
+						<div class="col-xs-12">
+							<label class="control-label" for="familyname">familyname</label>
+						</div>
+						<div class="col-xs-12">
+							<input type="text" class="form-control" name="familyname" />
+						    <span class="glyphicon glyphicon-ok form-control-feedback"></span>
+							<span class="glyphicon glyphicon-remove form-control-feedback"></span>		
+						</div>
 					</div>
 					<div class="form-group has-feedback" data-form-field="age" data-form-required="">
-						<label class="control-label" for="age">age</label>
-						<input type="number" class="form-control" name="age" />
-						<div class="bg-danger" data-form-validation="$value != undefined && $value.trim().toLowerCase() != ''">Enter your age!</div>
-						<div class="text-danger help-block " data-form-validation="/\d*/.test($value)">Accept numbers only!</div>
-						<div class="text-danger help-block " data-form-validation="$value >= 0">You are not existing! You are not born!</div>
-						<div class="text-muted " data-form-message="age == undefined || age == ''">You can enter your age!</div>
-						<div class="text-muted " data-form-message="age != undefined && age != ''&& age >= 0 && age < 14">child</div>
-						<div class="text-muted " data-form-message="age != undefined && age != '' && age >= 14 && age < 18">Teenager</div>
-						<div class="text-muted " data-form-message="age != undefined && age != '' && age >= 18 && age < 21">young adult</div>
-						<div class="text-muted " data-form-message="age != undefined && age != '' && age >= 21 && age < 70">adult</div>
-						<div class="text-muted " data-form-message="age != undefined && age != '' && age >=70 && age < 100">You are really old!</div>
-						<div class="text-muted " data-form-message="age != undefined && age != '' && age >=110">You are really alive?</div>
+						<div class="col-xs-12">
+							<label class="control-label" for="age">age</label>
+						</div>
+						<div class="col-xs-12">
+							<input type="number" class="form-control" name="age" />
+							<span class="glyphicon glyphicon-ok form-control-feedback"></span>
+							<span class="glyphicon glyphicon-remove form-control-feedback"></span>
+						</div>
+						<div class="col-xs-12">
+							<div class="text-danger help-block " data-form-validation="$value >= 0">You are not existing! You are not born!</div>
+							<div class="text-info " data-form-message="age >= 0 && age < 14">child</div>
+							<div class="text-info " data-form-message="age >= 14 && age < 18">Teenager</div>
+							<div class="text-info " data-form-message="&& age >= 18 && age < 21">young adult</div>
+							<div class="text-info " data-form-message="age >= 21 && age < 70">adult</div>
+							<div class="text-info " data-form-message="age >=70 && age < 100">You are really old!</div>
+							<div class="text-info " data-form-message="age >=110">You are really alive?</div>
+						</div>
 					</div>
 				</section>
 			</div>
@@ -185,22 +188,32 @@
 								<div class="row">
 									<div class="col-xs-12">
 										<div class="form-group has-feedback" data-form-field="socaltype" data-form-required="">
-											<label class="control-label" for="socaltype">social type</label>
-											<select class="form-control" name="socaltype">
-												<option value="">---------</option>
-												<option value="facebook">facebook</option>
-												<option value="google">google</option>
-												<option value="youtube">youtube</option>
-												<option value="instagram">instagram</option>
-											</select>
-											<div class="bg-danger" data-form-validation="$value != undefined && $value.trim().toLowerCase() != ''">Choose the type of social!</div>
+											<div class="col-xs-12">
+												<label class="control-label" for="socaltype">social type</label>
+											</div>
+											<div class="col-xs-12">
+												<select class="form-control" name="socaltype">
+													<option value="" selected="selected">---------</option>
+													<option value="facebook">facebook</option>
+													<option value="google">google</option>
+													<option value="youtube">youtube</option>
+													<option value="instagram">instagram</option>
+												</select>
+												<span class="glyphicon glyphicon-ok form-control-feedback"></span>
+												<span class="glyphicon glyphicon-remove form-control-feedback"></span>
+											</div>
 										</div>
 									</div>
 									<div class="col-xs-12">
 										<div class="form-group has-feedback" data-form-field="socialid" data-form-required="" data-form-condition="$item.socaltype != undefined && $item.socaltype != ''">
-											<label class="control-label" for="socialid">your social id</label>
-											<input type="text" class="form-control" name="socialid" />
-											<div class="bg-danger" data-form-validation="$value != undefined && $value.trim().toLowerCase() != ''">Enter your social id!</div>
+											<div class="col-xs-12">
+												<label class="control-label" for="socialid">your social id</label>
+											</div>
+											<div class="col-xs-12">
+												<input type="text" class="form-control" name="socialid" />
+												<span class="glyphicon glyphicon-ok form-control-feedback"></span>
+												<span class="glyphicon glyphicon-remove form-control-feedback"></span>
+											</div>
 										</div>
 									</div>
 								</div>
@@ -208,8 +221,7 @@
 						</div>
 						<div data-form-content-container=""></div>
 						<div>
-							<button data-form-list-field-action-add="" type="button" class="btn btn-primary pull-left">add</button>
-							<div class="clearfix"></div>
+							<button data-form-list-field-action-add="" type="button" class="btn btn-primary">add</button>
 						</div>
 					</div>
 				</section>
@@ -219,25 +231,40 @@
 				<h3>Something about yourself</h3>
 				<section>
 					<div class="form-group has-feedback" data-form-field="job" data-form-required="">
-						<label class="control-label" for="job">job</label>
-						<select class="form-control" name="job">
-							<option value="">---------</option>
-							<option value="student">student</option>
-							<option value="employee">employee</option>
-							<option value="independent">independent</option>
-							<option value="unemployed">unemployed</option>
-						</select>
-						<div class="bg-danger" data-form-validation="$value != undefined && $value.trim().toLowerCase() != ''">Choose the type of social!</div>
+						<div class="col-xs-12">
+							<label class="control-label" for="job">job</label>
+						</div>
+						<div class="col-xs-12">
+							<select class="form-control" name="job">
+								<option value="" selected="selected">---------</option>
+								<option value="student">student</option>
+								<option value="employee">employee</option>
+								<option value="independent">independent</option>
+								<option value="unemployed">unemployed</option>
+							</select>
+							<span class="glyphicon glyphicon-ok form-control-feedback"></span>
+							<span class="glyphicon glyphicon-remove form-control-feedback"></span>
+						</div>
 					</div>
 					<div class="form-group has-feedback" data-form-field="school" data-form-required="on-condition-true" data-form-condition="job == 'student'">
-						<label class="control-label" for="name">name of your school</label>
-						<input type="text" class="form-control" name="school" />
-						<div class="bg-danger" data-form-validation="$value != undefined && $value.trim().toLowerCase() != ''">Enter the name of your school!</div>
+						<div class="col-xs-12">
+							<label class="control-label" for="name">name of your school</label>
+						</div>
+						<div class="col-xs-12">
+							<input type="text" class="form-control" name="school" />
+							<span class="glyphicon glyphicon-ok form-control-feedback"></span>
+							<span class="glyphicon glyphicon-remove form-control-feedback"></span>
+						</div>
 					</div>
 					<div class="form-group has-feedback" data-form-field="company" data-form-required="on-condition-true" data-form-condition="job == 'employee' || job == 'independent'">
-						<label class="control-label" for="name">name of your company</label>
-						<input type="text" class="form-control" name="company" />
-						<div class="bg-danger" data-form-validation="$value != undefined && $value.trim().toLowerCase() != ''">Enter the name of your company!</div>
+						<div class="col-xs-12">
+							<label class="control-label" for="name">name of your company</label>
+						</div>
+						<div class="col-xs-12">
+							<input type="text" class="form-control" name="company" />
+							<span class="glyphicon glyphicon-ok form-control-feedback"></span>
+							<span class="glyphicon glyphicon-remove form-control-feedback"></span>
+						</div>
 					</div>
 				</section>
 			</div>

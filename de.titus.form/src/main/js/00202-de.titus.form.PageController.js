@@ -25,6 +25,7 @@
 			this.data.pages = this.data.element.find("[data-form-page]").formular_Page();
 			if (!Array.isArray(this.data.pages))
 				this.data.pages = [ this.data.pages ];
+
 			this.data.pageHandles = this.__initPageHandles();
 
 			de.titus.form.utils.EventUtils.handleEvent(this.data.element, EVENTTYPES.ACTION_PAGE_BACK, PageController.prototype.toPrevPage.bind(this));
@@ -50,44 +51,21 @@
 				handles.push(handle);
 			}
 
-			var show = function() {
-				var pages = this.data.pageController.data.pages;
-				for (var i = 0; i < pages.length; i++)
-					pages[i].summary();
+			var summaryPage = new de.titus.form.page.utils.VirtualPage(this.data.element, {
+			    pageController : this,
+			    type : de.titus.form.Constants.TYPES.SUMMARY_PAGE,
+			    step : de.titus.form.Constants.SPECIALSTEPS.SUMMARY,
+			    event : EVENTTYPES.PAGE_SUMMARY
+			});
+			handles.push(new de.titus.form.PageControlHandle(summaryPage, handles.length, summaryPage.data.step, this));
 
-				de.titus.form.utils.EventUtils.triggerEvent(this.data.pageController.data.element, EVENTTYPES.PAGE_SUMMARY);
-			};
-
-			var hide = function() {
-				var pages = this.data.pageController.data.pages;
-				for (var i = 0; i < pages.length; i++)
-					pages[i].hide();
-
-			};
-
-			var summaryHandle = new de.titus.form.PageControlHandle({
-				data : {
-				    type : de.titus.form.Constants.TYPES.SUMMARY_PAGE,
-				    valid : true,
-				    condition : true,
-				    step : de.titus.form.Constants.SPECIALSTEPS.SUMMARY
-				}
-			}, handles.length, de.titus.form.Constants.SPECIALSTEPS.SUMMARY, this);
-			summaryHandle.show = show.bind(summaryHandle);
-			summaryHandle.hide = hide.bind(summaryHandle);
-			handles.push(summaryHandle);
-
-			var submittedHandle = new de.titus.form.PageControlHandle({
-				data : {
-				    type : de.titus.form.Constants.TYPES.SUBMITTED_PAGE,
-				    valid : true,
-				    condition : true,
-				    step : de.titus.form.Constants.SPECIALSTEPS.SUBMITTED
-				}
-			}, handles.length, de.titus.form.Constants.SPECIALSTEPS.SUBMITTED, this);
-			submittedHandle.show = show.bind(submittedHandle);
-			submittedHandle.hide = hide.bind(submittedHandle);
-			handles.push(submittedHandle);
+			var submittedPage = new de.titus.form.page.utils.VirtualPage(this.data.element, {
+			    pageController : this,
+			    type : de.titus.form.Constants.TYPES.SUBMITTED_PAGE,
+			    step : de.titus.form.Constants.SPECIALSTEPS.SUBMITTED,
+			    event : EVENTTYPES.PAGE_SUBMITTED
+			});
+			handles.push(new de.titus.form.PageControlHandle(submittedPage, handles.length, submittedPage.data.step, this));
 
 			return handles;
 		};
@@ -132,10 +110,10 @@
 			if (PageController.LOGGER.isDebugEnabled())
 				PageController.LOGGER.logDebug("__getNextPageHandle()");
 
-			if (this.data.currentHandle && !this.data.currentHandle.data.page.data.valid)
-				return this.data.currentHandle;
-			else if (!this.data.currentHandle)
+			if (!this.data.currentHandle)
 				return;
+			else if (!this.data.currentHandle.data.page.doValidate())
+				return this.data.currentHandle;
 			else {
 				for (var i = this.data.currentHandle.data.index + 1; i < this.data.pageHandles.length; i++) {
 					var handle = this.data.pageHandles[i];
@@ -184,18 +162,18 @@
 			if (PageController.LOGGER.isDebugEnabled())
 				PageController.LOGGER.logDebug("toPrevPage()");
 
-			var page = this.__getPrevPageHandle();
-			if (page)
-				this.__toPageHandle(page);
+			var pageHandle = this.__getPrevPageHandle();
+			if (pageHandle)
+				this.__toPageHandle(pageHandle);
 		};
 
-		PageController.prototype.toNextPage = function() {
+		PageController.prototype.toNextPage = function(execute) {
 			if (PageController.LOGGER.isDebugEnabled())
 				PageController.LOGGER.logDebug("toNextPage()");
 
-			var page = this.__getNextPageHandle();
-			if (page)
-				this.__toPageHandle(page);
+			var pageHandle = this.__getNextPageHandle();
+			if (pageHandle)
+				this.__toPageHandle(pageHandle);
 		};
 
 		de.titus.core.jquery.Components.asComponent("formular_PageController", de.titus.form.PageController);
