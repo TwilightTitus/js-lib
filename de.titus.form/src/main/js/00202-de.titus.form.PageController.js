@@ -112,7 +112,7 @@
 
 			if (!this.data.currentHandle)
 				return;
-			else if (!this.data.currentHandle.data.page.doValidate())
+			else if (!this.data.currentHandle.data.page.doValidate(true))
 				return this.data.currentHandle;
 			else {
 				for (var i = this.data.currentHandle.data.index + 1; i < this.data.pageHandles.length; i++) {

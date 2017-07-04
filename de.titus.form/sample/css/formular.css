@@ -59,3 +59,9 @@
 [data-form-message] {
 	
 }
+
+.form-buttons {
+	margin-top: 3em;
+	padding-top: 1em;
+	border-top: solid 1px;
+}

@@ -11,11 +11,10 @@
 			    dataContext : undefined,
 			    expression : (aElement.attr("data-form-condition") || "").trim(),
 			    expressionResolver : new de.titus.core.ExpressionResolver(),
-			    timeoutId: undefined
+			    timeoutId : undefined
 			};
 
 			setTimeout(Condition.prototype.__init.bind(this), 1);
-			// this.__init();
 		};
 
 		Condition.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.form.Condition");
@@ -32,14 +31,13 @@
 
 			de.titus.form.utils.EventUtils.handleEvent(this.data.element, [ EVENTTYPES.INITIALIZED ], Condition.prototype.__doCheck.bind(this));
 		};
-		
-		Condition.prototype.__doCondition = function(aEvent){
-			if(this.data.timeoutId)
+
+		Condition.prototype.__doCondition = function(aEvent) {
+			if (this.data.timeoutId)
 				clearTimeout(this.data.timeoutId);
-			
+
 			this.data.timeoutId = setTimeout(Condition.prototype.__doCheck.bind(this, aEvent), 100);
-		}
-		
+		};
 
 		Condition.prototype.__doCheck = function(aEvent) {
 			if (Condition.LOGGER.isDebugEnabled())

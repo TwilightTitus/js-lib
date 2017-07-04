@@ -45,8 +45,7 @@
 }
 
 .btn-file {
-	overflow: hidden;	
-	line-height: 1.49857143em;
+	overflow: hidden;
 }
 
 .btn-file input[type=file] {

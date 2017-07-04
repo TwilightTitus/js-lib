@@ -19,35 +19,35 @@
 				this.each(function() {
 					$(this).formular_utils_RemoveAddClass(aRemoveClass, anAddClass);
 				});
-				return this;
 			} else {
 				this.removeClass(aRemoveClass);
 				this.addClass(anAddClass);
 			}
+			return this;
 		};
 
 		$.fn.formular_utils_SetInitializing = function() {
-			this.formular_utils_RemoveAddClass("initialized", "initializing");
+			return this.formular_utils_RemoveAddClass("initialized", "initializing");
 		};
 
 		$.fn.formular_utils_SetInitialized = function() {
-			this.formular_utils_RemoveAddClass("initializing", "initialized");
+			return this.formular_utils_RemoveAddClass("initializing", "initialized");
 		};
 
 		$.fn.formular_utils_SetActive = function() {
-			this.formular_utils_RemoveAddClass("inactive", "active");
+			return this.formular_utils_RemoveAddClass("inactive", "active");
 		};
 
 		$.fn.formular_utils_SetInactive = function() {
-			this.formular_utils_RemoveAddClass("active", "inactive");
+			return this.formular_utils_RemoveAddClass("active", "inactive");
 		};
 
 		$.fn.formular_utils_SetValid = function() {
-			this.formular_utils_RemoveAddClass("invalid", "valid");
+			return this.formular_utils_RemoveAddClass("invalid", "valid");
 		};
 
 		$.fn.formular_utils_SetInvalid = function() {
-			this.formular_utils_RemoveAddClass("valid", "invalid");
+			return this.formular_utils_RemoveAddClass("valid", "invalid");
 		};
 
 		$.fn.formular_field_utils_getAssociatedStructurElement = function() {

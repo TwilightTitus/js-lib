@@ -52,10 +52,11 @@
 			    }
 		    },
 
-		    isFieldsValid : function(theFields) {
+		    isFieldsValid : function(theFields, force) {
 			    for (var i = 0; i < theFields.length; i++) {
-				    var data = theFields[i].data;
-				    if (!data.valid)
+				    var field = theFields[i];
+				    var valid = force ? field.doValidate(force) : field.data.valid;
+				    if (!valid)
 					    return false;
 			    }
 

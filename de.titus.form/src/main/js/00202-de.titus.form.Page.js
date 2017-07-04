@@ -64,11 +64,7 @@
 				Page.LOGGER.logDebug([ "__changeConditionState (\"", aEvent, "\") -> page: \"", this, "\"" ]);
 
 			aEvent.preventDefault();
-			this.doValidate();
-		};
-
-		Page.prototype.doValidate = function() {
-			var valid = de.titus.form.utils.FormularUtils.isFieldsValid(this.data.fields);
+			var valid = this.doValidate();
 			if (this.data.valid != valid) {
 				this.data.valid = valid;
 
@@ -79,8 +75,10 @@
 
 				de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.VALIDATION_STATE_CHANGED);
 			}
+		};
 
-			return valid;
+		Page.prototype.doValidate = function(force) {
+			return de.titus.form.utils.FormularUtils.isFieldsValid(this.data.fields, force);
 		};
 
 		Page.prototype.hide = function() {

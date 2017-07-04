@@ -37,14 +37,14 @@
 
 			this.data.dataContext = this.data.element.formular_findParentDataContext();
 			EventUtils.handleEvent(this.data.element, [ EVENTTYPES.CONDITION_MET, EVENTTYPES.CONDITION_NOT_MET ], ListField.prototype.__changeConditionState.bind(this));
-			EventUtils.handleEvent(this.data.element, [ EVENTTYPES.CONDITION_STATE_CHANGED, EVENTTYPES.VALIDATION_STATE_CHANGED, EVENTTYPES.FIELD_VALUE_CHANGED ], ListField.prototype.__doValidation.bind(this), "*");
+			EventUtils.handleEvent(this.data.element, [ EVENTTYPES.CONDITION_STATE_CHANGED, EVENTTYPES.VALIDATION_STATE_CHANGED, EVENTTYPES.FIELD_VALUE_CHANGED ], ListField.prototype.__handleValidationEvent.bind(this), "*");
 
 			this.data.element.formular_Condition();
 
 			EventUtils.handleEvent(this.data.addButton, [ "click" ], ListField.prototype.__addItem.bind(this));
 
 			EventUtils.triggerEvent(this.data.element, EVENTTYPES.INITIALIZED);
-			this.__doValidation();
+			this.doValidate();
 		};
 
 		ListField.prototype.__addItem = function(aEvent) {
@@ -84,7 +84,7 @@
 
 			aItem.element.formular_utils_SetInitialized();
 			EventUtils.triggerEvent(this.data.element, EVENTTYPES.FIELD_VALUE_CHANGED);
-			this.__doValidation();
+			this.doValidate();
 			this.__doCheckAddButton();
 		};
 
@@ -100,7 +100,7 @@
 					this.data.items.splice(i, 1);
 					itemElement.remove();
 					EventUtils.triggerEvent(this.data.element, EVENTTYPES.FIELD_VALUE_CHANGED);
-					this.__doValidation();
+					this.doValidate();
 					this.__doCheckAddButton();
 					return;
 				}
@@ -137,34 +137,35 @@
 			}
 		};
 
-		ListField.prototype.__doValidation = function() {
-			var valid = false;
+		ListField.prototype.__handleValidationEvent = function(aEvent) {
+			var oldValid = this.data.valid;
+			this.doValidate();
 
+			if (this.data.valid != oldValid)
+				EventUtils.triggerEvent(this.data.element, EVENTTYPES.VALIDATION_STATE_CHANGED);
+
+			de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.FIELD_VALIDATED);
+		};
+
+		ListField.prototype.doValidate = function(force) {
+			var oldValid = this.data.valid;
 			if (this.data.items.length === 0)
-				valid = !this.data.required;
+				this.data.valid = !this.data.required;
 			else if (this.data.items.length < this.data.min)
-				valid = false;
+				this.data.valid = false;
 			else if (this.data.max !== 0 && this.data.items.length > this.data.max)
-				valid = false;
+				this.data.valid = false;
 			else
-				valid = this.__isListItemsValid();
+				this.data.valid = this.__isListItemsValid();
 
-			if (this.data.valid != valid) {
-				this.data.valid = valid;
+			if (oldValid != this.data.valid) {
 				if (this.data.valid)
 					this.data.element.formular_utils_SetValid();
 				else
 					this.data.element.formular_utils_SetInvalid();
-
-				EventUtils.triggerEvent(this.data.element, EVENTTYPES.VALIDATION_STATE_CHANGED);
 			}
-			
-			de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.FIELD_VALIDATED);
-		};
 
-		ListField.prototype.__changeValidationStateOfFields = function(aEvent) {
-			this.data.valid = this.__doValidation();
-
+			return this.data.valid;
 		};
 
 		ListField.prototype.__isListItemsValid = function() {

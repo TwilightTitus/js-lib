@@ -175,56 +175,60 @@
 			<div data-form-page="" data-form-step="3">
 				<h3>Social Information</h3>
 				<section>
-					<label class="control-label">social references:</label>
-					<div data-form-list-field="social" data-form-list-field-min="0">
-						<div data-form-content-template="" class="panel panel-primary">
-							<div class="panel-heading">
+					<div class="row">
+						<div class="col-xs-12">
+							<label class="control-label">social references:</label>
+							<div data-form-list-field="social" data-form-list-field-min="0">
+								<div data-form-content-template="" class="panel panel-primary">
+									<div class="panel-heading">
+										<div>
+											social reference
+											<button data-form-list-field-action-remove="" type="button" class="btn btn-danger pull-right">remove</button>
+										</div>
+									</div>
+									<section class="panel-body">
+										<div class="row">
+											<div class="col-xs-12">
+												<div class="form-group has-feedback" data-form-field="socaltype" data-form-required="">
+													<div class="col-xs-12">
+														<label class="control-label" for="socaltype">social type</label>
+													</div>
+													<div class="col-xs-12">
+														<select class="form-control" name="socaltype">
+															<option value="" selected="selected">---------</option>
+															<option value="facebook">facebook</option>
+															<option value="google">google</option>
+															<option value="youtube">youtube</option>
+															<option value="instagram">instagram</option>
+														</select>
+														<span class="glyphicon glyphicon-ok form-control-feedback"></span>
+														<span class="glyphicon glyphicon-remove form-control-feedback"></span>
+													</div>
+												</div>
+											</div>
+											<div class="col-xs-12">
+												<div class="form-group has-feedback" data-form-field="socialid" data-form-required="" data-form-condition="$item.socaltype != undefined && $item.socaltype != ''">
+													<div class="col-xs-12">
+														<label class="control-label" for="socialid">your social id</label>
+													</div>
+													<div class="col-xs-12">
+														<input type="text" class="form-control" name="socialid" />
+														<span class="glyphicon glyphicon-ok form-control-feedback"></span>
+														<span class="glyphicon glyphicon-remove form-control-feedback"></span>
+													</div>
+												</div>
+											</div>
+										</div>
+									</section>
+								</div>
+								<div data-form-content-container=""></div>
 								<div>
-									social reference
-									<button data-form-list-field-action-remove="" type="button" class="btn btn-danger pull-right">remove</button>
+									<button data-form-list-field-action-add="" type="button" class="btn btn-primary">add</button>
 								</div>
 							</div>
-							<section class="panel-body">
-								<div class="row">
-									<div class="col-xs-12">
-										<div class="form-group has-feedback" data-form-field="socaltype" data-form-required="">
-											<div class="col-xs-12">
-												<label class="control-label" for="socaltype">social type</label>
-											</div>
-											<div class="col-xs-12">
-												<select class="form-control" name="socaltype">
-													<option value="" selected="selected">---------</option>
-													<option value="facebook">facebook</option>
-													<option value="google">google</option>
-													<option value="youtube">youtube</option>
-													<option value="instagram">instagram</option>
-												</select>
-												<span class="glyphicon glyphicon-ok form-control-feedback"></span>
-												<span class="glyphicon glyphicon-remove form-control-feedback"></span>
-											</div>
-										</div>
-									</div>
-									<div class="col-xs-12">
-										<div class="form-group has-feedback" data-form-field="socialid" data-form-required="" data-form-condition="$item.socaltype != undefined && $item.socaltype != ''">
-											<div class="col-xs-12">
-												<label class="control-label" for="socialid">your social id</label>
-											</div>
-											<div class="col-xs-12">
-												<input type="text" class="form-control" name="socialid" />
-												<span class="glyphicon glyphicon-ok form-control-feedback"></span>
-												<span class="glyphicon glyphicon-remove form-control-feedback"></span>
-											</div>
-										</div>
-									</div>
-								</div>
-							</section>
-						</div>
-						<div data-form-content-container=""></div>
-						<div>
-							<button data-form-list-field-action-add="" type="button" class="btn btn-primary">add</button>
 						</div>
 					</div>
-				</section>
+				</section>				
 			</div>
 
 			<div data-form-page="" data-form-step="4" data-form-condition="age >= 18">
@@ -269,11 +273,13 @@
 				</section>
 			</div>
 
-			<div>
-				<button data-form-button-back="" type="button" class="btn btn-primary pull-left">previous step</button>
-				<button data-form-button-next="" type="button" class="btn btn-primary pull-right">next step</button>
-				<button data-form-button-summary="" type="button" class="btn btn-primary pull-right">summary</button>
-				<button data-form-button-submit="" type="button" class="btn btn-primary pull-right">submit</button>
+			<div class="row form-buttons">
+				<div class="col-xs-12">
+					<button data-form-button-back="" type="button" class="btn btn-primary pull-left">previous step</button>
+					<button data-form-button-next="" type="button" class="btn btn-primary pull-right">next step</button>
+					<button data-form-button-summary="" type="button" class="btn btn-primary pull-right">summary</button>
+					<button data-form-button-submit="" type="button" class="btn btn-primary pull-right">submit</button>
+				</div>
 			</div>
 
 		</form>
@@ -307,8 +313,12 @@
             "logLevel" : "ERROR",
             "appenders" : [ "de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender" ]
         }, {
-            "filter" : "de.titus.form.ValidationController",
+            "filter" : "de.titus.form.Validation",
             "logLevel" : "ERROR",
+            "appenders" : [ "de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender" ]
+        }, {
+            "filter" : "de.titus.form.ValidationExpression",
+            "logLevel" : "DEBUG",
             "appenders" : [ "de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender" ]
         }, {
             "filter" : "de.titus.form.buttons",
