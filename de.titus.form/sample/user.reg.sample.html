@@ -10,101 +10,149 @@
 
 
 </head>
-<body class="dev-mode">
+<body class="">
 	<h1>User Registration</h1>
 	<div class="container">
-		<form action="/rest/test" method="post" data-form="" data-form-init="" data-form-submit="" data-form-cancel="">
-			<div class="row form-group" data-form-step-panel="">
-				<div class="col-xs-12">
-					<ul class="nav nav-pills nav-justified thumbnail step-panel">
-						<li data-form-step="1">
-							<a>
-								<span class="list-group-item-heading">Registation Data</span>
-							</a>
-						</li>
-						<li data-form-step="2">
-							<a>
-								<span class="list-group-item-heading">Personal Data</span>
-							</a>
-						</li>
-						<li data-form-step="3">
-							<a>
-								<span class="list-group-item-heading">Social Information</span>
-							</a>
-						</li>
-						<li data-form-step="4">
-							<a>
-								<span class="list-group-item-heading">Something about yourself</span>
-							</a>
-						</li>
-						<li data-form-step="form-step-summary">
-							<a>
-								<span class="list-group-item-heading">Summary</span>
-							</a>
-						</li>
-						<li data-form-step="form-step-submitted">
-							<a>
-								<span class="list-group-item-heading">Submitted</span>
-							</a>
-						</li>
-					</ul>
-				</div>
-			</div>
+		<form class="form-horizontal" action="/rest/test" method="post" data-form="" data-form-init="" data-form-submit="" data-form-cancel="">			
+			<ul class="nav nav-pills nav-justified thumbnail " data-form-step-panel="">
+				<li data-form-step="1">
+					<a>
+						<span class="list-group-item-heading">Registation Data</span>
+					</a>
+				</li>
+				<li data-form-step="2">
+					<a>
+						<span class="list-group-item-heading">Personal Data</span>
+					</a>
+				</li>
+				<li data-form-step="3">
+					<a>
+						<span class="list-group-item-heading">Social Information</span>
+					</a>
+				</li>
+				<li data-form-step="4">
+					<a>
+						<span class="list-group-item-heading">Something about yourself</span>
+					</a>
+				</li>
+				<li data-form-step="form-step-summary">
+					<a>
+						<span class="list-group-item-heading">Summary</span>
+					</a>
+				</li>
+				<li data-form-step="form-step-submitted">
+					<a>
+						<span class="list-group-item-heading">Submitted</span>
+					</a>
+				</li>
+			</ul>
 
 			<div data-form-page="" data-form-step="1">
 				<h3>Registation Data</h3>
 				<section>
-					<div class="form-group" data-form-field="loginname" data-form-required="">
-						<label class="control-label" for="loginname">loginname</label>
-						<input type="text" class="form-control" name="loginname" />
-						<div class="bg-danger" data-form-validation="$value != undefined && $value.trim().toLowerCase() != ''">Enter your login name!</div>
-						<div class="bg-danger" data-form-validation="checkLoginName($value)">Your loginname is not "user"!</div>
-						<div class="text-info help-block ">This is a test. Valid loginname is "user"!</div>
+					<div class="form-group has-feedback" data-form-field="loginname" data-form-required="">
+						<div class="col-xs-12">
+							<label class="control-label" for="loginname">loginname</label>
+						</div>
+						<div class="col-xs-12">
+							<input type="text" class="form-control" name="loginname" />
+							<span class="glyphicon glyphicon-ok form-control-feedback"></span>
+							<span class="glyphicon glyphicon-remove form-control-feedback"></span>
+						</div>
+						<div class="col-xs-12">
+							<div data-form-message="loginname == undefined || loginname.trim() == ''">
+								<span class="label label-danger">Enter your login name!</span>
+							</div>
+							<div data-form-validation="checkLoginName($value)">
+								<span class="label label-danger">Your loginname is not "user"!</span>
+							</div>
+							<div class="text-info">This is a test. Valid loginname is "user"!</div>
+						</div>
 					</div>
 					
-					<div class="form-group" data-form-field="password" data-form-required="">
-						<label for="password">password</label>
-						<input type="password" class="form-control" name="password" />
-						<div class="bg-danger" data-form-validation="!(/^(?=.*\d)(?=.*[a-zA-Z])[a-zA-Z0-9]{7,}$/.test(password))">Your password is not strength enough!</div>
-					</div>
-					<div class="form-group" data-form-field="password_check" data-form-required="" data-form-condition="password != undefined && password != ''">
-						<label for="password_check">password</label>
-						<input type="password" class="form-control" name="password_check" />
-						<div class="bg-danger" data-form-validation="!(/^(?=.*\d)(?=.*[a-zA-Z])[a-zA-Z0-9]{7,}$/.test(password)) && password == $value">Password is wrong!</div>
-					</div>
-					<div class="form-group" data-form-field="displayname" data-form-required="" data-form-condition="password != undefined  && password.trim() != '' && password_check == password">
-						<label class="control-label" for="displayname">display name</label>
-						<input type="text" class="form-control" name="displayname" />
-						<div class="bg-danger" data-form-validation="$value != undefined && $value.trim().toLowerCase() != ''">Enter your display name!</div>
-					</div>					
-					<div data-form-field="avatar" data-form-condition="password != undefined  && password.trim() != '' && password_check == password">
-						<label class="control-label" for="avatar">avatar image</label>
-						<div class="input-group">
-							 <label class="input-group-btn">
-						    	<span class="btn btn-primary">
-						        	Browse&hellip; <input type="file" style="display: none;" accept="image/*" />
-						        </span>
-						    </label>
-						    <input type="text" class="form-control" readonly="readonly" name="avatar"/>						   
+					<div class="form-group has-feedback" data-form-field="password" data-form-required="">
+						<div class="col-xs-12">
+							<label for="password">password</label>
 						</div>
-						<div class="bg-danger" data-form-validation="$value != undefined && $value.trim() != ''">Select a image file!</div>
+						<div class="col-xs-12">
+							<input type="password" class="form-control" name="password" />
+							<span class="glyphicon glyphicon-ok form-control-feedback"></span>
+							<span class="glyphicon glyphicon-remove form-control-feedback"></span>
+						</div>
+						<div class="col-xs-12">
+							<div data-form-validation="password != undefined && password.length >= 8">
+								<span class="label label-danger">Your password is not strength enough! min 8 chars</span>
+							</div>
+						</div>
+					</div>
+					<div class="form-group has-feedback" data-form-field="password_check" data-form-required="">
+						<div class="col-xs-12">
+							<label for="password_check">confirm password</label>
+						</div>
+						<div class="col-xs-12">
+							<input type="password" class="form-control" name="password_check" />
+							<span class="glyphicon glyphicon-ok form-control-feedback"></span>
+							<span class="glyphicon glyphicon-remove form-control-feedback"></span>
+						</div>
+						<div class="col-xs-12">
+							<div data-form-validation="password == $value">
+								<span class="label label-danger">Password is wrong!</span>
+							</div>
+						</div>
+					</div>
+					<div class="form-group has-feedback" data-form-field="displayname" data-form-required="">
+						<div class="col-xs-12">
+							<label class="control-label" for="displayname">display name</label>
+						</div>
+						<div class="col-xs-12">
+							<input type="text" class="form-control" name="displayname" />
+							<span class="glyphicon glyphicon-ok form-control-feedback"></span>
+							<span class="glyphicon glyphicon-remove form-control-feedback"></span>
+						</div>
+						<div class="col-xs-12">
+							<div data-form-validation="$value != undefined && $value.trim().toLowerCase() != ''">
+								<span class="label label-danger">Enter your display name!</span>
+							</div>
+						</div>
+					</div>					
+					<div class="form-group" data-form-field="avatar">
+						<div class="col-xs-12">
+							<label class="control-label" for="avatar">avatar image</label>
+						</div>
+						<div class="col-xs-12">
+							<div class="input-group has-feedback">
+								 <div class="input-group-btn">
+							    	<span >
+							        	Browse&hellip; <input type="file" style="display: none;" accept="image/*" />
+							        </span>
+							    </div>
+							    <input type="text" class="form-control" readonly="readonly" name="avatar"/>
+							    <span class="glyphicon glyphicon-ok form-control-feedback"></span>
+								<span class="glyphicon glyphicon-remove form-control-feedback"></span>					   
+							</div>
+						</div>
+						<div class="col-xs-12">
+							<div data-form-validation="$value != undefined && $value.trim() != ''">
+								<span class="label label-danger">Select a image file!</span>
+							</div>
+						</div>
 					</div>
 				</section>
 			</div>
 			<div data-form-page="" data-form-step="2">
 				<h3>Personal Data</h3>
 				<section>
-					<div class="form-group" data-form-field="name" data-form-required="">
+					<div class="form-group has-feedback" data-form-field="name" data-form-required="">
 						<label class="control-label" for="name">name</label>
 						<input type="text" class="form-control" name="name" />
 						<div class="bg-danger" data-form-validation="$value != undefined && $value.trim().toLowerCase() != ''">Enter your name!</div>
 					</div>
-					<div class="form-group" data-form-field="familyname" data-form-required="">
+					<div class="form-group has-feedback" data-form-field="familyname" data-form-required="">
 						<label class="control-label" for="familyname">familyname</label>
 						<input type="text" class="form-control" name="familyname" />
 						<div class="bg-danger" data-form-validation="$value != undefined && $value.trim().toLowerCase() != ''">Enter your familyname!</div>
 					</div>
-					<div class="form-group" data-form-field="age" data-form-required="">
+					<div class="form-group has-feedback" data-form-field="age" data-form-required="">
 						<label class="control-label" for="age">age</label>
 						<input type="number" class="form-control" name="age" />
 						<div class="bg-danger" data-form-validation="$value != undefined && $value.trim().toLowerCase() != ''">Enter your age!</div>
@@ -136,7 +184,7 @@
 							<section class="panel-body">
 								<div class="row">
 									<div class="col-xs-12">
-										<div class="form-group" data-form-field="socaltype" data-form-required="">
+										<div class="form-group has-feedback" data-form-field="socaltype" data-form-required="">
 											<label class="control-label" for="socaltype">social type</label>
 											<select class="form-control" name="socaltype">
 												<option value="">---------</option>
@@ -149,7 +197,7 @@
 										</div>
 									</div>
 									<div class="col-xs-12">
-										<div class="form-group" data-form-field="socialid" data-form-required="" data-form-condition="$item.socaltype != undefined && $item.socaltype != ''">
+										<div class="form-group has-feedback" data-form-field="socialid" data-form-required="" data-form-condition="$item.socaltype != undefined && $item.socaltype != ''">
 											<label class="control-label" for="socialid">your social id</label>
 											<input type="text" class="form-control" name="socialid" />
 											<div class="bg-danger" data-form-validation="$value != undefined && $value.trim().toLowerCase() != ''">Enter your social id!</div>
@@ -170,7 +218,7 @@
 			<div data-form-page="" data-form-step="4" data-form-condition="age >= 18">
 				<h3>Something about yourself</h3>
 				<section>
-					<div class="form-group" data-form-field="job" data-form-required="">
+					<div class="form-group has-feedback" data-form-field="job" data-form-required="">
 						<label class="control-label" for="job">job</label>
 						<select class="form-control" name="job">
 							<option value="">---------</option>
@@ -181,12 +229,12 @@
 						</select>
 						<div class="bg-danger" data-form-validation="$value != undefined && $value.trim().toLowerCase() != ''">Choose the type of social!</div>
 					</div>
-					<div class="form-group" data-form-field="school" data-form-required="on-condition-true" data-form-condition="job == 'student'">
+					<div class="form-group has-feedback" data-form-field="school" data-form-required="on-condition-true" data-form-condition="job == 'student'">
 						<label class="control-label" for="name">name of your school</label>
 						<input type="text" class="form-control" name="school" />
 						<div class="bg-danger" data-form-validation="$value != undefined && $value.trim().toLowerCase() != ''">Enter the name of your school!</div>
 					</div>
-					<div class="form-group" data-form-field="company" data-form-required="on-condition-true" data-form-condition="job == 'employee' || job == 'independent'">
+					<div class="form-group has-feedback" data-form-field="company" data-form-required="on-condition-true" data-form-condition="job == 'employee' || job == 'independent'">
 						<label class="control-label" for="name">name of your company</label>
 						<input type="text" class="form-control" name="company" />
 						<div class="bg-danger" data-form-validation="$value != undefined && $value.trim().toLowerCase() != ''">Enter the name of your company!</div>
