@@ -32,7 +32,7 @@
 		<echo message="minify ${ant.project.name}.${project.version}.js" />
 		<copy file="${dir.build}/${ant.project.name}.${project.version}.js" tofile="${dir.build}/${ant.project.name}.${project.version}.min.js">
 		</copy>
-		<yuicompress linebreak="16000" warn="false" munge="no" preserveallsemicolons="true" outputfolder="${dir.build}" charset="utf-8">
+		<yuicompress linebreak="10000" warn="false" munge="true" preserveallsemicolons="true" outputfolder="${dir.build}" charset="utf-8">
 			<fileset dir="${dir.build}">
 				<include name="${ant.project.name}.${project.version}.min.js" />
 			</fileset>
@@ -52,7 +52,10 @@
 		</concat>
 		<concat destfile="${dir.build}/tmp/${ant.project.name}.${project.version}.min.js" fixlastline="true" append="true">
 			<fileset dir="${depents.jstl.dist.dir}" includes="*.${depents.jstl.version}.min.js" />
-		</concat>		
+		</concat>
+		<!--concat destfile="${dir.build}/tmp/${ant.project.name}.${project.version}.min.js" fixlastline="true" append="true">
+			<fileset dir="${depents.form.dist.dir}" includes="*-${depents.form.version}.min.js" />
+		</concat-->
 		<concat destfile="${dir.build}/tmp/${ant.project.name}.${project.version}.min.js" fixlastline="true" append="true">
 			<fileset dir="${dir.build}" includes="*.min-${project.version}.js" />
 			<fileset dir="${dir.build}" includes="*.${project.version}.min.js" />
@@ -71,7 +74,10 @@
 		</concat>
 		<concat destfile="${dir.build}/tmp/${ant.project.name}.${project.version}.js" fixlastline="true" append="true">
 			<fileset dir="${depents.jstl.dist.dir}" excludes="*.${depents.jstl.version}.min.js" includes="*.js" />
-		</concat>		
+		</concat>
+		<!--concat destfile="${dir.build}/tmp/${ant.project.name}.${project.version}.js" fixlastline="true" append="true">
+			<fileset dir="${depents.form.dist.dir}" excludes="*-${depents.form.version}.min.js" includes="*.js" />
+		</concat-->
 		<concat destfile="${dir.build}/tmp/${ant.project.name}.${project.version}.js" fixlastline="true" append="true">
 			<fileset dir="${dir.build}">
 				<include name="*.js" />

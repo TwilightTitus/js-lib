@@ -11,22 +11,21 @@
 			} else {
 				var processor = this.data("de.titus.jstl.Processor");
 				if (!processor) {
-				    	var data = aData || {};
+					var data = $.extend(true, {}, aData);
 					processor = new de.titus.jstl.Processor(this, data.data, data.callback || data.success);
 					this.data("de.titus.jstl.Processor", processor);
-				}
-				else if(aData){
-				    var data = aData || {};
-				    if(data.data)
-					processor.context = data.data;
-				    if(typeof data.callback === 'function')
-					processor.callback = data.callback
+				} else if (aData) {
+					var data = $.extend(true, {}, aData);
+					if (data.data)
+						processor.context = data.data;
+					if (typeof data.callback === 'function')
+						processor.callback = data.callback
 				}
 				processor.compute();
 				return processor;
 			}
 		};
-		
+
 		$.fn.jstlAsync = function(aData) {
 			if (this.length == 0)
 				return;
@@ -39,10 +38,10 @@
 				return this;
 			}
 		};
-		
+
 		$(document).ready(function() {
 			$("[jstl-autorun]").jstlAsync();
 		});
-		
+
 	});
 }(jQuery));
