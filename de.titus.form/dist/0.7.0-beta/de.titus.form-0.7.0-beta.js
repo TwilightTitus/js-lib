@@ -180,12 +180,8 @@
 
 			    if (aElement.is("[data-form]"))
 				    return aElement;
-			    else {
-				    var parent = aElement.parents("[data-form]").first();
-				    if (parent.length == 1)
-					    return parent;
-			    }
-
+			    else
+				    return aElement.parents("[data-form]").first();
 		    },
 		    getFormular : function(aElement) {
 			    if (FormularUtils.LOGGER.isDebugEnabled())
@@ -199,21 +195,23 @@
 		    getPage : function(aElement) {
 			    if (FormularUtils.LOGGER.isDebugEnabled())
 				    FormularUtils.LOGGER.logDebug("getPage()");
-
-			    if (aElement.is("[data-form-page]"))
+			    
+			    if (aElement.is("[data-form]"))
+			    	return undefined;
+			    else if (aElement.is("[data-form-page]"))
 				    return aElement.formular_Page();
 			    else {
 				    var parent = aElement.parents("[data-form-page]").first();
 				    if (parent.length == 1)
 					    return parent.formular_Page();
 			    }
-
 		    },
 		    getField : function(aElement) {
 			    if (FormularUtils.LOGGER.isDebugEnabled())
 				    FormularUtils.LOGGER.logDebug("getField()");
-
-			    if (aElement.is("[data-form-field]"))
+			    if (aElement.is("[data-form]"))
+			    	return undefined;
+			    else if (aElement.is("[data-form-field]"))
 				    return aElement.formular_Field();
 			    else {
 				    var parent = aElement.parents("[data-form-field]").first();
@@ -232,6 +230,7 @@
 
 			    return true;
 		    },
+		    
 		    toBaseModel : function(theFields, aFilter, aContainer) {
 			    var result = aContainer || {};
 			    for (var i = 0; i < theFields.length; i++) {
@@ -2218,14 +2217,12 @@
 
 		Field.prototype.__changeValidationState = function(aEvent) {
 			if (Field.LOGGER.isDebugEnabled())
-				Field.LOGGER.logDebug("__changeValidationState() for field \"" + this.data.name + "\" -> " + aEvent.type);
+				Field.LOGGER.logDebug([ "__changeValidationState() for field \"", this.data.name, "\" -> ", aEvent.type, "; field: \"", this, "\"" ]);
 
 			aEvent.preventDefault();
 			aEvent.stopPropagation();
 
-			var valid = this.data.valid;
-			if (aEvent.type == EVENTTYPES.VALIDATION_VALID)
-				valid = true;
+			var valid = aEvent.type == EVENTTYPES.VALIDATION_VALID;
 
 			if (this.data.valid != valid) {
 				if (Field.LOGGER.isDebugEnabled())

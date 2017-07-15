@@ -67,14 +67,12 @@
 
 		Field.prototype.__changeValidationState = function(aEvent) {
 			if (Field.LOGGER.isDebugEnabled())
-				Field.LOGGER.logDebug("__changeValidationState() for field \"" + this.data.name + "\" -> " + aEvent.type);
+				Field.LOGGER.logDebug([ "__changeValidationState() for field \"", this.data.name, "\" -> ", aEvent.type, "; field: \"", this, "\"" ]);
 
 			aEvent.preventDefault();
 			aEvent.stopPropagation();
 
-			var valid = this.data.valid;
-			if (aEvent.type == EVENTTYPES.VALIDATION_VALID)
-				valid = true;
+			var valid = aEvent.type == EVENTTYPES.VALIDATION_VALID;
 
 			if (this.data.valid != valid) {
 				if (Field.LOGGER.isDebugEnabled())
