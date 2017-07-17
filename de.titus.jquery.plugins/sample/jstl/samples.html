@@ -1,6 +1,8 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>JSTL Samples</title>
 <script src="../../libs/jquery-1.11.1.js" type="text/javascript"></script>
 <script src="../../dist/3.2.0/de.titus.jquery.plugins.3.2.0.js"	type="text/javascript"></script>
@@ -237,14 +239,16 @@
 	        };
         };
         
+        var data = {	        		
+    	        "contextExtention":{"text":"<b>insert</b>text as <i>html</i><p>$\{subtext\}</p>", "subtext":"and with child processing"},
+    	        test : "text",
+    	        "boolean" : false,
+    	        "jstlTemplate" : "jstl-template.html",
+    	        "jstlList" : []
+    	        };
+        
         $(document).ready(function() {
-	        var data = {	        		
-	        "contextExtention":{"text":"<b>insert</b>text as <i>html</i><p>$\{subtext\}</p>", "subtext":"and with child processing"},
-	        test : "text",
-	        "boolean" : false,
-	        "jstlTemplate" : "jstl-template.html",
-	        "jstlList" : []
-	        };
+	      
 	        
 	        for (var i = 0; i < 10; i++) {
 		        data.jstlList.push({

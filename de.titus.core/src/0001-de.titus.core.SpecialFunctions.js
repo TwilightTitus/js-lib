@@ -9,42 +9,27 @@ de.titus.core.Namespace.create("de.titus.core.SpecialFunctions", function() {
 		    else {
 			    if (typeof aStatement !== "string")
 				    return aStatement;
-			    else {
-				    var runContext = aContext || {};
-				    if (runContext["$$$$___STATEMENT___VALUE___$$$___TEXT___$$$$"] !== undefined)
-					    return undefined;
 
-				    var $$$$___STATEMENT___VALUE___$$$___TEXT___$$$$ = aStatement;
-				    with (runContext) {
-					    try {
-						    return eval("(function(){ return " + $$$$___STATEMENT___VALUE___$$$___TEXT___$$$$ + ";})()");
-					    } catch (e) {
-					    	if(SpecialFunctions.DEVMODE){					    		
-					    		console.log("----------------------\n",
-					    		"doEval()\n",	
-					    		"statement: \"", aStatement, "\"\n",
-					    		"context: \"", aContext, "\"\n",
-					    		"callback: \"", aCallback, "\"\n",
-					    		"error: ", e, "\n",
-					    		"----------------------");
-					    	}
-					    	throw e;
-					    }
+			    try {
+				    var evalFunction = new Function("aContext", "with(this){return " + aStatement + ";}");
+				    return evalFunction.call(aContext);
+			    } catch (e) {
+				    if (SpecialFunctions.DEVMODE) {
+					    console.log("----------------------\n", "doEval()\n", "statement: \"", aStatement, "\"\n", "context: \"", aContext, "\"\n", "callback: \"", aCallback, "\"\n", "error: ", e, "\n", "----------------------");
 				    }
+				    throw e;
 			    }
-
-			    return undefined;
 		    }
 	    },
 
 	    /**
-		 * 
-		 * @param aStatement
-		 * @param aContext
-		 * @param aDefault
-		 * @param aCallback
-		 * @returns
-		 */
+	     * 
+	     * @param aStatement
+	     * @param aContext
+	     * @param aDefault
+	     * @param aCallback
+	     * @returns
+	     */
 	    doEvalWithContext : function(aStatement, aContext, aDefault, aCallback) {
 		    if (typeof aCallback === "function") {
 			    window.setTimeout(function() {
