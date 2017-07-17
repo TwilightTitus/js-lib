@@ -22,9 +22,9 @@ de.titus.core.Namespace.create("de.titus.core.SpecialFunctions", function() {
 					    	if(SpecialFunctions.DEVMODE){					    		
 					    		console.log("----------------------\n",
 					    		"doEval()\n",	
-					    		"statement: \"" + aStatement + "\"\n",
-					    		"context: \"" + (aContext ? JSON.stringify(aContext) : "{}") + "\"\n",
-					    		"callback: \"" + aCallback + "\"\n",
+					    		"statement: \"", aStatement, "\"\n",
+					    		"context: \"", aContext, "\"\n",
+					    		"callback: \"", aCallback, "\"\n",
 					    		"error: ", e, "\n",
 					    		"----------------------");
 					    	}

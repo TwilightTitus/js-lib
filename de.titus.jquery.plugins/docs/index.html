@@ -13,13 +13,14 @@
 
 </head>
 <body jstl-data="modules.data.json" jstl-data-mode="remote" jstl-autorun>
-	<jstl jstl-data="module" jstl-data-mode="url-parameter" jstl-data-var="moduleId"></jstl>
-	<jstl jstl-data="page" jstl-data-mode="url-parameter" jstl-data-var="pageNumber"></jstl>
-	<jstl jstl-data="${parseInt(pageNumber) || 0}" jstl-data-var="pageNumber"></jstl>
-	<jstl jstl-if="${moduleId != undefined}" jstl-data="${modules[moduleId]}" jstl-data-var="module"> </jstl>
-	<jstl jstl-if="${moduleId == undefined}" jstl-data="${modules['home']}" jstl-data-var="module"> </jstl>
-
-
+	<jstl jstl-data="module" jstl-data-mode="url-parameter" jstl-data-var="moduleId" jstl-data-default="'home'"></jstl>
+	<jstl jstl-data="page" jstl-data-mode="url-parameter" jstl-data-var="pageNumber" jstl-data-default="'0'"></jstl>
+	<jstl jstl-data="${parseInt(pageNumber)}" jstl-data-var="pageNumber"></jstl>	
+	<jstl jstl-data="${modules[moduleId]}" jstl-data-var="module"></jstl>
+	
+	<!-- div>pagenumber: ${pageNumber}</div>
+	<div>moduleId: ${moduleId}</div>
+	<div>module: ${JSON.stringify(module)}</div -->
 
 	<!-- HEADER -->
 	<div id="header_wrap" class="outer">
@@ -71,7 +72,7 @@
 	<script type="text/javascript" src="libs/jquery-2.2.4.min.js"></script>
 	<!-- script type="text/javascript" src="libs/de.titus.jquery.plugins.2.17.0.min.js"></script -->
 
-	<script type="text/javascript" src="libs/de.titus.jquery.plugins.3.1.0.min.js"></script>
+	<script type="text/javascript" src="libs/de.titus.jquery.plugins.3.2.0.js"></script>
 	<script type="text/javascript" src="libs/bootstrap.3.3.6.min.js"></script>
 	<script type="text/javascript" src="libs/highlight/highlight.pack.js"></script>
 	<script type="text/javascript">

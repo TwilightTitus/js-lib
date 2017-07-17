@@ -7,41 +7,59 @@
 <link type="text/css" href="style.css" rel="stylesheet" />
 
 <script src="../../libs/jquery-3.0.0.min.js" type="text/javascript"></script>
-<script src="../../dist/3.0.0/de.titus.jquery.plugins-3.0.0.js" type="text/javascript"></script>
+<!-- script src="../../dist/3.0.0/de.titus.jquery.plugins-3.0.0.js"	type="text/javascript"></script-->
+<script src="../../dist/3.2.0/de.titus.jquery.plugins.3.2.0.js"	type="text/javascript"></script>
 
 <script type="text/javascript">
-	de.titus.logging.LoggerFactory.getInstance().setConfig([
-            {
-                "filter" : "",
-                "logLevel" : "ERROR",
-                "appenders" : [
-	                "de.titus.logging.ConsolenAppender"
-                ]
-            }, {
-                "filter" : "de.titus",
-                "logLevel" : "ERROR",
-                "appenders" : [
-	                "de.titus.logging.ConsolenAppender"
-                ]
-            }, {
-                "filter" : "de.titus.jstl.TaskChain",
-                "logLevel" : "ERROR",
-                "appenders" : [
-	                "de.titus.logging.ConsolenAppender"
-                ]
-            }
-    ]);
+	de.titus.logging.LoggerFactory.getInstance().setConfig([ {
+        "filter" : "",
+        "logLevel" : "ERROR",
+        "appenders" : [ "de.titus.logging.ConsolenAppender" ]
+    }, {
+        "filter" : "de.titus",
+        "logLevel" : "ERROR",
+        "appenders" : [ "de.titus.logging.ConsolenAppender" ]
+    }, {
+        "filter" : "de.titus.jstl.TaskChain",
+        "logLevel" : "ERROR",
+        "appenders" : [ "de.titus.logging.ConsolenAppender" ]
+    } ]);
 </script>
 
 </head>
 <body jstl-autorun="">
-	<jstl jstl-data="'a data value on same level'" jstl-data-var="data1" ></jstl>
+	<jstl jstl-data="'a data value on same level'" jstl-data-var="data1"></jstl>
 	${data1}
 	<br />
-	<jstl jstl-data="'a other data value on same level'" jstl-data-var="data2" ></jstl>
+	<jstl jstl-data="'a other data value on same level'"
+		jstl-data-var="data2"></jstl>
 	<span>${data2}</span>
 	<div id="log">
 		<div>Logs</div>
 	</div>
+	<div>
+		<div>merge data into context</div>
+		<ul jstl-data="${contextExtention}">
+			<li>
+				<h4>inculde as html and child processing</h4>
+				<div jstl-text-content-type="html">${text}</div>
+			</li>
+			<li>
+				<h4>inculde as html and no child processing</h4>
+				<div jstl-text-content-type="html" jstl-ignore-childs="">${text}</div>
+			</li>
+			<li>
+				<h4>normal inculde as plain text</h4>
+				<div>${text}</div>
+			</li>
+		</ul>
+	</div>
+	<script type="text/javascript">
+		var contextExtention = {
+			text: "<b>insert</b> text as <i>html</i><p jstl-text-content-type='html'>$\{subtext\}</p>", "subtext":"and with child processing",
+			subtext: "<strong>this is the SubText</strong>"
+		};
+	
+	</script>
 </body>
 </html>

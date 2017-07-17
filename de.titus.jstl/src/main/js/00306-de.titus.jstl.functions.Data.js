@@ -11,12 +11,24 @@
 			    var expression = aElement.attr("jstl-data");
 			    if (expression) {
 				    var varname = aElement.attr("jstl-data-var");
+				    var defaultValue = Data.__defaultvalue(aElement, expression, aDataContext, aProcessor)
 				    var mode = aElement.attr("jstl-data-mode") || "direct";
-				    Data.MODES[mode](expression, aElement, varname, aDataContext, aProcessor, aTaskChain);
+				    Data.MODES[mode](expression, defaultValue, aElement, varname, aDataContext, aProcessor, aTaskChain);
 				    
 			    } else
 				    aTaskChain.nextTask();
 		    },
+		    
+		    __defaultvalue : function(aElement, anExpression, aDataContext, aProcessor) {
+			    var defaultExpression = aElement.attr("jstl-data-default");
+			    if(defaultExpression == undefined)
+			    	return anExpression;
+			    else if(defaultExpression.trim() == "")
+			    	return undefined;
+			    else{
+			    	return aProcessor.resolver.resolveExpression(defaultExpression, aDataContext, anExpression);
+			    }
+		    }, 
 		    
 		    __options : function(aElement, aDataContext, aProcessor) {
 			    var options = aElement.attr("jstl-data-options");
@@ -37,13 +49,13 @@
 		    },
 		    
 		    MODES : {
-		        "direct" : function(anExpression, aElement, aVarname, aDataContext, aProcessor, aTaskChain) {
-			        var data = aProcessor.resolver.resolveExpression(anExpression, aDataContext, anExpression);
+		        "direct" : function(anExpression, aDefault, aElement, aVarname, aDataContext, aProcessor, aTaskChain) {
+			        var data = aProcessor.resolver.resolveExpression(anExpression, aDataContext, aDefault);
 			        Data.__updateContext(aVarname, data, aTaskChain);
 			        aTaskChain.nextTask();
 		        },
 		        
-		        "remote" : function(anExpression, aElement, aVarname, aDataContext, aProcessor, aTaskChain) {
+		        "remote" : function(anExpression, aDefault, aElement, aVarname, aDataContext, aProcessor, aTaskChain) {
 			        var url = aProcessor.resolver.resolveText(anExpression, aDataContext);
 			        var option = Data.__options(aElement, aDataContext, aProcessor);
 			        var datatype = (aElement.attr("jstl-data-datatype") || "json").toLowerCase();
@@ -59,9 +71,11 @@
 			        $.ajax(ajaxSettings).done(Data.__remoteResponse.bind({}, aVarname, datatype, aTaskChain));
 		        },
 		        
-		        "url-parameter" : function(anExpression, aElement, aVarname, aDataContext, aProcessor, aTaskChain) {
-			        var parameterName = aProcessor.resolver.resolveText(anExpression, aDataContext);
+		        "url-parameter" : function(anExpression, aDefault, aElement, aVarname, aDataContext, aProcessor, aTaskChain) {
+			        var parameterName = aProcessor.resolver.resolveText(anExpression, aDataContext, anExpression);
 			        var data = de.titus.core.Page.getInstance().getUrl().getParameter(parameterName);
+			        if(data == undefined && aDefault != undefined)
+			        	data = aDefault;
 			        Data.__updateContext(aVarname, data, aTaskChain);
 			        aTaskChain.nextTask();
 		        }

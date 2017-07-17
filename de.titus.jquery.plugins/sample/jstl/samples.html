@@ -3,8 +3,8 @@
 <head>
 <title>JSTL Samples</title>
 <script src="../../libs/jquery-1.11.1.js" type="text/javascript"></script>
-<script src="../../dist/3.0.1/de.titus.jquery.plugins.3.0.1.js"
-	type="text/javascript"></script>
+<script src="../../dist/3.2.0/de.titus.jquery.plugins.3.2.0.js"	type="text/javascript"></script>
+<!-- script src="../../dist/3.0.1/de.titus.jquery.plugins.3.0.1.js"	type="text/javascript"></script -->
 <link type="text/css" href="style.css" rel="stylesheet" />
 
 
@@ -83,7 +83,7 @@
 			<div>${"test " + test + "!"}</div>
 			<div>${testFunction}</div>
 		</div>
-		<div jstl-if="${boolean}">boolean test</div>
+		<!-- div jstl-if="${boolean}">boolean test</div>
 		<div></div>
 		<div>
 			include tests
@@ -108,7 +108,7 @@
 				jstl-include-mode="append">
 				<div>Parameterisierter Include mit den Options</div>
 			</div>
-		</div>
+		</div-->
 		<div>
 			data tests
 			<div jstl-data='{"data": "direct Data"}'>${data}</div>
@@ -188,9 +188,7 @@
 		</div>
 
 		<div class="jstl-text-content-type">
-			jstl-text-content-type="html"
-			<ul
-				jstl-data="${addAttributeTest}">
+			<ul	jstl-data="${contextExtention}">
 				<li>
 					<h4>inculde as html and child processing</h4>
 					<div jstl-text-content-type="html">${text}</div>
@@ -241,7 +239,7 @@
         
         $(document).ready(function() {
 	        var data = {	        		
-	        "addAttributeTest":{"text":"<b>insert</b>text as <i>html</i><p>$\{subtext\}</p>", "subtext":"and with child processing"},
+	        "contextExtention":{"text":"<b>insert</b>text as <i>html</i><p>$\{subtext\}</p>", "subtext":"and with child processing"},
 	        test : "text",
 	        "boolean" : false,
 	        "jstlTemplate" : "jstl-template.html",
@@ -270,7 +268,7 @@
 		        //event.stopPropagation();
 	        });
 	        
-	        $("#test").jstl(data);
+	        $("#test").jstl({data:data});
 	        
         });
         /*-->*/

@@ -64,7 +64,10 @@
 		
 		TaskChain.prototype.nextTask = function(aContext, doMerge) {
 			if (TaskChain.LOGGER.isDebugEnabled())
-				TaskChain.LOGGER.logDebug("nextTask( \"" + aContext + "\")");
+				TaskChain.LOGGER.logDebug(["nextTask( \"", aContext, "\", \"", doMerge, "\")"]);
+			
+			if(typeof aContext !== "object" && typeof aContext !== "undefined")
+				throw new Error();
 			
 			if (aContext)
 				this.updateContext(aContext, doMerge);
@@ -78,12 +81,17 @@
 				this.__taskchain = this.__taskchain.next;
 				
 				if (TaskChain.LOGGER.isDebugEnabled())
-					TaskChain.LOGGER.logDebug("nextTask() -> next task: \"" + name + "\", phase: \"" + phase + "\", selector \"" + selector + "\"!");
+					TaskChain.LOGGER.logDebug(["nextTask() -> next task: \"", name, "\", phase: \"", phase, "\", selector \"", selector, "\", element \"", this.element, "\" !"]);
 				if (selector == undefined || this.element.is(selector))
-					task(this.element, this.__buildContext(), this.processor, this);
+					try{
+						task(this.element, this.__buildContext(), this.processor, this);
+					}
+					catch (e) {
+							TaskChain.LOGGER.logError(e);
+					}
 				else {
 					if (TaskChain.LOGGER.isDebugEnabled())
-						TaskChain.LOGGER.logDebug("nextTask() -> skip task: \"" + name + "\", phase: \"" + phase + "\", selector \"" + selector + "\"!");
+						TaskChain.LOGGER.logDebug(["nextTask() -> skip task: \"", name, "\", phase: \"", phase, "\", selector \"", selector, "\"!"]);
 					this.nextTask();
 				}
 			} else {
