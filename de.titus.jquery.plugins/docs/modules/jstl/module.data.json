@@ -2,7 +2,11 @@
 	"type" : "module",
 	"versions": {
 		"release" : "3.1.0"
-	},	
+	},
+	"module": {
+		"js-file":"",
+		"js-min-file":""
+	},
 	"pages": [
 		{
 			"tag":"quick-start",

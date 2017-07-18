@@ -2,7 +2,11 @@
 	"type" : "module",
 	"versions": {
 		"release" : "0.7.0-beta"
-	},	
+	},
+	"module": {
+		"js-file":"",
+		"js-min-file":""
+	},
 	"pages": [
 		{
 		"tag":"summary",
