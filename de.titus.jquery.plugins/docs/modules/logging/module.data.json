@@ -1,0 +1,13 @@
+{
+	"type" : "module",
+	"versions": {
+		"release" : "2.1.0"
+	},	
+	"pages": [
+		{
+		"tag": "summary",
+		"title": "Introduction",
+		"teaser": ""
+		}
+	]
+}

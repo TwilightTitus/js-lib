@@ -1,25 +1,20 @@
 {
 	"modules": {
-		"home": {
-			"title": "Home",
-			"teaser":"Documentation for de.titus.jquery.plugins",
-			"data": "modules/home/pages.data.json"
+		"bundle": {
+			"title": "Bundle Info",
+			"teaser":"Bundle of de.titus.jquery.plugins"
 		},
 		"core": {
-			"title": "de.titus.core",
-			"data": "modules/core/pages.data.json"
+			"title": "de.titus.core"
 		},
 		"logging": {
-			"title": "logging",
-			"data": "modules/logging/pages.data.json"
+			"title": "logging"
 		},
 		"jstl": {
-			"title": "JSTL",
-			"data": "modules/jstl/pages.data.json"
+			"title": "JSTL"
 		},
 		"form": {
-			"title": "Form (alpha)",
-			"data": "modules/form/pages.data.json"
+			"title": "Form (beta)"
 		}
 	}
 }

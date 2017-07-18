@@ -1,0 +1,18 @@
+{
+	"type" : "module",
+	"versions": {
+		"release" : "0.7.0-beta"
+	},	
+	"pages": [
+		{
+		"tag":"summary",
+		"title": "Starting",
+		"teaser": "You make html, we make logic. Simple to use, simple to extends, simple to design!"
+		},
+		{
+		"tag":"reference",
+		"title": "Reference",
+		"teaser": "How to use it!"
+		}
+	]
+}

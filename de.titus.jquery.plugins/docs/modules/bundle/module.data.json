@@ -1,0 +1,18 @@
+{
+	"type" : "bundle",
+	"versions": {
+		"release" : "3.2.0"
+	},	
+	"pages": [
+		{
+			"tag":"summary",
+			"title": "Welcome to JQuery - Titus Lib.",
+			"teaser": ""
+		},
+		{
+			"tag":"release-notes",
+			"title": "Titus Lib - Release Notes",
+			"teaser": ""
+		}
+	]
+}
