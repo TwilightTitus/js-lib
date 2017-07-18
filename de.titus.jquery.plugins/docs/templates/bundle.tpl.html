@@ -1,0 +1,33 @@
+<div class="bundle">
+	<h1>${moduleData.title}</h1>
+	<h1>
+		<small>${moduleData.teaser}</small>
+	</h1>
+
+	<div class="container-fluid bundle-content">
+		<div class="row">
+			<div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
+				<div class="chapter-text">${moduleData.text}</div>
+				<div class="articles" jstl-foreach="${moduleData.articles}" jstl-foreach-var="article" jstl-foreach-status="articleStatus" jstl-async="">
+					<article id="${article.tag}">
+						<h2>${article.title}</h2>
+						<h4>${article.teaser}</h4>
+						<div class="article-content" jstl-foreach="${article.content}" jstl-foreach-var="content" jstl-foreach-status="contentStatus">
+							<div jstl-include="templates/${content.type}.content.tpl.html"></div>
+						</div>
+					</article>
+				</div>
+			</div>
+			<nav class="hidden-xs hidden-sm col-md-3 col-lg-3">
+				<div>
+					<div>Modules</div>
+					<ul class="nav nav-pills nav-stacked navbar-modules" jstl-foreach="${moduleData.bundle.modules}" jstl-foreach-var="module" jstl-foreach-status="moduleStatus">
+						<li>
+							<a href="index.html?module=${moduleStatus.key}&page=0">${modules[moduleStatus.key].title}</a>
+						</li>
+					</ul>
+				</div>
+			</nav>
+		</div>
+	</div>
+</div>
