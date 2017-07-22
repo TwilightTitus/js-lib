@@ -14,17 +14,18 @@
 
 </head>
 <body jstl-data="modules.data.json" jstl-data-mode="remote" jstl-autorun>
-	<jstl jstl-data="module" jstl-data-mode="url-parameter" jstl-data-var="moduleId" jstl-data-default="'bundle'"></jstl>
+	<jstl jstl-data="module" jstl-data-mode="url-parameter" jstl-data-var="moduleId" jstl-data-default="'home'"></jstl>
 	<jstl jstl-data="page" jstl-data-mode="url-parameter" jstl-data-var="pageNumber" jstl-data-default="'0'"></jstl>
 	<jstl jstl-data="${parseInt(pageNumber)}" jstl-data-var="pageNumber"></jstl>
 	<jstl jstl-data="${modules[moduleId]}" jstl-data-var="module"></jstl>
 	<jstl jstl-data="modules/${moduleId}/module.data.json" jstl-data-mode="remote" jstl-data-var="moduleData"></jstl>
 
-	<!-- div>pagenumber: ${pageNumber}</div>
-	<div>moduleId: ${moduleId}</div>
-	<div>module: ${JSON.stringify(module)}</div>
-	<div>module: ${JSON.stringify(moduleData)}</div-->
-
+	<div style="display: none;">
+		<div>pagenumber: ${pageNumber}</div>
+		<div>moduleId: ${moduleId}</div>
+		<div>module: ${JSON.stringify(module)}</div>
+		<div>module: ${JSON.stringify(moduleData)}</div>
+	</div>
 	<!-- HEADER -->
 	<div id="header_wrap" class="outer">
 		<header class="inner">
