@@ -131,7 +131,9 @@ jstl{
 	display: none;	
 }
 .module-bundler.state-bundling .module-bundler-actions, .module-bundler.state-finished .module-bundler-actions,
-.module-bundler.state-bundling .module-selection, .module-bundler.state-finished .module-selection {
+/*.module-bundler.state-bundling .module-selection, .module-bundler.state-finished .module-selection,*/
+.module-bundler.state-no-selection .module-bundler-actions,
+.module-bundler.state-waiting .module-bundler-result, .module-bundler.state-bundling .module-bundler-result{
 	display: none;	
 }
 

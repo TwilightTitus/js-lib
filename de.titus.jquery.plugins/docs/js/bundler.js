@@ -10,11 +10,24 @@
 				return Bundler.prototype.doHandleDependencies.bind(this);
 			var element = $(aEvent.target);
 			if (element.is(":checked")) {
-				var dependencies = element.attr("data-module-dependencies");
-				var dependencies = dependencies.split(",");
-				for (var i = 0; i < dependencies.length; i++)
-					this.element.find("[data-module=" + dependencies[i].trim() + "]").prop("checked", true);
+				var dependencies = element.attr("data-module-dependencies") || "";
+
+				if (dependencies != "") {
+					var dependencies = dependencies.split(",");
+					for (var i = 0; i < dependencies.length; i++)
+						this.element.find("[data-module=" + dependencies[i].trim() + "]").prop("checked", true);
+				}
 			}
+		};
+
+		Bundler.prototype.doHandleDownloadButtons = function(aEvent) {
+			if (aEvent == undefined)
+				return Bundler.prototype.doHandleDownloadButtons.bind(this);
+
+			if (this.element.find("[data-module]:checked").length > 0)
+				this.element.removeClass("state-no-selection");
+			else
+				this.element.addClass("state-no-selection");
 		};
 
 		Bundler.prototype.doBundle = function(aEvent) {
@@ -28,8 +41,12 @@
 			var jsType = $(aEvent.currentTarget).attr("data-js-type");
 			var codes = [];
 			this.element.find("[data-module]:checked").each(function() {
-				codes.push($(this).attr("data-module-" + jsType));
+				var element = $(this);
+				codes.push(element.attr("data-module-" + jsType));
+				element.prop("disabled", true);
 			});
+
+			var filename = "de.titus.bundle" + (jsType == "js" ? ".js" : ".min.js");
 			var concat = function(aCodes, aBundleCode, aCallback, aResponse) {
 				console.log(aCodes);
 				if (aResponse) {
@@ -45,11 +62,16 @@
 					aCallback(aBundleCode);
 			};
 
-			concat(codes, "", Bundler.prototype.__generateDownloadLink.bind(this));
+			concat(codes, "", Bundler.prototype.__generateDownloadLink.bind(this, filename));
 		};
 
-		Bundler.prototype.__generateDownloadLink = function(aBundleCode) {
+		Bundler.prototype.__generateDownloadLink = function(aFilename, aBundleCode) {
 			console.log(aBundleCode);
+			var element = this.element.find(".module-bundler-result .download");
+			element.attr('href', 'data:application/javascript;charset=utf-8,' + encodeURIComponent(aBundleCode));
+			element.attr('download', aFilename);
+
+			this.element.removeClass("state-bundling").addClass("state-finished");
 		};
 
 		de.titus.core.jquery.Components.asComponent("de.titus.js.Bundler", de.titus.js.Bundler);

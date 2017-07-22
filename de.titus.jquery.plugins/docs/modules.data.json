@@ -1,14 +1,14 @@
 {
 	"modules": {
-		"bundle": {
-			"title": "Bundle Info",
-			"teaser":"Bundle of de.titus.jquery.plugins"
+		"home": {
+			"title": "Home",
+			"teaser":"Home de.titus.jquery.plugins"
 		},
 		"core": {
-			"title": "de.titus.core"
+			"title": "Core"
 		},
 		"logging": {
-			"title": "logging"
+			"title": "Logging"
 		},
 		"jstl": {
 			"title": "JSTL"

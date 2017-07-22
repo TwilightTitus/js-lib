@@ -17,9 +17,9 @@
 			</div>
 		</div>
 		<div class="hidden-xs hidden-sm col-md-3 col-lg-3">
-			<div class="module-bundler state-waiting">
+			<div class="module-bundler state-waiting state-no-selection">
 				<div>Modules</div>
-				<div class="module-selection" jstl-foreach="${moduleData.bundle.modules}" jstl-foreach-var="module" jstl-foreach-status="moduleStatus">
+				<div class="module-selection" jstl-foreach="${moduleData.bundle.modules}" jstl-foreach-var="module" jstl-foreach-status="moduleStatus" jstl-eventbind="" event-type="change" event-action="jQuery('.module-bundler').de_titus_js_Bundler().doHandleDownloadButtons()" event-prevent-default="">
 					<jstl jstl-data="modules/${moduleStatus.key}/module.data.json" jstl-data-mode="remote" jstl-data-var="moduleData"></jstl>
 					<div class="checkbox">
 						<label>
@@ -28,13 +28,13 @@
 						</label>
 					</div>
 				</div>
-				<div class="module-bundler-actions">
+				<div class="module-bundler-actions downloads">
 					<a class="label label-primary download" data-js-type="js" href="#" jstl-eventbind="" event-type="click" event-action="jQuery('.module-bundler').de_titus_js_Bundler().doBundle()" event-prevent-default="">
-						js
+						build .js
 						<span class="glyphicon glyphicon-download"></span>
 					</a>
 					<a class="label label-success download" data-js-type="minjs" href="#" jstl-eventbind="" event-type="click" event-action="jQuery('.module-bundler').de_titus_js_Bundler().doBundle()" event-prevent-default="">
-						min.js
+						build min.js
 						<span class="glyphicon glyphicon-download"></span>
 					</a>
 				</div>
@@ -45,6 +45,12 @@
 						<span class="dot dot_3"></span>
 						<span class="dot dot_4"></span>						
 					</div>
+				</div>
+				<div class="module-bundler-result">
+					<a class="label label-primary download" href="">
+						download bundle
+						<span class="glyphicon glyphicon-download"></span>
+					</a>
 				</div>
 			</div>
 		</div>
