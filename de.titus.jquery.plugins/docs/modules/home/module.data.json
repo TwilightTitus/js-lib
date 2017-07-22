@@ -7,7 +7,8 @@
 		"modules": {
 			"core":"",
 			"logging":"",
-			"jstl":""
+			"jstl":"",
+			"form":""
 		}
 	},
 	"title": "Bundle",

@@ -36,8 +36,6 @@
 
 			this.element.removeClass("state-waiting").addClass("state-bundling");
 
-			console.log(aEvent);
-
 			var jsType = $(aEvent.currentTarget).attr("data-js-type");
 			var codes = [];
 			this.element.find("[data-module]:checked").each(function() {
@@ -48,7 +46,6 @@
 
 			var filename = "de.titus.bundle" + (jsType == "js" ? ".js" : ".min.js");
 			var concat = function(aCodes, aBundleCode, aCallback, aResponse) {
-				console.log(aCodes);
 				if (aResponse) {
 					console.log(aResponse);
 					aBundleCode += aResponse;
@@ -66,9 +63,11 @@
 		};
 
 		Bundler.prototype.__generateDownloadLink = function(aFilename, aBundleCode) {
-			console.log(aBundleCode);
+			var file = new Blob([ aBundleCode ], {
+				type : "text/javascript"
+			});
 			var element = this.element.find(".module-bundler-result .download");
-			element.attr('href', 'data:application/javascript;charset=utf-8,' + encodeURIComponent(aBundleCode));
+			element.attr('href', URL.createObjectURL(file));
 			element.attr('download', aFilename);
 
 			this.element.removeClass("state-bundling").addClass("state-finished");

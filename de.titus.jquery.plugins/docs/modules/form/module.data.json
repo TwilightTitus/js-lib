@@ -3,10 +3,9 @@
 	"versions": {
 		"release" : "0.7.0-beta"
 	},
-	"module": {
-		"js-file":"",
-		"js-min-file":""
-	},
+	"dependencies" : "core, logging",
+	"js-file":"https://raw.githubusercontent.com/TwilightTitus/js-lib/master/de.titus.form/dist/0.7.0-beta/de.titus.form-0.7.0-beta.js",
+	"min-js-file":"https://raw.githubusercontent.com/TwilightTitus/js-lib/master/de.titus.form/dist/0.7.0-beta/de.titus.form-0.7.0-beta.min.js",
 	"pages": [
 		{
 		"tag":"summary",
