@@ -17,5 +17,11 @@
 			"title": "Reference",
 			"teaser": "List of all JSTL Features and how to use there."
 		}
-	]
+	],
+	"modules" : {
+		"typeahead" : {
+			"title": "JSTL Typeahead",
+			"teaser":"Simple and customisable Typahead implementation for inputs fields"
+		}
+	}
 }
