@@ -40,7 +40,7 @@ de.titus.core.Namespace.create("de.titus.core.SpecialFunctions", function() {
 		    } else
 			    try {
 				    var result = SpecialFunctions.doEval(aStatement, aContext);
-				    if (result == undefined)
+				    if (typeof result === "undefined")
 					    return aDefault;
 				    return result;
 			    } catch (e) {
