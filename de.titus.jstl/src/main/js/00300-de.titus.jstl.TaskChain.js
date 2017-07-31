@@ -103,7 +103,9 @@
 		};
 		TaskChain.prototype.__buildContext = function() {
 			this.context["$element"] = this.element;
+			this.context["__element__"] = this.element;
 			this.context["$root"] = this.processor.element;
+			this.context["__root__"] = this.processor.element;
 			return this.context;
 		};
 

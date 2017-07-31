@@ -9,6 +9,10 @@ de.titus.core.Namespace.create("de.titus.core.SpecialFunctions", function() {
 		    else {
 			    if (typeof aStatement !== "string")
 				    return aStatement;
+			    
+			    var statement = aStatement.trim();			    
+			    if(statement === "")
+			    	return undefined;
 
 			    try {
 				    var evalFunction = new Function("aContext", "with(this){return " + aStatement + ";}");
