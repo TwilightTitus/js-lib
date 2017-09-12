@@ -113,14 +113,16 @@
 			if (TaskChain.LOGGER.isDebugEnabled())
 				TaskChain.LOGGER.logDebug("finish()");
 
-			if (typeof this.callback === "function")
-				this.callback(this.element, this.context, this.processor, this);
-			else if (Array.isArray(this.callback))
-				for (var i = 0; i < this.callback.length; i++)
-					if (typeof this.callback[i] === "function")
-						this.callback[i](this.element, this.context, this.processor, this);
+			setTimeout((function() {
+				if (typeof this.callback === "function")
+					this.callback(this.element, this.context, this.processor, this);
+				else if (Array.isArray(this.callback))
+					for (var i = 0; i < this.callback.length; i++)
+						if (typeof this.callback[i] === "function")
+							this.callback[i](this.element, this.context, this.processor, this);
 
-			this.element.trigger(de.titus.jstl.Constants.EVENTS.onSuccess, [ this.context, this.processor ]);
+				this.element.trigger(de.titus.jstl.Constants.EVENTS.onSuccess, [ this.context, this.processor ]);
+			}).bind(this), 1);
 			return this;
 		};
 
