@@ -64,9 +64,5 @@
 		<div class="col-xs-12 col-sm-12 col-md-9 col-lg-9" jstl-include="templates/page.tpl.html"></div>
 		<nav class="col-md-3 col-lg-3" jstl-include="templates/sidenav.tpl.html"></nav>
 	</div>
-	<div>
-		<a href="index.html?module=${moduleId}&page=${pageNumber - 1}" jstl-if="${pageNumber > 0}">prev</a>
-		<span>${page.title}</span>
-		<a href="index.html?module=${moduleId}&page=${pageNumber + 1}" jstl-if="${moduleData.pages.length > (pageNumber + 1)}">next</a>
-	</div>
+	<jstl jstl-include="templates/site-pager.tpl.html"></jstl>
 </div>
