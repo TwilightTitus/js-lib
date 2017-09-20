@@ -1,8 +1,23 @@
-jstl{
+jstl {
 	visibility: hidden;
 	display: none;
 }
 
+.jstl-running {
+	visibility: hidden;
+	display: none;
+	transition-delay: 2s;
+	transition-property: all;
+	transition-timing-function: ease-in;
+	transition-duration: 4s;
+}
+
+.jstl-ready {
+	transition-delay: 2s;
+	transition-property: all;
+	transition-timing-function: ease-in;
+	transition-duration: 4s;
+}
 .page-content {
 	padding: 1rem;
 }
@@ -121,21 +136,19 @@ jstl{
 	border-bottom: 1px solid #111;
 }
 
-.jstl-running {
+.downloads .download {
+	margin-right: 1rem;
+}
+
+.module-bundler.state-waiting .loader-container, .module-bundler.state-finished .loader-container
+	{
 	display: none;
 }
 
-.downloads .download { margin-right: 1rem;}
-
-.module-bundler.state-waiting .loader-container, .module-bundler.state-finished .loader-container {
-	display: none;	
-}
 .module-bundler.state-bundling .module-bundler-actions, .module-bundler.state-finished .module-bundler-actions,
-/*.module-bundler.state-bundling .module-selection, .module-bundler.state-finished .module-selection,*/
-.module-bundler.state-no-selection .module-bundler-actions,
-.module-bundler.state-waiting .module-bundler-result, .module-bundler.state-bundling .module-bundler-result{
-	display: none;	
+	/*.module-bundler.state-bundling .module-selection, .module-bundler.state-finished .module-selection,*/
+	.module-bundler.state-no-selection .module-bundler-actions,
+	.module-bundler.state-waiting .module-bundler-result, .module-bundler.state-bundling .module-bundler-result
+	{
+	display: none;
 }
-
-
-
