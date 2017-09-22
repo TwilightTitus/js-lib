@@ -1067,7 +1067,9 @@
 
 			var formularElement = this.data.element;
 			this.data.pages = this.data.element.find("[data-form-page]").formular_Page();
-			if (!Array.isArray(this.data.pages))
+			if(typeof this.data.pages === 'undefined')
+				this.data.pages = [];
+			else if (!Array.isArray(this.data.pages))
 				this.data.pages = [ this.data.pages ];
 
 			this.data.pageHandles = this.__initPageHandles();
