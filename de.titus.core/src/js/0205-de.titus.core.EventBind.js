@@ -2,41 +2,34 @@
 	de.titus.core.Namespace.create("de.titus.core.EventBind", function() {
 		"use strict";
 		var EventBind = de.titus.core.EventBind = function(anElement, aContext) {
-			if (anElement.data(de.titus.core.EventBind.STATE.FINISHED) == undefined) {
-				var result = {
-				    preventDefault : (typeof anElement.attr("event-prevent-default") !== "undefined"),
-				    stopPropagation : (typeof anElement.attr("event-stop-propagation") !== "undefined")
-				};
-				result.eventType = anElement.attr("event-type");
-				if (result.eventType == undefined || result.eventType.trim().length == 0) {
-					anElement.data(de.titus.core.EventBind.STATE.FINISHED, de.titus.core.EventBind.FINISHEDSTATE.FAIL);
-					return anElement;
-				}
-
+			var result = {
+			    preventDefault : (typeof anElement.attr("event-prevent-default") !== "undefined"),
+			    stopPropagation : (typeof anElement.attr("event-stop-propagation") !== "undefined")
+			};
+			result.eventType = anElement.attr("event-type");
+			if (typeof result.eventType === 'undefined')
+				anElement.data(de.titus.core.EventBind.STATE.FINISHED, de.titus.core.EventBind.FINISHEDSTATE.FAIL);
+			else {
 				result.action = anElement.attr("event-action");
-				if (result.action == undefined || result.action.trim().length == 0) {
+				result.delegation = anElement.attr("event-delegation");
+
+				if (typeof (result.action || result.delegation) === 'undefined') {
 					anElement.data(de.titus.core.EventBind.STATE.FINISHED, de.titus.core.EventBind.FINISHEDSTATE.FAIL);
-					return anElement;
-				}
-				if (EventBind.FUNCTIONS[result.action]) {
-					result.defaultAction = true;
-					result.action = EventBind.FUNCTIONS[result.action];
+					return;
 				}
 
-				var data = undefined;
 				result.eventData = anElement.attr("event-data");
-				if (result.eventData != undefined && result.eventData.trim().length > 0) {
-					data = de.titus.core.EventBind.EXPRESSIONRESOLVER.resolveExpression(eventData, aContext, {});
-				} else if (aContext != undefined) {
-					data = $().extend({}, aContext);
-				} else {
-					data = {};
-				}
+				if (typeof result.eventData !== 'undefined' && result.eventData.length > 0)
+					result.eventData = de.titus.core.EventBind.EXPRESSIONRESOLVER.resolveExpression(eventData, aContext, {});
+				else if (typeof aContext !== 'undefined')
+					result.eventData = $().extend({}, aContext);
 
-				anElement.on(eventType, null, data, de.titus.core.EventBind.$$__execute__$$);
-				anElement.data("de.titus.core.EventBind", result);
+				if (typeof result.eventData !== 'undefined')
+					anElement.on(result.eventType, null, result.eventData, de.titus.core.EventBind.$$__execute__$$);
+				else
+					anElement.on(result.eventType, de.titus.core.EventBind.$$__execute__$$);
 				anElement.data(de.titus.core.EventBind.STATE.FINISHED, de.titus.core.EventBind.FINISHEDSTATE.READY);
-				return anElement;
+				return result;
 			}
 		};
 
@@ -48,12 +41,6 @@
 		    FAIL : "fail",
 		    READY : "ready"
 		};
-		EventBind.FUNCTIONS = {
-			"trigger-event" : function(anEvent) {
-				var element = $(anEvent.target);
-				element.trigger(element.attr("data-trigger-event"));
-			}
-		};
 
 		EventBind.$$__execute__$$ = function(anEvent) {
 			var element = $(this);
@@ -63,16 +50,19 @@
 			if (data.stopPropagation)
 				anEvent.stopPropagation();
 
-			var action = data.action;
-			if (!data.defaultAction)
+			if (typeof data.action !== 'undefined') {
+				var action = data.action;
 				action = EventBind.EXPRESSIONRESOLVER.resolveExpression(data.action, anEvent.data, undefined);
-
-			if (typeof action === "function") {
-				var args = Array.from(arguments);
-				if (args != undefined && args.length >= 1 && anEvent.data != undefined)
-					args.splice(1, 0, anEvent.data);
-				action.apply(action, args);
+				if (typeof action === "function") {
+					var args = Array.from(arguments);
+					if (args != undefined && args.length >= 1 && anEvent.data != undefined)
+						args.splice(1, 0, anEvent.data);
+					action.apply(action, args);
+				}
 			}
+
+			if (typeof data.delegation !== 'undefined')
+				element.trigger(data.delegation, typeof data.eventData !== 'undefined' ? [ data.eventData ] : undefined);
 
 			return !anEvent.isDefaultPrevented();
 		};
@@ -80,23 +70,24 @@
 
 		$(document).ready(function() {
 			var hasAutorun = $("[event-autorun]");
-			if (hasAutorun != undefined && hasAutorun.length != 0) {
-				$("[event-autorun]").de_titus_core_EventBind();
-				$("[event-autorun]").find("[event-type]").de_titus_core_EventBind();
+			if (typeof hasAutorun !== 'undefined') {
+				hasAutorun.de_titus_core_EventBind();
+				hasAutorun.find("[event-type]").de_titus_core_EventBind();
 
 				var observer = new MutationObserver(function(mutations) {
 					mutations.forEach(function(mutation) {
-						for (var i = 0; i < mutation.addedNodes.length; i++) {
-							if (mutation.addedNodes[i].nodetype != Node.TEXT_NODE) {
-								$(mutation.addedNodes[i]).find("[event-type]").de_titus_core_EventBind();
+						mutation.addedNodes.forEach(function(node) {
+							if (node.nodetype != Node.TEXT_NODE) {
+								$(node).de_titus_core_EventBind();
+								$(node).find("[event-type]").de_titus_core_EventBind();
 							}
-						}
+						});
 					});
 				});
 
 				// configuration of the observer:
 				var config = {
-				    attributes : false,
+				    attributes : true,
 				    childList : true,
 				    subtree : true,
 				    characterData : false
