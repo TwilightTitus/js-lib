@@ -1,1 +1,5 @@
 #test div{ padding-left: 10px;}
+jstl, jstl-running, jstl-inactive {
+	visibility: hidden;
+	display: none;
+}

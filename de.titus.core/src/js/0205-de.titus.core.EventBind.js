@@ -69,10 +69,10 @@
 		de.titus.core.jquery.Components.asComponent("de.titus.core.EventBind", de.titus.core.EventBind);
 
 		$(document).ready(function() {
-			var hasAutorun = $("[event-autorun]");
-			if (typeof hasAutorun !== 'undefined') {
-				hasAutorun.de_titus_core_EventBind();
-				hasAutorun.find("[event-type]").de_titus_core_EventBind();
+			var elements = $("[event-autorun]");
+			if (typeof elements !== 'undefined' && elements.length > 0) {
+				elements.de_titus_core_EventBind();
+				elements.find("[event-type]").de_titus_core_EventBind();
 
 				var observer = new MutationObserver(function(mutations) {
 					mutations.forEach(function(mutation) {

@@ -3,11 +3,13 @@
 	de.titus.core.Namespace.create("de.titus.core.ScreenObserver", function() {
 		var Observer = de.titus.core.ScreenObserver = {
 		    __timeoutId : undefined,
-		    __handler : [],
+		    __handler : {},
 		    addHandler : function(aHandler) {
 			    if (typeof aHandler.condition !== 'undefined' && aHandler.condition.length != 0) {
-				    Observer.__handler.push(aHandler);
+				    aHandler.id = de.titus.core.UUID("-");
+				    Observer.__handler[aHandler.id] = aHandler;
 				    Observer.__callHandler(aHandler, Observer.__screenData());
+				    return aHandler;
 			    }
 		    },
 		    __screenData : function() {
@@ -22,23 +24,28 @@
 		    __resizing : function() {
 			    Observer.__timeoutId = undefined;
 			    var screen = Observer.__screenData();
-			    Observer.__handler.forEach(function(aHandler, aIndex) {
-				    Observer.__callHandler(aHandler, screen, aIndex);
+			    Object.getOwnPropertyNames(Observer.__handler).forEach(function(aHandler) {
+				    Observer.__callHandler(aHandler, screen);
 			    });
 
 		    },
-		    __callHandler : function(aHandler, aScreen, aIndex) {
-			    setTimeout((function(aHandler, aScreen, aIndex, aResolver) {
+		    __callHandler : function(aHandler, aScreen) {
+			    setTimeout((function(aHandler, aScreen, aResolver) {
 				    var result = aResolver.resolveExpression(aHandler.condition, aScreen, false);
 				    if (typeof result !== 'boolean')
-					    return Observer.__handler.splice(aIndex, 1);
+					    return Observer.__handler[aHandler.id] == undefined;
 
 				    if (result) {
-					    aHandler.callback.call(aScreen);
+					    aHandler.active = true;
+					    aHandler.activate.call(aScreen);
 					    if (aHandler.once)
-						    Observer.__handler.splice(aIndex, 1);
+						    Observer.__handler[aHandler.id] == undefined;
+				    } else if (aHandler.active && typeof aHandler.deactivate === 'function') {
+					    aHandler.deactivate.call(aScreen);
+					    aHandler.active = false;
 				    }
-			    }).bind(null, aHandler, aScreen, aIndex, aResolver), 66);
+
+			    }).bind(null, aHandler, aScreen, aResolver), 66);
 		    },
 		    __handleResize : function() {
 			    if (Observer.__timeoutId)

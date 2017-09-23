@@ -1,0 +1,35 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>JSTL Samples</title>
+		<script src="../../libs/jquery-3.0.0.min.js" type="text/javascript"></script>
+		<script src="../../dist/3.4.0/de.titus.jquery.plugins.3.4.0.js" type="text/javascript"></script>
+		<link type="text/css" href="style.css" rel="stylesheet" />
+
+
+		<script type="text/javascript">
+			de.titus.logging.LoggerFactory.getInstance().setConfig([ {
+                "filter" : "",
+                "logLevel" : "ERROR",
+                "appenders" : [ "de.titus.logging.ConsolenAppender" ]
+            }, {
+                "filter" : "de.titus",
+                "logLevel" : "ERROR",
+                "appenders" : [ "de.titus.logging.ConsolenAppender" ]
+            } ]);
+		</script>
+</head>
+<body jstl-autorun>
+	<div jstl-screen-condition="width > 900">width > 900</div>
+	<div jstl-screen-condition="width > 700 && width <= 900">width > 700 && width &lt;= 900</div>
+	<div jstl-screen-condition="width > 500 && width <= 700">width > 500 && width &lt;= 700</div>
+	<div jstl-screen-condition="width <= 500">width &lt;= 500</div>
+
+	<div id="log">
+		<div>Logs</div>
+	</div>
+
+</body>
+</html>
