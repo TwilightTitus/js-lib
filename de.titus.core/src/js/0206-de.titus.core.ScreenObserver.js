@@ -24,8 +24,8 @@
 		    __resizing : function() {
 			    Observer.__timeoutId = undefined;
 			    var screen = Observer.__screenData();
-			    Object.getOwnPropertyNames(Observer.__handler).forEach(function(aHandler) {
-				    Observer.__callHandler(aHandler, screen);
+			    Object.getOwnPropertyNames(Observer.__handler).forEach(function(aHandlerId) {
+				    Observer.__callHandler(Observer.__handler[aHandlerId], screen);
 			    });
 
 		    },
@@ -38,7 +38,7 @@
 				    if (result) {
 					    aHandler.active = true;
 					    aHandler.activate.call(aScreen);
-					    if (aHandler.once)
+					    if (typeof aHandler.deactivate !== 'function')
 						    Observer.__handler[aHandler.id] == undefined;
 				    } else if (aHandler.active && typeof aHandler.deactivate === 'function') {
 					    aHandler.deactivate.call(aScreen);

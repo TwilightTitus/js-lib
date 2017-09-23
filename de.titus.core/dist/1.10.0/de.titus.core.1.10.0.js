@@ -967,13 +967,14 @@ de.titus.core.Namespace.create("de.titus.core.UUID", function() {
 		    __resizing : function() {
 			    Observer.__timeoutId = undefined;
 			    var screen = Observer.__screenData();
-			    Object.getOwnPropertyNames(Observer.__handler).forEach(function(aHandler) {
-				    Observer.__callHandler(aHandler, screen);
+			    Object.getOwnPropertyNames(Observer.__handler).forEach(function(aHandlerId) {
+				    Observer.__callHandler(Observer.__handler[aHandlerId], screen);
 			    });
 
 		    },
 		    __callHandler : function(aHandler, aScreen) {
 			    setTimeout((function(aHandler, aScreen, aResolver) {
+				    console.log("hier");
 				    var result = aResolver.resolveExpression(aHandler.condition, aScreen, false);
 				    if (typeof result !== 'boolean')
 					    return Observer.__handler[aHandler.id] == undefined;
@@ -981,7 +982,7 @@ de.titus.core.Namespace.create("de.titus.core.UUID", function() {
 				    if (result) {
 					    aHandler.active = true;
 					    aHandler.activate.call(aScreen);
-					    if (aHandler.once)
+					    if (typeof aHandler.deactivate !== 'function')
 						    Observer.__handler[aHandler.id] == undefined;
 				    } else if (aHandler.active && typeof aHandler.deactivate === 'function') {
 					    aHandler.deactivate.call(aScreen);
