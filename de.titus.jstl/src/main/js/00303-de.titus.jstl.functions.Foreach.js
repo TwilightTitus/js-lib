@@ -92,8 +92,9 @@
 		    __map : function(aMap, aTemplate, aVarname, aStatusName, aElement, aContext, aProcessor, aTaskChain) {
 			    var breakCondition = aElement.attr("jstl-foreach-break-condition");
 			    var executeChain = new de.titus.jstl.ExecuteChain(aTaskChain, 1);
-			    var i = 0;
-			    for ( var name in aMap) {
+			    var properties = Object.getOwnPropertyNames(aMap);			    
+			    for (var i = 0; i < properties.length; i++) {
+			    	var name = properties[i];
 				    var content = aTemplate.clone();
 				    var context = $.extend({}, aContext);
 				    context[aVarname] = aMap[name];
@@ -110,7 +111,6 @@
 				    else {
 					    executeChain.count++;
 					    Foreach.__computeContent(content, context, aElement, aProcessor, executeChain);
-					    i++;
 				    }
 			    }
 			    executeChain.finish();

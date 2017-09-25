@@ -95,15 +95,15 @@
 	</target>
 
 	<target name="copy-to-sample">
-		<delete file="${dir.dist.sample.jstl}/js/${ant.project.name}.js"/>
-		<delete file="${dir.dist.sample.jstl}/js/${ant.project.name}.min.js"/>
-		<copy file="${dir.build}/tmp/${ant.project.name}.${project.version}.js" todir="${dir.dist.sample.jstl}/js/${ant.project.name}.js"/>
-		<copy file="${dir.build}/tmp/${ant.project.name}.${project.version}.min.js" todir="${dir.dist.sample.jstl}/js/${ant.project.name}.min.js"/>
+		<delete file="${dir.sample.jstl}/js/${ant.project.name}.js"/>
+		<delete file="${dir.sample.jstl}/js/${ant.project.name}.min.js"/>
+		<copy file="${dir.build}/tmp/${ant.project.name}.${project.version}.js" tofile="${dir.sample.jstl}/js/${ant.project.name}.js"/>
+		<copy file="${dir.build}/tmp/${ant.project.name}.${project.version}.min.js" tofile="${dir.sample.jstl}/js/${ant.project.name}.min.js"/>
 
-		<delete file="${dir.dist.sample.logging}/js/${ant.project.name}.js"/>
-		<delete file="${dir.dist.sample.logging}/js/${ant.project.name}.min.js"/>
-		<copy file="${dir.build}/tmp/${ant.project.name}.${project.version}.js" todir="${dir.dist.sample.logging}/js/${ant.project.name}.js"/>
-		<copy file="${dir.build}/tmp/${ant.project.name}.${project.version}.min.js" todir="${dir.dist.sample.logging}/js/${ant.project.name}.min.js"/>
+		<delete file="${dir.sample.logging}/js/${ant.project.name}.js"/>
+		<delete file="${dir.sample.logging}/js/${ant.project.name}.min.js"/>
+		<copy file="${dir.build}/tmp/${ant.project.name}.${project.version}.js" tofile="${dir.sample.logging}/js/${ant.project.name}.js"/>
+		<copy file="${dir.build}/tmp/${ant.project.name}.${project.version}.min.js" tofile="${dir.sample.logging}/js/${ant.project.name}.min.js"/>
 	</target>
 
 
@@ -111,7 +111,7 @@
 		<delete dir="${dir.build}" />
 	</target>
 
-	<target name="all" depends="clean, init, build-jquery-plugin-file, concat-js-files, concat-min-js-files, copy-to-dist">
+	<target name="all" depends="clean, init, build-jquery-plugin-file, concat-js-files, concat-min-js-files, copy-to-dist, copy-to-sample">
 		<echo message="Build complete." />
 	</target>
 </project>

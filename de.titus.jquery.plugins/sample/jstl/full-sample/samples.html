@@ -10,7 +10,7 @@
 </head>
 <body>
 	<div id="test" jstl-load="load" jstl-success="success" jstl-fail="function(){alert('fail')}">
-<!--
+
 		<div>
 			foreach on remote data
 			<div jstl-data="jstl-remote.data.json" jstl-data-mode="remote" jstl-data-var="newData" jstl-foreach="${newData.list}" jstl-foreach-var="listItem" jstl-foreach-status="listStatus">
@@ -56,7 +56,7 @@
 				</div>
 			</div>
 		</div>
-		  -->
+		  
 <!-- 
 		<div>
 			Simple Text replacement
@@ -91,7 +91,7 @@
 			</div>
 		</div-->
 		
-<!-- 
+<
 		<div>
 			data tests
 			<div jstl-data='{"data": "direct Data"}'>${data}</div>
@@ -160,7 +160,7 @@
 				</div>
 			</div>
 		</div>
--->
+
 		<div>
 			foreach on data context / it's like run over all properties of an Object
 			<div jstl-data='jstl-remote.data.array.json' jstl-data-mode="remote" jstl-foreach="" jstl-foreach-var="listItem" jstl-foreach-status="listStatus">
@@ -172,7 +172,7 @@
 				</div>
 			</div>
 		</div>
-<!--
+
 		<div class="jstl-text-content-type">
 			<ul jstl-data="${contextExtention}">
 				<li>
@@ -189,7 +189,6 @@
 				</li>
 			</ul>
 		</div>
-		 -->
 	</div>
 
 	<div id="log">
@@ -262,10 +261,7 @@
 		            "name" : "item " + i,
 		            "show" : (i % 4 != 0)
 		        });
-	        }
-	        $("#test").on("jstl-on-load", function(event) {
-		        window.jstlStartTime = new Date();
-	        });
+	        }	        
 
 	        $("#test").on("jstl-on-ready", function(event) {
 		        window.jstlEndTime = new Date();
@@ -277,7 +273,7 @@
 		        //console.log(event);
 		        //event.stopPropagation();
 	        });
-
+	        window.jstlStartTime = new Date();
 	        $("#test").jstl({
 		        data : data
 	        });
