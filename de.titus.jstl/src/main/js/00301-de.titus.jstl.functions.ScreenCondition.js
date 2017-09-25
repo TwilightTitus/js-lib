@@ -1,6 +1,6 @@
 (function($, GlobalSettings) {
 	de.titus.core.Namespace.create("de.titus.jstl.functions.ScreenCondition", function() {
-		var ScreenCondition = de.titus.jstl.functions.ScreenCondition = {
+		let ScreenCondition = de.titus.jstl.functions.ScreenCondition = {
 		    LOGGER : de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.ScreenCondition"),
 
 		    TASK : function(aElement, aContext, aProcessor, aTaskChain) {

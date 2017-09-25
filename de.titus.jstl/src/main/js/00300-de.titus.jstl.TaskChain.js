@@ -1,7 +1,7 @@
 (function($, GlobalSettings) {
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.jstl.TaskChain", function() {
-		var TaskChain = function(aElement, aContext, aProcessor, isRoot, aCallback) {
+		let TaskChain = function(aElement, aContext, aProcessor, isRoot, aCallback) {
 			this.element = aElement;
 			this.context = aContext;
 			this.processor = aProcessor;
@@ -11,6 +11,7 @@
 			this.__preventChilds = false;
 			this.__taskchain = de.titus.jstl.TaskRegistry.taskchain;
 			this.__currentTask = undefined;
+			this.__buildContext();
 		};
 		TaskChain.LOGGER = de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.TaskChain");
 
@@ -26,7 +27,7 @@
 
 		TaskChain.prototype.preventChilds = function() {
 			if (TaskChain.LOGGER.isDebugEnabled())
-				TaskChain.LOGGER.logDebug(["preventChilds() ", this ]);
+				TaskChain.LOGGER.logDebug([ "preventChilds() ", this ]);
 			this.__preventChilds = true;
 			return this;
 		};
@@ -42,6 +43,8 @@
 				this.context = $.extend(this.context, aContext);
 			else
 				this.context = aContext;
+
+			this.__buildContext();
 
 			return this;
 		};
@@ -66,17 +69,17 @@
 			if (TaskChain.LOGGER.isDebugEnabled())
 				TaskChain.LOGGER.logDebug([ "nextTask( \"", aContext, "\", \"", doMerge, "\")" ]);
 
-			if (typeof aContext !== "object" && typeof aContext !== "undefined")
-				throw new Error();
-
-			if (aContext)
-				this.updateContext(aContext, doMerge);
+			if (typeof aContext !== "undefined")
+				if (typeof aContext !== "object")
+					throw new Error();
+				else
+					this.updateContext(aContext, doMerge);
 
 			if (this.__taskchain) {
-				var name = this.__taskchain.name;
-				var task = this.__taskchain.task;
-				var phase = this.__taskchain.phase;
-				var selector = this.__taskchain.selector;
+				let name = this.__taskchain.name;
+				let task = this.__taskchain.task;
+				let phase = this.__taskchain.phase;
+				let selector = this.__taskchain.selector;
 				this.__currentTask = this.__taskchain;
 				this.__taskchain = this.__taskchain.next;
 
@@ -84,7 +87,7 @@
 					TaskChain.LOGGER.logDebug([ "nextTask() -> next task: \"", name, "\", phase: \"", phase, "\", selector \"", selector, "\", element \"", this.element, "\" !" ]);
 				if (selector == undefined || this.element.is(selector))
 					try {
-						task(this.element, this.__buildContext(), this.processor, this);
+						task(this.element, this.context, this.processor, this);
 					} catch (e) {
 						TaskChain.LOGGER.logError(e);
 					}
@@ -109,20 +112,24 @@
 			return this.context;
 		};
 
-		TaskChain.prototype.finish = function() {
+		TaskChain.prototype.finish = function(sync) {
 			if (TaskChain.LOGGER.isDebugEnabled())
 				TaskChain.LOGGER.logDebug("finish()");
 
-			setTimeout((function() {
+			if (sync) {
 				if (typeof this.callback === "function")
 					this.callback(this.element, this.context, this.processor, this);
 				else if (Array.isArray(this.callback))
-					for (var i = 0; i < this.callback.length; i++)
+					for (let i = 0; i < this.callback.length; i++)
 						if (typeof this.callback[i] === "function")
 							this.callback[i](this.element, this.context, this.processor, this);
 
 				this.element.trigger(de.titus.jstl.Constants.EVENTS.onSuccess, [ this.context, this.processor ]);
-			}).bind(this), 1);
+			}
+
+			else
+				setTimeout(TaskChain.prototype.finish.bind(this, true), 0);
+
 			return this;
 		};
 

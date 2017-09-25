@@ -1,18 +1,18 @@
 (function($, GlobalSettings) {
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.jstl.functions.Data", function() {
-		var Data = de.titus.jstl.functions.Data = {
+		let Data = de.titus.jstl.functions.Data = {
 		    LOGGER : de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.Data"),
 
 		    TASK : function(aElement, aDataContext, aProcessor, aTaskChain) {
 			    if (Data.LOGGER.isDebugEnabled())
 				    Data.LOGGER.logDebug("TASK");
 
-			    var expression = aElement.attr("jstl-data");
-			    if (expression) {
-				    var varname = aElement.attr("jstl-data-var");
-				    var defaultValue = Data.__defaultvalue(aElement, expression, aDataContext, aProcessor)
-				    var mode = aElement.attr("jstl-data-mode") || "direct";
+			    let expression = aElement.attr("jstl-data");
+			    if (typeof expression !== 'undefined') {
+				    let varname = aElement.attr("jstl-data-var");
+				    let defaultValue = Data.__defaultvalue(aElement, expression, aDataContext, aProcessor)
+				    let mode = aElement.attr("jstl-data-mode") || "direct";
 				    Data.MODES[mode](expression, defaultValue, aElement, varname, aDataContext, aProcessor, aTaskChain);
 
 			    } else
@@ -20,10 +20,10 @@
 		    },
 
 		    __defaultvalue : function(aElement, anExpression, aDataContext, aProcessor) {
-			    var defaultExpression = aElement.attr("jstl-data-default");
-			    if (defaultExpression == undefined)
+			    let defaultExpression = aElement.attr("jstl-data-default");
+			    if (typeof defaultExpression === 'undefined')
 				    return anExpression;
-			    else if (defaultExpression.trim() == "")
+			    else if (defaultExpression.length == 0)
 				    return undefined;
 			    else {
 				    return aProcessor.resolver.resolveExpression(defaultExpression, aDataContext, anExpression);
@@ -31,13 +31,12 @@
 		    },
 
 		    __options : function(aElement, aDataContext, aProcessor) {
-			    var options = aElement.attr("jstl-data-options");
+			    let options = aElement.attr("jstl-data-options");
 			    if (options) {
 				    options = aProcessor.resolver.resolveText(options, aDataContext);
 				    options = aProcessor.resolver.resolveExpression(options, aDataContext);
-				    return options || {};
+				    return options;
 			    }
-			    return {};
 		    },
 		    __updateContext : function(aVarname, aData, aTaskChain) {
 			    if (aData) {
@@ -50,33 +49,36 @@
 
 		    MODES : {
 		        "direct" : function(anExpression, aDefault, aElement, aVarname, aDataContext, aProcessor, aTaskChain) {
-			        var data = aProcessor.resolver.resolveExpression(anExpression, aDataContext, aDefault);
+			        let data = aProcessor.resolver.resolveExpression(anExpression, aDataContext, aDefault);
 			        Data.__updateContext(aVarname, data, aTaskChain);
 			        aTaskChain.nextTask();
 		        },
 
 		        "remote" : function(anExpression, aDefault, aElement, aVarname, aDataContext, aProcessor, aTaskChain) {
-			        var url = aProcessor.resolver.resolveText(anExpression, aDataContext);
-			        var option = Data.__options(aElement, aDataContext, aProcessor);
-			        var datatype = (aElement.attr("jstl-data-datatype") || "json").toLowerCase();
+			        let url = aProcessor.resolver.resolveText(anExpression, aDataContext);
+			        let option = Data.__options(aElement, aDataContext, aProcessor);
+			        let datatype = (aElement.attr("jstl-data-datatype") || "json").toLowerCase();
 
-			        var ajaxSettings = {
+			        let ajaxSettings = $.extend({
 			            'url' : de.titus.core.Page.getInstance().buildUrl(url),
 			            'async' : true,
 			            'cache' : false,
 			            'dataType' : datatype
-			        };
-			        ajaxSettings = $.extend(ajaxSettings, option);
+			        }, option);
+			        ajaxSettings.success = Data.__remoteResponse.bind(null, aVarname, datatype, aTaskChain, ajaxSettings);
+			        ajaxSettings.error = Data.__remoteError.bind(null, aElement, aTaskChain, ajaxSettings);
 
-			        $.ajax(ajaxSettings).done(Data.__remoteResponse.bind({}, aVarname, datatype, aTaskChain, ajaxSettings)).fail(Data.__remoteError.bind({}, aElement, aTaskChain, ajaxSettings));
+			        $.ajax(ajaxSettings);
 		        },
 
 		        "url-parameter" : function(anExpression, aDefault, aElement, aVarname, aDataContext, aProcessor, aTaskChain) {
-			        var parameterName = aProcessor.resolver.resolveText(anExpression, aDataContext, anExpression);
-			        var data = de.titus.core.Page.getInstance().getUrl().getParameter(parameterName);
-			        if (data == undefined && aDefault != undefined)
-				        data = aDefault;
-			        Data.__updateContext(aVarname, data, aTaskChain);
+		        	let parameterName = aProcessor.resolver.resolveText(anExpression, aDataContext, anExpression);
+		        	let data = de.titus.core.Page.getInstance().getUrl().getParameter(parameterName);
+			        if (typeof data !== 'undefined')
+			        	 Data.__updateContext(aVarname, data, aTaskChain);
+			        else if(typeof aDefault !== 'undefined')
+			        	 Data.__updateContext(aVarname, aDefault, aTaskChain);
+			       
 			        aTaskChain.nextTask();
 		        }
 		    },
@@ -90,8 +92,8 @@
 		    __remoteResponse : function(aVarname, aDatatype, aTaskChain, aRequest, aData, aState, aResponse) {
 			    if (Data.LOGGER.isDebugEnabled())
 				    Data.LOGGER.logDebug([ "add remote data \"", aData, "\ as var \"", aVarname, "\" as datatype \"", aDatatype, "\" -> (request: \"", aRequest, "\", response: \"", aResponse, "\")" ]);
-			    var data = Data.CONTENTYPE[aDatatype](aData);
-			    Data.__updateContext(aVarname, data, aTaskChain);
+			  
+			    Data.__updateContext(aVarname, Data.CONTENTYPE[aDatatype](aData), aTaskChain);
 			    aTaskChain.nextTask();
 		    },
 

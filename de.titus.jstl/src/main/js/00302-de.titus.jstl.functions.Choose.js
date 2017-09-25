@@ -1,15 +1,15 @@
 (function($) {
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.jstl.functions.Choose", function() {
-		var Choose = de.titus.jstl.functions.Choose = {
+		let Choose = de.titus.jstl.functions.Choose = {
 		    LOGGER : de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.Choose"),
 		    
 		    TASK : function(aElement, aDataContext, aProcessor, aTaskChain) {
 			    if (Choose.LOGGER.isDebugEnabled())
 				    Choose.LOGGER.logDebug("execute run(" + aElement + ", " + aDataContext + ", " + aProcessor + ")");
 			    
-			    var expression = aElement.attr("jstl-choose");
-			    if (expression != undefined){
+			    let expression = aElement.attr("jstl-choose");
+			    if (typeof expression !== 'undefined'){
 			    	Choose.__compute(aElement, aDataContext, aProcessor, aProcessor.resolver);
 			    	aTaskChain.preventChilds();
 			    }
@@ -21,9 +21,9 @@
 			    if (Choose.LOGGER.isDebugEnabled())
 				    Choose.LOGGER.logDebug("execute processChilds(" + aChooseElement + ", " + aDataContext + ", " + aProcessor + ", " + aExpressionResolver + ")");
 			    
-			    var resolved = false;
+			    let resolved = false;
 			    aChooseElement.children().each(function() {
-				    var child = $(this);
+				    let child = $(this);
 				    if (!resolved && Choose.__computeChild(aChooseElement, child, aDataContext, aProcessor, aExpressionResolver)) {
 					    if (Choose.LOGGER.isTraceEnabled())
 						    Choose.LOGGER.logTrace("compute child: " + child);
@@ -53,8 +53,8 @@
 			    if (Choose.LOGGER.isDebugEnabled())
 				    Choose.LOGGER.logDebug("execute processWhenElement(" + aChooseElement + ", " + aElement + ", " + aDataContext + ", " + aProcessor + ", " + aExpressionResolver + ")");
 			    
-			    var expression = aElement.attr("jstl-when");
-			    if (expression != undefined)
+			    let expression = aElement.attr("jstl-when");
+			    if (typeof expression !== 'undefined')
 				    return aExpressionResolver.resolveExpression(expression, aDataContext, false);
 			    return false;
 		    },
@@ -63,7 +63,7 @@
 			    if (Choose.LOGGER.isDebugEnabled())
 				    Choose.LOGGER.logDebug("execute processOtherwiseElement(" + aChooseElement + ", " + aElement + ", " + aDataContext + ", " + aProcessor + ", " + aExpressionResolver + ")");
 			    
-			    if (aElement.attr("jstl-otherwise") != undefined)
+			    if (typeof aElement.attr("jstl-otherwise") !== 'undefined')
 				    return true;
 			    return false;
 		    }

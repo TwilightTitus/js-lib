@@ -2,15 +2,15 @@
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.jstl.functions.Include", function() {
 
-		var Include = de.titus.jstl.functions.Include = {
+		let Include = de.titus.jstl.functions.Include = {
 		    LOGGER : de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.Include"),
 		    CACHE : {},
 		    TASK : function(aElement, aContext, aProcessor, aTaskChain) {
 			    if (Include.LOGGER.isDebugEnabled())
 				    Include.LOGGER.logDebug("execute run(" + aElement + ", " + aContext + ", " + aProcessor + ")");
 
-			    var expression = aElement.attr("jstl-include");
-			    if (expression)
+			    let expression = aElement.attr("jstl-include");
+			    if (typeof expression != undefined)
 				    Include.__compute(expression, aElement, aContext, aProcessor, aTaskChain);
 			    else
 				    aTaskChain.nextTask();
@@ -21,17 +21,19 @@
 		    },
 
 		    __executeCacheCallback : function(aUrl, aTemplate) {
-			    Include.CACHE[aUrl].template = $("<jstl/>").append(aTemplate);
-			    Include.CACHE[aUrl].onload = false;
-			    var cache = Include.CACHE[aUrl];
-			    for (var i = 0; i < cache.callback.length; i++)
+			    Include.CACHE[aUrl] = {
+			        "template" : $("<jstl/>").append(aTemplate),
+			        "onload" : false
+			    };
+			    let cache = Include.CACHE[aUrl];
+			    for (let i = 0; i < cache.callback.length; i++)
 				    cache.callback[i](cache.template);
 		    },
 
 		    __compute : function(anIncludeExpression, aElement, aContext, aProcessor, aTaskChain) {
-			    var url = aProcessor.resolver.resolveText(anIncludeExpression, aContext);
-			    var disableCaching = url.indexOf("?") >= 0 || aElement.attr("jstl-include-cache-disabled") != undefined;
-			    var cache = undefined;
+			    let url = aProcessor.resolver.resolveText(anIncludeExpression, aContext);
+			    let disableCaching = url.indexOf("?") >= 0 || typeof aElement.attr("jstl-include-cache-disabled") !== 'undefined';
+			    let cache = undefined;
 			    if (!disableCaching)
 				    cache = Include.CACHE[url];
 
@@ -45,22 +47,23 @@
 				        onload : true,
 				        callback : [ Include.__cacheCallback.bind({}, aElement, aProcessor, aContext, aTaskChain) ]
 				    };
-				    var options = Include.__options(aElement, aContext, aProcessor);
-				    var ajaxSettings = {
+				    ajaxSettings = $.extend({
 				        'url' : Include.__buildUrl(url),
 				        'async' : true,
-				        'cache' : aElement.attr("jstl-include-ajax-cache-disabled") == undefined,
+				        'cache' : (typeof aElement.attr("jstl-include-ajax-cache-disabled") === 'undefined'),
 				        "dataType" : "html"
-				    };
-				    ajaxSettings = $.extend(true, ajaxSettings, options);
+				    }, Include.__options(aElement, aContext, aProcessor));
 
-				    $.ajax(ajaxSettings).done(Include.__executeCacheCallback.bind({}, ajaxSettings.url)).fail(Include.__remoteError.bind({}, aElement, aTaskChain, ajaxSettings));
+				    ajaxSettings.success = Include.__executeCacheCallback.bind(null, ajaxSettings.url);
+				    ajaxSettings.error = Include.__remoteError.bind(null, aElement, aTaskChain, ajaxSettings);
+				    
+				    $.ajax(ajaxSettings);
 			    }
 		    },
 		    URLPATTERN : new RegExp("^((https?://)|/).*", "i"),
 
 		    __buildUrl : function(aUrl) {
-			    var url = aUrl;
+			    let url = aUrl;
 			    if (!Include.URLPATTERN.test(aUrl))
 				    url = GlobalSettings.DEFAULT_INCLUDE_BASEPATH + aUrl;
 			    url = de.titus.core.Page.getInstance().buildUrl(url);
@@ -71,18 +74,16 @@
 		    },
 
 		    __options : function(aElement, aContext, aProcessor) {
-			    var options = aElement.attr("jstl-include-options");
+			    let options = aElement.attr("jstl-include-options");
 			    if (options) {
 				    options = aProcessor.resolver.resolveText(options, aContext);
 				    options = aProcessor.resolver.resolveExpression(options, aContext);
-				    return options || {};
+				    return options;
 			    }
-
-			    return {};
 		    },
 
 		    __mode : function(aElement, aContext, aProcessor) {
-			    var mode = aElement.attr("jstl-include-mode");
+			    let mode = aElement.attr("jstl-include-mode");
 			    if (mode == undefined)
 				    return "replace";
 
@@ -96,8 +97,8 @@
 		    __include : function(aElement, aTemplate, aProcessor, aContext, aTaskChain) {
 			    if (Include.LOGGER.isDebugEnabled())
 				    Include.LOGGER.logDebug("execute __include()");
-			    var content = aTemplate.clone();
-			    var includeMode = Include.__mode(aElement, aContext, aProcessor);
+			    let content = aTemplate.clone();
+			    let includeMode = Include.__mode(aElement, aContext, aProcessor);
 
 			    if (includeMode == "replace") {
 				    aElement.empty();

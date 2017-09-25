@@ -1,6 +1,6 @@
 (function($, GlobalSettings) {
 	de.titus.core.Namespace.create("de.titus.jstl.functions.Preprocessor", function() {
-		var Preprocessor = de.titus.jstl.functions.Preprocessor = {
+		let Preprocessor = de.titus.jstl.functions.Preprocessor = {
 		    LOGGER : de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.Preprocessor"),
 
 		    STATICEVENTHANDLER : function(aExpression, aEvent, aContext, aProcessor) {
@@ -19,22 +19,30 @@
 				    return aTaskChain.preventChilds().finish();
 
 			    if (!aTaskChain.root) {
-				    var ignore = aElement.attr("jstl-ignore");
-				    if (ignore && ignore != "")
-					    ignore = aProcessor.resolver.resolveExpression(ignore, aContext, false);
-				    if (ignore == "" || ignore == true || ignore == "true")
-					    return aTaskChain.preventChilds().finish();
+				    let ignore = aElement.attr("jstl-ignore");
+				    if (typeof ignore !== 'undefined') {
+					    if (ignore.length > 0)
+						    ignore = aProcessor.resolver.resolveExpression(ignore, aContext, false);
+					    else
+					    	ignore = true;
+					    if (ignore)
+						    return aTaskChain.preventChilds().finish();
+				    }
 
-				    var async = aElement.attr("jstl-async");
-				    if (async && async != "")
-					    async = aProcessor.resolver.resolveExpression(async, dataContext, false);
-				    if (async == "" || async == true || async == "true") {
-					    aProcessor.onReady((function(aContext) {
-						    this.jstlAsync({
-							    data : aContext
-						    });
-					    }).bind(aElement, $.extend({}, aContext)));
-					    return aTaskChain.preventChilds().finish();
+				    let async = aElement.attr("jstl-async");
+				    if (typeof async !== 'undefined') {
+					    if (async.length > 0)
+						    async = aProcessor.resolver.resolveExpression(async, dataContext, false);
+					    else
+						    async = true;
+					    if (async) {
+						    aProcessor.onReady((function(aContext) {
+							    this.jstlAsync({
+								    data : aContext
+							    });
+						    }).bind(aElement, $.extend({}, aContext)));
+						    return aTaskChain.preventChilds().finish();
+					    }
 				    }
 
 			    }
