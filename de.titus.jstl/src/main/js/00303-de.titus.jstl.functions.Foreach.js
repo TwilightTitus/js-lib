@@ -2,13 +2,13 @@
 	"use strict";
 	de.titus.core.Namespace.create("de.titus.jstl.functions.Foreach", function() {
 		var Foreach = de.titus.jstl.functions.Foreach = {
-		    
+
 		    LOGGER : de.titus.logging.LoggerFactory.getInstance().newLogger("de.titus.jstl.functions.Foreach"),
-		    
+
 		    TASK : function(aElement, aContext, aProcessor, aTaskChain) {
 			    if (Foreach.LOGGER.isDebugEnabled())
 				    Foreach.LOGGER.logDebug("execute run(" + aElement + ", " + aContext + ", " + aProcessor + ")");
-			    
+
 			    var expression = aElement.attr("jstl-foreach");
 			    if (expression != undefined) {
 				    aTaskChain.preventChilds();
@@ -16,36 +16,40 @@
 			    } else
 				    aTaskChain.nextTask();
 		    },
-		    
+
 		    __compute : function(aExpression, aElement, aContext, aProcessor, anExpressionResolver, aTaskChain) {
 			    if (Foreach.LOGGER.isDebugEnabled())
 				    Foreach.LOGGER.logDebug("execute __compute(" + aElement + ", " + aContext + ", " + aProcessor + ", " + anExpressionResolver + ")");
-			    
+
 			    var tempalte = Foreach.__template(aElement);
 			    if (tempalte == undefined)
 				    return;
-			    
+
 			    aElement.empty();
-			    
+
 			    var varName = aElement.attr("jstl-foreach-var") || "itemVar";
-			    var statusName = aElement.attr("jstl-foreach-status") || "statusVar";			    
-			    var list = anExpressionResolver.resolveExpression(aExpression, aContext, undefined);
-			    
-			    if (aExpression == "")
+			    var statusName = aElement.attr("jstl-foreach-status") || "statusVar";
+			    if (aExpression == "" && typeof aElement.attr("jstl-foreach-count") !== "undefined")
 				    Foreach.__count(tempalte, statusName, aElement, aContext, aProcessor, aTaskChain);
-			    else if (Array.isArray(list))
-				    Foreach.__list(list, tempalte, varName, statusName, aElement, aContext, aProcessor, aTaskChain);
-			    else if (typeof list === "object")
-				    Foreach.__map(list, tempalte, varName, statusName, aElement, aContext, aProcessor, aTaskChain);
-			    else
-				aTaskChain.nextTask();
+			    else {
+				    var list = anExpressionResolver.resolveExpression(aExpression, aContext, undefined);
+				    if (Array.isArray(list))
+					    Foreach.__list(list, tempalte, varName, statusName, aElement, aContext, aProcessor, aTaskChain);
+				    else if (typeof list === "object")
+					    Foreach.__map(list, tempalte, varName, statusName, aElement, aContext, aProcessor, aTaskChain);
+				    else if (typeof list === "undefined")
+					    Foreach.__map(aContext, tempalte, varName, statusName, aElement, aContext, aProcessor, aTaskChain);
+				    else
+					    aTaskChain.nextTask();
+			    }
+
 		    },
 		    __count : function(aTemplate, aStatusName, aElement, aContext, aProcessor, aTaskChain) {
 			    var startIndex = aProcessor.resolver.resolveExpression(aElement.attr("jstl-foreach-start-index"), aContext, 0) || 0;
 			    var count = aProcessor.resolver.resolveExpression(aElement.attr("jstl-foreach-count"));
 			    var step = aProcessor.resolver.resolveExpression(aElement.attr("jstl-foreach-step") || 1);
 			    var executeChain = new de.titus.jstl.ExecuteChain(aTaskChain);
-			    
+
 			    for (var i = startIndex; i < count; i += step) {
 				    var template = aTemplate.clone();
 				    var context = $.extend({}, aContext);
@@ -55,15 +59,15 @@
 				        "context" : aContext
 				    };
 				    executeChain.count++;
-				    Foreach.__computeContent(template, context, aElement, aProcessor, executeChain);				    
+				    Foreach.__computeContent(template, context, aElement, aProcessor, executeChain);
 			    }
 		    },
-		    
+
 		    __list : function(aListData, aTemplate, aVarname, aStatusName, aElement, aContext, aProcessor, aTaskChain) {
 			    var startIndex = aProcessor.resolver.resolveExpression(aElement.attr("jstl-foreach-start-index"), aContext, 0) || 0;
 			    var breakCondition = aElement.attr("jstl-foreach-break-condition");
 			    var executeChain = new de.titus.jstl.ExecuteChain(aTaskChain, 1);
-			    
+
 			    for (var i = startIndex; i < aListData.length; i++) {
 				    var template = aTemplate.clone();
 				    var context = $.extend({}, aContext);
@@ -84,7 +88,7 @@
 			    }
 			    executeChain.finish();
 		    },
-		    
+
 		    __map : function(aMap, aTemplate, aVarname, aStatusName, aElement, aContext, aProcessor, aTaskChain) {
 			    var breakCondition = aElement.attr("jstl-foreach-break-condition");
 			    var executeChain = new de.titus.jstl.ExecuteChain(aTaskChain, 1);
@@ -100,7 +104,7 @@
 				        "data" : aMap,
 				        "context" : aContext
 				    };
-				    
+
 				    if (breakCondition && Foreach.__break(context, breakCondition, aElement, aProcessor))
 					    return executeChain.finish();
 				    else {
@@ -111,22 +115,22 @@
 			    }
 			    executeChain.finish();
 		    },
-		    
+
 		    __break : function(aContext, aBreakCondition, aElement, aProcessor) {
 			    var expression = aProcessor.resolver.resolveExpression(aBreakCondition, aContext, false);
 			    if (typeof expression === "function")
 				    expression = expression(aElement, aContext, aProcessor);
-			    
+
 			    return expression == true || expression == "true";
 		    },
-		    
+
 		    __computeContent : function(aContent, aContext, aElement, aProcessor, aExecuteChain) {
 			    aContent.appendTo(aElement);
 			    aProcessor.compute(aContent, aContext, (function(aElement, aContent, aExecuteChain) {
 				    aExecuteChain.finish();
 			    }).bind({}, aElement, aContent, aExecuteChain));
 		    },
-		    
+
 		    __template : function(aElement) {
 			    var template = aElement.data("de.titus.jstl.functions.Foreach.Template");
 			    if (template == undefined) {
@@ -136,7 +140,7 @@
 			    return template;
 		    }
 		};
-		
+
 		de.titus.jstl.TaskRegistry.append("foreach", de.titus.jstl.Constants.PHASE.MANIPULATION, "[jstl-foreach]", de.titus.jstl.functions.Foreach.TASK);
 	});
 })($, de.titus.jstl.GlobalSettings);

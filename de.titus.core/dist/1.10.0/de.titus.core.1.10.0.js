@@ -974,7 +974,6 @@ de.titus.core.Namespace.create("de.titus.core.UUID", function() {
 		    },
 		    __callHandler : function(aHandler, aScreen) {
 			    setTimeout((function(aHandler, aScreen, aResolver) {
-				    console.log("hier");
 				    var result = aResolver.resolveExpression(aHandler.condition, aScreen, false);
 				    if (typeof result !== 'boolean')
 					    return Observer.__handler[aHandler.id] == undefined;

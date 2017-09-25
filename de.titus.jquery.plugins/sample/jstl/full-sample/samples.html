@@ -10,6 +10,7 @@
 </head>
 <body>
 	<div id="test" jstl-load="load" jstl-success="success" jstl-fail="function(){alert('fail')}">
+<!--
 		<div>
 			foreach on remote data
 			<div jstl-data="jstl-remote.data.json" jstl-data-mode="remote" jstl-data-var="newData" jstl-foreach="${newData.list}" jstl-foreach-var="listItem" jstl-foreach-status="listStatus">
@@ -44,7 +45,6 @@
 				</div>
 			</div>
 		</div>
-
 		<div>
 			foreach on data context / it's like run over all properties of an Object
 			<div jstl-data='jstl-remote.data.json' jstl-data-mode="remote" jstl-foreach="${list}" jstl-foreach-var="listItem" jstl-foreach-status="listStatus">
@@ -56,14 +56,14 @@
 				</div>
 			</div>
 		</div>
-
-
+		  -->
+<!-- 
 		<div>
 			Simple Text replacement
 			<div>${test}</div>
 			<div>${"test " + test + "!"}</div>
 			<div>${testFunction}</div>
-		</div>
+		</div>-->
 		<!-- div jstl-if="${boolean}">boolean test</div>
 		<div></div>
 		<div>
@@ -90,6 +90,8 @@
 				<div>Parameterisierter Include mit den Options</div>
 			</div>
 		</div-->
+		
+<!-- 
 		<div>
 			data tests
 			<div jstl-data='{"data": "direct Data"}'>${data}</div>
@@ -97,6 +99,7 @@
 			<div jstl-data="jstl-remote.data.json" jstl-data-mode="remote" jstl-data-options='{"test": "test"}'>${remoteData}</div>
 			<div jstl-data="jstl-remote.data.json" jstl-data-mode="remote" jstl-data-var="remoteData">${remoteData.remoteData} with new Varname</div>
 		</div>
+
 
 		<div>
 			Choose test
@@ -125,6 +128,7 @@
 				<br />
 			</div>
 		</div>
+
 		<div>
 			foreach on remote data
 			<div jstl-data="jstl-remote.data.json" jstl-data-mode="remote" jstl-data-var="newData" jstl-foreach="${newData.list}" jstl-foreach-var="listItem" jstl-foreach-status="listStatus">
@@ -134,7 +138,7 @@
 				<span>name: ${jstlTemplate}</span>
 				<br />
 			</div>
-		</div>
+		</div> 
 		<div>
 			foreach on remote data with start index and break condition
 			<div jstl-data="jstl-remote.data.json" jstl-data-mode="remote" jstl-foreach="${list}" jstl-foreach-var="listItem" jstl-foreach-status="listStatus" jstl-foreach-start-index="2" jstl-foreach-break-condition="${listStatus.index == 5}">
@@ -156,7 +160,7 @@
 				</div>
 			</div>
 		</div>
-
+-->
 		<div>
 			foreach on data context / it's like run over all properties of an Object
 			<div jstl-data='jstl-remote.data.array.json' jstl-data-mode="remote" jstl-foreach="" jstl-foreach-var="listItem" jstl-foreach-status="listStatus">
@@ -168,7 +172,7 @@
 				</div>
 			</div>
 		</div>
-
+<!--
 		<div class="jstl-text-content-type">
 			<ul jstl-data="${contextExtention}">
 				<li>
@@ -185,6 +189,7 @@
 				</li>
 			</ul>
 		</div>
+		 -->
 	</div>
 
 	<div id="log">
@@ -203,6 +208,10 @@
             "appenders" : [ "de.titus.logging.ConsolenAppender" ]
         }, {
             "filter" : "de.titus",
+            "logLevel" : "ERROR",
+            "appenders" : [ "de.titus.logging.ConsolenAppender" ]
+        } , {
+            "filter" : "de.titus.jstl.TaskChain",
             "logLevel" : "ERROR",
             "appenders" : [ "de.titus.logging.ConsolenAppender" ]
         } ]);

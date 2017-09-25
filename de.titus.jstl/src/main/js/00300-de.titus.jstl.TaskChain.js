@@ -26,7 +26,7 @@
 
 		TaskChain.prototype.preventChilds = function() {
 			if (TaskChain.LOGGER.isDebugEnabled())
-				TaskChain.LOGGER.logDebug("preventChilds()");
+				TaskChain.LOGGER.logDebug(["preventChilds() ", this ]);
 			this.__preventChilds = true;
 			return this;
 		};

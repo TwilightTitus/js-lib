@@ -92,7 +92,18 @@
 		<copy todir="${dir.dist}">
 			<fileset dir="${dir.build}/tmp" includes="*.js" />
 		</copy>
+	</target>
 
+	<target name="copy-to-sample">
+		<delete file="${dir.dist.sample.jstl}/js/${ant.project.name}.js"/>
+		<delete file="${dir.dist.sample.jstl}/js/${ant.project.name}.min.js"/>
+		<copy file="${dir.build}/tmp/${ant.project.name}.${project.version}.js" todir="${dir.dist.sample.jstl}/js/${ant.project.name}.js"/>
+		<copy file="${dir.build}/tmp/${ant.project.name}.${project.version}.min.js" todir="${dir.dist.sample.jstl}/js/${ant.project.name}.min.js"/>
+
+		<delete file="${dir.dist.sample.logging}/js/${ant.project.name}.js"/>
+		<delete file="${dir.dist.sample.logging}/js/${ant.project.name}.min.js"/>
+		<copy file="${dir.build}/tmp/${ant.project.name}.${project.version}.js" todir="${dir.dist.sample.logging}/js/${ant.project.name}.js"/>
+		<copy file="${dir.build}/tmp/${ant.project.name}.${project.version}.min.js" todir="${dir.dist.sample.logging}/js/${ant.project.name}.min.js"/>
 	</target>
 
 
