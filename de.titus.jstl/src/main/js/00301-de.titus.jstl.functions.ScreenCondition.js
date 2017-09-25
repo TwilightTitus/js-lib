@@ -40,8 +40,7 @@
 				    aTaskChain.finish();
 			    } else
 				    aTaskChain.nextTask();
-		    },
-
+		    }
 		};
 
 		de.titus.jstl.TaskRegistry.append("screenCondition", de.titus.jstl.Constants.PHASE.INIT, "[jstl-screen-condition]", de.titus.jstl.functions.ScreenCondition.TASK);

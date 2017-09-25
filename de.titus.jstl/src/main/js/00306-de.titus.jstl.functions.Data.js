@@ -11,7 +11,7 @@
 			    let expression = aElement.attr("jstl-data");
 			    if (typeof expression !== 'undefined') {
 				    let varname = aElement.attr("jstl-data-var");
-				    let defaultValue = Data.__defaultvalue(aElement, expression, aDataContext, aProcessor)
+				    let defaultValue = Data.__defaultvalue(aElement, expression, aDataContext, aProcessor);
 				    let mode = aElement.attr("jstl-data-mode") || "direct";
 				    Data.MODES[mode](expression, defaultValue, aElement, varname, aDataContext, aProcessor, aTaskChain);
 
@@ -25,9 +25,8 @@
 				    return anExpression;
 			    else if (defaultExpression.length == 0)
 				    return undefined;
-			    else {
+			    else
 				    return aProcessor.resolver.resolveExpression(defaultExpression, aDataContext, anExpression);
-			    }
 		    },
 
 		    __options : function(aElement, aDataContext, aProcessor) {
@@ -72,27 +71,27 @@
 		        },
 
 		        "url-parameter" : function(anExpression, aDefault, aElement, aVarname, aDataContext, aProcessor, aTaskChain) {
-		        	let parameterName = aProcessor.resolver.resolveText(anExpression, aDataContext, anExpression);
-		        	let data = de.titus.core.Page.getInstance().getUrl().getParameter(parameterName);
+			        let parameterName = aProcessor.resolver.resolveText(anExpression, aDataContext, anExpression);
+			        let data = de.titus.core.Page.getInstance().getUrl().getParameter(parameterName);
 			        if (typeof data !== 'undefined')
-			        	 Data.__updateContext(aVarname, data, aTaskChain);
-			        else if(typeof aDefault !== 'undefined')
-			        	 Data.__updateContext(aVarname, aDefault, aTaskChain);
-			       
+				        Data.__updateContext(aVarname, data, aTaskChain);
+			        else if (typeof aDefault !== 'undefined')
+				        Data.__updateContext(aVarname, aDefault, aTaskChain);
+
 			        aTaskChain.nextTask();
 		        }
 		    },
 		    CONTENTYPE : {
 		        "xml" : de.titus.core.Converter.xmlToJson,
 		        "json" : function(aData) {
-			        return aData
+			        return aData;
 		        }
 		    },
 
 		    __remoteResponse : function(aVarname, aDatatype, aTaskChain, aRequest, aData, aState, aResponse) {
 			    if (Data.LOGGER.isDebugEnabled())
 				    Data.LOGGER.logDebug([ "add remote data \"", aData, "\ as var \"", aVarname, "\" as datatype \"", aDatatype, "\" -> (request: \"", aRequest, "\", response: \"", aResponse, "\")" ]);
-			  
+
 			    Data.__updateContext(aVarname, Data.CONTENTYPE[aDatatype](aData), aTaskChain);
 			    aTaskChain.nextTask();
 		    },

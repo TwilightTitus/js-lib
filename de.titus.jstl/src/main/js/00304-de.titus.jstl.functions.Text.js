@@ -13,7 +13,7 @@
 				    // IE BUG
 				    if (!de.titus.core.Page.getInstance().detectBrowser().other)
 					    Text.normalize(aElement[0]);
-				    let contenttype = aElement.attr("jstl-text-content-type") || "text";
+				    var contenttype = aElement.attr("jstl-text-content-type") || "text";
 				    aElement.contents().filter(function() {
 					    return (this.nodeType === 3 || this.nodeType === 4) && this.textContent != undefined && this.textContent.trim() != "";
 				    }).each(function() {
@@ -31,19 +31,19 @@
 		    },
 
 		    normalize : function(aNode) {
-			    if (!aNode)
-				    return;
-			    if (aNode.nodeType == 3) {
-				    let text = aNode.textContent;
-				    while (aNode.nextSibling && aNode.nextSibling.nodeType == 3) {
-					    text += aNode.nextSibling.textContent;
-					    aNode.parentNode.removeChild(aNode.nextSibling);
+			    if (typeof aNode !== 'undefined') {
+				    if (aNode.nodeType == 3) {
+					    var text = aNode.textContent;
+					    while (aNode.nextSibling && aNode.nextSibling.nodeType == 3) {
+						    text += aNode.nextSibling.textContent;
+						    aNode.parentNode.removeChild(aNode.nextSibling);
+					    }
+					    aNode.textContent = text;
+				    } else {
+					    Text.normalize(aNode.firstChild);
 				    }
-				    aNode.textContent = text;
-			    } else {
-				    Text.normalize(aNode.firstChild);
+				    Text.normalize(aNode.nextSibling);
 			    }
-			    Text.normalize(aNode.nextSibling);
 		    },
 
 		    CONTENTTYPE : {
@@ -57,10 +57,10 @@
 				        aNode.textContent = JSON.stringify(aText);
 		        },
 		        "text" : function(aNode, aText, aBaseElement, aProcessor, aContext) {
-			        let text = aText;
-			        let addAsHtml = false;
+			        var text = aText;
+			        var addAsHtml = false;
 
-			        let trimLength = aBaseElement.attr("jstl-text-trim-length");
+			        var trimLength = aBaseElement.attr("jstl-text-trim-length");
 			        if (trimLength != undefined && trimLength != "") {
 				        trimLength = aProcessor.resolver.resolveExpression(trimLength, aContext, "-1");
 				        trimLength = parseInt(trimLength);
@@ -68,7 +68,7 @@
 					        text = de.titus.core.StringUtils.trimTextLength(text, trimLength);
 			        }
 
-			        let preventformat = aBaseElement.attr("jstl-text-prevent-format");
+			        var preventformat = aBaseElement.attr("jstl-text-prevent-format");
 			        if (preventformat) {
 				        preventformat = aProcessor.resolver.resolveExpression(preventformat, aContext, true) || true;
 				        if (preventformat) {
