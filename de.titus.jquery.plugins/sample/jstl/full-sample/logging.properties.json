@@ -1,0 +1,4 @@
+{"configs":[
+	{"filter": "", "logLevel": "ERROR", "appenders":["de.titus.logging.MemoryAppender"]},
+	{"filter": "de.titus", "logLevel": "ERROR", "appenders":["de.titus.logging.MemoryAppender", "de.titus.logging.ConsolenAppender"]}
+]}
