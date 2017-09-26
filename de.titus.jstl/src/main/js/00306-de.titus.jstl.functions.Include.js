@@ -32,6 +32,7 @@
 
 		    __compute : function(anIncludeExpression, aElement, aContext, aProcessor, aTaskChain) {
 			    let url = aProcessor.resolver.resolveText(anIncludeExpression, aContext);
+			    url = Include.__buildUrl(url);
 			    let disableCaching = url.indexOf("?") >= 0 || typeof aElement.attr("jstl-include-cache-disabled") !== 'undefined';
 			    let cache = undefined;
 			    if (!disableCaching)
@@ -39,24 +40,32 @@
 
 			    if (cache) {
 				    if (cache.onload)
-					    cache.callback.push(Include.__cacheCallback.bind({}, aElement, aProcessor, aContext, aTaskChain));
+					    cache.callback.push(function(aTemplate) {
+						    Include.__cacheCallback(aElement, aProcessor, aContext, aTaskChain, aTemplate);
+					    });
 				    else
 					    Include.__include(aElement, cache.template, aProcessor, aContext, aTaskChain);
 			    } else {
 				    cache = Include.CACHE[url] = {
 				        onload : true,
-				        callback : [ Include.__cacheCallback.bind({}, aElement, aProcessor, aContext, aTaskChain) ]
+				        callback : [ function(aTemplate) {
+					        Include.__cacheCallback(aElement, aProcessor, aContext, aTaskChain, aTemplate);
+				        } ]
 				    };
 				    ajaxSettings = $.extend({
-				        'url' : Include.__buildUrl(url),
+				        'url' : url,
 				        'async' : true,
 				        'cache' : (typeof aElement.attr("jstl-include-ajax-cache-disabled") === 'undefined'),
 				        "dataType" : "html"
 				    }, Include.__options(aElement, aContext, aProcessor));
 
-				    ajaxSettings.success = Include.__executeCacheCallback.bind(null, ajaxSettings.url);
-				    ajaxSettings.error = Include.__remoteError.bind(null, aElement, aTaskChain, ajaxSettings);
-				    
+				    ajaxSettings.success = function(aTemplate) {
+					    Include.__executeCacheCallback(url, aTemplate);
+				    };
+				    ajaxSettings.error = function(aResponse, aState, aError) {
+					    Include.__remoteError(aElement, aTaskChain, ajaxSettings, aResponse, aState, aError);
+				    };
+
 				    $.ajax(ajaxSettings);
 			    }
 		    },

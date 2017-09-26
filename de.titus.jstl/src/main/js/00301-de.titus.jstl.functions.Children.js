@@ -13,8 +13,8 @@
 					    if (ignoreChilds.length > 0)
 						    ignoreChilds = aProcessor.resolver.resolveExpression(ignoreChilds, aContext, true);
 					    else
-					    	ignoreChilds = true;
-					    
+						    ignoreChilds = true;
+
 					    if (ignoreChilds)
 						    return aTaskChain.preventChilds().nextTask();
 				    }
@@ -23,9 +23,11 @@
 				    if (children.length == 0)
 					    aTaskChain.nextTask();
 				    else {
-				    	let child = $(children[0]);
+					    let child = $(children[0]);
 					    if (child && child.length == 1)
-						    aProcessor.compute(child, aTaskChain.context, Children.ElementChain.bind(null, children, 1, aTaskChain));
+						    aProcessor.compute(child, aTaskChain.context, function(aElement, aContext, aProcessor) {
+							    Children.ElementChain(children, 1, aTaskChain, aElement, aContext, aProcessor);
+						    });
 				    }
 			    } else
 				    aTaskChain.nextTask();
@@ -40,7 +42,9 @@
 			    if (aIndex < theChildren.length) {
 				    let next = $(theChildren[aIndex]);
 				    if (next && next.length == 1)
-					    aProcessor.compute(next, aParentTaskChain.context, Children.ElementChain.bind(null, theChildren, aIndex + 1, aParentTaskChain));
+					    aProcessor.compute(next, aParentTaskChain.context, function(aElement, aContext, aProcessor) {
+						    Children.ElementChain(theChildren, aIndex + 1, aParentTaskChain, aElement, aContext, aProcessor);
+					    });
 			    } else
 				    aParentTaskChain.nextTask();
 		    }

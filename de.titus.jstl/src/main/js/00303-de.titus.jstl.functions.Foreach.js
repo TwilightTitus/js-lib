@@ -124,9 +124,9 @@
 
 		    __computeContent : function(aContent, aContext, aElement, aProcessor, aExecuteChain) {
 			    aContent.appendTo(aElement);
-			    aProcessor.compute(aContent, aContext, (function(aElement, aContent, aExecuteChain) {
+			    aProcessor.compute(aContent, aContext, function() {
 				    aExecuteChain.finish();
-			    }).bind(null, aElement, aContent, aExecuteChain));
+			    });
 		    },
 
 		    __template : function(aElement) {

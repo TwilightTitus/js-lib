@@ -11,30 +11,30 @@
 				    aElement.addClass("jstl-screen-inactive");
 				    de.titus.core.ScreenObserver.addHandler({
 				        "condition" : aElement.attr("jstl-screen-condition"),
-				        "activate" : (function(aContext, aScreenData) {
+				        "activate" : function(aScreenData) {
 					        if (ScreenCondition.LOGGER.isDebugEnabled())
 						        ScreenCondition.LOGGER.logDebug("run jstl screen condition (activate)");
-
-					        if (!this.is(".jstl-ready")) {
-						        this.jstl({
+					        
+					        if (!aElement.is(".jstl-ready")) {
+					        	aElement.jstl({
 						            "data" : aContext,
-						            "callback" : (function() {
-							            this.removeClass("jstl-screen-inactive");
-							            this.addClass("jstl-screen-active");
-						            }).bind(this)
+						            "callback" : function() {
+						            	aElement.removeClass("jstl-screen-inactive");
+						            	aElement.addClass("jstl-screen-active");
+						            }
 						        });
 					        } else {
-						        this.removeClass("jstl-screen-inactive");
-						        this.addClass("jstl-screen-active");
+					        	aElement.removeClass("jstl-screen-inactive");
+					        	aElement.addClass("jstl-screen-active");
 					        }
-				        }).bind(aElement, aContext),
-				        "deactivate" : (function(aContext, aScreenData) {
+				        },
+				        "deactivate" : function(aScreenData) {
 					        if (ScreenCondition.LOGGER.isDebugEnabled())
 						        ScreenCondition.LOGGER.logDebug("run jstl screen condition (deactivate)");
 
-					        this.removeClass("jstl-screen-active");
-					        this.addClass("jstl-screen-inactive");
-				        }).bind(aElement)
+					        aElement.removeClass("jstl-screen-active");
+					        aElement.addClass("jstl-screen-inactive");
+				        }
 				    });
 				    aElement.attr("jstl-screen-condition-init", "");
 				    aTaskChain.finish();

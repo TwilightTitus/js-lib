@@ -127,8 +127,10 @@
 				this.element.trigger(de.titus.jstl.Constants.EVENTS.onSuccess, [ this.context, this.processor ]);
 			}
 
-			else
-				setTimeout(TaskChain.prototype.finish.bind(this, true), 0);
+			else{
+				let self = this;
+				setTimeout(function(){self.finish(true);}, 0);
+			}
 
 			return this;
 		};

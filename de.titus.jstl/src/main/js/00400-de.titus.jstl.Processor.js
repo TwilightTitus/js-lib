@@ -27,7 +27,8 @@
 			if (Processor.LOGGER.isDebugEnabled())
 				Processor.LOGGER.logDebug(["__computeElement() -> root: ", isRoot, "\""]);
 
-			var taskChain = new de.titus.jstl.TaskChain(aElement, aContext, this, isRoot, Processor.prototype.__computeFinished.bind(this, isRoot, aCallback));
+			let self = this;
+			let taskChain = new de.titus.jstl.TaskChain(aElement, aContext, this, isRoot, function(aElement, aContext){ self.__computeFinished(isRoot, aCallback, aElement, aContext);});
 			taskChain.nextTask();
 		};
 
@@ -58,11 +59,12 @@
 				});
 				return this;
 			} else {
-				setTimeout((function(aProcessor) {
-					this.removeClass("jstl-running");
-					this.addClass("jstl-ready");
-					this.trigger(de.titus.jstl.Constants.EVENTS.onReady, [ aProcessor ]);
-				}).bind(this.element, this), GlobalSettings.DEFAULT_TIMEOUT_VALUE * 10);
+				let self = this;
+				setTimeout(function() {
+					self.element.removeClass("jstl-running");
+					self.element.addClass("jstl-ready");
+					self.element.trigger(de.titus.jstl.Constants.EVENTS.onReady, [ self ]);
+				}, GlobalSettings.DEFAULT_TIMEOUT_VALUE * 10);
 			}
 		};
 

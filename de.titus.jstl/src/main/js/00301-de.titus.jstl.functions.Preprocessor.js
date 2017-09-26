@@ -36,11 +36,11 @@
 					    else
 						    async = true;
 					    if (async) {
-						    aProcessor.onReady((function(aContext) {
-							    this.jstlAsync({
-								    data : aContext
+						    aProcessor.onReady(function() {
+						    	aElement.jstlAsync({
+								    data : $.extend({}, aContext)
 							    });
-						    }).bind(aElement, $.extend({}, aContext)));
+						    });
 						    return aTaskChain.preventChilds().finish();
 					    }
 				    }
@@ -55,9 +55,9 @@
 
 		    __appendEvents : function(aElement) {
 			    if (aElement.attr("jstl-load"))
-				    aElement.one(de.titus.jstl.Constants.EVENTS.onLoad, Preprocessor.STATICEVENTHANDLER.bind(null, aElement.attr("jstl-load")));
+				    aElement.one(de.titus.jstl.Constants.EVENTS.onLoad, function(aEvent, aContext, aProcessor){Preprocessor.STATICEVENTHANDLER(aElement.attr("jstl-load"), aEvent, aContext, aProcessor);});
 			    if (aElement.attr("jstl-success"))
-				    aElement.one(de.titus.jstl.Constants.EVENTS.onSuccess, Preprocessor.STATICEVENTHANDLER.bind(null, aElement.attr("jstl-success")));
+				    aElement.one(de.titus.jstl.Constants.EVENTS.onSuccess, function(aEvent, aContext, aProcessor){Preprocessor.STATICEVENTHANDLER(aElement.attr("jstl-success"), aEvent, aContext, aProcessor);});
 		    }
 
 		};

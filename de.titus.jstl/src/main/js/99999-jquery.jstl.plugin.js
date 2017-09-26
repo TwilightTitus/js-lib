@@ -41,7 +41,10 @@
 				});
 				return result;
 			} else {
-				setTimeout($.fn.jstl.bind(this, aData), 1);
+				var self = this;
+				setTimeout(function() {
+					self.jstl(aData);
+				}, 1);
 				return this;
 			}
 		};

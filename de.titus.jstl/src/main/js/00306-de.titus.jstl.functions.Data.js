@@ -58,18 +58,21 @@
 			        url = de.titus.core.Page.getInstance().buildUrl(url);
 			        let option = Data.__options(aElement, aDataContext, aProcessor);
 			        let datatype = (aElement.attr("jstl-data-datatype") || "json").toLowerCase();
-			        
+
 			        let ajaxSettings = {
-			            'url' : url,
-			            'async' : true,
-			            'cache' : false,
-			            'dataType' : datatype
+			            "url" : url,
+			            "async" : true,
+			            "cache" : false,
+			            "dataType" : datatype,
+			            "success" : function(aData, aState, aResponse) {
+				            Data.__remoteResponse(aVarname, datatype, aTaskChain, ajaxSettings, aData, aState, aResponse);
+			            },
+			            "error" : function(aResponse, aState, aError) {
+				            Data.__remoteError(aElement, aTaskChain, ajaxSettings, aResponse, aState, aError);
+			            }
 			        };
-			        if(option)
-			        	ajaxSettings = $.extend(ajaxSettings, option);
-			        
-			        ajaxSettings.success = Data.__remoteResponse.bind(null, aVarname, datatype, aTaskChain, ajaxSettings);
-			        ajaxSettings.error = Data.__remoteError.bind(null, aElement, aTaskChain, ajaxSettings);
+			        if (option)
+				        ajaxSettings = $.extend(ajaxSettings, option);
 
 			        $.ajax(ajaxSettings);
 		        },
