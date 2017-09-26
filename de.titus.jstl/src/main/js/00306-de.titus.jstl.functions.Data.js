@@ -55,15 +55,19 @@
 
 		        "remote" : function(anExpression, aDefault, aElement, aVarname, aDataContext, aProcessor, aTaskChain) {
 			        let url = aProcessor.resolver.resolveText(anExpression, aDataContext);
+			        url = de.titus.core.Page.getInstance().buildUrl(url);
 			        let option = Data.__options(aElement, aDataContext, aProcessor);
 			        let datatype = (aElement.attr("jstl-data-datatype") || "json").toLowerCase();
-
-			        let ajaxSettings = $.extend({
-			            'url' : de.titus.core.Page.getInstance().buildUrl(url),
+			        
+			        let ajaxSettings = {
+			            'url' : url,
 			            'async' : true,
 			            'cache' : false,
 			            'dataType' : datatype
-			        }, option);
+			        };
+			        if(option)
+			        	ajaxSettings = $.extend(ajaxSettings, option);
+			        
 			        ajaxSettings.success = Data.__remoteResponse.bind(null, aVarname, datatype, aTaskChain, ajaxSettings);
 			        ajaxSettings.error = Data.__remoteError.bind(null, aElement, aTaskChain, ajaxSettings);
 

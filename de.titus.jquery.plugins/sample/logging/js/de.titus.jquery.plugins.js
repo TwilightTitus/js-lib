@@ -2005,8 +2005,8 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 			    var template = Foreach.__template(aElement);
 			    if (typeof template !== 'undefined') {
 				    aElement.empty();
-				    var varName = aElement.attr("jstl-foreach-var") || "itemVar";
-				    var statusName = aElement.attr("jstl-foreach-status") || "statusVar";
+				    let varName = aElement.attr("jstl-foreach-var") || "itemVar";
+				    let statusName = aElement.attr("jstl-foreach-status") || "statusVar";
 				    if (aExpression.length == 0 && typeof aElement.attr("jstl-foreach-count") !== "undefined")
 					    Foreach.__count(template, statusName, aElement, aContext, aProcessor, aTaskChain);
 				    else {
@@ -2029,7 +2029,8 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 			    var executeChain = new de.titus.jstl.ExecuteChain(aTaskChain);
 
 			    for (let i = startIndex; i < count; i += step) {
-				    let context = $.extend({}, aContext);
+				    let context = {};
+				    context = $.extend(context, aContext);
 				    context[aStatusName] = {
 				        "index" : i,
 				        "count" : count,
@@ -2046,7 +2047,8 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 			    var executeChain = new de.titus.jstl.ExecuteChain(aTaskChain, 1);
 
 			    for (let i = startIndex; i < aListData.length; i++) {
-				    let context = $.extend({}, aContext);
+				    let context = {};
+				    context = $.extend(context, aContext);
 				    context[aVarname] = aListData[i];
 				    context[aStatusName] = {
 				        "index" : i,
@@ -2072,7 +2074,8 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 
 			    for (let i = 0; i < properties.length; i++) {
 				    let name = properties[i];
-				    let context = $.extend({}, aContext);
+				    let context = {};
+				    context = $.extend(context, aContext);
 				    context[aVarname] = aMap[name];
 				    context[aStatusName] = {
 				        "index" : i,
@@ -2102,9 +2105,9 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 
 		    __computeContent : function(aContent, aContext, aElement, aProcessor, aExecuteChain) {
 			    aContent.appendTo(aElement);
-			    aProcessor.compute(aContent, aContext, (function(aElement, aContent, aExecuteChain) {
+			    aProcessor.compute(aContent, aContext, function() {
 				    aExecuteChain.finish();
-			    }).bind(null, aElement, aContent, aExecuteChain));
+			    });
 		    },
 
 		    __template : function(aElement) {
@@ -2131,7 +2134,7 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 				    Text.LOGGER.logDebug("execute run(" + aElement + ", " + aContext + ", " + aProcessor + ")");
 
 			    let ignore = aElement.attr("jstl-text-ignore");
-			    if (typeof ignore !== "undefined") {
+			    if (typeof ignore === "undefined") {
 				    // IE BUG
 				    if (!de.titus.core.Page.getInstance().detectBrowser().other)
 					    Text.normalize(aElement[0]);
@@ -2153,7 +2156,7 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 		    },
 
 		    normalize : function(aNode) {
-			    if (typeof aNode !== 'undefined') {
+			    if (aNode) {
 				    if (aNode.nodeType == 3) {
 					    var text = aNode.textContent;
 					    while (aNode.nextSibling && aNode.nextSibling.nodeType == 3) {
@@ -2308,15 +2311,19 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 
 		        "remote" : function(anExpression, aDefault, aElement, aVarname, aDataContext, aProcessor, aTaskChain) {
 			        let url = aProcessor.resolver.resolveText(anExpression, aDataContext);
+			        url = de.titus.core.Page.getInstance().buildUrl(url);
 			        let option = Data.__options(aElement, aDataContext, aProcessor);
 			        let datatype = (aElement.attr("jstl-data-datatype") || "json").toLowerCase();
-
-			        let ajaxSettings = $.extend({
-			            'url' : de.titus.core.Page.getInstance().buildUrl(url),
+			        
+			        let ajaxSettings = {
+			            'url' : url,
 			            'async' : true,
 			            'cache' : false,
 			            'dataType' : datatype
-			        }, option);
+			        };
+			        if(option)
+			        	ajaxSettings = $.extend(ajaxSettings, option);
+			        
 			        ajaxSettings.success = Data.__remoteResponse.bind(null, aVarname, datatype, aTaskChain, ajaxSettings);
 			        ajaxSettings.error = Data.__remoteError.bind(null, aElement, aTaskChain, ajaxSettings);
 

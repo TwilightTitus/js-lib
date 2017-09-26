@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Simple Text Replacement</title>
+<link type="text/css" href="../style.css" rel="stylesheet" />
+</head>
+<body>
+	<div>
+		Simple Text replacement
+		<div>${test}</div>
+		<!-- div>${"test " + test + "!"}</div>
+		<div>${testFunction}</div>
+		<div jstl-text-content-type="text">jstl-text-content-type="text": ${HTMLTEXT}</div>
+		<div jstl-text-content-type="html">jstl-text-content-type="html": ${HTMLTEXT}</div -->
+	</div>
+	<div id="log">
+		<div>Logs</div>
+	</div>
+	
+	<script src="../js/libs/jquery-3.2.1.min.js" type="text/javascript"></script>
+	<script src="../js/de.titus.jquery.plugins.js" type="text/javascript"></script>
+
+	<script type="text/javascript">
+		de.titus.logging.LoggerFactory.getInstance().setConfig([ {
+            "filter" : "",
+            "logLevel" : "ERROR",
+            "appenders" : [ "de.titus.logging.ConsolenAppender" ]
+        }, {
+            "filter" : "de.titus",
+            "logLevel" : "ERROR",
+            "appenders" : [ "de.titus.logging.ConsolenAppender" ]
+        } , {
+            "filter" : "de.titus.jstl.TaskChain",
+            "logLevel" : "ERROR",
+            "appenders" : [ "de.titus.logging.ConsolenAppender" ]
+        } ]);
+	</script>
+	<script type="text/javascript">
+		/*<!--*/
+	
+		var HTMLTEXT="<b>test</b>";
+        
+        function testFunction() {
+	        return "result from a Function!";
+        };
+        
+        $(document).ready(function() {
+	        var data = {	        		
+	        	html:"<b>insert</b>text as <i>html</i><p>$\{subtext\}</p>", "subtext":"and with child processing",
+	        	test : "text"
+	        };
+	        
+	        $("body").jstl({data: data});
+	        
+        });
+        /*-->*/
+	</script>
+
+</body>
+</html>

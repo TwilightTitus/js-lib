@@ -9,7 +9,7 @@
 				    Text.LOGGER.logDebug("execute run(" + aElement + ", " + aContext + ", " + aProcessor + ")");
 
 			    let ignore = aElement.attr("jstl-text-ignore");
-			    if (typeof ignore !== "undefined") {
+			    if (typeof ignore === "undefined") {
 				    // IE BUG
 				    if (!de.titus.core.Page.getInstance().detectBrowser().other)
 					    Text.normalize(aElement[0]);
@@ -31,7 +31,7 @@
 		    },
 
 		    normalize : function(aNode) {
-			    if (typeof aNode !== 'undefined') {
+			    if (aNode) {
 				    if (aNode.nodeType == 3) {
 					    var text = aNode.textContent;
 					    while (aNode.nextSibling && aNode.nextSibling.nodeType == 3) {

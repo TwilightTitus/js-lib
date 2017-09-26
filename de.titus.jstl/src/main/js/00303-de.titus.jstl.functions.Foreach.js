@@ -24,8 +24,8 @@
 			    var template = Foreach.__template(aElement);
 			    if (typeof template !== 'undefined') {
 				    aElement.empty();
-				    var varName = aElement.attr("jstl-foreach-var") || "itemVar";
-				    var statusName = aElement.attr("jstl-foreach-status") || "statusVar";
+				    let varName = aElement.attr("jstl-foreach-var") || "itemVar";
+				    let statusName = aElement.attr("jstl-foreach-status") || "statusVar";
 				    if (aExpression.length == 0 && typeof aElement.attr("jstl-foreach-count") !== "undefined")
 					    Foreach.__count(template, statusName, aElement, aContext, aProcessor, aTaskChain);
 				    else {
@@ -48,7 +48,8 @@
 			    var executeChain = new de.titus.jstl.ExecuteChain(aTaskChain);
 
 			    for (let i = startIndex; i < count; i += step) {
-				    let context = $.extend({}, aContext);
+				    let context = {};
+				    context = $.extend(context, aContext);
 				    context[aStatusName] = {
 				        "index" : i,
 				        "count" : count,
@@ -65,7 +66,8 @@
 			    var executeChain = new de.titus.jstl.ExecuteChain(aTaskChain, 1);
 
 			    for (let i = startIndex; i < aListData.length; i++) {
-				    let context = $.extend({}, aContext);
+				    let context = {};
+				    context = $.extend(context, aContext);
 				    context[aVarname] = aListData[i];
 				    context[aStatusName] = {
 				        "index" : i,
@@ -91,7 +93,8 @@
 
 			    for (let i = 0; i < properties.length; i++) {
 				    let name = properties[i];
-				    let context = $.extend({}, aContext);
+				    let context = {};
+				    context = $.extend(context, aContext);
 				    context[aVarname] = aMap[name];
 				    context[aStatusName] = {
 				        "index" : i,
