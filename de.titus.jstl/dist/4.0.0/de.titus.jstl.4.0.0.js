@@ -929,11 +929,9 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 		    },
 
 		    __executeCacheCallback : function(aUrl, aTemplate) {
-			    Include.CACHE[aUrl] = {
-			        "template" : $("<jstl/>").append(aTemplate),
-			        "onload" : false
-			    };
-			    let cache = Include.CACHE[aUrl];
+			    let cache = Include.CACHE[aUrl.hashCode()];
+			    cache.onload = false;
+			    cache.template = $("<jstl/>").append(aTemplate);
 			    for (let i = 0; i < cache.callback.length; i++)
 				    cache.callback[i](cache.template);
 		    },
@@ -944,7 +942,7 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 			    let disableCaching = url.indexOf("?") >= 0 || typeof aElement.attr("jstl-include-cache-disabled") !== 'undefined';
 			    let cache = undefined;
 			    if (!disableCaching)
-				    cache = Include.CACHE[url];
+				    cache = Include.CACHE[url.hashCode()];
 
 			    if (cache) {
 				    if (cache.onload)
@@ -954,13 +952,13 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 				    else
 					    Include.__include(aElement, cache.template, aProcessor, aContext, aTaskChain);
 			    } else {
-				    cache = Include.CACHE[url] = {
+				    cache = Include.CACHE[url.hashCode()] = {
 				        onload : true,
 				        callback : [ function(aTemplate) {
 					        Include.__cacheCallback(aElement, aProcessor, aContext, aTaskChain, aTemplate);
 				        } ]
 				    };
-				    ajaxSettings = $.extend({
+				    let ajaxSettings = $.extend({
 				        'url' : url,
 				        'async' : true,
 				        'cache' : (typeof aElement.attr("jstl-include-ajax-cache-disabled") === 'undefined'),

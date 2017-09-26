@@ -32,7 +32,7 @@
 		<echo message="minify ${ant.project.name}.${project.version}.js" />
 		<copy file="${dir.build}/${ant.project.name}.${project.version}.js" tofile="${dir.build}/${ant.project.name}.${project.version}.min.js">
 		</copy>
-		<yuicompress linebreak="10000" warn="false" munge="true" preserveallsemicolons="true" outputfolder="${dir.build}" charset="utf-8">
+		<yuicompress linebreak="1000" warn="false" munge="false" preserveallsemicolons="true" outputfolder="${dir.build}" charset="utf-8">
 			<fileset dir="${dir.build}">
 				<include name="${ant.project.name}.${project.version}.min.js" />
 			</fileset>
@@ -95,15 +95,22 @@
 	</target>
 
 	<target name="copy-to-sample">
-		<delete file="${dir.sample.jstl}/js/${ant.project.name}.js"/>
-		<delete file="${dir.sample.jstl}/js/${ant.project.name}.min.js"/>
-		<copy file="${dir.build}/tmp/${ant.project.name}.${project.version}.js" tofile="${dir.sample.jstl}/js/${ant.project.name}.js"/>
-		<copy file="${dir.build}/tmp/${ant.project.name}.${project.version}.min.js" tofile="${dir.sample.jstl}/js/${ant.project.name}.min.js"/>
+		<delete file="${dir.sample.jstl}/js/${ant.project.name}.js" />
+		<delete file="${dir.sample.jstl}/js/${ant.project.name}.min.js" />
+		<copy file="${dir.build}/tmp/${ant.project.name}.${project.version}.js" tofile="${dir.sample.jstl}/js/${ant.project.name}.js" />
+		<copy file="${dir.build}/tmp/${ant.project.name}.${project.version}.min.js" tofile="${dir.sample.jstl}/js/${ant.project.name}.min.js" />
 
-		<delete file="${dir.sample.logging}/js/${ant.project.name}.js"/>
-		<delete file="${dir.sample.logging}/js/${ant.project.name}.min.js"/>
-		<copy file="${dir.build}/tmp/${ant.project.name}.${project.version}.js" tofile="${dir.sample.logging}/js/${ant.project.name}.js"/>
-		<copy file="${dir.build}/tmp/${ant.project.name}.${project.version}.min.js" tofile="${dir.sample.logging}/js/${ant.project.name}.min.js"/>
+		<delete file="${dir.sample.logging}/js/${ant.project.name}.js" />
+		<delete file="${dir.sample.logging}/js/${ant.project.name}.min.js" />
+		<copy file="${dir.build}/tmp/${ant.project.name}.${project.version}.js" tofile="${dir.sample.logging}/js/${ant.project.name}.js" />
+		<copy file="${dir.build}/tmp/${ant.project.name}.${project.version}.min.js" tofile="${dir.sample.logging}/js/${ant.project.name}.min.js" />
+	</target>
+
+	<target name="copy-to-docs">
+		<delete file="${dir.docs}/libs/${ant.project.name}.js" />
+		<delete file="${dir.docs}/libs/${ant.project.name}.min.js" />
+		<copy file="${dir.build}/tmp/${ant.project.name}.${project.version}.js" tofile="${dir.docs}/libs/${ant.project.name}.js" />
+		<copy file="${dir.build}/tmp/${ant.project.name}.${project.version}.min.js" tofile="${dir.docs}/libs/${ant.project.name}.min.js" />
 	</target>
 
 
@@ -111,7 +118,7 @@
 		<delete dir="${dir.build}" />
 	</target>
 
-	<target name="all" depends="clean, init, build-jquery-plugin-file, concat-js-files, concat-min-js-files, copy-to-dist, copy-to-sample">
+	<target name="all" depends="clean, init, build-jquery-plugin-file, concat-js-files, concat-min-js-files, copy-to-dist, copy-to-sample, copy-to-docs">
 		<echo message="Build complete." />
 	</target>
 </project>
