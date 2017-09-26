@@ -36,7 +36,7 @@
 		<echo message="minify ${ant.project.name}-${project.version}.js" />
 		<copy file="${dir.dist}/${ant.project.name}-${project.version}.js" tofile="${dir.dist}/${ant.project.name}-${project.version}.min.js">
 		</copy>
-		<yuicompress linebreak="1000" warn="false" munge="no" preserveallsemicolons="true" outputfolder="${dir.dist}" charset="utf-8">
+		<yuicompress linebreak="1000" warn="false" munge="yes" preserveallsemicolons="true" outputfolder="${dir.dist}" charset="utf-8">
 			<fileset dir="${dir.dist}">
 				<include name="${ant.project.name}-${project.version}.min.js" />
 			</fileset>
