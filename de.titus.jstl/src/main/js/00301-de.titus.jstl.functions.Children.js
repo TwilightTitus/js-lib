@@ -23,11 +23,9 @@
 				    if (children.length == 0)
 					    aTaskChain.nextTask();
 				    else {
-					    let child = $(children[0]);
-					    if (child && child.length == 1)
-						    aProcessor.compute(child, aTaskChain.context, function(aElement, aContext, aProcessor) {
-							    Children.ElementChain(children, 1, aTaskChain, aElement, aContext, aProcessor);
-						    });
+					    setTimeout(function() {
+						    Children.ElementChain(children, 0, aTaskChain, aElement, aContext, aProcessor);
+					    }, 1);
 				    }
 			    } else
 				    aTaskChain.nextTask();
@@ -45,6 +43,7 @@
 					    aProcessor.compute(next, aParentTaskChain.context, function(aElement, aContext, aProcessor) {
 						    Children.ElementChain(theChildren, aIndex + 1, aParentTaskChain, aElement, aContext, aProcessor);
 					    });
+
 			    } else
 				    aParentTaskChain.nextTask();
 		    }

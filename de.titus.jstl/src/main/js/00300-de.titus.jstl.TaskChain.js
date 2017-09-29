@@ -76,7 +76,6 @@
 					this.updateContext(aContext, doMerge);
 
 			if (this.__taskchain) {
-				let name = this.__taskchain.name;
 				let task = this.__taskchain.task;
 				let phase = this.__taskchain.phase;
 				let selector = this.__taskchain.selector;
@@ -106,17 +105,22 @@
 		};
 		TaskChain.prototype.__buildContext = function() {
 			this.context["$element"] = this.element;
-			this.context["__element__"] = this.element;
 			this.context["$root"] = this.processor.element;
-			this.context["__root__"] = this.processor.element;
 			return this.context;
 		};
 
-		TaskChain.prototype.finish = function(sync) {
+		TaskChain.prototype.finish = function(async) {
 			if (TaskChain.LOGGER.isDebugEnabled())
 				TaskChain.LOGGER.logDebug("finish()");
 
-			if (sync) {
+			if (async) {
+				let self = this;
+				setTimeout(function() {
+					self.finish(true);
+				}, 0);
+			}
+
+			else {
 				if (typeof this.callback === "function")
 					this.callback(this.element, this.context, this.processor, this);
 				else if (Array.isArray(this.callback))
@@ -125,11 +129,6 @@
 							this.callback[i](this.element, this.context, this.processor, this);
 
 				this.element.trigger(de.titus.jstl.Constants.EVENTS.onSuccess, [ this.context, this.processor ]);
-			}
-
-			else{
-				let self = this;
-				setTimeout(function(){self.finish(true);}, 0);
 			}
 
 			return this;

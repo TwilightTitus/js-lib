@@ -187,6 +187,15 @@
 				</li>
 			</ul>
 		</div>
+		
+		<div>
+			Test if context element of current JQuery element availible
+			<div jstl-data="${$element.text($element.html())}">$element availible</div>
+		</div>
+		<div>
+			Test if context element of the root JQuery element availible
+			<div jstl-data="${$element.text($root.tagName() + ' $root is availible!')}"></div>
+		</div>
 	</div>
 
 	<div id="log">

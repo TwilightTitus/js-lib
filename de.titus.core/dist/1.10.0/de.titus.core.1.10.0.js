@@ -119,19 +119,16 @@ if (de.titus.core.Namespace == undefined) {
 })($);
 (function($) {
 	$.fn.tagName = $.fn.tagName || function() {
-		if (this.length == undefined || this.length == 0)
+		if (this.length == 0)
 			return undefined;
 		else if (this.length > 1) {
-			return this.each(function() {
-				return $(this).tagName();
+			let result = [];
+			this.each(function() {
+				result.push($(this)[0].tagName.toLowerCase());
 			});
-		} else {
-			var tagname = this.prop("tagName");
-			if(tagname != undefined && tagname != "")
-				return tagname.toLowerCase();
-			
-			return undefined;				
-		}
+			return result;
+		} else
+			return $(this)[0].tagName.toLowerCase();
 	};
 })(jQuery);
 (function($){
@@ -274,7 +271,8 @@ de.titus.core.Namespace.create("de.titus.core.ExpressionResolver", function() {
 	/**
 	 * static variables
 	 */
-	ExpressionResolver.TEXT_EXPRESSION_REGEX = "\\$\\{([^\\$\\{\\}]*)\\}";
+	// ExpressionResolver.TEXT_EXPRESSION_REGEX = "\\$\\{([^\\$\\{\\}]*)\\}";
+	ExpressionResolver.TEXT_EXPRESSION_REGEX = "\\$\\{([^\\{\\}]+)\\}";
 
 	/**
 	 * @param aText

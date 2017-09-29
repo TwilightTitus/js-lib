@@ -132,19 +132,16 @@ if (de.titus.core.Namespace == undefined) {
 })($);
 (function($) {
 	$.fn.tagName = $.fn.tagName || function() {
-		if (this.length == undefined || this.length == 0)
+		if (this.length == 0)
 			return undefined;
 		else if (this.length > 1) {
-			return this.each(function() {
-				return $(this).tagName();
+			let result = [];
+			this.each(function() {
+				result.push($(this)[0].tagName.toLowerCase());
 			});
-		} else {
-			var tagname = this.prop("tagName");
-			if(tagname != undefined && tagname != "")
-				return tagname.toLowerCase();
-			
-			return undefined;				
-		}
+			return result;
+		} else
+			return $(this)[0].tagName.toLowerCase();
 	};
 })(jQuery);
 (function($){
@@ -287,7 +284,8 @@ de.titus.core.Namespace.create("de.titus.core.ExpressionResolver", function() {
 	/**
 	 * static variables
 	 */
-	ExpressionResolver.TEXT_EXPRESSION_REGEX = "\\$\\{([^\\$\\{\\}]*)\\}";
+	// ExpressionResolver.TEXT_EXPRESSION_REGEX = "\\$\\{([^\\$\\{\\}]*)\\}";
+	ExpressionResolver.TEXT_EXPRESSION_REGEX = "\\$\\{([^\\{\\}]+)\\}";
 
 	/**
 	 * @param aText
@@ -1663,7 +1661,6 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 					this.updateContext(aContext, doMerge);
 
 			if (this.__taskchain) {
-				let name = this.__taskchain.name;
 				let task = this.__taskchain.task;
 				let phase = this.__taskchain.phase;
 				let selector = this.__taskchain.selector;
@@ -1693,17 +1690,22 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 		};
 		TaskChain.prototype.__buildContext = function() {
 			this.context["$element"] = this.element;
-			this.context["__element__"] = this.element;
 			this.context["$root"] = this.processor.element;
-			this.context["__root__"] = this.processor.element;
 			return this.context;
 		};
 
-		TaskChain.prototype.finish = function(sync) {
+		TaskChain.prototype.finish = function(async) {
 			if (TaskChain.LOGGER.isDebugEnabled())
 				TaskChain.LOGGER.logDebug("finish()");
 
-			if (sync) {
+			if (async) {
+				let self = this;
+				setTimeout(function() {
+					self.finish(true);
+				}, 0);
+			}
+
+			else {
 				if (typeof this.callback === "function")
 					this.callback(this.element, this.context, this.processor, this);
 				else if (Array.isArray(this.callback))
@@ -1712,11 +1714,6 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 							this.callback[i](this.element, this.context, this.processor, this);
 
 				this.element.trigger(de.titus.jstl.Constants.EVENTS.onSuccess, [ this.context, this.processor ]);
-			}
-
-			else{
-				let self = this;
-				setTimeout(function(){self.finish(true);}, 0);
 			}
 
 			return this;
@@ -1750,11 +1747,9 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 				    if (children.length == 0)
 					    aTaskChain.nextTask();
 				    else {
-					    let child = $(children[0]);
-					    if (child && child.length == 1)
-						    aProcessor.compute(child, aTaskChain.context, function(aElement, aContext, aProcessor) {
-							    Children.ElementChain(children, 1, aTaskChain, aElement, aContext, aProcessor);
-						    });
+					    setTimeout(function() {
+						    Children.ElementChain(children, 0, aTaskChain, aElement, aContext, aProcessor);
+					    }, 1);
 				    }
 			    } else
 				    aTaskChain.nextTask();
@@ -1772,6 +1767,7 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 					    aProcessor.compute(next, aParentTaskChain.context, function(aElement, aContext, aProcessor) {
 						    Children.ElementChain(theChildren, aIndex + 1, aParentTaskChain, aElement, aContext, aProcessor);
 					    });
+
 			    } else
 				    aParentTaskChain.nextTask();
 		    }
@@ -2493,16 +2489,16 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 		    __include : function(aElement, aTemplate, aProcessor, aContext, aTaskChain) {
 			    if (Include.LOGGER.isDebugEnabled())
 				    Include.LOGGER.logDebug("execute __include()");
-			    let content = aTemplate.clone();
+			    let template = aTemplate.clone();
 			    let includeMode = Include.__mode(aElement, aContext, aProcessor);
 
 			    if (includeMode == "replace") {
 				    aElement.empty();
-				    content.appendTo(aElement);
+				    aElement.append(template.contents());
 			    } else if (includeMode == "append")
-				    content.appendTo(aElement);
+				    aElement.append(template.contents());
 			    else if (includeMode == "prepend")
-				    content.prependTo(aElement);
+				    aElement.prepend(template.contents());
 
 			    aTaskChain.nextTask();
 		    },

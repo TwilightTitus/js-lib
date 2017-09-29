@@ -7,7 +7,8 @@ de.titus.core.Namespace.create("de.titus.core.ExpressionResolver", function() {
 	/**
 	 * static variables
 	 */
-	ExpressionResolver.TEXT_EXPRESSION_REGEX = "\\$\\{([^\\$\\{\\}]*)\\}";
+	// ExpressionResolver.TEXT_EXPRESSION_REGEX = "\\$\\{([^\\$\\{\\}]*)\\}";
+	ExpressionResolver.TEXT_EXPRESSION_REGEX = "\\$\\{([^\\{\\}]+)\\}";
 
 	/**
 	 * @param aText

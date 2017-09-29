@@ -104,16 +104,16 @@
 		    __include : function(aElement, aTemplate, aProcessor, aContext, aTaskChain) {
 			    if (Include.LOGGER.isDebugEnabled())
 				    Include.LOGGER.logDebug("execute __include()");
-			    let content = aTemplate.clone();
+			    let template = aTemplate.clone();
 			    let includeMode = Include.__mode(aElement, aContext, aProcessor);
 
 			    if (includeMode == "replace") {
 				    aElement.empty();
-				    content.appendTo(aElement);
+				    aElement.append(template.contents());
 			    } else if (includeMode == "append")
-				    content.appendTo(aElement);
+				    aElement.append(template.contents());
 			    else if (includeMode == "prepend")
-				    content.prependTo(aElement);
+				    aElement.prepend(template.contents());
 
 			    aTaskChain.nextTask();
 		    },
