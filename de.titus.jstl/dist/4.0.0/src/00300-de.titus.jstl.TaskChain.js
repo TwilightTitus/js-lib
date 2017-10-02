@@ -116,7 +116,7 @@
 			if (async) {
 				let self = this;
 				setTimeout(function() {
-					self.finish(true);
+					self.finish();
 				}, 0);
 			}
 

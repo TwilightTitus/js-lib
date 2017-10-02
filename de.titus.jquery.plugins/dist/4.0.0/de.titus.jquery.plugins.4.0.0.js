@@ -1701,7 +1701,7 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 			if (async) {
 				let self = this;
 				setTimeout(function() {
-					self.finish(true);
+					self.finish();
 				}, 0);
 			}
 
