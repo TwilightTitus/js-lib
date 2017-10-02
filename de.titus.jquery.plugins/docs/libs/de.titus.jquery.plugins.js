@@ -2395,7 +2395,7 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 				    Include.LOGGER.logDebug("execute run(" + aElement + ", " + aContext + ", " + aProcessor + ")");
 
 			    let expression = aElement.attr("jstl-include");
-			    if (typeof expression != undefined)
+			    if (expression.length > 0)
 				    Include.__compute(expression, aElement, aContext, aProcessor, aTaskChain);
 			    else
 				    aTaskChain.nextTask();
@@ -2414,6 +2414,7 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 		    },
 
 		    __compute : function(anIncludeExpression, aElement, aContext, aProcessor, aTaskChain) {
+			    aElement.addClass("jstl-include-loading");
 			    let url = aProcessor.resolver.resolveText(anIncludeExpression, aContext);
 			    url = Include.__buildUrl(url);
 			    let disableCaching = url.indexOf("?") >= 0 || typeof aElement.attr("jstl-include-cache-disabled") !== 'undefined';
@@ -2500,6 +2501,7 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 			    else if (includeMode == "prepend")
 				    aElement.prepend(template.contents());
 
+			    aElement.removeClass("jstl-include-loading");
 			    aTaskChain.nextTask();
 		    },
 
