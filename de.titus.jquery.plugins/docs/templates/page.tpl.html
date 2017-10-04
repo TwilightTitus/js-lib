@@ -3,11 +3,15 @@
 	<small>${page.teaser}</small>
 </h1>
 <div class="chapter-text">${pageData.text}</div>
-<div class="articles" jstl-foreach="${pageData.articles}" jstl-foreach-var="article" jstl-foreach-status="articleStatus" jstl-async="">
-	<article id="${article.tag}">
-		<h2>${article.title}</h2>
-		<h4>${article.teaser}</h4>
-		<div class="article-content" jstl-foreach="${article.content}" jstl-foreach-var="content" jstl-foreach-status="contentStatus">
+<div class="articles panel-group" jstl-foreach="${pageData.articles}" jstl-foreach-var="article" jstl-foreach-status="articleStatus" jstl-async="">
+	<article id="${article.tag}" class="panel panel-primary">
+		<div class="panel-heading">
+			<div><b>${article.title}</b></div>
+			<p jstl-if="${typeof article.teaser !== 'undefined' && article.teaser.trim().length > 0}">
+				<small>${article.teaser}</small>
+			</p>
+		</div>
+		<div class="article-content panel-body" jstl-foreach="${article.content}" jstl-foreach-var="content" jstl-foreach-status="contentStatus">
 			<div jstl-include="templates/${content.type}.content.tpl.html"></div>
 		</div>
 	</article>

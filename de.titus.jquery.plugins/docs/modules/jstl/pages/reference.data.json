@@ -23,9 +23,7 @@
 						"$(document).ready(function(){",
 						"\tvar settings = {",
 						"\t\tdata:{},//context data to processing",
-						"\t\tonLoad:function(){},",
-						"\t\tonSuccess:function(){},",
-						"\t\tonFail:function(){},",
+						"\t\tcallback:function(){},",
 						"\t};",
 						"\t$('[jstl-autorun]').each(function(){",
 						"\t\t$(this).jstl(settings);// settings is optional",
@@ -162,6 +160,15 @@
 					"headline": "expression syntax",
 					"content": "${[your expression]}",
 					"subcontent": "Your expression can be an javacript call or an variable from the data context."
+				},{
+					"headline": "special properties at context",
+					"type": "text",
+					"content": [
+						"At expression context you have two special properties.",
+						"",
+						"<b>$root</b> this property is the element where the jstl executed",
+						"<b>$element</> this is the current element where the jstl processed"
+					]
 				},
 				{
 					"type": "button",
