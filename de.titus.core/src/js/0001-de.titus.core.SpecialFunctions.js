@@ -11,7 +11,7 @@ de.titus.core.Namespace.create("de.titus.core.SpecialFunctions", function() {
 				    return aStatement;
 			    
 			    var statement = aStatement.trim();			    
-			    if(statement === "")
+			    if(statement.length == 0)
 			    	return undefined;
 
 			    try {

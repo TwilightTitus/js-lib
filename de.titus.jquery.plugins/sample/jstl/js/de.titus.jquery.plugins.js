@@ -14,7 +14,7 @@
 var de = de || {};
 de.titus = de.titus || {};
 de.titus.core = de.titus.core || {
-	Version : "1.10.0"
+	Version : "1.10.1"
 };
 if (de.titus.core.Namespace == undefined) {
 	de.titus.core.Namespace = {};
@@ -52,7 +52,7 @@ if (de.titus.core.Namespace == undefined) {
 				    return aStatement;
 			    
 			    var statement = aStatement.trim();			    
-			    if(statement === "")
+			    if(statement.length == 0)
 			    	return undefined;
 
 			    try {
@@ -1491,7 +1491,7 @@ de.titus.core.Namespace.create("de.titus.logging.MemoryAppender", function() {
 
 (function($){
 	de.titus.core.Namespace.create("de.titus.jstl", function() {
-		de.titus.jstl.Version = "4.0.0";
+		de.titus.jstl.Version = "4.0.1";
 	});
 })($);
 de.titus.core.Namespace.create("de.titus.jstl.Constants", function() {
@@ -2309,7 +2309,7 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 			    }
 		    },
 		    __updateContext : function(aVarname, aData, aTaskChain) {
-			    if (aData) {
+			    if (typeof aData !== 'undefined') {
 				    if (!aVarname)
 					    aTaskChain.updateContext(aData, true);
 				    else
