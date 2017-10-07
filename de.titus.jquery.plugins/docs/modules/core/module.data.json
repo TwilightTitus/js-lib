@@ -1,11 +1,11 @@
 {
 	"type" : "module",
 	"versions": {
-		"release" : "1.8.9"
+		"release" : "1.10.1"
 	},
 	"dependencies" : "",
-	"js-file":"https://raw.githubusercontent.com/TwilightTitus/js-lib/master/de.titus.core/dist/1.8.9/de.titus.core.1.8.9.js",
-	"min-js-file":"https://raw.githubusercontent.com/TwilightTitus/js-lib/master/de.titus.core/dist/1.8.9/de.titus.core.1.8.9.min.js",
+	"js-file":"https://raw.githubusercontent.com/TwilightTitus/js-lib/master/de.titus.core/dist/1.10.1/de.titus.core.1.10.1.js",
+	"min-js-file":"https://raw.githubusercontent.com/TwilightTitus/js-lib/master/de.titus.core/dist/1.10.1/de.titus.core.1.10.1.min.js",
 	"pages": [
 		{
 		"tag":"summary",
@@ -26,6 +26,11 @@
 		"tag":"converter",
 		"title": "Reference: Data Converter",
 		"teaser": "A function lib to convert data. xml -> json"
+		},
+		{
+		"tag":"screenobserver",
+		"title": "Reference: Screen Observer",
+		"teaser": "This provide functionality run function by screen size conditions"
 		}
 	]
 }
