@@ -12,12 +12,6 @@
 			    expressionResolver : new de.titus.core.ExpressionResolver()
 			};
 
-			// this.data.element.formular_DataContext({
-			// data : (function(aFilter) {
-			// return this.getData(aFilter, "object");
-			// }).bind(this)
-			// });
-
 			this.data.element.formular_DataContext({
 				data : Formular.prototype.getData.bind(this)
 			});
@@ -81,8 +75,25 @@
 				console.log(this.getData("data-model"));
 
 				this.data.state = de.titus.form.Constants.STATE.SUBMITTED;
-				de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.STATE_CHANGED);
-				de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.SUCCESSED);
+
+				let hasError = false;
+				let action = (this.data.element.attr("data-form-action") || "").trim();
+				if (action.length > 0) {
+					let result = this.data.expressionResolver.resolveExpression(action, {
+						form : this
+					});
+					if (typeof result === "function")
+						result = result(this);
+					
+					if(typeof result === "boolean")
+						hasError = !result;
+				}
+
+				if (!hasError) {
+					de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.STATE_CHANGED);
+					de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.SUCCESSED);
+				} else
+					de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.FAILED);
 			} catch (e) {
 				Formular.LOGGER.logError(e);
 				de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.FAILED);
