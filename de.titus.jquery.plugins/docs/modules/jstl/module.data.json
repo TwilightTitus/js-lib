@@ -1,11 +1,11 @@
 {
 	"type" : "module",
 	"versions": {
-		"release" : "3.1.0"
+		"release" : "4.0.1"
 	},
 	"dependencies" : "core, logging",
-	"js-file":"https://raw.githubusercontent.com/TwilightTitus/js-lib/master/de.titus.jstl/dist/3.1.0/de.titus.jstl.3.1.0.js",
-	"min-js-file":"https://raw.githubusercontent.com/TwilightTitus/js-lib/master/de.titus.jstl/dist/3.1.0/de.titus.jstl.3.1.0.min.js",
+	"js-file":"https://raw.githubusercontent.com/TwilightTitus/js-lib/master/de.titus.jstl/dist/4.0.1/de.titus.jstl.4.0.1.js",
+	"min-js-file":"https://raw.githubusercontent.com/TwilightTitus/js-lib/master/de.titus.jstl/dist/4.0.1/de.titus.jstl.4.0.1.min.js",
 	"pages": [
 		{
 			"tag":"quick-start",
