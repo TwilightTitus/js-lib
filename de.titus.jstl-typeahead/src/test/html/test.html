@@ -10,7 +10,7 @@
 
 </head>
 <body>
-	<input type="text" class="jstl-typeahead form-control"
+	<input id="test-1" type="text" class="jstl-typeahead form-control"
 		typeahead-input-action="testSearch"
 		typeahead-template="templates/typeahead.tpl.html"
 		typeahead-display="name" typeahead-display-marker="" />
@@ -176,11 +176,15 @@
         	console.log("select value");
         	console.log(aItem);
         };
+        
+        function setSelectedValue(){
+        	$("#test-1").de_titus_Typeahead().setSelectedData(TESTVALUES[0]);
+        }
 	</script>
 	<script type="text/javascript" src="js/libs/jquery-2.2.4.min.js"></script>
 	<script type="text/javascript"
 		src="js/libs/de.titus.jquery.plugins.3.0.0.min.js"></script>
 	<script type="text/javascript"
-		src="js/libs/de.titus.jstl-typeahead-1.0.1.min.js"></script>
+		src="js/libs/de.titus.jstl-typeahead-1.1.0.min.js"></script>
 </body>
 </html>
