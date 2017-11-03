@@ -42,6 +42,9 @@
 
 			if (this.data.inputSize == undefined)
 				this.data.inputSize = parseInt(this.element.attr("typeahead-input-size") || "1");
+			
+			if (this.data.maxSuggestions == undefined)
+				this.data.maxSuggestions = parseInt(this.element.attr("typeahead-max-suggestions") || "10");
 
 			if (this.data.template == undefined)
 				this.data.template = this.element.attr("typeahead-template");
@@ -85,7 +88,6 @@
 		};
 
 		Typeahead.prototype.__doInput = function(aEvent) {
-//			this.selected = undefined;
 			var value = (this.element.val() || "").trim();
 			if (value.length >= this.data.inputSize)
 				this.timeoutId = setTimeout(Typeahead.prototype.__callInputAction.bind(this, value), this.data.inputInterval);
@@ -155,8 +157,9 @@
 			    map : {},
 			    list : []
 			};
+			let min = Math.min(aValues.length, this.data.maxSuggestions);
 			let displayMarkerValues = aValue.split(" ");
-			for (let i = 0; i < aValues.length; i++) {
+			for (let i = 0; i < min; i++) {
 				let item = this.__buildItemData(displayMarkerValues, aValues[i]);
 				item.index = i;
 				item.id = "item-id-" + i;
