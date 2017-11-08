@@ -1835,10 +1835,10 @@
 		};
 
 		ContainerField.prototype.__handleValidationEvent = function(aEvent) {
-			this.doValidation(true);
+			this.doValidate(true);
 		};
 
-		ContainerField.prototype.doValidation = function(force) {
+		ContainerField.prototype.doValidate = function(force) {
 			if (force) {
 				var oldValid = this.data.valid;
 				this.data.valid = de.titus.form.utils.FormularUtils.isFieldsValid(this.data.fields, force);
