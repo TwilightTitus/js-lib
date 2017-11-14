@@ -234,12 +234,14 @@
 			} else
 				return;
 
-			return {
-			    name : this.data.name,
-			    type : "list-field",
-			    $type : "list-field",
-			    value : items
-			};
+			if (items.length > 0) {
+				return {
+				    name : this.data.name,
+				    type : "list-field",
+				    $type : "list-field",
+				    value : items
+				};
+			}
 		};
 
 		ListField.prototype.getExample = function(aFilter) {
