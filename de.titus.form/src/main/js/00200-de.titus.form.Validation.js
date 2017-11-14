@@ -32,8 +32,12 @@
 				var formularElement = de.titus.form.utils.FormularUtils.getFormularElement(this.data.element);
 				de.titus.form.utils.EventUtils.handleEvent(this.data.element, [ EVENTTYPES.INITIALIZED, EVENTTYPES.FIELD_VALUE_CHANGED ], Validation.prototype.__doLazyValidate.bind(this));
 				de.titus.form.utils.EventUtils.handleEvent(formularElement, [ EVENTTYPES.CONDITION_STATE_CHANGED, EVENTTYPES.VALIDATION_STATE_CHANGED ], Validation.prototype.__doLazyValidate.bind(this));
-			} else
+			} else {
 				de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.VALIDATION_VALID);
+				de.titus.form.utils.EventUtils.handleEvent(this.data.element, [ EVENTTYPES.INITIALIZED, EVENTTYPES.FIELD_VALUE_CHANGED ], (function() {
+					de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.VALIDATION_VALID);
+				}).bind(this));
+			}
 		};
 
 		Validation.prototype.__doLazyValidate = function(aEvent) {
