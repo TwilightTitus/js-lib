@@ -80,38 +80,48 @@
 			if (DefaultController.LOGGER.isDebugEnabled())
 				DefaultController.LOGGER.logDebug("readFileData()");
 
-			var input = aEvent.target;
-			var multiple = input.files.length > 1;
+			let input = aEvent.target;
+			let multiple = input.files.length > 1;
 			if (multiple)
 				this.fileData = [];
 			else
 				this.fileData = undefined;
 
-			var $__THIS__$ = this;
-			var reader = new FileReader();
-			var count = input.files.length;
-			reader.addEventListener("load", (function() {
-				if (DefaultController.LOGGER.isDebugEnabled())
-					DefaultController.LOGGER.logDebug("readFileData() -> reader load event!");
+			let counter = {
+				count : input.files.length
+			};
 
-				count--;
-				if (multiple)
-					this.fileData.push(reader.result);
-				else
-					this.fileData = reader.result;
-
-				if (count === 0)
-					de.titus.form.utils.EventUtils.triggerEvent(this.element, de.titus.form.Constants.EVENTS.FIELD_VALUE_CHANGED);
-			}).bind(this), false);
-
-			var textField = this.element.find("input[type='text'][readonly]");
+			let textField = this.element.find("input[type='text'][readonly]");
 			if (textField.length == 1)
 				textField.val("");
 			for (var i = 0; i < input.files.length; i++) {
+				let reader = new FileReader();
+				reader.addEventListener("loadend", DefaultController.prototype.__fileReaded.bind(this, counter, reader, input.files[i], multiple), false);
 				reader.readAsDataURL(input.files[i]);
 				if (textField.length == 1)
 					textField.val(textField.val() !== "" ? textField.val() + ", " + input.files[i].name : input.files[i].name);
 			}
+		};
+
+		DefaultController.prototype.__fileReaded = function(aCounter, aReader, aFile, isMultible, aEvent) {
+			if (DefaultController.LOGGER.isDebugEnabled())
+				DefaultController.LOGGER.logDebug("readFileData() -> reader load event!");
+
+			let file = {
+			    name : aFile.name,
+			    type : aFile.type,
+			    size : aFile.size,
+			    data : aReader.result
+			};
+
+			if (isMultible)
+				this.fileData.push(file);
+			else
+				this.fileData = file;
+
+			aCounter.count--;
+			if (aCounter.count === 0)
+				de.titus.form.utils.EventUtils.triggerEvent(this.element, de.titus.form.Constants.EVENTS.FIELD_VALUE_CHANGED);
 		};
 
 		DefaultController.prototype.getValue = function() {
