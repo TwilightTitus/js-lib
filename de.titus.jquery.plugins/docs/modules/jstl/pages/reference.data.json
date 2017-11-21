@@ -160,21 +160,27 @@
 					"headline": "expression syntax",
 					"content": "${[your expression]}",
 					"subcontent": "Your expression can be an javacript call or an variable from the data context."
-				},{
-					"headline": "special properties at context",
-					"type": "text",
-					"content": [
-						"At expression context you have two special properties.",
-						"",
-						"<b>$root</b> this property is the element where the jstl executed",
-						"<b>$element</> this is the current element where the jstl processed"
-					]
 				},
 				{
 					"type": "button",
 					"text": "full reference the expression",
 					"link": "index.html?module=core&page=1#expression-language",
 					"linktype": "relativ"
+				}
+			]
+		},
+		{
+			"tag": "special-context-properties",
+			"title": "Special Context Properties",
+			"teaser": "",
+			"content": [{
+					"type": "text",
+					"content": [
+						"At expression context you have two special properties.",
+						"",
+						"<b>$root</b> this property is the element where the jstl process executed",
+						"<b>$element</b> this is the current element where the jstl processed"
+					]
 				}
 			]
 		},
@@ -484,18 +490,18 @@
 			]
 		},
 		{
-			"tag": "jstl-add-atribute",
-			"title": "jstl-add-atribute",
+			"tag": "jstl-add-attribute",
+			"title": "jstl-add-attribute",
 			"teaser": "",
 			"content": [
 				{
 					"type": "text",
-					"content": "With \"jstl-add-atribute\" you can add a html tag attribute."
+					"content": "With \"jstl-add-attribute\" you can add a html tag attribute."
 				},
 				{
 					"type": "code",
 					"codetype": "html",
-					"headline": "jstl-add-atribute",
+					"headline": "jstl-add-attribute",
 					"content": "<[any tag] jstl-add-attribute=\"[string|expression|json object string|json array]\"></[any tag]>",
 					"subcontent": ""
 				},
@@ -524,6 +530,40 @@
 						"<[any tag] jstl-add-attribute=\"${my.data}\"></[any tag]>"
 					],
 					"subcontent": "If you use an expression, it is required that the result has the same structure of the json object or json array."
+				}
+			]
+		},{
+			"tag": "jstl-screen-condition",
+			"title": "jstl-screen-condition",
+			"teaser": "",
+			"content": [
+				{
+					"type": "text",
+					"content": "With \"jstl-screen-condition\" is the way to control the jstl execution on screen size."
+				},
+				{
+					"type": "code",
+					"codetype": "html",
+					"headline": "jstl-screen-condition",
+					"content": "<[any tag] jstl-screen-condition=\"expression\"></[any tag]>",
+					"subcontent": ""
+				},
+				{
+					"type": "text",
+					"headline": "a typical use case",
+					"content": [
+						"You have for every device size a special navigation and you have the problem, that every html structur are unique for every device.",
+						"You can prerender all navigation type in the page and css media queries controls the visibility. This solution is hard, if you have ",
+						"a dynamic navigation. At worst case, you write for all devices and html navigation structures a special logic.",
+						"",
+						"This function of jstl-screen-condtion can help you."
+					]
+				},
+				{
+					"type": "button",
+					"text": "reference for screenobserver",
+					"link": "index.html?module=core&page=4#screenobserver",
+					"linktype": "relativ"
 				}
 			]
 		},
@@ -572,6 +612,31 @@
 					"type": "text",
 					"headline": "jstl-text-trim-length",
 					"content": "With this \"text-trim-length\" attribute you can define a max length of text, that will be insert as content. This would only works with plain text."
+				}
+			]
+		},{
+			"tag": "css-classes",
+			"title": "css classes/ css marker/ JSTL states",
+			"teaser": "",
+			"content": [
+				{
+					"type": "text",
+					"content": "At the processing, jstl add css marker. It's helpful to control the visibility at rendering."
+				},
+				
+				{
+					"type": "text",
+					"headline": "jstl-running",
+					"content": [
+						"This css class would be added to begin of the jstl processing."
+					]
+				},
+				{
+					"type": "text",
+					"headline": "jstl-ready",
+					"content": [
+						"This css class would be added if the jstl finished the processing."
+					]
 				}
 			]
 		}

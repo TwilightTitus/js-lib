@@ -409,18 +409,19 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 				        "activate" : function(aScreenData) {
 					        if (ScreenCondition.LOGGER.isDebugEnabled())
 						        ScreenCondition.LOGGER.logDebug("run jstl screen condition (activate)");
-					        
-					        if (!aElement.is(".jstl-ready")) {
-					        	aElement.jstl({
+
+					        if (!aElement.is(".jstl-screen-condition-ready")) {
+						        aElement.jstl({
 						            "data" : aContext,
 						            "callback" : function() {
-						            	aElement.removeClass("jstl-screen-inactive");
-						            	aElement.addClass("jstl-screen-active");
+							            aElement.removeClass("jstl-screen-inactive");
+							            aElement.addClass("jstl-screen-active");
+							            aElement.addClass("jstl-screen-condition-ready");
 						            }
 						        });
 					        } else {
-					        	aElement.removeClass("jstl-screen-inactive");
-					        	aElement.addClass("jstl-screen-active");
+						        aElement.removeClass("jstl-screen-inactive");
+						        aElement.addClass("jstl-screen-active");
 					        }
 				        },
 				        "deactivate" : function(aScreenData) {
