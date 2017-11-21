@@ -98,10 +98,11 @@
 				var item = this.data.items[i];
 				if (item.id == itemId) {
 					this.data.items.splice(i, 1);
-					itemElement.remove();
-					EventUtils.triggerEvent(this.data.element, EVENTTYPES.FIELD_VALUE_CHANGED);
-					this.doValidate();
+					itemElement.remove();					
+					//this.doValidate();
+					this.__handleValidationEvent(aEvent);
 					this.__doCheckAddButton();
+					EventUtils.triggerEvent(this.data.element, EVENTTYPES.FIELD_VALUE_CHANGED);
 					return;
 				}
 			}
@@ -146,6 +147,7 @@
 
 			de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.FIELD_VALIDATED);
 		};
+		
 
 		ListField.prototype.doValidate = function(force) {
 			var oldValid = this.data.valid;
