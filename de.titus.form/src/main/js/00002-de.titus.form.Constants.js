@@ -40,7 +40,10 @@
 
 		    CONDITION_STATE_CHANGED : "form-condition-state-changed",
 		    CONDITION_MET : "form-condition-met",
-		    CONDITION_NOT_MET : "form-condition-not-met"
+		    CONDITION_NOT_MET : "form-condition-not-met",
+
+		    BUTTON_INACTIVE : "form-button-inactive",
+		    BUTTON_ACTIVE : "form-button-active",
 		};
 
 		de.titus.form.Constants.STATE = {
