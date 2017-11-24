@@ -41,6 +41,7 @@
 				if (nextPage.data.type == de.titus.form.Constants.TYPES.SUMMARY_PAGE) {
 					this.data.element.formular_utils_SetActive();
 					aEventUtils.triggerEvent(this.data.element, EVENTTYPES.BUTTON_ACTIVE);
+					return;
 				}
 			}
 			this.data.element.formular_utils_SetInactive();
