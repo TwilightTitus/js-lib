@@ -1491,7 +1491,7 @@ de.titus.core.Namespace.create("de.titus.logging.MemoryAppender", function() {
 
 (function($){
 	de.titus.core.Namespace.create("de.titus.jstl", function() {
-		de.titus.jstl.Version = "4.0.1";
+		de.titus.jstl.Version = "4.0.2";
 	});
 })($);
 de.titus.core.Namespace.create("de.titus.jstl.Constants", function() {
@@ -2201,17 +2201,17 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 			        var text = aText;
 			        var addAsHtml = false;
 
-			        var trimLength = aBaseElement.attr("jstl-text-trim-length");
-			        if (trimLength != undefined && trimLength != "") {
+			        let trimLength = (aBaseElement.attr("jstl-text-trim-length") || "").trim();
+			        if (trimLength.length > 0) {
 				        trimLength = aProcessor.resolver.resolveExpression(trimLength, aContext, "-1");
 				        trimLength = parseInt(trimLength);
 				        if (trimLength && trimLength > 0)
 					        text = de.titus.core.StringUtils.trimTextLength(text, trimLength);
 			        }
 
-			        var preventformat = aBaseElement.attr("jstl-text-prevent-format");
-			        if (preventformat) {
-				        preventformat = aProcessor.resolver.resolveExpression(preventformat, aContext, true) || true;
+			        let preventformat = aBaseElement.attr("jstl-text-prevent-format");
+			        if (typeof preventformat === "string") {
+				        preventformat = preventformat.trim().length > 0 ? (aProcessor.resolver.resolveExpression(preventformat, aContext, true) || true) : true;
 				        if (preventformat) {
 					        text = de.titus.core.StringUtils.formatToHtml(text);
 					        addAsHtml = true;
