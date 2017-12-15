@@ -14,7 +14,7 @@
 var de = de || {};
 de.titus = de.titus || {};
 de.titus.core = de.titus.core || {
-	Version : "1.10.1"
+	Version : "1.10.2"
 };
 if (de.titus.core.Namespace == undefined) {
 	de.titus.core.Namespace = {};
@@ -719,7 +719,7 @@ de.titus.core.Namespace.create("de.titus.core.UUID", function() {
 			if (aText.length > maxLength) {
 				var end = maxLength - settings.postfix.length;
 				if ((aText.length - end) > 0)
-					return aText.substring(0, end) + settings.postfix;
+					return aText.substring(0, end).trim() + settings.postfix;
 			}
 			return aText;
 		};
@@ -1491,7 +1491,7 @@ de.titus.core.Namespace.create("de.titus.logging.MemoryAppender", function() {
 
 (function($){
 	de.titus.core.Namespace.create("de.titus.jstl", function() {
-		de.titus.jstl.Version = "4.0.2";
+		de.titus.jstl.Version = "4.0.4";
 	});
 })($);
 de.titus.core.Namespace.create("de.titus.jstl.Constants", function() {
@@ -2489,22 +2489,34 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 		    },
 
 		    __include : function(aElement, aTemplate, aProcessor, aContext, aTaskChain) {
-			    if (Include.LOGGER.isDebugEnabled())
-				    Include.LOGGER.logDebug("execute __include()");
-			    let template = aTemplate.clone();
-			    let includeMode = Include.__mode(aElement, aContext, aProcessor);
+				if (Include.LOGGER.isDebugEnabled())
+					Include.LOGGER.logDebug("execute __include()");
+				let template = aTemplate.clone();
+				let includeMode = Include.__mode(aElement, aContext, aProcessor);
 
-			    if (includeMode == "replace") {
-				    aElement.empty();
-				    aElement.append(template.contents());
-			    } else if (includeMode == "append")
-				    aElement.append(template.contents());
-			    else if (includeMode == "prepend")
-				    aElement.prepend(template.contents());
-
-			    aElement.removeClass("jstl-include-loading");
-			    aTaskChain.nextTask();
-		    },
+				if (includeMode == "replace") {
+					aElement.empty();
+					aElement.append(template.contents());
+					aElement.removeClass("jstl-include-loading");
+					aTaskChain.nextTask();
+				} else if (includeMode == "append") {
+					let wrapper = $("<div></div>");
+					wrapper.append(template);
+					aProcessor.compute(wrapper, aContext, (function(aElement, aTemplate, aTaskChain) {
+						aElement.append(aTemplate.contents());
+						aElement.removeClass("jstl-include-loading");
+						aTaskChain.finish();
+					}).bind({}, aElement, wrapper, aTaskChain));
+				} else if (includeMode == "prepend"){
+					let wrapper = $("<div></div>");
+					wrapper.append(template);
+					aProcessor.compute(wrapper, aContext, (function(aElement, aTemplate, aTaskChain) {
+						aElement.prepend(template.contents());
+						aElement.removeClass("jstl-include-loading");
+						aTaskChain.finish();
+					}).bind({}, aElement, wrapper, aTaskChain));					
+				}				
+			},
 
 		    __remoteError : function(aElement, aTaskChain, aRequest, aResponse, aState, aError) {
 			    Include.LOGGER.logError([ "jstl-include error at element \"", aElement, "\" -> request: \"", aRequest, "\", response: \"", aResponse, "\", state: \"", aState, "\" error: \"", aError, "\"!" ]);

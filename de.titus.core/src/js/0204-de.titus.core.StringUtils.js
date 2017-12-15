@@ -21,7 +21,7 @@
 			if (aText.length > maxLength) {
 				var end = maxLength - settings.postfix.length;
 				if ((aText.length - end) > 0)
-					return aText.substring(0, end) + settings.postfix;
+					return aText.substring(0, end).trim() + settings.postfix;
 			}
 			return aText;
 		};
