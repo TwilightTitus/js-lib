@@ -19,7 +19,7 @@
 				NextButton.LOGGER.logDebug("__init()");
 
 			aEventUtils.handleEvent(this.data.element, "click", NextButton.prototype.execute.bind(this));
-			aEventUtils.handleEvent(this.data.formularElement, [ EVENTTYPES.PAGE_CHANGED, EVENTTYPES.VALIDATION_STATE_CHANGED ], NextButton.prototype.update.bind(this));
+			aEventUtils.handleEvent(this.data.formularElement, [ EVENTTYPES.PAGE_CHANGED, EVENTTYPES.VALIDATION_STATE_CHANGED, EVENTTYPES.CONDITION_STATE_CHANGED ], NextButton.prototype.update.bind(this));
 			this.data.element.formular_utils_SetInactive();
 			aEventUtils.triggerEvent(this.data.element, EVENTTYPES.BUTTON_INACTIVE);
 		};
