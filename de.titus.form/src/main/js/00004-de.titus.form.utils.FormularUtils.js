@@ -25,9 +25,9 @@
 		    getPage : function(aElement) {
 			    if (FormularUtils.LOGGER.isDebugEnabled())
 				    FormularUtils.LOGGER.logDebug("getPage()");
-			    
+
 			    if (aElement.is("[data-form]"))
-			    	return undefined;
+				    return undefined;
 			    else if (aElement.is("[data-form-page]"))
 				    return aElement.formular_Page();
 			    else {
@@ -40,7 +40,7 @@
 			    if (FormularUtils.LOGGER.isDebugEnabled())
 				    FormularUtils.LOGGER.logDebug("getField()");
 			    if (aElement.is("[data-form]"))
-			    	return undefined;
+				    return undefined;
 			    else if (aElement.is("[data-form-field]"))
 				    return aElement.formular_Field();
 			    else {
@@ -51,16 +51,18 @@
 		    },
 
 		    isFieldsValid : function(theFields, force) {
-			    for (var i = 0; i < theFields.length; i++) {
-				    var field = theFields[i];
-				    var valid = force ? field.doValidate(force) : field.data.valid;
-				    if (!valid)
-					    return false;
+			    if (typeof theFields !== 'undefined' && theFields.length > 0) {
+				    for (var i = 0; i < theFields.length; i++) {
+					    var field = theFields[i];
+					    var valid = force ? field.doValidate(force) : field.data.valid;
+					    if (!valid)
+						    return false;
+				    }
 			    }
 
 			    return true;
 		    },
-		    
+
 		    toBaseModel : function(theFields, aFilter, aContainer) {
 			    var result = aContainer || {};
 			    for (var i = 0; i < theFields.length; i++) {

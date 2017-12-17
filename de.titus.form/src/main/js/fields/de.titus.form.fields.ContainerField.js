@@ -37,10 +37,13 @@
 			EventUtils.handleEvent(this.data.element, [ EVENTTYPES.CONDITION_STATE_CHANGED, EVENTTYPES.VALIDATION_STATE_CHANGED ], ContainerField.prototype.__handleValidationEvent.bind(this), "*");
 
 			this.data.fields = this.data.element.formular_field_utils_getSubFields();
-
+			
 			this.data.element.formular_Condition();
 
 			EventUtils.triggerEvent(this.data.element, EVENTTYPES.INITIALIZED);
+			
+			if(typeof this.data.fields === 'undefined' || this.data.fields.length == 0)
+				this.doValidate(true);			
 		};
 
 		ContainerField.prototype.__changeConditionState = function(aEvent) {
