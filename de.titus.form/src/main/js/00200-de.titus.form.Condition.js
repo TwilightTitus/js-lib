@@ -23,13 +23,15 @@
 			if (Condition.LOGGER.isDebugEnabled())
 				Condition.LOGGER.logDebug("__init()");
 
-			if (this.data.expression !== "") {
+			if (this.data.expression.length !== 0) {
 				this.data.formular = de.titus.form.utils.FormularUtils.getFormular(this.data.element);
 				this.data.dataContext = this.data.element.formular_findDataContext();
 				de.titus.form.utils.EventUtils.handleEvent(this.data.formular.data.element, [ EVENTTYPES.CONDITION_STATE_CHANGED, EVENTTYPES.VALIDATION_STATE_CHANGED, EVENTTYPES.FIELD_VALIDATED ], Condition.prototype.__doCondition.bind(this));
 			}
 
 			de.titus.form.utils.EventUtils.handleEvent(this.data.element, [ EVENTTYPES.INITIALIZED ], Condition.prototype.__doCheck.bind(this));
+			if (this.data.expression.length === 0)
+				de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.CONDITION_MET);
 		};
 
 		Condition.prototype.__doCondition = function(aEvent) {

@@ -36,7 +36,7 @@
 			de.titus.form.utils.EventUtils.handleEvent(this.data.element, [ EVENTTYPES.CONDITION_MET, EVENTTYPES.CONDITION_NOT_MET ], Page.prototype.__changeConditionState.bind(this));
 			de.titus.form.utils.EventUtils.handleEvent(this.data.element, [ EVENTTYPES.CONDITION_STATE_CHANGED, EVENTTYPES.VALIDATION_STATE_CHANGED ], Page.prototype.__changeValidationState.bind(this));
 
-			this.data.fields = this.data.element.formular_field_utils_getSubFields();
+			this.data.fields = this.data.element.formular_field_utils_getSubFields();			
 			this.data.element.formular_Condition();
 
 			de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.PAGE_INITIALIZED);
@@ -64,21 +64,24 @@
 				Page.LOGGER.logDebug([ "__changeConditionState (\"", aEvent, "\") -> page: \"", this, "\"" ]);
 
 			aEvent.preventDefault();
-			var valid = this.doValidate();
-			if (this.data.valid != valid) {
-				this.data.valid = valid;
-
-				if (this.data.valid)
-					this.data.element.formular_utils_SetValid();
-				else
-					this.data.element.formular_utils_SetInvalid();
-
-				de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.VALIDATION_STATE_CHANGED);
-			}
+			this.doValidate(true);			
 		};
 
 		Page.prototype.doValidate = function(force) {
-			return de.titus.form.utils.FormularUtils.isFieldsValid(this.data.fields, force);
+			if (force) {
+				var oldValid = this.data.valid;
+				this.data.valid = de.titus.form.utils.FormularUtils.isFieldsValid(this.data.fields, force);
+				if (oldValid != this.data.valid) {
+					if (this.data.valid)
+						this.data.element.formular_utils_SetValid();
+					else
+						this.data.element.formular_utils_SetInvalid();
+					
+					de.titus.form.utils.EventUtils.triggerEvent(this.data.element, EVENTTYPES.VALIDATION_STATE_CHANGED);
+				}
+			}
+
+			return this.data.valid;
 		};
 
 		Page.prototype.hide = function() {
