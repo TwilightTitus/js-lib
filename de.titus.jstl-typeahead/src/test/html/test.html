@@ -41,6 +41,22 @@
 				class="glyphicon glyphicon-ok form-control-feedback"></span>
 		</div>
 	</div>
+	<h3>Typeahed at a form tag</h3>
+	<form onsubmit="alert('submit triggert')">
+		<div class="input-group has-success has-feedback">
+			<span class="input-group-addon"><i
+				class="glyphicon glyphicon-user"></i></span> <input type="text"
+				class="jstl-typeahead form-control"
+				typeahead-input-action="testSearch"
+				typeahead-template="templates/typeahead.tpl.html"
+				typeahead-display="name + '(' + name + ')'" typeahead-display-marker=""
+				typeahead-selection-action="selectValue" /> <span
+				class="glyphicon glyphicon-ok form-control-feedback"></span>
+		</div>
+		<input type="submit" value="test submit">
+	</form>
+	
+	
 	<script type="text/javascript">
 		var GIVENNAMES = [
 			"Peter",
