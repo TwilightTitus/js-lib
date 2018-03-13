@@ -71,6 +71,9 @@
 
 			this.data.element.find("[data-form-validation]").formular_utils_SetInactive();
 
+			if(typeof this.data.field === "undefined")
+				return false;
+			
 			var fieldData = this.data.field.getData({
 			    condition : false,
 			    validate : true

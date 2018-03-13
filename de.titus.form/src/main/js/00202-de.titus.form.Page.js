@@ -61,7 +61,7 @@
 
 		Page.prototype.__changeValidationState = function(aEvent) {
 			if (Page.LOGGER.isDebugEnabled())
-				Page.LOGGER.logDebug([ "__changeConditionState (\"", aEvent, "\") -> page: \"", this, "\"" ]);
+				Page.LOGGER.logDebug([ "__changeValidationState (\"", aEvent, "\") -> page: \"", this, "\"" ]);
 
 			aEvent.preventDefault();
 			this.doValidate(true);			

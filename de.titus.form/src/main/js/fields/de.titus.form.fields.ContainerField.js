@@ -37,13 +37,11 @@
 			EventUtils.handleEvent(this.data.element, [ EVENTTYPES.CONDITION_STATE_CHANGED, EVENTTYPES.VALIDATION_STATE_CHANGED ], ContainerField.prototype.__handleValidationEvent.bind(this), "*");
 
 			this.data.fields = this.data.element.formular_field_utils_getSubFields();
-			
+
 			this.data.element.formular_Condition();
 
 			EventUtils.triggerEvent(this.data.element, EVENTTYPES.INITIALIZED);
-			
-			if(typeof this.data.fields === 'undefined' || this.data.fields.length == 0)
-				this.doValidate(true);			
+			this.doValidate(true);
 		};
 
 		ContainerField.prototype.__changeConditionState = function(aEvent) {
@@ -66,22 +64,36 @@
 
 				EventUtils.triggerEvent(this.data.element, EVENTTYPES.CONDITION_STATE_CHANGED);
 			}
+			this.doValidate(true);
 		};
 
 		ContainerField.prototype.__handleValidationEvent = function(aEvent) {
+			if (ContainerField.LOGGER.isDebugEnabled())
+				ContainerField.LOGGER.logDebug([ "__handleValidationEvent()  for \"", this.data.name, "\" -> ", aEvent ]);
+			aEvent.preventDefault();
+			aEvent.stopPropagation();
 			this.doValidate(true);
 		};
 
 		ContainerField.prototype.doValidate = function(force) {
-			if (force) {
-				var oldValid = this.data.valid;
+			if (ContainerField.LOGGER.isDebugEnabled())
+				ContainerField.LOGGER.logDebug([ "doValidate()  for \"", this.data.name ]);
+
+			var oldValid = this.data.valid;
+			if (typeof this.data.fields === 'undefined' || this.data.fields.length == 0)
+				this.data.valid = true;
+			else if(!this.data.condition && (!this.data.required || this.data.requiredOnActive))
+				this.data.valid = true;
+			else				
 				this.data.valid = de.titus.form.utils.FormularUtils.isFieldsValid(this.data.fields, force);
-				if (oldValid != this.data.valid) {
-					if (this.data.valid)
-						this.data.element.formular_utils_SetValid();
-					else
-						this.data.element.formular_utils_SetInvalid();
-				}
+
+			if (oldValid != this.data.valid) {
+				if (this.data.valid)
+					this.data.element.formular_utils_SetValid();
+				else
+					this.data.element.formular_utils_SetInvalid();
+
+				EventUtils.triggerEvent(this.data.element, EVENTTYPES.VALIDATION_STATE_CHANGED);
 			}
 
 			return this.data.valid;

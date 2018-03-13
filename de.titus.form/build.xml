@@ -25,24 +25,28 @@
 
 
 	<target name="build-js-file" depends="init" description="Concatenate JavaScript source files">
-		<echo message="Building ${ant.project.name}-${project.version}.js" />
+		<echo message="Building ${ant.project.name}.${project.version}.js" />
 		<mkdir dir="${dir.dist}" />
-		<concat destfile="${dir.dist}/${ant.project.name}-${project.version}.js">
+		<concat destfile="${dir.dist}/${ant.project.name}.${project.version}.js">
 			<fileset dir="${dir.src}" casesensitive="false">
-				<include name="**/*.js"/>
+				<include name="**/*.js" />
 			</fileset>
 		</concat>
-		<echo message="${ant.project.name}-${project.version}.js built." />
-		<copy file="${dir.dist}/${ant.project.name}-${project.version}.js" tofile="sample/js/${ant.project.name}.js"/>
-		
-		<echo message="minify ${ant.project.name}-${project.version}.js" />
-		<copy file="${dir.dist}/${ant.project.name}-${project.version}.js" tofile="${dir.dist}/${ant.project.name}-${project.version}.min.js"/>
+		<echo message="${ant.project.name}.${project.version}.js built." />
+		<copy file="${dir.dist}/${ant.project.name}.${project.version}.js" tofile="sample/js/${ant.project.name}.js" />
+
+		<echo message="minify ${ant.project.name}.${project.version}.js" />
+		<copy file="${dir.dist}/${ant.project.name}.${project.version}.js" tofile="${dir.dist}/${ant.project.name}.${project.version}.min.js" />
 		<yuicompress linebreak="1000" warn="false" munge="no" preserveallsemicolons="true" outputfolder="${dir.dist}" charset="utf-8">
 			<fileset dir="${dir.dist}">
-				<include name="${ant.project.name}-${project.version}.min.js" />
+				<include name="${ant.project.name}.${project.version}.min.js" />
 			</fileset>
 		</yuicompress>
-		<echo message="${ant.project.name}-${project.version}.min.js built." />
+
+		<replace file="${dir.dist}/${ant.project.name}.${project.version}.js" token="{version}" value="${project.version}" />
+		<replace file="${dir.dist}/${ant.project.name}.${project.version}.min.js" token="{version}" value="${project.version}" />
+
+		<echo message="${ant.project.name}.${project.version}.min.js built." />
 	</target>
 
 

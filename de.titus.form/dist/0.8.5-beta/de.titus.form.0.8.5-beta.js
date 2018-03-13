@@ -12,7 +12,7 @@
 
 (function($){
 	de.titus.core.Namespace.create("de.titus.form", function() {
-		de.titus.form.Version = "{version}";
+		de.titus.form.Version = "0.8.5-beta";
 	});
 })($);(function() {
 	"use strict";
