@@ -1491,7 +1491,7 @@ de.titus.core.Namespace.create("de.titus.logging.MemoryAppender", function() {
 
 (function($){
 	de.titus.core.Namespace.create("de.titus.jstl", function() {
-		de.titus.jstl.Version = "4.0.4";
+		de.titus.jstl.Version = "4.0.5";
 	});
 })($);
 de.titus.core.Namespace.create("de.titus.jstl.Constants", function() {
@@ -2027,12 +2027,12 @@ de.titus.core.Namespace.create("de.titus.jstl.TaskRegistry", function() {
 					    Foreach.__count(template, statusName, aElement, aContext, aProcessor, aTaskChain);
 				    else {
 					    let list = aResolver.resolveExpression(aExpression, aContext, undefined);
-					    if (Array.isArray(list))
+					    if (typeof list === "undefined")
+					    	aTaskChain.nextTask();
+					    else if (Array.isArray(list))
 						    Foreach.__list(list, template, varName, statusName, aElement, aContext, aProcessor, aTaskChain);
 					    else if (typeof list === "object")
-						    Foreach.__map(list, template, varName, statusName, aElement, aContext, aProcessor, aTaskChain);
-					    else if (typeof list === "undefined")
-						    Foreach.__map(aContext, template, varName, statusName, aElement, aContext, aProcessor, aTaskChain);
+						    Foreach.__map(list, template, varName, statusName, aElement, aContext, aProcessor, aTaskChain);					   
 					    else
 						    aTaskChain.nextTask();
 				    }
